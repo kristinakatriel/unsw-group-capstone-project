@@ -1,45 +1,51 @@
-import React, { useEffect, useState } from 'react';
-import { invoke } from '@forge/bridge';
-import './App.css'; // Make sure to import your CSS file
+import React, { useState, useEffect } from 'react';
+import { invoke, view } from '@forge/bridge';
+import './App.css';
 
 function App() {
-  const [data, setData] = useState(null);
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
 
-  useEffect(() => {
-    invoke('getText', { example: 'my-invoke-variable' }).then(setData);
-  }, []);
-
   const handleSave = () => {
-    // Here you would add the logic to save the flashcard
     console.log('Flashcard saved:', { question, answer });
     setQuestion('');
     setAnswer('');
   };
 
+  const handleClose = () => {
+    view.close();
+  };
+
   return (
-    <div>
-      <div className="flashcard-creation">
-        <h2>Manually Create Flashcard</h2>
+    <div className="flashcard-creation">
+      <h2>Manually Create Flashcard</h2>
+
+      <div className="form-group">
         <label htmlFor="question">Question</label>
         <textarea
           id="question"
           value={question}
           onChange={(e) => setQuestion(e.target.value)}
           placeholder="Type the question here..."
+          className="input-area"
         />
+      </div>
+
+      <div className="form-group">
         <label htmlFor="answer">Answer</label>
         <textarea
           id="answer"
           value={answer}
           onChange={(e) => setAnswer(e.target.value)}
           placeholder="Type the answer here..."
+          className="input-area"
         />
-        <button className="save-button" onClick={handleSave}>Save</button>
       </div>
 
-      {data ? data : 'Loading...'}
+      <div className="button-group">
+        <button className="save-button" onClick={handleSave}>Save</button>
+        <button className="close-button" onClick={handleClose}>Close</button>
+      </div>
     </div>
   );
 }
