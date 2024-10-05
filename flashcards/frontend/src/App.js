@@ -3,6 +3,7 @@ import { invoke, view } from '@forge/bridge';
 import './App.css';
 
 function App() {
+  console.log(window.location.pathname)
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
 

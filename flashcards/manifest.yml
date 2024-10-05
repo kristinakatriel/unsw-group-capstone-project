@@ -6,12 +6,19 @@ modules:
         function: resolver
       viewportSize: medium
       title: content-action-flashcards
+  confluence:spacePage:
+    - key: flashcard-space-page
+      resource: main
+      resolver:
+        function: resolver
+      title: Flashcards Space Page
+      route: flashcard-space-page
   function:
     - key: resolver
       handler: index.handler
 resources:
   - key: main
-    path: frontend/content-menu-action/build
+    path: frontend/build
 app:
   runtime:
     name: nodejs20.x
