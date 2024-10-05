@@ -1,0 +1,18 @@
+modules:
+  confluence:contentAction:
+    - key: content-action-menu-flashcards
+      resource: main
+      resolver:
+        function: resolver
+      viewportSize: medium
+      title: content-action-flashcards
+  function:
+    - key: resolver
+      handler: index.handler
+resources:
+  - key: main
+    path: frontend/content-menu-action/build
+app:
+  runtime:
+    name: nodejs20.x
+  id: ari:cloud:ecosystem::app/61ace610-ef8d-4591-9283-afd839ca356c
