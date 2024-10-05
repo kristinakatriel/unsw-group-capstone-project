@@ -1,17 +1,24 @@
 modules:
-  macro:
-    - key: flashcards-hello-world-macro
+  confluence:contentAction:
+    - key: content-action-menu-flashcards
       resource: main
-      render: native
       resolver:
         function: resolver
-      title: flashcards
+      viewportSize: medium
+      title: content-action-flashcards
+  confluence:spacePage:
+    - key: flashcard-space-page
+      resource: main
+      resolver:
+        function: resolver
+      title: Flashcards Space Page
+      route: flashcard-space-page
   function:
     - key: resolver
       handler: index.handler
 resources:
   - key: main
-    path: src/frontend/index.jsx
+    path: frontend/build
 app:
   runtime:
     name: nodejs20.x
