@@ -6,13 +6,13 @@ modules:
         function: resolver
       viewportSize: medium
       title: content-action-flashcards
-  confluence:spacePage:
-    - key: flashcard-space-page
+  confluence:globalPage:
+    - key: flashcard-global-page
       resource: main
       resolver:
         function: resolver
-      title: Flashcards Space Page
-      route: flashcard-space-page
+      title: Flashcards Global Page
+      route: flashcard-global-page
   function:
     - key: resolver
       handler: index.handler

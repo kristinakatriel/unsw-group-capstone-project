@@ -2,7 +2,7 @@ import React from 'react';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/react-splide/css';
 
-function SpacePageApp() {
+function GlobalPageApp() {
     const recentFlashcards = [
         { id: 1, title: 'Flashcard 1', count: 10, owner: 'User A' },
         { id: 2, title: 'Flashcard 2', count: 15, owner: 'User B' },
@@ -43,7 +43,7 @@ function SpacePageApp() {
 
     return (
         <div>
-            <h1>The Space Page is to show user's flashcards!</h1>
+            <h1>The Global Page is to show user's flashcards!</h1>
             <h2>NavBar/Jump To: Recent Flashcards Decks Groups</h2>
 
             <h3>Recent</h3>
@@ -61,4 +61,4 @@ function SpacePageApp() {
     );
 }
 
-export default SpacePageApp;
+export default GlobalPageApp;
