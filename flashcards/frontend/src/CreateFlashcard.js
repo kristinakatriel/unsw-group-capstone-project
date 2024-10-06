@@ -1,22 +1,50 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { invoke, view } from '@forge/bridge';
-import './App.css';
+import './CreateFlashcard.css';
 
-function App() {
-  console.log(window.location.pathname)
+function CreateFlashcard() {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [hint, setHint] = useState('');
+  const [ownerEmail, setOwnerEmail] = useState('');
+
+  useEffect(() => {
+    const getUserEmail = async () => {
+      try {
+        const response = await invoke('getUserEmail');
+        setOwnerEmail(response.email);
+        console.log(ownerEmail)
+      } catch (error) {
+        console.error('Error fetching user email:', error);
+      }
+    };
+
+    getUserEmail();
+  }, []);
 
   const uploadImageModal = () => {
-    console.log("Uploading an image...")
-  }
+    console.log("Uploading an image...");
+  };
 
-  const handleSave = () => {
-    console.log('Flashcard saved:', { question, answer, hint });
-    setQuestion('');
-    setAnswer('');
-    setHint('');
+  const handleSave = async () => {
+    try {
+      const response = await invoke('createFlashcard', {
+        question_text: question,
+        answer_text: answer,
+        hint: hint,
+        owner: ownerEmail,
+      });
+
+      console.log('Flashcard saved successfully:', response);
+      
+      setQuestion('');
+      setAnswer('');
+      setHint('');
+      setTags(['default-tag']);
+
+    } catch (error) {
+      console.error('Error saving flashcard:', error);
+    }
   };
 
   const handleClose = () => {
@@ -37,7 +65,7 @@ function App() {
           className="input-area"
         />
         <button onClick={uploadImageModal}>Upload Image</button>
-        </div>
+      </div>
 
       <div className="form-group">
         <label htmlFor="answer">Answer</label>
@@ -52,20 +80,20 @@ function App() {
       </div>
 
       <div className="form-group">
-        <label htmlFor="answer">Hint (Optional)</label>
+        <label htmlFor="hint">Hint (Optional)</label>
         <textarea
           id="hint"
           value={hint}
           onChange={(e) => setHint(e.target.value)}
-          placeholder="Type the answer here..."
+          placeholder="Type the hint here..."
           className="input-area"
         />
         <button onClick={uploadImageModal}>Upload Image</button>
       </div>
 
       <div className="form-group">
-      <label htmlFor="select">Add to... (Optional)</label>
-      <label htmlFor="select">Select Deck and/or Group</label>
+        <label htmlFor="select">Add to... (Optional) Implement Later</label>
+        <label htmlFor="select">Select Deck and/or Group</label>
       </div>
 
       <div className="button-group">
@@ -76,4 +104,4 @@ function App() {
   );
 }
 
-export default App;
+export default CreateFlashcard;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import CreateFlashcard from './CreateFlashcard';
 import GlobalPageApp from './GlobalPageApp';
 import '@atlaskit/css-reset';
 import { invoke } from '@forge/bridge';
@@ -19,7 +19,7 @@ const MainComponent = () => {
   }, []);
 
   if (moduleKey === 'content-action-menu-flashcards') {
-    return <App />;
+    return <CreateFlashcard />;
   } else if (moduleKey === 'flashcard-global-page') {
     return <GlobalPageApp />;
   }
