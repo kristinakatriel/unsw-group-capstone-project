@@ -6,11 +6,17 @@ function App() {
   console.log(window.location.pathname)
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
+  const [hint, setHint] = useState('');
+
+  const uploadImageModal = () => {
+    console.log("Uploading an image...")
+  }
 
   const handleSave = () => {
-    console.log('Flashcard saved:', { question, answer });
+    console.log('Flashcard saved:', { question, answer, hint });
     setQuestion('');
     setAnswer('');
+    setHint('');
   };
 
   const handleClose = () => {
@@ -30,7 +36,8 @@ function App() {
           placeholder="Type the question here..."
           className="input-area"
         />
-      </div>
+        <button onClick={uploadImageModal}>Upload Image</button>
+        </div>
 
       <div className="form-group">
         <label htmlFor="answer">Answer</label>
@@ -41,6 +48,24 @@ function App() {
           placeholder="Type the answer here..."
           className="input-area"
         />
+        <button onClick={uploadImageModal}>Upload Image</button>
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="answer">Hint (Optional)</label>
+        <textarea
+          id="hint"
+          value={hint}
+          onChange={(e) => setHint(e.target.value)}
+          placeholder="Type the answer here..."
+          className="input-area"
+        />
+        <button onClick={uploadImageModal}>Upload Image</button>
+      </div>
+
+      <div className="form-group">
+      <label htmlFor="select">Add to... (Optional)</label>
+      <label htmlFor="select">Select Deck and/or Group</label>
       </div>
 
       <div className="button-group">
