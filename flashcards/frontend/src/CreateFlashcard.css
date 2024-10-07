@@ -3,21 +3,13 @@
   font-family: 'Arial', sans-serif;
   max-width: 500px;
   margin: 0 auto; 
-  padding-top: 30px;
-  padding-left: 30px;
-  padding-right: 30px;
-  padding-bottom: 30px;
+  padding: 30px;
 }
 
 h2 {
   font-size: 24px;
   font-weight: bold;
-  margin-bottom: 20px;
-  margin-top: 20px;
-}
-
-.form-group {
-  margin-bottom: 15px;
+  margin: 20px 0;
 }
 
 label {
@@ -26,14 +18,24 @@ label {
   margin-bottom: 5px;
 }
 
+.input-drag-container {
+  display: flex;
+  align-items: stretch;
+}
+
 .input-area {
-  width: 100%;
+  flex: 3;
   box-sizing: border-box;
-  width: 100%;
-  height: 60px;
+  height: 95px;
   border: 1px solid #ccc;
   border-radius: 4px;
   resize: none; 
+  margin-right: 10px; 
+}
+
+.drag-drop {
+  flex: 1;
+  height: 100px;
 }
 
 .button-group {
