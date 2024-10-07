@@ -5,14 +5,14 @@ modules:
       resolver:
         function: resolver
       viewportSize: medium
-      title: content-action-flashcards
-  confluence:spacePage:
-    - key: flashcard-space-page
+      title: Create Flashcards
+  confluence:globalPage:
+    - key: flashcard-global-page
       resource: main
       resolver:
         function: resolver
-      title: Flashcards Space Page
-      route: flashcard-space-page
+      title: Flashcards Global Page
+      route: flashcard-global-page
   function:
     - key: resolver
       handler: index.handler
@@ -23,3 +23,9 @@ app:
   runtime:
     name: nodejs20.x
   id: ari:cloud:ecosystem::app/61ace610-ef8d-4591-9283-afd839ca356c
+permissions:
+  scopes:
+    - read:confluence-content.summary
+    - write:confluence-content
+    - storage:app
+    - read:confluence-user
