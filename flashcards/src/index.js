@@ -1,19 +1,18 @@
 import Resolver from '@forge/resolver';
-import { storage } from '@forge/api';
 
 const resolver = new Resolver();
+
+const cards = {};
+
+const generateId = () => {
+  return new Date().getTime().toString();
+};
 
 resolver.define('getModule', (req) => {
   const { moduleKey } = req.context;
   return { moduleKey };
 });
 
-resolver.define('getUserEmail', async (req) => {
-  const user = req.context.user;
-  return { email: user.email };
-});
-
-// NOTE: ADD HINT IMAGES
 resolver.define('createFlashcard', async (req) => {
   const { 
     question_text, 
@@ -25,7 +24,15 @@ resolver.define('createFlashcard', async (req) => {
     owner 
   } = req.payload;
 
-  const flashcard = {
+  if (!question_text || !answer_text || !owner) {
+    return {
+      success: false,
+      error: 'invalid input: owner, question, answer',
+    };
+  }
+
+  const cardId = generateId();
+  const card = {
     question_text,
     question_image,
     answer_text,
@@ -33,53 +40,40 @@ resolver.define('createFlashcard', async (req) => {
     hint,
     tags,
     owner,
-    id: new Date().getTime().toString(),
+    id: cardId,
   };
+  cards[cardId] = card;
 
   return {
-    statusCode: 201,
-    body: {id: flashcard.id},
+    success: true,
+    id: card.id,
+    card,
   };
 });
 
-resolver.define('createDeck', async (req) => {
-  const {
-    deck_title,
-    deck_description
-  } = req.payload;
+resolver.define('getFlashcard', async ({ payload }) => {
+  const { cardId } = payload;
 
-  const deck = {
-    deck_title,
-    deck_description,
-    id: new Date().getTime().toString(),
-  };
+  if (!cards[cardId]) {
+    return {
+      success: false,
+      error: `no card found with id: ${cardId}`,
+    };
+  }
 
   return {
-    statusCode: 201, // Double check this status code
-    body: {id: deck.id, title: deck.deck_title}
-  }
+    success: true,
+    card: cards[cardId],
+  };
 });
 
-resolver.define('createGroup', async (req) => {
-  const {
-    group_title,
-    group_description,
-    group_owner,
-    group_flashdecks,
-  } = req.payload;
-
-  const group = {
-    group_title,
-    group_description,
-    group_owner,
-    group_flashdecks,
-    id: new Date().getTime().toString(),
-  };
-
+resolver.define('getAllFlashcards', async () => {
+  const allFlashcards = Object.values(cards);
   return {
-    statusCode: 201, // Double check if this is the correct status code
-    body: {id: group.id, title: group.group_title, flashdecks: group.group_flashdecks}
-  }
+    success: true,
+    cards: allFlashcards,
+  };
 });
 
 export const handler = resolver.getDefinitions();
+
