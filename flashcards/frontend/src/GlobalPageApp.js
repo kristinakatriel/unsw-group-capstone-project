@@ -5,6 +5,7 @@ import { invoke } from '@forge/bridge';
 // flashcard creation
 import CreateFlashcard from './CreateFlashcard';
 import ModalDialog from '@atlaskit/modal-dialog';
+import CreateDeck from './CreateDeck';
 // import { Modal, Button } from '@atlaskit/modal-dialog';
 
 function GlobalPageApp() {
@@ -181,7 +182,8 @@ function GlobalPageApp() {
       {/* Deck Modal: TODO */}
       {isDeckModalOpen && (
         <ModalDialog heading="Create Deck" onClose={closeDeckModal}>
-          <p onClose={closeDeckModal}>Example modal for deck...</p>
+          {/* <p onClose={closeDeckModal}>Example modal for deck...</p> */}
+          <CreateDeck onClose={closeDeckModal}/>
         </ModalDialog>
       )}
 

@@ -76,5 +76,7 @@ resolver.define('getAllFlashcards', async () => {
   };
 });
 
+// TODO: use for . um. deck and groups
+
 export const handler = resolver.getDefinitions();
 
