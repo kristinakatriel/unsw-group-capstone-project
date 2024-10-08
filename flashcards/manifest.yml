@@ -29,3 +29,6 @@ permissions:
     - write:confluence-content
     - storage:app
     - read:confluence-user
+  content:
+    styles:
+      - 'unsafe-inline'
