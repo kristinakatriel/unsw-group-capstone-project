@@ -1,16 +1,17 @@
 import Resolver from '@forge/resolver';
-import { storage } from '@forge/api';
 
 const resolver = new Resolver();
 
-// (key: id, value: data)
 const cards = {};
 
-// id helper
 const generateId = () => {
   return new Date().getTime().toString();
 };
 
+resolver.define('getModule', (req) => {
+  const { moduleKey } = req.context;
+  return { moduleKey };
+});
 
 resolver.define('createFlashcard', async (req) => {
   const { 
@@ -50,7 +51,6 @@ resolver.define('createFlashcard', async (req) => {
   };
 });
 
-
 resolver.define('getFlashcard', async ({ payload }) => {
   const { cardId } = payload;
 
@@ -67,5 +67,13 @@ resolver.define('getFlashcard', async ({ payload }) => {
   };
 });
 
+resolver.define('getAllFlashcards', async () => {
+  const allFlashcards = Object.values(cards);
+  return {
+    success: true,
+    cards: allFlashcards,
+  };
+});
 
 export const handler = resolver.getDefinitions();
+
