@@ -77,3 +77,13 @@
   .close-button:hover {
     background-color: #ccc; /* Darker shade for hover effect */
   }
+
+  /* Styling for the deck selection checkboxes */
+.form-group div {
+    display: flex;
+    align-items: center; /* Align checkbox and label vertically */
+  }
+  
+  input[type="checkbox"] {
+    margin-right: 10px; /* Space between checkbox and label */
+  }

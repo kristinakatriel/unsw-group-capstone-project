@@ -141,7 +141,7 @@ resolver.define('createGroup', async (req) => {
     title,
     description,
     owner,
-    // decks (later)
+    decks
   } = req.payload;
 
   if (!title || !owner) {
@@ -157,6 +157,7 @@ resolver.define('createGroup', async (req) => {
     description,
     owner,
     id: groupId,
+    decks: decks || [] // if it is empty (FOR NOW)
   };
   groups[groupId] = group;
 

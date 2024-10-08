@@ -1,17 +1,38 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { invoke, view } from '@forge/bridge';
 import './CreateGroups.css';
 
 function CreateGroups() {
   const [groupTitle, setGroupTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [selectedDecks, setSelectedDecks] = useState([]);
+  const [decks, setDecks] = useState([]);
+
+  // Fetch available decks when the component mounts
+  useEffect(() => {
+    const fetchDecks = async () => {
+      try {
+        const response = await invoke('getAllDecks', {});
+        if (response.success) {
+          setDecks(response.decks);
+        } else {
+          console.error('Error fetching decks:', response.error);
+        }
+      } catch (error) {
+        console.error('Error fetching decks:', error);
+      }
+    };
+
+    fetchDecks();
+  }, []);
 
   const handleSave = async () => {
     try {
       const response = await invoke('createGroup', {
         title: groupTitle,
         description: description,
-        owner: '@eee'
+        owner: '@aaa',
+        decks: selectedDecks, // Pass the selected decks
       });
 
       console.log('Group saved successfully:', response);
@@ -19,6 +40,7 @@ function CreateGroups() {
       // Reset the fields after saving
       setGroupTitle('');
       setDescription('');
+      setSelectedDecks([]);
     } catch (error) {
       console.error('Error invoking createGroup:', error);
     }
@@ -28,12 +50,20 @@ function CreateGroups() {
     view.close(); // Close the modal
   };
 
+  const handleCheckboxChange = (deckId) => {
+    setSelectedDecks((prevSelectedDecks) => 
+      prevSelectedDecks.includes(deckId)
+        ? prevSelectedDecks.filter(id => id !== deckId) // Deselect if already selected
+        : [...prevSelectedDecks, deckId] // Select the deck
+    );
+  };
+
   return (
     <div className="group-creation">
       <h2 className="group-title">Create New Group</h2>
 
       <div className="form-group">
-        <label htmlFor="groupTitle">Group Name</label>
+        <label htmlFor="groupTitle">Group Title</label>
         <input
           type="text"
           id="groupTitle"
@@ -45,7 +75,7 @@ function CreateGroups() {
       </div>
 
       <div className="form-group">
-        <label htmlFor="description">Description</label>
+        <label htmlFor="description">Description </label>
         <textarea
           id="description"
           value={description}
@@ -53,6 +83,21 @@ function CreateGroups() {
           placeholder="Type a description for the group..."
           className="input-area"
         />
+      </div>
+
+      <div className="form-group">
+        <label>Select Decks:</label>
+        {decks.map(deck => (
+          <div key={deck.id}>
+            <input
+              type="checkbox"
+              id={`deck-${deck.id}`}
+              checked={selectedDecks.includes(deck.id)}
+              onChange={() => handleCheckboxChange(deck.id)}
+            />
+            <label htmlFor={`deck-${deck.id}`}>{deck.title}</label>
+          </div>
+        ))}
       </div>
 
       <div className="button-group">
