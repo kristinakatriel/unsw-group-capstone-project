@@ -2,11 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/react-splide/css';
 import { invoke } from '@forge/bridge';
+// flashcard creation
 import CreateFlashcard from './CreateFlashcard';
+import ModalDialog from '@atlaskit/modal-dialog';
+// import { Modal, Button } from '@atlaskit/modal-dialog';
 
 function GlobalPageApp() {
   const [flashcards, setFlashcards] = useState([]);
   const [loading, setLoading] = useState(true);
+  // for creating new flashcard, deck and group: modals 
+  const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
+  const [isDeckModalOpen, setDeckModalOpen] = useState(false); // Track modal state for Deck
+  const [isGroupModalOpen, setGroupModalOpen] = useState(false); // Track modal state for Group
 
   const recentFlashcards = [
     { id: 1, title: 'Flashcard 1', count: 10, owner: 'User A' },
@@ -44,18 +51,48 @@ function GlobalPageApp() {
     getFlashcards();
   }, []);
 
+  // const createFlashcard = () => {
+  //   // need to invoke CreateFlashcard over here!
+  //   console.log("Here to create a flashcard!");
+  // };
   const createFlashcard = () => {
-    // need to invoke CreateFlashcard over here!
-    console.log("Here to create a flashcard!");
+    setIsCreateFlashcardOpen(true); // Open modal to create flashcard
   };
 
   const createDecks = () => {
-    console.log("Here to create a deck!");
+    setDeckModalOpen(true);  // Open deck modal
+  };
+
+  const closeDeckModal = () => {
+    setIsDeckModalOpen(false);
   };
 
   const createGroups = () => {
-    console.log("Here to create a group!");
+    setGroupModalOpen(true);  // Open group modal
   };
+
+  const closeGroupModal = () => {
+    setIsGroupModalOpen(false);
+  };
+
+  // const closeModals = () => {
+  //   setIsCreateFlashcardOpen(false);  // Close flashcard modal
+  //   setDeckModalOpen(false);  // Close deck modal
+  //   setGroupModalOpen(false);  // Close group modal
+  // };
+
+  const closeFlashcardModal = () => {
+    setIsCreateFlashcardOpen(false); // Close modal
+    view.close();
+  };
+
+  // const createDecks = () => {
+  //   console.log("Here to create a deck!");
+  // };
+
+  // const createGroups = () => {
+  //   console.log("Here to create a group!");
+  // };
 
   const renderSplide = (items) => {
     const itemsCount = items.length;
@@ -116,15 +153,14 @@ function GlobalPageApp() {
       {loading ? (
         <p>Loading...</p>
       ) : flashcards.length === 0 ? (
-        <h4>No flashcards to view. Create a flashcard to view it here.</h4>
+        <><h4>No flashcards to view. Create a flashcard to view it here.</h4><button className="create-flashcards" onClick={createFlashcard}>Create New Flashcard</button></>
       ) : (
         renderFlashcardsList(flashcards)
       )}
-      <div className="button-group">
-        <button className="create-flashcards" onClick={createFlashcard}>Create New Flashcard</button>
-        <button className="create-decks" onClick={createDecks}>Create New Deck</button> 
-        <button className="create-groups" onClick={createGroups}>Create New Group </button>
-      </div>
+      <h3>Decks</h3>
+      <><h4>Create a new deck: </h4><button className="create-decks" onClick={createDecks}>Create New Deck</button></>
+      <h3>Groups</h3>
+      <><h4>Create a new group: </h4><button className="create-groups" onClick={createGroups}>Create New Group </button></>
       <h2 style={{ marginTop: '10px' }}>EXAMPLE OUTPUT BELOW (DELETE THIS LATER)</h2>
       <h3 style={{ marginTop: '0px' }}>Recent</h3>
       {renderSplide(recentFlashcards)}
@@ -134,6 +170,28 @@ function GlobalPageApp() {
       {renderSplide(decks)}
       <h3>Groups</h3>
       {renderSplide(groups)}
+      // modal for flashcard creation
+       {/* Flashcard Modal */}
+      {isFlashcardModalOpen && (
+        <ModalDialog heading="Create Flashcard" onClose={closeFlashcardModal}>
+          <CreateFlashcard onClose={closeFlashcardModal}/>
+        </ModalDialog>
+      )}
+
+      {/* Deck Modal: TODO */}
+      {isDeckModalOpen && (
+        <ModalDialog heading="Create Deck" onClose={closeDeckModal}>
+          <p onClose={closeDeckModal}>Example modal for deck...</p>
+        </ModalDialog>
+      )}
+
+      {/* Group Modal: TODO */}
+      {isGroupModalOpen && (
+        <ModalDialog heading="Create Group" onClose={closeGroupModal}>
+          <p onClose={closeGroupModal}>Example modal for group...</p>
+        </ModalDialog>
+      )}
+
     </div>
   );
 }
