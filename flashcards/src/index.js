@@ -84,7 +84,7 @@ resolver.define('createDeck', async (req) => {
     title,
     description,
     owner,
-    // flashcards (later)
+    flashcards // now: (NOT later)
   } = req.payload;
 
   if (!title || !owner) {
@@ -100,6 +100,7 @@ resolver.define('createDeck', async (req) => {
     description,
     owner,
     id: deckId,
+    flashcards: flashcards || [], // No flashcards means empty
   };
   decks[deckId] = deck;
 
