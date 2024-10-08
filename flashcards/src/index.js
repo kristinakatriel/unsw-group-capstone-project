@@ -1,10 +1,11 @@
 import Resolver from '@forge/resolver';
-// import { storage } from forge deploy —environment development;
+// import { storage } from forge resolver
 
 const resolver = new Resolver();
 
 const cards = {};
-const decks = {}
+const decks = {};
+const groups = {};
 
 const generateId = () => {
   return new Date().getTime().toString();
@@ -77,19 +78,19 @@ resolver.define('getAllFlashcards', async () => {
   };
 });
 
-// TODO: use for . um. deck and groups
+// TODO: DECK
 resolver.define('createDeck', async (req) => {
   const { 
     title,
     description,
-    owner
+    owner,
     // flashcards (later)
   } = req.payload;
 
-  if (!title || !description || !owner) {
+  if (!title || !owner) {
     return {
       success: false,
-      error: 'invalid input: title and description needed',
+      error: 'invalid input: title and owner needed',
     };
   }
 
@@ -115,13 +116,13 @@ resolver.define('getDeck', async ({ payload }) => {
   if (!decks[deckId]) {
     return {
       success: false,
-      error: `no card found with id: ${cardId}`,
+      error: `no deck found with id: ${deckId}`,
     };
   }
 
   return {
     success: true,
-    card: cards[cardId],
+    deck: decks[deckId],
   };
 });
 
@@ -129,7 +130,63 @@ resolver.define('getAllDecks', async () => {
   const allDecks = Object.values(decks);
   return {
     success: true,
-    cards: allDecks,
+    decks: allDecks,
+  };
+});
+
+// TODO: GROUPS
+resolver.define('createGroup', async (req) => {
+  const { 
+    title,
+    description,
+    owner,
+    // decks (later)
+  } = req.payload;
+
+  if (!title || !owner) {
+    return {
+      success: false,
+      error: 'invalid input: title and owner needed',
+    };
+  }
+
+  const groupId = generateId();
+  const group = {
+    title,
+    description,
+    owner,
+    id: groupId,
+  };
+  groups[groupId] = group;
+
+  return {
+    success: true,
+    id: group.id,
+    group,
+  };
+});
+
+resolver.define('getGroup', async ({ payload }) => {
+  const { groupId } = payload;
+
+  if (!groups[groupId]) {
+    return {
+      success: false,
+      error: `no group found with id: ${groupId}`,
+    };
+  }
+
+  return {
+    success: true,
+    group: groups[groupId],
+  };
+});
+
+resolver.define('getAllGroups', async () => {
+  const allGroups = Object.values(groups);
+  return {
+    success: true,
+    groups: allGroups,
   };
 });
 

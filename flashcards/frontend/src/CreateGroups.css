@@ -1,4 +1,4 @@
-.deck-creation {
+.group-creation {
     background-color: white;
     font-family: 'Arial', sans-serif;
     max-width: 500px;
@@ -12,7 +12,7 @@
     margin: 20px 0;
   }
   
-  .deck-title {
+  .group-title {
     margin-bottom: 10px;
   }
   

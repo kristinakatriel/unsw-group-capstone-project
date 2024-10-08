@@ -6,8 +6,9 @@ import { invoke } from '@forge/bridge';
 import CreateFlashcard from './CreateFlashcard';
 import ModalDialog from '@atlaskit/modal-dialog';
 import CreateDeck from './CreateDeck';
-import api, { route } from "@forge/api";
+import CreateGroups from './CreateGroups';
 // import { Modal, Button } from '@atlaskit/modal-dialog';
+// import api, { route } from "@forge/api";
 
 function GlobalPageApp() {
   const [flashcards, setFlashcards] = useState([]);
@@ -222,7 +223,8 @@ function GlobalPageApp() {
       {/* Group Modal: TODO */}
       {isGroupModalOpen && (
         <ModalDialog heading="Create Group" onClose={closeGroupModal}>
-          <p onClose={closeGroupModal}>Example modal for group...</p>
+          {/* <p onClose={closeGroupModal}>Example modal for group...</p> */}
+          <CreateGroups onClose={closeGroupModal}/>
         </ModalDialog>
       )}
 
