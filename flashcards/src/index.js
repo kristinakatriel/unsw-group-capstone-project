@@ -4,6 +4,7 @@ import Resolver from '@forge/resolver';
 const resolver = new Resolver();
 
 const cards = {};
+const decks = {}
 
 const generateId = () => {
   return new Date().getTime().toString();
@@ -77,6 +78,60 @@ resolver.define('getAllFlashcards', async () => {
 });
 
 // TODO: use for . um. deck and groups
+resolver.define('createDeck', async (req) => {
+  const { 
+    title,
+    description,
+    owner
+    // flashcards (later)
+  } = req.payload;
+
+  if (!title || !description || !owner) {
+    return {
+      success: false,
+      error: 'invalid input: title and description needed',
+    };
+  }
+
+  const deckId = generateId();
+  const deck = {
+    title,
+    description,
+    owner,
+    id: deckId,
+  };
+  decks[deckId] = deck;
+
+  return {
+    success: true,
+    id: deck.id,
+    deck,
+  };
+});
+
+resolver.define('getDeck', async ({ payload }) => {
+  const { deckId } = payload;
+
+  if (!decks[deckId]) {
+    return {
+      success: false,
+      error: `no card found with id: ${cardId}`,
+    };
+  }
+
+  return {
+    success: true,
+    card: cards[cardId],
+  };
+});
+
+resolver.define('getAllDecks', async () => {
+  const allDecks = Object.values(decks);
+  return {
+    success: true,
+    cards: allDecks,
+  };
+});
 
 export const handler = resolver.getDefinitions();
 

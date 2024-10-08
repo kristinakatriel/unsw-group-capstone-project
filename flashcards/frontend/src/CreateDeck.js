@@ -3,22 +3,22 @@ import { invoke, view } from '@forge/bridge';
 import './CreateDeck.css';
 
 function CreateDeck() {
-  const [deckName, setDeckName] = useState('');
+  const [deckTitle, setDeckTitle] = useState('');
   const [description, setDescription] = useState('');
   const [ownerEmail, setOwnerEmail] = useState('');
 
   const handleSave = async () => {
     try {
       const response = await invoke('createDeck', {
-        name: deckName,
+        title: deckTitle,
         description: description,
-        owner: ownerEmail,
+        owner: '@eee',
       });
 
       console.log('Deck saved successfully:', response);
       
       // Reset the fields after saving
-      setDeckName('');
+      setDeckTitle('');
       setDescription('');
       setOwnerEmail('');
     } catch (error) {
@@ -31,35 +31,35 @@ function CreateDeck() {
   };
 
   return (
-    <div className="deck-creation">
-      <h2 className="deck-title">Create New Deck</h2>
+    <div classTitle="deck-creation">
+      <h2 classTitle="deck-title">Create New Deck</h2>
 
-      <div className="form-group">
-        <label htmlFor="deckName">Deck Name</label>
+      <div classTitle="form-group">
+        <label htmlFor="deckTitle">Deck Title</label>
         <input
           type="text"
-          id="deckName"
-          value={deckName}
-          onChange={(e) => setDeckName(e.target.value)}
-          placeholder="Type the deck name here..."
-          className="input-field"
+          id="deckTitle"
+          value={deckTitle}
+          onChange={(e) => setDeckTitle(e.target.value)}
+          placeholder="Type the deck Title here..."
+          classTitle="input-field"
         />
       </div>
 
-      <div className="form-group">
-        <label htmlFor="description">Description (Optional)</label>
+      <div classTitle="form-group">
+        <label htmlFor="description">Description </label>
         <textarea
           id="description"
           value={description}
           onChange={(e) => setDescription(e.target.value)}
           placeholder="Type a description for the deck..."
-          className="input-area"
+          classTitle="input-area"
         />
       </div>
 
-      <div className="button-group">
-        <button className="save-button" onClick={handleSave}>Save</button>
-        <button className="close-button" onClick={handleClose}>Close</button>
+      <div classTitle="button-group">
+        <button classTitle="save-button" onClick={handleSave}>Save</button>
+        <button classTitle="close-button" onClick={handleClose}>Close</button>
       </div>
     </div>
   );

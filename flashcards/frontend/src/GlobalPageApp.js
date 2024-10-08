@@ -13,8 +13,8 @@ function GlobalPageApp() {
   const [loading, setLoading] = useState(true);
   // for creating new flashcard, deck and group: modals 
   const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
-  const [isDeckModalOpen, setDeckModalOpen] = useState(false); // Track modal state for Deck
-  const [isGroupModalOpen, setGroupModalOpen] = useState(false); // Track modal state for Group
+  const [isDeckModalOpen, setIsDeckModalOpen] = useState(false); // Track modal state for Deck
+  const [isGroupModalOpen, setIsGroupModalOpen] = useState(false); // Track modal state for Group
 
   const recentFlashcards = [
     { id: 1, title: 'Flashcard 1', count: 10, owner: 'User A' },
@@ -61,7 +61,7 @@ function GlobalPageApp() {
   };
 
   const createDecks = () => {
-    setDeckModalOpen(true);  // Open deck modal
+    setIsDeckModalOpen(true);  // Open deck modal
   };
 
   const closeDeckModal = () => {
@@ -69,7 +69,7 @@ function GlobalPageApp() {
   };
 
   const createGroups = () => {
-    setGroupModalOpen(true);  // Open group modal
+    setIsGroupModalOpen(true);  // Open group modal
   };
 
   const closeGroupModal = () => {
