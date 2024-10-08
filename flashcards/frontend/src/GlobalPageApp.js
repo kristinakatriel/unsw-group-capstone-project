@@ -115,6 +115,11 @@ function GlobalPageApp() {
       {renderSplide(decks)}
       <h3>Groups</h3>
       {renderSplide(groups)}
+      <div className="button-group">
+        <button className="create-flashcards" onClick={createFlashcards}>Create New Flashcard</button>
+        <button className="create-decks" onClick={createDecks}>Create New Deck</button> 
+        <button className="create-groups" onClick={createGroups}>Create New Group </button>
+      </div>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import Resolver from '@forge/resolver';
+// import { storage } from '@forge/resolver';
 
 const resolver = new Resolver();
 
