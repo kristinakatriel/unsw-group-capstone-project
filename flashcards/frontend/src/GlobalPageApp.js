@@ -11,89 +11,110 @@ function GlobalPageApp() {
     { id: 1, title: 'Flashcard 1', count: 10, owner: 'User A' },
     { id: 2, title: 'Flashcard 2', count: 15, owner: 'User B' },
     { id: 3, title: 'Flashcard 3', count: 5, owner: 'User C' },
+    { id: 4, title: 'Flashcard 4', count: 5, owner: 'User D' },
   ];
 
   const decks = [
     { id: 1, title: 'Deck 1', count: 20, owner: 'User A' },
     { id: 2, title: 'Deck 2', count: 30, owner: 'User B' },
-    { id: 3, title: 'Deck 3', count: 25, owner: 'User C' },
   ];
 
   const groups = [
     { id: 1, title: 'Group 1', count: 3, owner: 'User A' },
-    { id: 2, title: 'Group 2', count: 5, owner: 'User B' },
-    { id: 3, title: 'Group 3', count: 7, owner: 'User C' },
   ];
 
-  const fetchFlashcards = async () => {
+  const getFlashcards = async () => {
     try {
-      // Assuming you have an endpoint or resolver to fetch all flashcards
       const response = await invoke('getAllFlashcards', {});
       
       if (response.success) {
         setFlashcards(response.cards);
       } else {
-        console.error('Error fetching flashcards:', response.error);
+        console.error('Error getting flashcards:', response.error);
       }
     } catch (error) {
-      console.error('Error fetching flashcards:', error);
+      console.error('Error getting flashcards:', error);
     } finally {
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchFlashcards(); // Fetch flashcards when the component mounts
+    getFlashcards();
   }, []);
 
-  const renderSplide = (items) => (
-    <Splide
+  const renderSplide = (items) => {
+    const itemsCount = items.length;
+  
+    return (
+      <Splide
         options={{
-            type: 'loop',
-            perPage: 3,
-            perMove: 1,
+          type: 'loop',
+          perMove: 1,
+          gap: '1rem',
+          perPage: Math.min(itemsCount, 4),
+          breakpoints: {
+            1200: { perPage: Math.min(itemsCount, 4) },
+            900: { perPage: Math.min(itemsCount, 3) },
+            600: { perPage: Math.min(itemsCount, 2) },
+            300: { perPage: Math.min(itemsCount, 1) },
+          },
         }}
         aria-label="Slider"
-    >
+      >
         {items.map((item) => (
-            <SplideSlide key={item.id}>
-                <p>Title: {item.title}</p>
-                <p>Number of Flashcards: {item.count}</p>
-                <p>Owner: {item.owner}</p>
-                <button>Open {item.title}</button>
-            </SplideSlide>
+          <SplideSlide key={item.id}>
+            <p>Title: {item.title}</p>
+            <p>Number of Flashcards: {item.count}</p>
+            <p>Owner: {item.owner}</p>
+            <button>Open {item.title}</button>
+          </SplideSlide>
         ))}
-    </Splide>
-  );
+      </Splide>
+    );
+  };
 
-  const renderFlashcardsList = () => (
-    <ul>
+  const renderFlashcardsList = (flashcards) => (
+    <Splide
+      options={{
+        type: 'loop',
+        perMove: 1,
+        gap: '1rem',
+      }}
+      aria-label="Flashcards Slider"
+    >
       {flashcards.map((flashcard) => (
-        <li key={flashcard.id}>
+        <SplideSlide key={flashcard.id}>
           <strong>Question:</strong> {flashcard.question_text || 'No question available'} <br />
-          <strong>Answer:</strong> {flashcard.answer_text || 'No answer available' } <br />
+          <strong>Answer:</strong> {flashcard.answer_text || 'No answer available'} <br />
           <strong>Owner:</strong> {flashcard.owner || 'No owner available'}
-        </li>
+          <button>Open Flashcard</button>
+        </SplideSlide>
       ))}
-    </ul>
+    </Splide>
   );
 
   return (
     <div>
-        <h1>The Global Page is to show user's flashcards!</h1>
-        <h2>NavBar/Jump To: Recent Flashcards Decks Groups</h2>
-        {renderFlashcardsList()}
-        <h3>Recent</h3>
-        {renderSplide(recentFlashcards)}
-
-        <h3>Flashcards</h3>
-        {renderSplide(recentFlashcards)}
-
-        <h3>Decks</h3>
-        {renderSplide(decks)}
-
-        <h3>Groups</h3>
-        {renderSplide(groups)}
+      <h1>The Global Page is to show user's flashcards!</h1>
+      <h2>NavBar/Jump To: Recent Flashcards Decks Groups</h2>
+      <h3>Flashcards</h3>
+      {loading ? (
+        <p>Loading...</p>
+      ) : flashcards.length === 0 ? (
+        <h4>No flashcards to view. Create a flashcard to view it here.</h4>
+      ) : (
+        renderFlashcardsList(flashcards)
+      )}
+      <h2 style={{ marginTop: '10px' }}>EXAMPLE OUTPUT BELOW (DELETE THIS LATER)</h2>
+      <h3 style={{ marginTop: '0px' }}>Recent</h3>
+      {renderSplide(recentFlashcards)}
+      <h3>Flashcards</h3>
+      {renderSplide(recentFlashcards)}
+      <h3>Decks</h3>
+      {renderSplide(decks)}
+      <h3>Groups</h3>
+      {renderSplide(groups)}
     </div>
   );
 }
