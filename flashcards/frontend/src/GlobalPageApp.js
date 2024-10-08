@@ -43,6 +43,18 @@ function GlobalPageApp() {
     getFlashcards();
   }, []);
 
+  const createFlashcard = () => {
+    console.log("Here to create a flashcard!");
+  };
+
+  const createDecks = () => {
+    console.log("Here to create a deck!");
+  };
+
+  const createGroups = () => {
+    console.log("Here to create a group!");
+  };
+
   const renderSplide = (items) => {
     const itemsCount = items.length;
   
@@ -116,7 +128,7 @@ function GlobalPageApp() {
       <h3>Groups</h3>
       {renderSplide(groups)}
       <div className="button-group">
-        <button className="create-flashcards" onClick={createFlashcards}>Create New Flashcard</button>
+        <button className="create-flashcards" onClick={createFlashcard}>Create New Flashcard</button>
         <button className="create-decks" onClick={createDecks}>Create New Deck</button> 
         <button className="create-groups" onClick={createGroups}>Create New Group </button>
       </div>
