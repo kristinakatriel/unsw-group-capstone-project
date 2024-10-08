@@ -9,6 +9,7 @@
   position: relative;
   border-radius: 8px;
   cursor: pointer;
+  height: 70px;
 }
 
 .document-uploader.active {
@@ -18,7 +19,10 @@
 .upload-info {
   display: flex;
   align-items: center;
-  margin-bottom: 1rem;
+}
+
+.browse-btn {
+  color: #0052CC;
 }
 
 .file-list {
