@@ -6,6 +6,7 @@ import { invoke } from '@forge/bridge';
 import CreateFlashcard from './CreateFlashcard';
 import ModalDialog from '@atlaskit/modal-dialog';
 import CreateDeck from './CreateDeck';
+import api, { route } from "@forge/api";
 // import { Modal, Button } from '@atlaskit/modal-dialog';
 
 function GlobalPageApp() {
@@ -15,6 +16,8 @@ function GlobalPageApp() {
   const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
   const [isDeckModalOpen, setIsDeckModalOpen] = useState(false); // Track modal state for Deck
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false); // Track modal state for Group
+  // just user id getter check: 
+  // const [user, setUser] = useState(null);
 
   const recentFlashcards = [
     { id: 1, title: 'Flashcard 1', count: 10, owner: 'User A' },
@@ -48,8 +51,29 @@ function GlobalPageApp() {
     }
   };
 
+  // TODO: just to get the user
+  // const getCurrentUser = async () => {
+  //   try {
+  //     const response = await api.asUser().requestConfluence(route`/wiki/rest/api/user/current`, {
+  //       headers: {
+  //         'Accept': 'application/json'
+  //       }
+  //     });
+  //     if (response.ok) {
+  //       const userData = await response.json();
+  //       setUser(userData);
+  //     } else {
+  //       console.error(`Error fetching user: ${response.status} ${response.statusText}`);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching user:', error);
+  //   }
+  // };
+
   useEffect(() => {
     getFlashcards();
+    // trial to get user info using: https://developer.atlassian.com/cloud/confluence/rest/v1/api-group-users/#api-wiki-rest-api-user-get
+    // getCurrentUser(); 
   }, []);
 
   // const createFlashcard = () => {
@@ -149,6 +173,12 @@ function GlobalPageApp() {
   return (
     <div>
       <h1>The Global Page is to show user's flashcards!</h1>
+      {/* {user && (
+        <div>
+          <h2>User Information:</h2>
+          <p>User ID: {user}</p>
+        </div>
+      )} */}
       <h2>NavBar/Jump To: Recent Flashcards Decks Groups</h2>
       <h3>Flashcards</h3>
       {loading ? (
@@ -159,7 +189,9 @@ function GlobalPageApp() {
         renderFlashcardsList(flashcards)
       )}
       <h3>Decks</h3>
-      <><h4>Create a new deck: </h4><button className="create-decks" onClick={createDecks}>Create New Deck</button></>
+      <>
+      <h4>Create a new deck: </h4><button className="create-decks" onClick={createDecks}>Create New Deck</button>
+      </>
       <h3>Groups</h3>
       <><h4>Create a new group: </h4><button className="create-groups" onClick={createGroups}>Create New Group </button></>
       <h2 style={{ marginTop: '10px' }}>EXAMPLE OUTPUT BELOW (DELETE THIS LATER)</h2>
