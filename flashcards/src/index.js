@@ -1,5 +1,5 @@
 import Resolver from '@forge/resolver';
-// import { storage } from '@forge/resolver';
+// import { storage } from forge deploy —environment development;
 
 const resolver = new Resolver();
 

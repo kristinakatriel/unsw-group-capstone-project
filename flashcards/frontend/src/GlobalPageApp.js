@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/react-splide/css';
 import { invoke } from '@forge/bridge';
+import CreateFlashcard from './CreateFlashcard';
 
 function GlobalPageApp() {
   const [flashcards, setFlashcards] = useState([]);
@@ -44,6 +45,7 @@ function GlobalPageApp() {
   }, []);
 
   const createFlashcard = () => {
+    // need to invoke CreateFlashcard over here!
     console.log("Here to create a flashcard!");
   };
 
@@ -118,6 +120,11 @@ function GlobalPageApp() {
       ) : (
         renderFlashcardsList(flashcards)
       )}
+      <div className="button-group">
+        <button className="create-flashcards" onClick={createFlashcard}>Create New Flashcard</button>
+        <button className="create-decks" onClick={createDecks}>Create New Deck</button> 
+        <button className="create-groups" onClick={createGroups}>Create New Group </button>
+      </div>
       <h2 style={{ marginTop: '10px' }}>EXAMPLE OUTPUT BELOW (DELETE THIS LATER)</h2>
       <h3 style={{ marginTop: '0px' }}>Recent</h3>
       {renderSplide(recentFlashcards)}
@@ -127,11 +134,6 @@ function GlobalPageApp() {
       {renderSplide(decks)}
       <h3>Groups</h3>
       {renderSplide(groups)}
-      <div className="button-group">
-        <button className="create-flashcards" onClick={createFlashcard}>Create New Flashcard</button>
-        <button className="create-decks" onClick={createDecks}>Create New Deck</button> 
-        <button className="create-groups" onClick={createGroups}>Create New Group </button>
-      </div>
     </div>
   );
 }
