@@ -12,6 +12,9 @@ import CreateGroups from './CreateGroups';
 
 function GlobalPageApp() {
   const [flashcards, setFlashcards] = useState([]);
+  // decks + groups 
+  const [flashdecks, setDecks] = useState([]);
+  const [flashgroups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   // for creating new flashcard, deck and group: modals 
   const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
@@ -47,6 +50,38 @@ function GlobalPageApp() {
       }
     } catch (error) {
       console.error('Error getting flashcards:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getDecks = async () => {
+    try {
+      const response = await invoke('getAllDecks', {});
+      
+      if (response.success) {
+        setDecks(response.decks);
+      } else {
+        console.error('Error getting decks:', response.error);
+      }
+    } catch (error) {
+      console.error('Error getting decks:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const getGroups = async () => {
+    try {
+      const response = await invoke('getAllGroups', {});
+      
+      if (response.success) {
+        setGroups(response.groups);
+      } else {
+        console.error('Error getting groups:', response.error);
+      }
+    } catch (error) {
+      console.error('Error getting groups:', error);
     } finally {
       setLoading(false);
     }
@@ -164,8 +199,51 @@ function GlobalPageApp() {
         <SplideSlide key={flashcard.id}>
           <strong>Question:</strong> {flashcard.question_text || 'No question available'} <br />
           <strong>Answer:</strong> {flashcard.answer_text || 'No answer available'} <br />
-          <strong>Owner:</strong> {flashcard.owner || 'No owner available'}
+          <strong>Owner:</strong> {flashcard.owner || 'No owner available'} <br />
           <button>Open Flashcard</button>
+        </SplideSlide>
+      ))}
+    </Splide>
+  );
+
+  // render Decks list
+  const renderDecksList = (flashdecks) => (
+    <Splide
+      options={{
+        type: 'loop',
+        perMove: 1,
+        gap: '1rem',
+      }}
+      aria-label="Decks Slider"
+    >
+      {flashdecks.map((deck) => (
+        <SplideSlide key={deck.id}>
+          <strong>Title:</strong> {deck.title || 'No title available'} <br />
+          <strong>Description:</strong> {deck.description || 'No description available'} <br />
+          <strong>Owner:</strong> {deck.owner || 'No owner available'} <br />
+          <strong>Flashcards:</strong> {deck.flashcards || 'No flashcards available'} <br />
+          <button>Open Deck</button>
+        </SplideSlide>
+      ))}
+    </Splide>
+  );
+
+  const renderGroupsList = (flashgroups) => (
+    <Splide
+      options={{
+        type: 'loop',
+        perMove: 1,
+        gap: '1rem',
+      }}
+      aria-label="Groups Slider"
+    >
+      {flashgroups.map((group) => (
+        <SplideSlide key={group.id}>
+          <strong>Group Name:</strong> {group.title || 'No name available'} <br />
+          <strong>Description:</strong> {group.description || 'No description available'} <br />
+          <strong>Owner:</strong> {group.owner || 'No owner available'} <br />
+          <strong>Decks: </strong> {group.decks || 'No decks available'} <br />
+          <button>Open Group</button>
         </SplideSlide>
       ))}
     </Splide>
@@ -187,14 +265,36 @@ function GlobalPageApp() {
       ) : flashcards.length === 0 ? (
         <><h4>No flashcards to view. Create a flashcard to view it here.</h4><button className="create-flashcards" onClick={createFlashcard}>Create New Flashcard</button></>
       ) : (
-        renderFlashcardsList(flashcards)
+        <>
+        {renderFlashcardsList(flashcards)}
+        <br />
+        <><h4>Create more flashcards: </h4><button className="create-flashcards" onClick={createFlashcard}>Create New Flashcard</button></>
+        </>
       )}
       <h3>Decks</h3>
-      <>
-      <h4>Create a new deck: </h4><button className="create-decks" onClick={createDecks}>Create New Deck</button>
-      </>
+      {loading ? (
+        <p>Loading...</p>
+      ) : flashdecks.length === 0 ? (
+        <><h4>No decks to view. Create a deck to view it here.</h4><button className="create-decks" onClick={createDecks}>Create New Deck</button></>
+      ) : (
+        <>
+        {renderDecksList(decks)}
+        <br />
+        <><h4>Create more decks: </h4><button className="create-decks" onClick={createDecks}>Create New Deck</button></>
+        </>
+      )}
       <h3>Groups</h3>
-      <><h4>Create a new group: </h4><button className="create-groups" onClick={createGroups}>Create New Group </button></>
+      {loading ? (
+        <p>Loading...</p>
+      ) : flashgroups.length === 0 ? (
+        <><h4>No groups to view. Create a group to view it here.</h4><button className="create-groups" onClick={createGroups}>Create New Group</button></>
+      ) : (
+        <>
+        {renderGroupsList(groups)}
+        <br />
+        <><h4>Create more groups: </h4><button className="create-groups" onClick={createGroups}>Create New Group</button></>
+        </>
+      )}
       <h2 style={{ marginTop: '10px' }}>EXAMPLE OUTPUT BELOW (DELETE THIS LATER)</h2>
       <h3 style={{ marginTop: '0px' }}>Recent</h3>
       {renderSplide(recentFlashcards)}
@@ -204,7 +304,6 @@ function GlobalPageApp() {
       {renderSplide(decks)}
       <h3>Groups</h3>
       {renderSplide(groups)}
-      // modal for flashcard creation
        {/* Flashcard Modal */}
       {isFlashcardModalOpen && (
         <ModalDialog heading="Create Flashcard" onClose={closeFlashcardModal}>

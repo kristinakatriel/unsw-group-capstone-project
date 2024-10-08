@@ -75,7 +75,7 @@ function CreateGroups() {
       </div>
 
       <div className="form-group">
-        <label htmlFor="description">Description </label>
+        <label htmlFor="description">Description (Optional) </label>
         <textarea
           id="description"
           value={description}
