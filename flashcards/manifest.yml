@@ -29,3 +29,7 @@ permissions:
     - write:confluence-content
     - storage:app
     - read:confluence-user
+    - read:content-details:confluence
+  content:
+    styles:
+      - 'unsafe-inline'

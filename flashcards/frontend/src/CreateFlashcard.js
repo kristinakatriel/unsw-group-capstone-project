@@ -11,27 +11,19 @@ function CreateFlashcard() {
   const [questionImage, setQuestionImage] = useState(null); 
   const [answerImage, setAnswerImage] = useState(null);
 
-  async function getUserEmail() {
-    try {
-      const response = await invoke('getUserEmail');
-      console.log('User Email:', response.email);
-    } catch (error) {
-      console.error('Error fetching user email:', error);
-    }
-  }
-
   const handleSave = async () => {
     try {
       const response = await invoke('createFlashcard', {
         question_text: question,
-        question_image: questionImage,
+        question_image: null,
         answer_text: answer,
-        answer_image: answerImage,
-        hint: hint,
-        owner: ownerEmail,
+        answer_image: null,
+        hint: 'abababb hint',
+        tags: ['no', 'yes'],
+        owner: 'e@1',
       });
 
-      getUserEmail();
+      // getUserEmail();
       console.log(response.owner);
       console.log('Flashcard saved successfully:', response);
       
@@ -42,7 +34,7 @@ function CreateFlashcard() {
       setAnswerImage(null);
 
     } catch (error) {
-      console.error('Error saving flashcard:', error);
+      console.error('Error invoking createFlashcard:', error);
     }
   };
 
@@ -64,7 +56,7 @@ function CreateFlashcard() {
 
   return (
     <div className="flashcard-creation">
-      <h2>Manually Create Flashcard</h2>
+      <h2 className="flashcard-title">Manually Create Flashcard</h2>
 
       <div className="form-group">
         <label htmlFor="question">Question</label>
@@ -76,9 +68,7 @@ function CreateFlashcard() {
             placeholder="Type the question here..."
             className="input-area"
           />
-          <DragNDrop
-            onFilesSelected={handleQuestionImageSelected} 
-          />
+          <DragNDrop onFilesSelected={handleQuestionImageSelected} />
         </div>
       </div>
 
@@ -92,9 +82,7 @@ function CreateFlashcard() {
             placeholder="Type the answer here..."
             className="input-area"
           />
-          <DragNDrop
-            onFilesSelected={handleAnswerImageSelected} 
-          />
+          <DragNDrop onFilesSelected={handleAnswerImageSelected} />
         </div>
       </div>
 
@@ -108,15 +96,13 @@ function CreateFlashcard() {
             placeholder="Type the hint here..."
             className="input-area"
           />
-          <DragNDrop
-            onFilesSelected={(files) => console.log('Files selected:', files)} // Can handle hints if needed
-          />
+          <DragNDrop onFilesSelected={(files) => console.log('Files selected:', files)} />
         </div>
       </div>
 
       <div className="form-group">
         <label htmlFor="select">Add to... (Optional)</label>
-        <label htmlFor="select">Select Deck and/or Group</label>
+
       </div>
 
       <div className="button-group">
@@ -128,3 +114,27 @@ function CreateFlashcard() {
 }
 
 export default CreateFlashcard;
+
+
+    // try {
+    //   const response = await invoke('createFlashcard', {
+    //     question_text: question,
+    //     question_image: questionImage,
+    //     answer_text: answer,
+    //     answer_image: answerImage,
+    //     hint: hint,
+    //     owner: ownerEmail,
+    //   });
+
+    //   console.log(response.owner);
+    //   console.log('Flashcard saved successfully:', response);
+      
+    //   setQuestion('');
+    //   setAnswer('');
+    //   setHint('');
+    //   setQuestionImage(null);  
+    //   setAnswerImage(null);
+
+    // } catch (error) {
+    //   console.error('Error saving flashcard:', error);
+    // }

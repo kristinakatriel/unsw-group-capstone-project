@@ -40,11 +40,9 @@ const DragNDrop = ({ onFilesSelected, width, height }) => {
         onDragOver={(event) => event.preventDefault()}
       >
         <div className="upload-info">
-          <FontAwesomeIcon icon={faImage} size="3x" color="#ffffff" />
+          <FontAwesomeIcon icon={faImage} size="3x" color="#0052CC" />
         </div>
         
-        <p style={{ color: "#ffffff", marginTop: "8px" }}>Upload Image</p>
-
         <input
           type="file"
           hidden
