@@ -6,7 +6,7 @@ import CreateFlashcard from './CreateFlashcard';
 import ModalDialog from '@atlaskit/modal-dialog';
 import CreateDeck from './CreateDeck';
 import CreateGroups from './CreateGroups';
-// import './ModalStyles.css';
+import './styles.css';
 
 function GlobalPageApp() {
   const [flashcards, setFlashcards] = useState([]);
@@ -121,7 +121,7 @@ function GlobalPageApp() {
 
   const renderSplide = (items) => {
     const itemsCount = items.length;
-  
+
     return (
       <Splide
         options={{
@@ -213,12 +213,12 @@ function GlobalPageApp() {
   );
 
   return (
-    // importing from modal class just to make sure the modals are shown properly 
-    <div> 
+    // importing from modal class just to make sure the modals are shown properly
+    <div className="full-page-container">
       <h1>The Global Page to show user's flashcards!</h1>
 
       <h2>NavBar/Jump To: Recent Flashcards Decks Groups</h2>
-      
+
       <h3>Flashcards</h3>
       {loading ? (
         <p>Loading...</p>
@@ -282,7 +282,7 @@ function GlobalPageApp() {
         </>
       )}
 
-      <h2 style={{ marginTop: '10px' }}>EXAMPLE OUTPUT BELOW (DELETE THIS LATER)</h2>
+      {/* <h2 style={{ marginTop: '10px' }}>EXAMPLE OUTPUT BELOW (DELETE THIS LATER)</h2>
       <h3 style={{ marginTop: '0px' }}>Recent</h3>
       {renderSplide(recentFlashcards)}
       <h3>Flashcards</h3>
@@ -290,7 +290,7 @@ function GlobalPageApp() {
       <h3>Decks</h3>
       {renderSplide(decks)}
       <h3>Groups</h3>
-      {renderSplide(groups)}
+      {renderSplide(groups)} */}
 
       {/* Flashcard Modal */}
       {isFlashcardModalOpen && (
