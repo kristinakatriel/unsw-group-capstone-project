@@ -2,26 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/react-splide/css';
 import { invoke } from '@forge/bridge';
-// flashcard creation
 import CreateFlashcard from './CreateFlashcard';
 import ModalDialog from '@atlaskit/modal-dialog';
 import CreateDeck from './CreateDeck';
 import CreateGroups from './CreateGroups';
-// import { Modal, Button } from '@atlaskit/modal-dialog';
-// import api, { route } from "@forge/api";
+// import './ModalStyles.css';
 
 function GlobalPageApp() {
   const [flashcards, setFlashcards] = useState([]);
-  // decks + groups 
   const [flashdecks, setDecks] = useState([]);
   const [flashgroups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
-  // for creating new flashcard, deck and group: modals 
+
+  // Modal states
   const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
-  const [isDeckModalOpen, setIsDeckModalOpen] = useState(false); // Track modal state for Deck
-  const [isGroupModalOpen, setIsGroupModalOpen] = useState(false); // Track modal state for Group
-  // just user id getter check: 
-  // const [user, setUser] = useState(null);
+  const [isDeckModalOpen, setIsDeckModalOpen] = useState(false);
+  const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
 
   const recentFlashcards = [
     { id: 1, title: 'Flashcard 1', count: 10, owner: 'User A' },
@@ -42,7 +38,6 @@ function GlobalPageApp() {
   const getFlashcards = async () => {
     try {
       const response = await invoke('getAllFlashcards', {});
-      
       if (response.success) {
         setFlashcards(response.cards);
       } else {
@@ -58,7 +53,6 @@ function GlobalPageApp() {
   const getDecks = async () => {
     try {
       const response = await invoke('getAllDecks', {});
-      
       if (response.success) {
         setDecks(response.decks);
       } else {
@@ -74,7 +68,6 @@ function GlobalPageApp() {
   const getGroups = async () => {
     try {
       const response = await invoke('getAllGroups', {});
-      
       if (response.success) {
         setGroups(response.groups);
       } else {
@@ -87,73 +80,44 @@ function GlobalPageApp() {
     }
   };
 
-  // TODO: just to get the user
-  // const getCurrentUser = async () => {
-  //   try {
-  //     const response = await api.asUser().requestConfluence(route`/wiki/rest/api/user/current`, {
-  //       headers: {
-  //         'Accept': 'application/json'
-  //       }
-  //     });
-  //     if (response.ok) {
-  //       const userData = await response.json();
-  //       setUser(userData);
-  //     } else {
-  //       console.error(`Error fetching user: ${response.status} ${response.statusText}`);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching user:', error);
-  //   }
-  // };
-
   useEffect(() => {
     getFlashcards();
-    // trial to get user info using: https://developer.atlassian.com/cloud/confluence/rest/v1/api-group-users/#api-wiki-rest-api-user-get
-    // getCurrentUser(); 
+    getDecks();
+    getGroups();
   }, []);
 
-  // const createFlashcard = () => {
-  //   // need to invoke CreateFlashcard over here!
-  //   console.log("Here to create a flashcard!");
-  // };
   const createFlashcard = () => {
     setIsCreateFlashcardOpen(true); // Open modal to create flashcard
   };
 
   const createDecks = () => {
-    setIsDeckModalOpen(true);  // Open deck modal
-  };
-
-  const closeDeckModal = () => {
-    setIsDeckModalOpen(false);
+    setIsDeckModalOpen(true); // Open modal to create deck
   };
 
   const createGroups = () => {
-    setIsGroupModalOpen(true);  // Open group modal
+    setIsGroupModalOpen(true); // Open modal to create group
   };
 
-  const closeGroupModal = () => {
+  const closeFlashcardModal = (shouldRefresh = false) => {
+    setIsCreateFlashcardOpen(false);
+    if (shouldRefresh) {
+      getFlashcards();  // Re-fetch flashcards to update the UI
+    }
+  };
+
+  const closeDeckModal = (shouldRefresh = false) => {
+    setIsDeckModalOpen(false);
+    if (shouldRefresh) {
+      getDecks();  // Re-fetch decks to update the UI
+    }
+  };
+
+  const closeGroupModal = (shouldRefresh = false) => {
     setIsGroupModalOpen(false);
+    if (shouldRefresh) {
+      getGroups();  // Re-fetch groups to update the UI
+    }
   };
-
-  // const closeModals = () => {
-  //   setIsCreateFlashcardOpen(false);  // Close flashcard modal
-  //   setDeckModalOpen(false);  // Close deck modal
-  //   setGroupModalOpen(false);  // Close group modal
-  // };
-
-  const closeFlashcardModal = () => {
-    setIsCreateFlashcardOpen(false); // Close modal
-    view.close();
-  };
-
-  // const createDecks = () => {
-  //   console.log("Here to create a deck!");
-  // };
-
-  // const createGroups = () => {
-  //   console.log("Here to create a group!");
-  // };
 
   const renderSplide = (items) => {
     const itemsCount = items.length;
@@ -206,7 +170,6 @@ function GlobalPageApp() {
     </Splide>
   );
 
-  // render Decks list
   const renderDecksList = (flashdecks) => (
     <Splide
       options={{
@@ -250,51 +213,75 @@ function GlobalPageApp() {
   );
 
   return (
-    <div>
-      <h1>The Global Page is to show user's flashcards!</h1>
-      {/* {user && (
-        <div>
-          <h2>User Information:</h2>
-          <p>User ID: {user}</p>
-        </div>
-      )} */}
+    // importing from modal class just to make sure the modals are shown properly 
+    <div> 
+      <h1>The Global Page to show user's flashcards!</h1>
+
       <h2>NavBar/Jump To: Recent Flashcards Decks Groups</h2>
+      
       <h3>Flashcards</h3>
       {loading ? (
         <p>Loading...</p>
       ) : flashcards.length === 0 ? (
-        <><h4>No flashcards to view. Create a flashcard to view it here.</h4><button className="create-flashcards" onClick={createFlashcard}>Create New Flashcard</button></>
+        <>
+          <h4>No flashcards to view. Create a flashcard to view it here.</h4>
+          <button className="create-flashcards" onClick={createFlashcard}>
+            Create New Flashcard
+          </button>
+        </>
       ) : (
         <>
-        {renderFlashcardsList(flashcards)}
-        <br />
-        <><h4>Create more flashcards: </h4><button className="create-flashcards" onClick={createFlashcard}>Create New Flashcard</button></>
+          {renderFlashcardsList(flashcards)}
+          <br />
+          <h4>Create more flashcards here: </h4>
+          <button className="create-flashcards" onClick={createFlashcard}>
+            Create New Flashcard
+          </button>
         </>
       )}
+
       <h3>Decks</h3>
       {loading ? (
         <p>Loading...</p>
       ) : flashdecks.length === 0 ? (
-        <><h4>No decks to view. Create a deck to view it here.</h4><button className="create-decks" onClick={createDecks}>Create New Deck</button></>
+        <>
+          <h4>No decks to view. Create a deck to view it here.</h4>
+          <button className="create-decks" onClick={createDecks}>
+            Create New Deck
+          </button>
+        </>
       ) : (
         <>
-        {renderDecksList(decks)}
-        <br />
-        <><h4>Create more decks: </h4><button className="create-decks" onClick={createDecks}>Create New Deck</button></>
+          {renderDecksList(flashdecks)}
+          <br />
+          <h4>Create more decks here: </h4>
+          <button className="create-decks" onClick={createDecks}>
+            Create New Deck
+          </button>
         </>
       )}
+
       <h3>Groups</h3>
       {loading ? (
         <p>Loading...</p>
       ) : flashgroups.length === 0 ? (
-        <><h4>No groups to view. Create a group to view it here.</h4><button className="create-groups" onClick={createGroups}>Create New Group</button></>
+        <>
+          <h4>No groups to view. Create a group to view it here.</h4>
+          <button className="create-groups" onClick={createGroups}>
+            Create New Group
+          </button>
+        </>
       ) : (
         <>
-        {renderGroupsList(groups)}
-        <br />
-        <><h4>Create more groups: </h4><button className="create-groups" onClick={createGroups}>Create New Group</button></>
+          {renderGroupsList(flashgroups)}
+          <br />
+          <h4>Create more groups here: </h4>
+          <button className="create-groups" onClick={createGroups}>
+            Create New Group
+          </button>
         </>
       )}
+
       <h2 style={{ marginTop: '10px' }}>EXAMPLE OUTPUT BELOW (DELETE THIS LATER)</h2>
       <h3 style={{ marginTop: '0px' }}>Recent</h3>
       {renderSplide(recentFlashcards)}
@@ -304,29 +291,27 @@ function GlobalPageApp() {
       {renderSplide(decks)}
       <h3>Groups</h3>
       {renderSplide(groups)}
-       {/* Flashcard Modal */}
+
+      {/* Flashcard Modal */}
       {isFlashcardModalOpen && (
-        <ModalDialog heading="Create Flashcard" onClose={closeFlashcardModal}>
-          <CreateFlashcard onClose={closeFlashcardModal}/>
+        <ModalDialog heading="Create Flashcard" onClose={() => closeFlashcardModal(true)}>
+          <CreateFlashcard onClose={() => closeFlashcardModal(true)} />
         </ModalDialog>
       )}
 
-      {/* Deck Modal: TODO */}
+      {/* Deck Modal */}
       {isDeckModalOpen && (
-        <ModalDialog heading="Create Deck" onClose={closeDeckModal}>
-          {/* <p onClose={closeDeckModal}>Example modal for deck...</p> */}
-          <CreateDeck onClose={closeDeckModal}/>
+        <ModalDialog heading="Create Deck" onClose={() => closeDeckModal(true)}>
+          <CreateDeck onClose={() => closeDeckModal(true)} />
         </ModalDialog>
       )}
 
-      {/* Group Modal: TODO */}
+      {/* Group Modal */}
       {isGroupModalOpen && (
-        <ModalDialog heading="Create Group" onClose={closeGroupModal}>
-          {/* <p onClose={closeGroupModal}>Example modal for group...</p> */}
-          <CreateGroups onClose={closeGroupModal}/>
+        <ModalDialog heading="Create Group" onClose={() => closeGroupModal(true)}>
+          <CreateGroups onClose={() => closeGroupModal(true)} />
         </ModalDialog>
       )}
-
     </div>
   );
 }
