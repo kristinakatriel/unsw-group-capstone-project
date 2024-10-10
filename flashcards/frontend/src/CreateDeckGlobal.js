@@ -1,12 +1,22 @@
 import React, { useState, useEffect } from 'react';
 import { invoke, view } from '@forge/bridge';
-import './CreateDeck.css';
+import './GlobalPageApp.js';
+import './CreateDeckGlobal.css';
 
-function CreateDeck() {
+function CreateDeckGlobal( { closeDeckModal }) {
   const [deckTitle, setDeckTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedFlashcards, setSelectedFlashcards] = useState([]);
   const [flashcards, setFlashcards] = useState([]);
+
+  const handleCloseGlobal = () => {
+    console.log('Function called: handleCloseGlobal');
+    if (typeof closeDeckModal === 'function') {
+      closeDeckModal(); // Call the function passed as a prop
+    } else {
+      console.error('closeDeckModal is not a function:', closeDeckModal);
+    }
+  };
 
   // Fetch flashcards when the component mounts
   useEffect(() => {
@@ -46,9 +56,9 @@ function CreateDeck() {
     }
   };
 
-  const handleClose = () => {
-    view.close(); // Close the modal
-  };
+//   const handleClose = () => {
+//     view.close(); // Close the modal
+//   };
 
   const handleCheckboxChange = (flashcardId) => {
     if (selectedFlashcards.includes(flashcardId)) {
@@ -106,10 +116,10 @@ function CreateDeck() {
 
       <div className="button-group">
         <button className="save-button" onClick={handleSave}>Save</button>
-        <button className="close-button" onClick={handleClose}>Close</button>
+        <button className="close-button" onClick={handleCloseGlobal}>Close</button>
       </div>
     </div>
   );
 }
 
-export default CreateDeck;
+export default CreateDeckGlobal;

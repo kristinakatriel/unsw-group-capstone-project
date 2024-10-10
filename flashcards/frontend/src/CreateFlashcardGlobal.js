@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { invoke, view } from '@forge/bridge';
-import './CreateFlashcard.css';
+import './CreateFlashcardGlobal.css';
+import './GlobalPageApp.js';
 import DragNDrop from './components/DragNDrop';
 
-function CreateFlashcard() {
+function CreateFlashcardGlobal( { closeFlashcardModal }) {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [hint, setHint] = useState('');
@@ -11,9 +12,23 @@ function CreateFlashcard() {
   const [questionImage, setQuestionImage] = useState(null);
   const [answerImage, setAnswerImage] = useState(null);
 
-  const handleSave = async () => {
+
+
+  const handleCloseGlobal = () => {
+    console.log('Function called: handleCloseGlobal');
+    if (typeof closeFlashcardModal === 'function') {
+      closeFlashcardModal(); // Call the function passed as a prop
+    } else {
+      console.error('closeFlashcardModal is not a function:', closeFlashcardModal);
+    }
+  };
+
+
+  const handleSaveGlobal = async () => {
     try {
-      const response = await invoke('createFlashcard', {
+
+        console.log('Function called: handleSaveGlobal');
+        const response = await invoke('createFlashcard', {
         question_text: question,
         question_image: null,
         answer_text: answer,
@@ -38,19 +53,21 @@ function CreateFlashcard() {
     }
   };
 
-  const handleClose = () => {
-    console.log('LOGGGGG');
-    view.close();
+//   const handleCloseGlobal = () => {
+//     console.log('Function called: handleCloseGlobal');
+//     view.close();
 
-  };
+//   };
 
   const handleQuestionImageSelected = (files) => {
+    console.log('Function called: handleQuestionImageSelected');
     if (files.length > 0) {
       setQuestionImage(files[0]);
     }
   };
 
   const handleAnswerImageSelected = (files) => {
+    console.log('Function called: handleAnswerImageSelected');
     if (files.length > 0) {
       setAnswerImage(files[0]);
     }
@@ -108,14 +125,14 @@ function CreateFlashcard() {
       </div>
 
       <div className="button-group">
-        <button className="save-button" onClick={handleSave}>Save</button>
-        <button className="close-button" onClick={handleClose}>Close</button>
+        <button className="save-button" onClick={handleSaveGlobal}>Save</button>
+        <button className="close-button" onClick={handleCloseGlobal}>Close</button>
       </div>
     </div>
   );
 }
 
-export default CreateFlashcard;
+export default CreateFlashcardGlobal;
 
 
     // try {

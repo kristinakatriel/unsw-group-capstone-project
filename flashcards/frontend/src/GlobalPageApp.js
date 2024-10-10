@@ -2,7 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/react-splide/css';
 import { invoke } from '@forge/bridge';
-import CreateFlashcard from './CreateFlashcard';
+import CreateFlashcardGlobal from './CreateFlashcardGlobal';
+//import CreateDeckGlobal from './CreateDeckGlobal';
+//import CreateGroupGlobal from './CreateGroupGlobal';
 import ModalDialog from '@atlaskit/modal-dialog';
 import CreateDeck from './CreateDeck';
 import CreateGroups from './CreateGroups';
@@ -86,11 +88,11 @@ function GlobalPageApp() {
     getGroups();
   }, []);
 
-  const createFlashcard = () => {
+  const createFlashcardGlobal = () => {
     setIsCreateFlashcardOpen(true); // Open modal to create flashcard
   };
 
-  const createDecks = () => {
+  const createDeck = () => {
     setIsDeckModalOpen(true); // Open modal to create deck
   };
 
@@ -99,24 +101,23 @@ function GlobalPageApp() {
   };
 
   const closeFlashcardModal = (shouldRefresh = false) => {
+    console.log('Closing flashcard modal. shouldRefresh:', shouldRefresh);  // Debugging print statement
     setIsCreateFlashcardOpen(false);
-    if (shouldRefresh) {
-      getFlashcards();  // Re-fetch flashcards to update the UI
-    }
+
+    getFlashcards();  // Re-fetch flashcards to update the UI
+
   };
 
   const closeDeckModal = (shouldRefresh = false) => {
     setIsDeckModalOpen(false);
-    if (shouldRefresh) {
-      getDecks();  // Re-fetch decks to update the UI
-    }
+    getDecks();  // Re-fetch decks to update the UI
+
   };
 
   const closeGroupModal = (shouldRefresh = false) => {
     setIsGroupModalOpen(false);
-    if (shouldRefresh) {
-      getGroups();  // Re-fetch groups to update the UI
-    }
+    getGroups();  // Re-fetch groups to update the UI
+
   };
 
   const renderSplide = (items) => {
@@ -225,7 +226,7 @@ function GlobalPageApp() {
       ) : flashcards.length === 0 ? (
         <>
           <h4>No flashcards to view. Create a flashcard to view it here.</h4>
-          <button className="create-flashcards" onClick={createFlashcard}>
+          <button className="create-flashcards" onClick={createFlashcardGlobal}>
             Create New Flashcard
           </button>
         </>
@@ -234,7 +235,7 @@ function GlobalPageApp() {
           {renderFlashcardsList(flashcards)}
           <br />
           <h4>Create more flashcards here: </h4>
-          <button className="create-flashcards" onClick={createFlashcard}>
+          <button className="create-flashcards" onClick={createFlashcardGlobal}>
             Create New Flashcard
           </button>
         </>
@@ -246,7 +247,7 @@ function GlobalPageApp() {
       ) : flashdecks.length === 0 ? (
         <>
           <h4>No decks to view. Create a deck to view it here.</h4>
-          <button className="create-decks" onClick={createDecks}>
+          <button className="create-decks" onClick={createDeck}>
             Create New Deck
           </button>
         </>
@@ -255,7 +256,7 @@ function GlobalPageApp() {
           {renderDecksList(flashdecks)}
           <br />
           <h4>Create more decks here: </h4>
-          <button className="create-decks" onClick={createDecks}>
+          <button className="create-decks" onClick={createDeck}>
             Create New Deck
           </button>
         </>
@@ -294,10 +295,16 @@ function GlobalPageApp() {
 
       {/* Flashcard Modal */}
       {isFlashcardModalOpen && (
-        <ModalDialog heading="Create Flashcard" onClose={() => closeFlashcardModal(true)}>
-          <CreateFlashcard onClose={() => closeFlashcardModal(true)} />
+        <ModalDialog heading="Create Flashcard" onClose={() => closeFlashcardModal()}>
+          <CreateFlashcardGlobal closeFlashcardModal={closeFlashcardModal} />
         </ModalDialog>
       )}
+
+      {/* {isFlashcardModalOpen && (
+        <ModalDialog heading="Create Flashcard" onClose={() => closeFlashcardModal(true)}>
+          <CreateFlashcardGlobal onClose={() => closeFlashcardModal(true)} />
+        </ModalDialog>
+      )} */}
 
       {/* Deck Modal */}
       {isDeckModalOpen && (
@@ -312,6 +319,21 @@ function GlobalPageApp() {
           <CreateGroups onClose={() => closeGroupModal(true)} />
         </ModalDialog>
       )}
+
+
+      {/* Deck Modal
+      {isDeckModalOpen && (
+        <ModalDialog heading="Create Deck" onClose={handleCloseGlobal()}>
+          <CreateDeckGlobal closeDeckModal={handleCloseGlobal()} />
+        </ModalDialog>
+      )} */}
+
+      {/* Group Modal
+      {isGroupModalOpen && (
+        <ModalDialog heading="Create Group" onClose={() => closeGroupModal}>
+          <CreateGroupsGlobal closeGroupModal={closeGroupModal} />
+        </ModalDialog>
+      )} */}
     </div>
   );
 }
