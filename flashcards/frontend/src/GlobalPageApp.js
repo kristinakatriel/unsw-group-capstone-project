@@ -8,7 +8,7 @@ import CreateFlashcardGlobal from './CreateFlashcardGlobal';
 import ModalDialog from '@atlaskit/modal-dialog';
 import CreateDeck from './CreateDeck';
 import CreateGroups from './CreateGroups';
-import './styles.css';
+import CardSlider from './components/CardSlider';
 
 function GlobalPageApp() {
   const [flashcards, setFlashcards] = useState([]);
@@ -215,11 +215,10 @@ function GlobalPageApp() {
 
   return (
     // importing from modal class just to make sure the modals are shown properly
-    <div className="full-page-container">
+    <div>
       <h1>The Global Page to show user's flashcards!</h1>
-
       <h2>NavBar/Jump To: Recent Flashcards Decks Groups</h2>
-
+      <CardSlider />
       <h3>Flashcards</h3>
       {loading ? (
         <p>Loading...</p>
