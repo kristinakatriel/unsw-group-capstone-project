@@ -1,9 +1,20 @@
+.form-group div {
+  align-items: stretch;
+  display: flex;
+  height: 100%;
+}
+
 .flashcard-creation {
   background-color: white;
   font-family: 'Arial', sans-serif;
   max-width: 500px;
   margin: 0 auto;
-  padding: 30px;
+  padding-top: 100px;
+  padding-right: 30px;
+  padding-left: 30px;
+  padding-bottom: 30px;
+  position: relative;
+  width: 100vw;
 }
 
 h2 {
@@ -30,16 +41,10 @@ label {
 .input-area {
   flex: 3;
   box-sizing: border-box;
-  height: 95px;
   border: 1px solid #ccc;
   border-radius: 4px;
   resize: none;
   margin-right: 10px;
-}
-
-.drag-drop {
-  flex: 1;
-  height: 100px;
 }
 
 .button-group {

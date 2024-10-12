@@ -215,9 +215,11 @@ function GlobalPageApp() {
 
   return (
     // importing from modal class just to make sure the modals are shown properly
-    <div>
+    <div className='global-page-container'>
       <h1>The Global Page to show user's flashcards!</h1>
       <h2>NavBar/Jump To: Recent Flashcards Decks Groups</h2>
+      <CardSlider />
+      <CardSlider />
       <CardSlider />
       <h3>Flashcards</h3>
       {loading ? (

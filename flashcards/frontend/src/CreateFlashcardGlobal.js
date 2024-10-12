@@ -74,7 +74,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
   };
 
   return (
-    <div className="flashcard-creation">
+    <div className="global-flashcard-creation">
       <h2 className="flashcard-title">Manually Create Flashcard</h2>
 
       <div className="form-group">
