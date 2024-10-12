@@ -1,0 +1,25 @@
+export interface Card {
+    id: string;
+    question_text?: string;
+    question_image?: string;
+    answer_text: string;
+    answer_image?: string;
+    hint?: string;
+    tags?: Tag[];
+    owner: string;
+}
+
+export interface Deck {
+    id: string;
+    title: string;
+    description?: string;
+    owner: string;
+    cards?: Card[];
+}
+
+export interface Tag {
+    id: string;
+    title: string;
+    description?: string;
+    owner: string;
+}
