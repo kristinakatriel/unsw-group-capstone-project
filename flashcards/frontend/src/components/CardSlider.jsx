@@ -29,38 +29,80 @@ const CardSlider = () => {
             <SplideSlide className='card-item'>
               <div className="card-link">
                 <p className='badge blue'>Blue Tag</p>
-                <h4 className='card-title'>Lorem ipsum dolor sit explicabo adipisicing elit</h4>
-                <EditIcon />
-                <DeleteIcon />
+                <h4 className='card-name'>Flashcard</h4>
+                <h4 className='card-description'>If it is a flashcard, it shows the question. What's 1 + 1?</h4>
+                <h4 className='card-owner'>By exmaple@ad.unsw.edu.au</h4>
+                <div className='card-button'>
+                  <EditIcon className='card-edit-button'/>
+                  <DeleteIcon className='card-delete-button'/>
+                </div>
               </div>
             </SplideSlide>
             <SplideSlide className='card-item'>
               <div className="card-link">
-                <p className='badge red'>Red Tag</p>
-                <h4 className='card-title'>Lorem ipsum dolor sit explicabo adipisicing elit</h4>
-                <EditIcon />
-                <DeleteIcon />
+                <div className='card-tags'>
+                  <p className='badge red'>Red Tag</p>
+                  <p className='badge blue'>Blue Tag</p>
+                </div>
+                <h4 className='card-name'>Deck</h4>
+                <h4 className='card-description'>If it is a flashcard, it shows the question. What's 1 + 1?</h4>
+                <h4 className='card-owner'>By exmaple@ad.unsw.edu.au</h4>
+                <div className='card-button'>
+                  <EditIcon className='card-edit-button'/>
+                  <DeleteIcon className='card-delete-button'/>
+                </div>
               </div>
             </SplideSlide>
             <SplideSlide className='card-item'>
               <div className="card-link">
-                <p className='badge orange'>Orange Tag</p>
-                <h4 className='card-title'>Lorem ipsum dolor sit explicabo adipisicing elit</h4>
-                <DeleteIcon className='card-button' />
+              <p className='badge orange'>Orange Tag</p>
+              <h4 className='card-name'>Deck</h4>
+              <h4 className='card-description'>If it is a deck, it shows the deck description and/or the number of flashcards in deck</h4>
+                <h4 className='card-flashcard-amount'>Flashcards: 7</h4>
+                <h4 className='card-owner'>By exmaple@ad.unsw.edu.au</h4>
+                <div className='card-button'>
+                  <EditIcon className='card-edit-button'/>
+                  <DeleteIcon className='card-delete-button'/>
+                </div>
               </div>
             </SplideSlide>
             <SplideSlide className='card-item'>
               <div className="card-link">
                 <p className='badge green'>Green Tag</p>
-                <h4 className='card-title'>Lorem ipsum dolor sit explicabo adipisicing elit</h4>
-                <DeleteIcon className='card-button' />
+                <h4 className='card-name'>Deck</h4>
+                <h4 className='card-description'>If it is a deck, it shows the deck description and/or the number of flashcards in deck</h4>
+                <h4 className='card-flashcard-amount'>Flashcards: 7</h4>
+                <h4 className='card-owner'>By exmaple@ad.unsw.edu.au</h4>
+                <div className='card-button'>
+                  <EditIcon className='card-edit-button'/>
+                  <DeleteIcon className='card-delete-button'/>
+                </div>
               </div>
             </SplideSlide>
             <SplideSlide className='card-item'>
               <div className="card-link">
-                <p className='badge yellow'>Yellow Tag</p>
-                <h4 className='card-title'>Lorem ipsum dolor sit explicabo adipisicing elit</h4>
-                <DeleteIcon className='card-button' />
+                <p className='badge orange'>Orange Tag</p>
+                <h4 className='card-name'>Deck</h4>
+                <h4 className='card-description'>If it is a deck, it shows the deck description and/or the number of flashcards in deck</h4>
+                <h4 className='card-flashcard-amount'>Flashcards: 7</h4>
+                <h4 className='card-owner'>By exmaple@ad.unsw.edu.au</h4>
+                <div className='card-button'>
+                  <EditIcon className='card-edit-button'/>
+                  <DeleteIcon className='card-delete-button'/>
+                </div>
+              </div>
+            </SplideSlide>
+            <SplideSlide className='card-item'>
+              <div className="card-link">
+                <p className='badge blue'>Blue Tag</p>
+                <h4 className='card-name'>Deck</h4>
+                <h4 className='card-description'>If it is a deck, it shows the deck description and/or the number of flashcards in deck</h4>
+                <h4 className='card-flashcard-amount'>Flashcards: 7</h4>
+                <h4 className='card-owner'>By exmaple@ad.unsw.edu.au</h4>
+                <div className='card-button'>
+                  <EditIcon className='card-edit-button'/>
+                  <DeleteIcon className='card-delete-button'/>
+                </div>
               </div>
             </SplideSlide>
           </Splide>

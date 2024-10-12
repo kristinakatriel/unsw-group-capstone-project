@@ -26,12 +26,18 @@ body {
   border-radius: 10px;
   text-decoration: none;
   border: 2px solid transparent;
-  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.4);
-  margin: 8px 0px;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+  margin: 8px 10px;
 }
 
 .card-list .card-item .card-link:hover {
   border-color: #5372F0;
+}
+
+.card-list .card-link .card-tags {
+  display: flex; 
+  justify-content: flex-start;
+  gap: 10px;
 }
 
 .card-list .card-link .badge {
@@ -69,27 +75,50 @@ body {
   background: #fff3cd;
 }
 
-.card-list .card-link .card-title {
-  font-size: 1rem;
+.card-list .card-link .card-name {
+  font-size: 12px; 
+  color: lightgrey;
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.card-list .card-link .card-description {
+  font-size: 16px;
   color: #000;
-  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.card-list .card-link .card-flashcard-amount {
+  font-size: 16px; 
+  color: #777;
+  margin-bottom: 10px; 
+}
+
+.card-list .card-link .card-owner {
+  font-size: 12px; 
+  color: #333; 
+  font-style: italic; 
+  margin-bottom: 5px; 
 }
 
 .card-list .card-link .card-button {
-  color: #5372F0;
-  border-radius: 50%;
-  margin: 20px 0 3px;
-  background: none;
-  cursor: pointer;
-  border: 2px solid #5372F0;
+  display: flex; 
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 10px;
 }
 
-.card-list .card-link .card-button:hover {
-  color: #fff;
-  background: #5372F0;
+.card-list .card-link .card-edit-button,
+.card-list .card-link .card-delete-button {
+  color: lightgrey;
+  cursor: pointer;
+}
+
+.card-list .card-link .card-edit-button:hover,
+.card-list .card-link .card-delete-button:hover {
+  color: darkgrey;
 }
 
 .splide__track.splide__track--slide.splide__track--ltr.splide__track--draggable {
-  margin-left: 55px;
-  margin-right: 55px;
+  margin: 15px 55px;
 }
