@@ -6,6 +6,8 @@ import CreateFlashcardGlobal from './CreateFlashcardGlobal';
 import ModalDialog from '@atlaskit/modal-dialog';
 import CreateDeck from './CreateDeck';
 import CardSlider from './components/CardSlider';
+import FlashOnIcon from '@mui/icons-material/FlashOn';
+import './GlobalPageApp.css';
 
 function GlobalPageApp() {
   const [flashcards, setFlashcards] = useState([]);
@@ -115,12 +117,22 @@ function GlobalPageApp() {
   );
 
   return (
-    // importing from modal class just to make sure the modals are shown properly
     <div className='global-page-container'>
-      <h1>The Global Page to show user's flashcards!</h1>
+      <div className='global-page-headline'><FlashOnIcon className='global-page-flash-icon'/> FLASH</div>
+      <div className='global-page-subheadline'>The Forge App that allows you to create flashcards in a flash</div>
+      <div className='global-page-recents'>Recents
+        <button className='global-page-create-flashcard-button' onClick={createFlashcardGlobal}>+ Create Flashcard</button>
+        <button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button>
+      </div>
+      <div className='global-page-recents-description'>No flashcards or decks created. Create a flashcard or deck to display here.</div>
       <CardSlider />
+      <div className='global-page-flashcards'>Flashcards<button className='global-page-create-flashcard-button' onClick={createFlashcardGlobal}>+ Create Flashcard</button></div>
+      <div className='global-page-flashcards-description'>No dlashcards created. Create a flashcard to display here.</div>
       <CardSlider />
+      <div className='global-page-decks'>Decks<button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button></div>
+      <div className='global-page-decks-description'>No decks created. Create a deck to display here.</div>
       <CardSlider />
+
       <h3>Flashcards</h3>
       {loading ? (
         <p>Loading...</p>
