@@ -127,7 +127,7 @@ function GlobalPageApp() {
       <div className='global-page-recents-description'>No flashcards or decks created. Create a flashcard or deck to display here.</div>
       <CardSlider />
       <div className='global-page-flashcards'>Flashcards<button className='global-page-create-flashcard-button' onClick={createFlashcardGlobal}>+ Create Flashcard</button></div>
-      <div className='global-page-flashcards-description'>No dlashcards created. Create a flashcard to display here.</div>
+      <div className='global-page-flashcards-description'>No flashcards created. Create a flashcard to display here.</div>
       <CardSlider />
       <div className='global-page-decks'>Decks<button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button></div>
       <div className='global-page-decks-description'>No decks created. Create a deck to display here.</div>

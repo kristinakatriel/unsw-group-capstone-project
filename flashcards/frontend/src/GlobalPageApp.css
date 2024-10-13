@@ -16,7 +16,7 @@
 .global-page-subheadline {
   font-size: 16px;
   color: darkgray;
-  margin-bottom: 20px;
+  margin-bottom: 10px;
   font-style: italic; 
 }
   
@@ -38,7 +38,9 @@
   border: none;
   border-radius: 4px;
   cursor: pointer;
-  margin: 10px;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 10px;
 }
 
 .global-page-create-flashcard-button:hover {
