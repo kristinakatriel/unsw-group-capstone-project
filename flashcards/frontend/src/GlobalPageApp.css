@@ -1,0 +1,48 @@
+.global-page-headline {
+  font-size: 36px;
+  color: black;
+  display: flex;
+  align-items: center;
+  margin-bottom: 10px;
+}
+  
+.global-page-flash-icon {
+  color: #5372F0;
+  margin-right: 10px;
+  width: 40px !important;
+  height: 40px !important;
+}
+  
+.global-page-subheadline {
+  font-size: 16px;
+  color: darkgray;
+  margin-bottom: 10px;
+  font-style: italic; 
+}
+  
+.global-page-recents,
+.global-page-flashcards,
+.global-page-decks {
+  font-size: 18px;
+  color: black; 
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center; 
+}
+
+.global-page-create-flashcard-button,
+.global-page-create-deck-button {
+  background-color: #5372F0;
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+
+.global-page-create-flashcard-button:hover {
+  background-color: #2A4BA0;
+}

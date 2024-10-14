@@ -3,39 +3,20 @@ import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/react-splide/css';
 import { invoke } from '@forge/bridge';
 import CreateFlashcardGlobal from './CreateFlashcardGlobal';
-//import CreateDeckGlobal from './CreateDeckGlobal';
-//import CreateGroupGlobal from './CreateGroupGlobal';
 import ModalDialog from '@atlaskit/modal-dialog';
 import CreateDeck from './CreateDeck';
-import CreateGroups from './CreateGroups';
 import CardSlider from './components/CardSlider';
+import FlashOnIcon from '@mui/icons-material/FlashOn';
+import './GlobalPageApp.css';
 
 function GlobalPageApp() {
   const [flashcards, setFlashcards] = useState([]);
   const [flashdecks, setDecks] = useState([]);
-  const [flashgroups, setGroups] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Modal states
   const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
   const [isDeckModalOpen, setIsDeckModalOpen] = useState(false);
-  const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
-
-  const recentFlashcards = [
-    { id: 1, title: 'Flashcard 1', count: 10, owner: 'User A' },
-    { id: 2, title: 'Flashcard 2', count: 15, owner: 'User B' },
-    { id: 3, title: 'Flashcard 3', count: 5, owner: 'User C' },
-    { id: 4, title: 'Flashcard 4', count: 5, owner: 'User D' },
-  ];
-
-  const decks = [
-    { id: 1, title: 'Deck 1', count: 20, owner: 'User A' },
-    { id: 2, title: 'Deck 2', count: 30, owner: 'User B' },
-  ];
-
-  const groups = [
-    { id: 1, title: 'Group 1', count: 3, owner: 'User A' },
-  ];
 
   const getFlashcards = async () => {
     try {
@@ -67,25 +48,9 @@ function GlobalPageApp() {
     }
   };
 
-  const getGroups = async () => {
-    try {
-      const response = await invoke('getAllGroups', {});
-      if (response.success) {
-        setGroups(response.groups);
-      } else {
-        console.error('Error getting groups:', response.error);
-      }
-    } catch (error) {
-      console.error('Error getting groups:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
     getFlashcards();
     getDecks();
-    getGroups();
   }, []);
 
   const createFlashcardGlobal = () => {
@@ -94,10 +59,6 @@ function GlobalPageApp() {
 
   const createDeck = () => {
     setIsDeckModalOpen(true); // Open modal to create deck
-  };
-
-  const createGroups = () => {
-    setIsGroupModalOpen(true); // Open modal to create group
   };
 
   const closeFlashcardModal = (shouldRefresh = false) => {
@@ -112,43 +73,6 @@ function GlobalPageApp() {
     setIsDeckModalOpen(false);
     getDecks();  // Re-fetch decks to update the UI
 
-  };
-
-  const closeGroupModal = (shouldRefresh = false) => {
-    setIsGroupModalOpen(false);
-    getGroups();  // Re-fetch groups to update the UI
-
-  };
-
-  const renderSplide = (items) => {
-    const itemsCount = items.length;
-
-    return (
-      <Splide
-        options={{
-          type: 'loop',
-          perMove: 1,
-          gap: '1rem',
-          perPage: Math.min(itemsCount, 4),
-          breakpoints: {
-            1200: { perPage: Math.min(itemsCount, 4) },
-            900: { perPage: Math.min(itemsCount, 3) },
-            600: { perPage: Math.min(itemsCount, 2) },
-            300: { perPage: Math.min(itemsCount, 1) },
-          },
-        }}
-        aria-label="Slider"
-      >
-        {items.map((item) => (
-          <SplideSlide key={item.id}>
-            <p>Title: {item.title}</p>
-            <p>Number of Flashcards: {item.count}</p>
-            <p>Owner: {item.owner}</p>
-            <button>Open {item.title}</button>
-          </SplideSlide>
-        ))}
-      </Splide>
-    );
   };
 
   const renderFlashcardsList = (flashcards) => (
@@ -192,35 +116,23 @@ function GlobalPageApp() {
     </Splide>
   );
 
-  const renderGroupsList = (flashgroups) => (
-    <Splide
-      options={{
-        type: 'loop',
-        perMove: 1,
-        gap: '1rem',
-      }}
-      aria-label="Groups Slider"
-    >
-      {flashgroups.map((group) => (
-        <SplideSlide key={group.id}>
-          <strong>Group Name:</strong> {group.title || 'No name available'} <br />
-          <strong>Description:</strong> {group.description || 'No description available'} <br />
-          <strong>Owner:</strong> {group.owner || 'No owner available'} <br />
-          <strong>Decks: </strong> {group.decks || 'No decks available'} <br />
-          <button>Open Group</button>
-        </SplideSlide>
-      ))}
-    </Splide>
-  );
-
   return (
-    // importing from modal class just to make sure the modals are shown properly
     <div className='global-page-container'>
-      <h1>The Global Page to show user's flashcards!</h1>
-      <h2>NavBar/Jump To: Recent Flashcards Decks Groups</h2>
+      <div className='global-page-headline'><FlashOnIcon className='global-page-flash-icon'/> FLASH</div>
+      <div className='global-page-subheadline'>The Forge App that allows you to create flashcards in a flash</div>
+      <div className='global-page-recents'>Recents
+        <button className='global-page-create-flashcard-button' onClick={createFlashcardGlobal}>+ Create Flashcard</button>
+        <button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button>
+      </div>
+      <div className='global-page-recents-description'>No flashcards or decks created. Create a flashcard or deck to display here.</div>
       <CardSlider />
+      <div className='global-page-flashcards'>Flashcards<button className='global-page-create-flashcard-button' onClick={createFlashcardGlobal}>+ Create Flashcard</button></div>
+      <div className='global-page-flashcards-description'>No flashcards created. Create a flashcard to display here.</div>
       <CardSlider />
+      <div className='global-page-decks'>Decks<button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button></div>
+      <div className='global-page-decks-description'>No decks created. Create a deck to display here.</div>
       <CardSlider />
+
       <h3>Flashcards</h3>
       {loading ? (
         <p>Loading...</p>
@@ -263,37 +175,6 @@ function GlobalPageApp() {
         </>
       )}
 
-      <h3>Groups</h3>
-      {loading ? (
-        <p>Loading...</p>
-      ) : flashgroups.length === 0 ? (
-        <>
-          <h4>No groups to view. Create a group to view it here.</h4>
-          <button className="create-groups" onClick={createGroups}>
-            Create New Group
-          </button>
-        </>
-      ) : (
-        <>
-          {renderGroupsList(flashgroups)}
-          <br />
-          <h4>Create more groups here: </h4>
-          <button className="create-groups" onClick={createGroups}>
-            Create New Group
-          </button>
-        </>
-      )}
-
-      {/* <h2 style={{ marginTop: '10px' }}>EXAMPLE OUTPUT BELOW (DELETE THIS LATER)</h2>
-      <h3 style={{ marginTop: '0px' }}>Recent</h3>
-      {renderSplide(recentFlashcards)}
-      <h3>Flashcards</h3>
-      {renderSplide(recentFlashcards)}
-      <h3>Decks</h3>
-      {renderSplide(decks)}
-      <h3>Groups</h3>
-      {renderSplide(groups)} */}
-
       {/* Flashcard Modal */}
       {isFlashcardModalOpen && (
         <ModalDialog heading="Create Flashcard" onClose={() => closeFlashcardModal()}>
@@ -301,40 +182,12 @@ function GlobalPageApp() {
         </ModalDialog>
       )}
 
-      {/* {isFlashcardModalOpen && (
-        <ModalDialog heading="Create Flashcard" onClose={() => closeFlashcardModal(true)}>
-          <CreateFlashcardGlobal onClose={() => closeFlashcardModal(true)} />
-        </ModalDialog>
-      )} */}
-
       {/* Deck Modal */}
       {isDeckModalOpen && (
         <ModalDialog heading="Create Deck" onClose={() => closeDeckModal(true)}>
           <CreateDeck onClose={() => closeDeckModal(true)} />
         </ModalDialog>
       )}
-
-      {/* Group Modal */}
-      {isGroupModalOpen && (
-        <ModalDialog heading="Create Group" onClose={() => closeGroupModal(true)}>
-          <CreateGroups onClose={() => closeGroupModal(true)} />
-        </ModalDialog>
-      )}
-
-
-      {/* Deck Modal
-      {isDeckModalOpen && (
-        <ModalDialog heading="Create Deck" onClose={handleCloseGlobal()}>
-          <CreateDeckGlobal closeDeckModal={handleCloseGlobal()} />
-        </ModalDialog>
-      )} */}
-
-      {/* Group Modal
-      {isGroupModalOpen && (
-        <ModalDialog heading="Create Group" onClose={() => closeGroupModal}>
-          <CreateGroupsGlobal closeGroupModal={closeGroupModal} />
-        </ModalDialog>
-      )} */}
     </div>
   );
 }
