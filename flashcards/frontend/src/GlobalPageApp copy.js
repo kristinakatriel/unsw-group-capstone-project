@@ -81,103 +81,110 @@ function GlobalPageApp() {
 
   };
 
-  /////*****************************additions */
+  //Rendering Flashcards and Decks with Splide:
   const renderFlashcardsList = (flashcards) => (
-    <CardSlider cards={flashcards} type="flashcard" />
+    <Splide
+      options={{
+        type: 'loop',
+        perMove: 1,
+        gap: '1rem',
+      }}
+      aria-label="Flashcards Slider"
+    >
+      {flashcards.map((flashcard) => (
+        <SplideSlide key={flashcard.id}>
+          <strong>Question:</strong> {flashcard.question_text || 'No question available'} <br />
+          <strong>Answer:</strong> {flashcard.answer_text || 'No answer available'} <br />
+          <strong>Owner:</strong> {flashcard.owner || 'No owner available'} <br />
+          <button>Open Flashcard</button>
+        </SplideSlide>
+      ))}
+    </Splide>
   );
 
   const renderDecksList = (flashdecks) => (
-    <CardSlider cards={flashdecks} type="deck" />
+    <Splide
+      options={{
+        type: 'loop',
+        perMove: 1,
+        gap: '1rem',
+      }}
+      aria-label="Decks Slider"
+    >
+      {flashdecks.map((deck) => (
+        <SplideSlide key={deck.id}>
+          <strong>Title:</strong> {deck.title || 'No title available'} <br />
+          <strong>Description:</strong> {deck.description || 'No description available'} <br />
+          <strong>Owner:</strong> {deck.owner || 'No owner available'} <br />
+          <strong>Flashcards:</strong> {deck.flashcards || 'No flashcards available'} <br />
+          <button>Open Deck</button>
+        </SplideSlide>
+      ))}
+    </Splide>
   );
-
-
-  // //Rendering Flashcards and Decks with Splide:
-  // const renderFlashcardsList = (flashcards) => (
-  //   <Splide
-  //     options={{
-  //       type: 'loop',
-  //       perMove: 1,
-  //       gap: '1rem',
-  //     }}
-  //     aria-label="Flashcards Slider"
-  //   >
-  //     {flashcards.map((flashcard) => (
-  //       <SplideSlide key={flashcard.id}>
-  //         <strong>Question:</strong> {flashcard.question_text || 'No question available'} <br />
-  //         <strong>Answer:</strong> {flashcard.answer_text || 'No answer available'} <br />
-  //         <strong>Owner:</strong> {flashcard.owner || 'No owner available'} <br />
-  //         <button>Open Flashcard</button>
-  //       </SplideSlide>
-  //     ))}
-  //   </Splide>
-  // );
-
-  // const renderDecksList = (flashdecks) => (
-  //   <Splide
-  //     options={{
-  //       type: 'loop',
-  //       perMove: 1,
-  //       gap: '1rem',
-  //     }}
-  //     aria-label="Decks Slider"
-  //   >
-  //     {flashdecks.map((deck) => (
-  //       <SplideSlide key={deck.id}>
-  //         <strong>Title:</strong> {deck.title || 'No title available'} <br />
-  //         <strong>Description:</strong> {deck.description || 'No description available'} <br />
-  //         <strong>Owner:</strong> {deck.owner || 'No owner available'} <br />
-  //         <strong>Flashcards:</strong> {deck.flashcards || 'No flashcards available'} <br />
-  //         <button>Open Deck</button>
-  //       </SplideSlide>
-  //     ))}
-  //   </Splide>
-  // );
 
   return (
     <div className='global-page-container'>
-
       <div className='global-page-headline'><FlashOnIcon className='global-page-flash-icon'/> FLASH</div>
       <div className='global-page-subheadline'>The Forge App that allows you to create flashcards in a flash</div>
-
-
-      <div className='global-page-recents'>
-        Recents
-
-
+      <div className='global-page-recents'>Recents
+        <button className='global-page-create-flashcard-button' onClick={createFlashcardGlobal}>+ Create Flashcard</button>
+        <button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button>
       </div>
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : flashcards.length === 0 ? (
-        <p>Nothing recently accessed. Create some flashcards!.</p>
-      ) : (
-        renderFlashcardsList(flashcards)
-      )}
-
+      <div className='global-page-recents-description'>No flashcards or decks created. Create a flashcard or deck to display here.</div>
+      <CardSlider />
       <div className='global-page-flashcards'>Flashcards<button className='global-page-create-flashcard-button' onClick={createFlashcardGlobal}>+ Create Flashcard</button></div>
+      <div className='global-page-flashcards-description'>No flashcards created. Create a flashcard to display here.</div>
+      <CardSlider />
+      <div className='global-page-decks'>Decks<button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button></div>
+      <div className='global-page-decks-description'>No decks created. Create a deck to display here.</div>
+      <CardSlider />
+
+      <h3>Flashcards</h3>
       {loading ? (
         <p>Loading...</p>
       ) : flashcards.length === 0 ? (
-        <p>No flashcards created. Create a flashcard to display here.</p>
+        <>
+          <h4>No flashcards to view. Create a flashcard to view it here.</h4>
+          <button className="create-flashcards" onClick={createFlashcardGlobal}>
+            Create New Flashcard
+          </button>
+        </>
       ) : (
-        renderFlashcardsList(flashcards)
+        <>
+          {renderFlashcardsList(flashcards)}
+          <br />
+          <h4>Create more flashcards here: </h4>
+          <button className="create-flashcards" onClick={createFlashcardGlobal}>
+            Create New Flashcard
+          </button>
+        </>
       )}
 
-      <div className='global-page-decks'>Decks<button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button></div>
+      <h3>Decks</h3>
       {loading ? (
         <p>Loading...</p>
       ) : flashdecks.length === 0 ? (
-        <p>No decks created. Create a deck to display here.</p>
+        <>
+          <h4>No decks to view. Create a deck to view it here.</h4>
+          <button className="create-decks" onClick={createDeck}>
+            Create New Deck
+          </button>
+        </>
       ) : (
-        renderDecksList(flashdecks)
+        <>
+          {renderDecksList(flashdecks)}
+          <br />
+          <h4>Create more decks here: </h4>
+          <button className="create-decks" onClick={createDeck}>
+            Create New Deck
+          </button>
+        </>
       )}
-
-
-
 
       {/* Flashcard Modal */}
       {isFlashcardModalOpen && (
-        <ModalDialog heading="Create Flashcard" onClose={() => closeFlashcardModal(true)}>
+        <ModalDialog heading="Create Flashcard" onClose={() => closeFlashcardModal()}>
           <CreateFlashcardGlobal closeFlashcardModal={closeFlashcardModal} />
         </ModalDialog>
       )}

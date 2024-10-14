@@ -31,21 +31,22 @@ const CardSlider = ({ cards = [], type }) => {
             {cards.map((card) => (
               <SplideSlide key={card.id} className='card-item'>
                 <div className="card-link">
-                  <p className='badge blue'>Blue Tag</p>
+                  <p className={`badge ${type === 'flashcard' ? 'blue' : 'orange'}`}>
+                    {type === 'flashcard' ? 'Flashcard' : 'Deck'}
+                  </p>
+                  <h4 className='card-name'>{card.title || 'Untitled'}</h4>
                   {type === 'flashcard' ? (
                     <>
-                      <h4 className='card-name'>Flashcard</h4>
                       <h4 className='card-description'>{card.question_text || 'No question available'}</h4>
+                      <h4 className='card-owner'>By {card.owner || 'Unknown'}</h4>
                     </>
                   ) : (
                     <>
-                      <h4 className='card-name'>Deck</h4>
                       <h4 className='card-description'>{card.description || 'No description available'}</h4>
                       <h4 className='card-flashcard-amount'>Flashcards: {card.flashcards?.length || 0}</h4>
-
+                      <h4 className='card-owner'>By {card.owner || 'Unknown'}</h4>
                     </>
                   )}
-                  <h4 className='card-owner'>By {card.owner || 'Unknown'}</h4>
                   <div className='card-button'>
                     <EditIcon className='card-edit-button' />
                     <DeleteIcon className='card-delete-button' />

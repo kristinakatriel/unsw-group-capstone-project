@@ -5,29 +5,41 @@
   align-items: center;
   margin-bottom: 10px;
 }
-  
+
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%); /* Center modal */
+  width: 90%; /* Use most of the width */
+  max-width: 600px; /* Cap the max width */
+  z-index: 1000; /* Keep it on top of other elements */
+}
+
+
 .global-page-flash-icon {
   color: #5372F0;
   margin-right: 10px;
   width: 40px !important;
   height: 40px !important;
 }
-  
+
 .global-page-subheadline {
   font-size: 16px;
   color: darkgray;
   margin-bottom: 10px;
-  font-style: italic; 
+  font-style: italic;
 }
-  
+
 .global-page-recents,
 .global-page-flashcards,
 .global-page-decks {
   font-size: 18px;
-  color: black; 
+  color: black;
   margin-bottom: 10px;
   display: flex;
-  align-items: center; 
+  align-items: center;
 }
 
 .global-page-create-flashcard-button,
