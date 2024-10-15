@@ -7,7 +7,6 @@ import './CardSlider.css';
 
 const CardSlider = ({ cards = [], type }) => {
 
-
   return (
     <div className='container'>
       <div className='card-wrapper'>

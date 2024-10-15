@@ -6,7 +6,6 @@
   margin-bottom: 10px;
 }
 
-
 .modal {
   position: fixed;
   top: 50%;
@@ -16,7 +15,6 @@
   max-width: 600px; /* Cap the max width */
   z-index: 1000; /* Keep it on top of other elements */
 }
-
 
 .global-page-flash-icon {
   color: #5372F0;

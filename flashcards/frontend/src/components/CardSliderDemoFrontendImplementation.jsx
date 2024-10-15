@@ -3,7 +3,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
-import './CardSlider.css';
+import './CardSliderDemoFrontendImplementation.css';
 
 const CardSlider = () => {
   return (

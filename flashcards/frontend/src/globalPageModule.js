@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/react-splide/css';
 import { invoke } from '@forge/bridge';
-import CreateFlashcardGlobal from './CreateFlashcardGlobal';
+import CreateFlashcardGlobal from './flashcardGlobalModuleCreate';
 import ModalDialog from '@atlaskit/modal-dialog';
-import CreateDeck from './CreateDeck';
+import CreateDeck from './deckStandardCreate';
 import CardSlider from './components/CardSlider';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
-import './GlobalPageApp.css';
+import './globalPageModule.css';
+import CreateDeckGlobal from './deckGlobalModuleCreate';
 
-function GlobalPageApp() {
+function globalPageModule() {
 
   //State Management:
   const [flashcards, setFlashcards] = useState([]);
@@ -22,10 +23,12 @@ function GlobalPageApp() {
 
 
   //Fetching Flashcards & Decks:
+  //what is this actually doing, consult kristina / nira
   const getFlashcards = async () => {
     try {
       const response = await invoke('getAllFlashcards', {});
       if (response.success) {
+        //what is this actually doing, consult kristina / nira
         setFlashcards(response.cards);
       } else {
         console.error('Error getting flashcards:', response.error);
@@ -185,11 +188,11 @@ function GlobalPageApp() {
       {/* Deck Modal */}
       {isDeckModalOpen && (
         <ModalDialog heading="Create Deck" onClose={() => closeDeckModal(true)}>
-          <CreateDeck onClose={() => closeDeckModal(true)} />
+          <CreateDeckGlobal closeDeckModal = {closeDeckModal}/>
         </ModalDialog>
       )}
     </div>
   );
 }
 
-export default GlobalPageApp;
+export default globalPageModule;
