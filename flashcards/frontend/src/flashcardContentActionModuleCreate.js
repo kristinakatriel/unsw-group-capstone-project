@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { invoke, view } from '@forge/bridge';
-import './CreateFlashcard.css';
+import './flashcardContentActionModuleCreate.css';
 import DragNDrop from './components/DragNDrop';
 
-function CreateFlashcard() {
+function flashcardContentActionModuleCreate() {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [hint, setHint] = useState('');
@@ -115,28 +115,4 @@ function CreateFlashcard() {
   );
 }
 
-export default CreateFlashcard;
-
-
-    // try {
-    //   const response = await invoke('createFlashcard', {
-    //     question_text: question,
-    //     question_image: questionImage,
-    //     answer_text: answer,
-    //     answer_image: answerImage,
-    //     hint: hint,
-    //     owner: ownerEmail,
-    //   });
-
-    //   console.log(response.owner);
-    //   console.log('Flashcard saved successfully:', response);
-
-    //   setQuestion('');
-    //   setAnswer('');
-    //   setHint('');
-    //   setQuestionImage(null);
-    //   setAnswerImage(null);
-
-    // } catch (error) {
-    //   console.error('Error saving flashcard:', error);
-    // }
+export default flashcardContentActionModuleCreate;

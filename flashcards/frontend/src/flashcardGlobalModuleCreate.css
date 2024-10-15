@@ -1,3 +1,10 @@
+.global-flashcard-container {
+  overflow: auto;
+  min-height: 100%;
+  height: 911px;
+}
+
+
 .global-flashcard-creation {
   background-color: white;
   font-family: 'Arial', sans-serif;

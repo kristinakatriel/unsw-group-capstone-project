@@ -5,17 +5,18 @@ import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
 import './CardSlider.css';
 
-const CardSlider = () => {
+const CardSlider = ({ cards = [], type }) => {
+
   return (
     <div className='container'>
       <div className='card-wrapper'>
         <ul className='card-list'>
           <Splide
             options={{
-              type       : 'slide',
-              perPage    : 5,
-              pagination : false,
-              gap        : '10px', 
+              type: 'slide',
+              perPage: 5,
+              pagination: false,
+              gap: '10px',
               breakpoints: {
                 640: {
                   perPage: 2,
@@ -26,90 +27,36 @@ const CardSlider = () => {
               },
             }}
           >
-            <SplideSlide className='card-item'>
-              <div className="card-link">
-                <p className='badge blue'>Blue Tag</p>
-                <h4 className='card-name'>Flashcard</h4>
-                <h4 className='card-description'>If it is a flashcard, it shows the question. What's 1 + 1?</h4>
-                <h4 className='card-owner'>By exmaple@ad.unsw.edu.au</h4>
-                <div className='card-button'>
-                  <EditIcon className='card-edit-button'/>
-                  <DeleteIcon className='card-delete-button'/>
-                </div>
-              </div>
-            </SplideSlide>
-            <SplideSlide className='card-item'>
-              <div className="card-link">
-                <div className='card-tags'>
-                  <p className='badge red'>Red Tag</p>
+            {cards.map((card) => (
+              <SplideSlide key={card.id} className='card-item'>
+                <div className="card-link">
                   <p className='badge blue'>Blue Tag</p>
+                  {type === 'flashcard' ? (
+                    <>
+                      <h4 className='card-name'>Flashcard</h4>
+                      <h4 className='card-description'>{card.question_text || 'No question available'}</h4>
+                    </>
+                  ) : (
+                    <>
+                      <h4 className='card-name'>Deck</h4>
+                      <h4 className='card-description'>{card.description || 'No description available'}</h4>
+                      <h4 className='card-flashcard-amount'>Flashcards: {card.flashcards?.length || 0}</h4>
+
+                    </>
+                  )}
+                  <h4 className='card-owner'>By {card.owner || 'Unknown'}</h4>
+                  <div className='card-button'>
+                    <EditIcon className='card-edit-button' />
+                    <DeleteIcon className='card-delete-button' />
+                  </div>
                 </div>
-                <h4 className='card-name'>Deck</h4>
-                <h4 className='card-description'>If it is a flashcard, it shows the question. What's 1 + 1?</h4>
-                <h4 className='card-owner'>By exmaple@ad.unsw.edu.au</h4>
-                <div className='card-button'>
-                  <EditIcon className='card-edit-button'/>
-                  <DeleteIcon className='card-delete-button'/>
-                </div>
-              </div>
-            </SplideSlide>
-            <SplideSlide className='card-item'>
-              <div className="card-link">
-              <p className='badge orange'>Orange Tag</p>
-              <h4 className='card-name'>Deck</h4>
-              <h4 className='card-description'>If it is a deck, it shows the deck description and/or the number of flashcards in deck</h4>
-                <h4 className='card-flashcard-amount'>Flashcards: 7</h4>
-                <h4 className='card-owner'>By exmaple@ad.unsw.edu.au</h4>
-                <div className='card-button'>
-                  <EditIcon className='card-edit-button'/>
-                  <DeleteIcon className='card-delete-button'/>
-                </div>
-              </div>
-            </SplideSlide>
-            <SplideSlide className='card-item'>
-              <div className="card-link">
-                <p className='badge green'>Green Tag</p>
-                <h4 className='card-name'>Deck</h4>
-                <h4 className='card-description'>If it is a deck, it shows the deck description and/or the number of flashcards in deck</h4>
-                <h4 className='card-flashcard-amount'>Flashcards: 7</h4>
-                <h4 className='card-owner'>By exmaple@ad.unsw.edu.au</h4>
-                <div className='card-button'>
-                  <EditIcon className='card-edit-button'/>
-                  <DeleteIcon className='card-delete-button'/>
-                </div>
-              </div>
-            </SplideSlide>
-            <SplideSlide className='card-item'>
-              <div className="card-link">
-                <p className='badge orange'>Orange Tag</p>
-                <h4 className='card-name'>Deck</h4>
-                <h4 className='card-description'>If it is a deck, it shows the deck description and/or the number of flashcards in deck</h4>
-                <h4 className='card-flashcard-amount'>Flashcards: 7</h4>
-                <h4 className='card-owner'>By exmaple@ad.unsw.edu.au</h4>
-                <div className='card-button'>
-                  <EditIcon className='card-edit-button'/>
-                  <DeleteIcon className='card-delete-button'/>
-                </div>
-              </div>
-            </SplideSlide>
-            <SplideSlide className='card-item'>
-              <div className="card-link">
-                <p className='badge blue'>Blue Tag</p>
-                <h4 className='card-name'>Deck</h4>
-                <h4 className='card-description'>If it is a deck, it shows the deck description and/or the number of flashcards in deck</h4>
-                <h4 className='card-flashcard-amount'>Flashcards: 7</h4>
-                <h4 className='card-owner'>By exmaple@ad.unsw.edu.au</h4>
-                <div className='card-button'>
-                  <EditIcon className='card-edit-button'/>
-                  <DeleteIcon className='card-delete-button'/>
-                </div>
-              </div>
-            </SplideSlide>
+              </SplideSlide>
+            ))}
           </Splide>
         </ul>
       </div>
     </div>
   );
-}
+};
 
 export default CardSlider;

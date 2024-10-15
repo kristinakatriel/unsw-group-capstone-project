@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { invoke, view } from '@forge/bridge';
-import './CreateFlashcardGlobal.css';
-import './GlobalPageApp.js';
-import DragNDrop from './components/DragNDrop';
+import './flashcardGlobalModuleCreate.css';
+import './globalPageModule.js';
+import DragNDrop from './components/DragNDrop.jsx';
 
 function CreateFlashcardGlobal( { closeFlashcardModal }) {
   const [question, setQuestion] = useState('');
@@ -15,7 +15,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
 
 
   const handleCloseGlobal = () => {
-    console.log('Function called: handleCloseGlobal');
+    console.log('CLOSE BUTTON WAS JUST PRESSED (Function called: handleCloseGlobal)');
     if (typeof closeFlashcardModal === 'function') {
       closeFlashcardModal(); // Call the function passed as a prop
     } else {
@@ -25,10 +25,11 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
 
 
   const handleSaveGlobal = async () => {
+    console.log('SAVE BUTTON WAS JUST PRESSED (Function called: handleSaveGlobal)');
     try {
 
-        console.log('Function called: handleSaveGlobal');
-        const response = await invoke('createFlashcard', {
+      console.log('Function called: handleSaveGlobal');
+      const response = await invoke('createFlashcard', {
         question_text: question,
         question_image: null,
         answer_text: answer,
@@ -39,8 +40,8 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
       });
 
       // getUserEmail();
-      console.log(response.owner);
-      console.log('Flashcard saved successfully:', response);
+      //console.log(response.owner);
+      console.log('Flashcard saved?:', response);
 
       setQuestion('');
       setAnswer('');
@@ -53,21 +54,15 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
     }
   };
 
-//   const handleCloseGlobal = () => {
-//     console.log('Function called: handleCloseGlobal');
-//     view.close();
-
-//   };
-
   const handleQuestionImageSelected = (files) => {
-    console.log('Function called: handleQuestionImageSelected');
+    //console.log('Function called: handleQuestionImageSelected');
     if (files.length > 0) {
       setQuestionImage(files[0]);
     }
   };
 
   const handleAnswerImageSelected = (files) => {
-    console.log('Function called: handleAnswerImageSelected');
+    //console.log('Function called: handleAnswerImageSelected');
     if (files.length > 0) {
       setAnswerImage(files[0]);
     }
@@ -134,26 +129,3 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
 
 export default CreateFlashcardGlobal;
 
-
-    // try {
-    //   const response = await invoke('createFlashcard', {
-    //     question_text: question,
-    //     question_image: questionImage,
-    //     answer_text: answer,
-    //     answer_image: answerImage,
-    //     hint: hint,
-    //     owner: ownerEmail,
-    //   });
-
-    //   console.log(response.owner);
-    //   console.log('Flashcard saved successfully:', response);
-
-    //   setQuestion('');
-    //   setAnswer('');
-    //   setHint('');
-    //   setQuestionImage(null);
-    //   setAnswerImage(null);
-
-    // } catch (error) {
-    //   console.error('Error saving flashcard:', error);
-    // }

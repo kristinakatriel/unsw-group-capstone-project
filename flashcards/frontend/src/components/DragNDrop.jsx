@@ -29,6 +29,7 @@ const DragNDrop = ({ onFilesSelected, width, height }) => {
   };
 
   useEffect(() => {
+    console.log('Files updated:', files); // Debug
     onFilesSelected(files);
   }, [files, onFilesSelected]);
 
@@ -42,7 +43,7 @@ const DragNDrop = ({ onFilesSelected, width, height }) => {
         <div className="upload-info">
           <FontAwesomeIcon icon={faImage} size="3x" color="#0052CC" />
         </div>
-        
+
         <input
           type="file"
           hidden

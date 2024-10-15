@@ -1,27 +1,34 @@
+.global-deck-container {
+  overflow: auto;
+  min-height: 100%;
+  height: 911px;
+}
+
 .deck-creation {
+
     background-color: white;
     font-family: 'Arial', sans-serif;
     max-width: 500px;
-    margin: 0 auto; 
+    margin: 0 auto;
     padding: 30px;
   }
-  
+
   h2 {
     font-size: 24px;
     font-weight: bold;
     margin: 20px 0;
   }
-  
+
   .deck-title {
     margin-bottom: 10px;
   }
-  
+
   label {
     font-weight: bold;
     display: block;
     margin-bottom: 5px;
   }
-  
+
   .input-field,
   .input-area {
     box-sizing: border-box;
@@ -29,22 +36,22 @@
     border-radius: 4px;
     padding: 8px;
   }
-  
+
   .input-field {
     height: 40px; /* Height for the text input */
   }
-  
+
   .input-area {
     height: 95px; /* Height for the text area */
     resize: none; /* Disable resizing */
   }
-  
+
   .button-group {
     display: flex;
     justify-content: flex-end;
     margin-top: 20px;
   }
-  
+
   .save-button {
     background-color: #0052CC; /* Primary Button Color */
     color: white;
@@ -57,11 +64,11 @@
     text-transform: uppercase;
     margin-right: 10px;
   }
-  
+
   .save-button:hover {
     background-color: #0747A6; /* Darker shade for hover effect */
   }
-  
+
   .close-button {
     background-color: #f0f0f0; /* Secondary Button Color */
     color: #333;
@@ -73,7 +80,7 @@
     font-size: 14px;
     text-transform: uppercase;
   }
-  
+
   .close-button:hover {
     background-color: #ccc; /* Darker shade for hover effect */
   }
@@ -81,7 +88,7 @@
   .form-group {
     margin-bottom: 20px;
   }
-  
+
   input[type="checkbox"] {
     margin-right: 10px; /* Space between checkbox and label */
   }
