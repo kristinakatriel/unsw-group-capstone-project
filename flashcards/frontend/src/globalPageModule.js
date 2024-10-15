@@ -4,7 +4,6 @@ import '@splidejs/react-splide/css';
 import { invoke } from '@forge/bridge';
 import CreateFlashcardGlobal from './flashcardGlobalModuleCreate';
 import ModalDialog from '@atlaskit/modal-dialog';
-import CreateDeck from './deckStandardCreate';
 import CardSlider from './components/CardSlider';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
 import './globalPageModule.css';
@@ -94,47 +93,6 @@ function globalPageModule() {
   );
 
 
-  // //Rendering Flashcards and Decks with Splide:
-  // const renderFlashcardsList = (flashcards) => (
-  //   <Splide
-  //     options={{
-  //       type: 'loop',
-  //       perMove: 1,
-  //       gap: '1rem',
-  //     }}
-  //     aria-label="Flashcards Slider"
-  //   >
-  //     {flashcards.map((flashcard) => (
-  //       <SplideSlide key={flashcard.id}>
-  //         <strong>Question:</strong> {flashcard.question_text || 'No question available'} <br />
-  //         <strong>Answer:</strong> {flashcard.answer_text || 'No answer available'} <br />
-  //         <strong>Owner:</strong> {flashcard.owner || 'No owner available'} <br />
-  //         <button>Open Flashcard</button>
-  //       </SplideSlide>
-  //     ))}
-  //   </Splide>
-  // );
-
-  // const renderDecksList = (flashdecks) => (
-  //   <Splide
-  //     options={{
-  //       type: 'loop',
-  //       perMove: 1,
-  //       gap: '1rem',
-  //     }}
-  //     aria-label="Decks Slider"
-  //   >
-  //     {flashdecks.map((deck) => (
-  //       <SplideSlide key={deck.id}>
-  //         <strong>Title:</strong> {deck.title || 'No title available'} <br />
-  //         <strong>Description:</strong> {deck.description || 'No description available'} <br />
-  //         <strong>Owner:</strong> {deck.owner || 'No owner available'} <br />
-  //         <strong>Flashcards:</strong> {deck.flashcards || 'No flashcards available'} <br />
-  //         <button>Open Deck</button>
-  //       </SplideSlide>
-  //     ))}
-  //   </Splide>
-  // );
 
   return (
     <div className='global-page-container'>

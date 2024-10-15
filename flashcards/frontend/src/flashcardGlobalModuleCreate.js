@@ -129,26 +129,3 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
 
 export default CreateFlashcardGlobal;
 
-
-    // try {
-    //   const response = await invoke('createFlashcard', {
-    //     question_text: question,
-    //     question_image: questionImage,
-    //     answer_text: answer,
-    //     answer_image: answerImage,
-    //     hint: hint,
-    //     owner: ownerEmail,
-    //   });
-
-    //   console.log(response.owner);
-    //   console.log('Flashcard saved successfully:', response);
-
-    //   setQuestion('');
-    //   setAnswer('');
-    //   setHint('');
-    //   setQuestionImage(null);
-    //   setAnswerImage(null);
-
-    // } catch (error) {
-    //   console.error('Error saving flashcard:', error);
-    // }
