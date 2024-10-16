@@ -29,6 +29,7 @@ permissions:
     - write:confluence-content
     - storage:app
     - read:confluence-user
+    - read:user:confluence
     - read:content-details:confluence
   content:
     styles:
