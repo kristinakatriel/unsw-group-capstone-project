@@ -21,6 +21,44 @@ function globalPageModule() {
   const [isDeckModalOpen, setIsDeckModalOpen] = useState(false);
 
 
+  // Add a new state to track the flashcard being deleted and if the confirmation modal is open
+  const [flashcardToDelete, setFlashcardToDelete] = useState(null);
+  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+
+
+  // Open delete confirmation modal
+  const confirmDeleteFlashcard = (flashcard) => {
+    console.log('Flashcard to delete:', flashcard);  // Log flashcard to ensure it has an id
+    setFlashcardToDelete(flashcard);
+    setIsDeleteConfirmOpen(true);
+  };
+
+  // Close delete confirmation modal
+  const closeDeleteConfirm = () => {
+    setIsDeleteConfirmOpen(false);
+    setFlashcardToDelete(null);
+  };
+
+  // Perform the delete action after confirmation
+  const deleteFlashcard = async () => {
+    try {
+      console.log('Deleting flashcard with id:', flashcardToDelete?.id);  // Check id before invoking API
+      const response = await invoke('deleteFlashcard', { cardId: flashcardToDelete.id }); // Replace with the actual API call
+      if (response.success) {
+        setFlashcards((prevFlashcards) =>
+          prevFlashcards.filter((card) => card.id !== flashcardToDelete.id)
+        );
+        setIsDeleteConfirmOpen(false);
+        setFlashcardToDelete(null);
+      } else {
+        console.error('Error deleting flashcard:', response.error);
+      }
+    } catch (error) {
+      console.error('Error deleting flashcard:', error);
+    }
+  };
+
+
   //Fetching Flashcards & Decks:
   //what is this actually doing, consult kristina / nira
   const getFlashcards = async () => {
@@ -83,14 +121,23 @@ function globalPageModule() {
 
   };
 
-  /////*****************************additions */
+  // /////*****************************additions */
+  // const renderFlashcardsList = (flashcards) => (
+  //   <CardSlider cards={flashcards} type="flashcard" />
+  // );
+
+  // const renderDecksList = (flashdecks) => (
+  //   <CardSlider cards={flashdecks} type="deck" />
+  // );
+
   const renderFlashcardsList = (flashcards) => (
-    <CardSlider cards={flashcards} type="flashcard" />
+    <CardSlider cards={flashcards} type="flashcard" onDelete={confirmDeleteFlashcard} />
   );
 
   const renderDecksList = (flashdecks) => (
-    <CardSlider cards={flashdecks} type="deck" />
+    <CardSlider cards={flashdecks} type="deck" onDelete={confirmDeleteFlashcard} />
   );
+
 
 
 
@@ -149,6 +196,17 @@ function globalPageModule() {
           <CreateDeckGlobal closeDeckModal = {closeDeckModal}/>
         </ModalDialog>
       )}
+
+      {/* Delete Confirmation Modal */}
+      {isDeleteConfirmOpen && (
+        <ModalDialog heading="Delete Flashcard?" onClose={closeDeleteConfirm}>
+          <p>Are you sure you want to delete this flashcard?</p>
+          <button onClick={deleteFlashcard}>Yes, Delete</button>
+          <button onClick={closeDeleteConfirm}>Cancel</button>
+        </ModalDialog>
+      )}
+
+
     </div>
   );
 }
