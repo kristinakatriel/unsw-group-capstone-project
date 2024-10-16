@@ -36,7 +36,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
         answer_image: null,
         hint: 'abababb hint',
         tags: ['no', 'yes'],
-        owner: 'e@1',
+        // owner: 'e@1',
       });
 
       // getUserEmail();

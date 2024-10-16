@@ -23,11 +23,18 @@ resolver.define('createFlashcard', async (req) => {
     answer_text,
     answer_image,
     hint,
-    tags,
-    owner
+    tags
   } = req.payload;
 
-  if (!question_text || !answer_text || !owner) {
+  let owner = "@@";
+
+  if(!req.context.accountId) {
+    console.log("No account Id found :(");
+  } else {
+    owner = req.context.accountId;
+  }
+
+  if (!question_text || !answer_text) {
     return {
       success: false,
       error: 'invalid input: owner, question, answer',
@@ -83,15 +90,22 @@ resolver.define('createDeck', async (req) => {
   const {
     title,
     description,
-    owner,
     flashcards // now: (NOT later)
   } = req.payload;
 
-  if (!title || !owner) {
+  let owner = "@@";
+
+  if (!title) {
     return {
       success: false,
       error: 'invalid input: title and owner needed',
     };
+  }
+
+  if(!req.context.accountId) {
+    console.log("No account Id found :(");
+  } else {
+    owner = req.context.accountId;
   }
 
   const deckId = generateId();
@@ -140,15 +154,22 @@ resolver.define('createGroup', async (req) => {
   const {
     title,
     description,
-    owner,
     decks
   } = req.payload;
 
-  if (!title || !owner) {
+  if (!title) {
     return {
       success: false,
       error: 'invalid input: title and owner needed',
     };
+  }
+
+  let owner = "@@";
+  
+  if(!req.context.accountId) {
+    console.log("No account Id found :(");
+  } else {
+    owner = req.context.accountId;
   }
 
   const groupId = generateId();
