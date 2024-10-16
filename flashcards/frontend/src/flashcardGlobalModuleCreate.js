@@ -27,7 +27,6 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
   const handleSaveGlobal = async () => {
     console.log('SAVE BUTTON WAS JUST PRESSED (Function called: handleSaveGlobal)');
     try {
-
       console.log('Function called: handleSaveGlobal');
       const response = await invoke('createFlashcard', {
         question_text: question,
