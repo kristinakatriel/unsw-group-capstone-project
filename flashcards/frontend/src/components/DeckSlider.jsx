@@ -32,7 +32,8 @@ const DeckSlider = ({ decks = [], onDelete }) => {
                 <div className="deck-link">
                   {/* Deck content wrapper to ensure banner placement */}
                   <div className="deck-content"></div>
-                  <h4 className='deck-name'>{deck.name || 'Unnamed Deck'}</h4>
+                  <p className='badge blue'>Blue Tag</p>
+                  <h4 className='deck-name'>{deck.title || 'Unnamed Deck'}</h4>
                   <h4 className='deck-description'>{deck.description || 'No description available'}</h4>
                   <h4 className='deck-flashcard-amount'>Flashcards: {deck.flashcards?.length || 0}</h4>
                   <h4 className='deck-owner'>By {deck.owner || 'Unknown'}</h4>
@@ -45,8 +46,6 @@ const DeckSlider = ({ decks = [], onDelete }) => {
                             onDelete(deck);
                         }}
                     />
-
-
                   </div>
                 </div>
               </SplideSlide>

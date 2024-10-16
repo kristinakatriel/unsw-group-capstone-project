@@ -28,7 +28,7 @@ FIX Option 2 (call different thingys in the .css file depending on if cards or d
 }
 .deck-list .deck-item .deck-link {
   display: block;
-  background: #ff0000;  /* Overall background */
+  background: #ffffff;  /* Overall background */
   padding: 14px;
   border-radius: 10px;
   text-decoration: none;
@@ -47,20 +47,14 @@ FIX Option 2 (call different thingys in the .css file depending on if cards or d
   top: 0;
   left: 0;
   width: 100%;
-  height: 25%;  /* Top 1/4 of the deck */
-  background-color: rgb(0, 222, 22); /* Grey banner color */
+  height: 10%;  /* Top 1/4 of the deck */
+  background-color: black;; /* Grey banner color */
   border-top-left-radius: 10px;
   border-top-right-radius: 10px;
 }
 
-/* Ensure content is displayed below the banner */
-.deck-list .deck-item .deck-link .deck-content {
-  position: relative;
-  z-index: 1;
-}
-
 .deck-list .deck-item .deck-link:hover {
-  border-color: #ea00ff;  /* Different hover color for decks */
+  border-color: #5372F0;
 }
 
 .deck-list .deck-link .deck-tags {
@@ -70,7 +64,7 @@ FIX Option 2 (call different thingys in the .css file depending on if cards or d
 }
 
 .deck-list .deck-link .badge {
-  color: #28a745;
+  color: #5372F0;
   padding: 6px 12px;
   font-size: 10px;
   margin: 12px 0 14px;
@@ -79,22 +73,23 @@ FIX Option 2 (call different thingys in the .css file depending on if cards or d
   border-radius: 40px;
 }
 
-.deck-list .deck-link .badge.green {
-  color: #28a745;
-  background: #e8f5e9;
+.deck-list .deck-link .deck.blue {
+  color: #5372F0;
+  background: #DDE4FF;
 }
 
+
 .deck-list .deck-link .deck-name {
+  font-size: 16px;
+  color: #000;
+  margin-bottom: 10px;
+}
+
+.deck-list .deck-link .deck-description {
   font-size: 14px;
   color: darkgrey;
   font-weight: bold;
   margin-bottom: 6px;
-}
-
-.deck-list .deck-link .deck-description {
-  font-size: 16px;
-  color: #000;
-  margin-bottom: 10px;
 }
 
 .deck-list .deck-link .deck-flashcard-amount {
@@ -119,7 +114,7 @@ FIX Option 2 (call different thingys in the .css file depending on if cards or d
 
 .deck-list .deck-link .deck-edit-button,
 .deck-list .deck-link .deck-delete-button {
-  color: rgb(0, 255, 255);
+  color: lightgrey;
   cursor: pointer;
 }
 

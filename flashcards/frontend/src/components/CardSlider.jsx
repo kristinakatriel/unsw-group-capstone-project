@@ -55,8 +55,8 @@ const CardSlider = ({ cards = [], onDelete  }) => {
               <SplideSlide key={card.id} className='card-item'>
               <div className="card-link">
                 <p className='badge blue'>Blue Tag</p>
-                <h4 className='card-name'>Card</h4>
-                <h4 className='card-description'>{card.description || 'No description available'}</h4>
+                <h4 className='card-question'>{card.question_text || 'No question available'}</h4>
+                <h4 className='card-answer'>{card.answer_text || 'No question available'}</h4>
                 <h4 className='card-owner'>By {card.owner || 'Unknown'}</h4>
                 <div className='card-button'>
                   <EditIcon className='card-edit-button' />
