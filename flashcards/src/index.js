@@ -17,14 +17,14 @@ resolver.define('getModule', (req) => {
 });
 
 resolver.define('createFlashcard', async (req) => {
-  const { 
-    question_text, 
-    question_image, 
-    answer_text, 
-    answer_image, 
-    hint, 
-    tags, 
-    owner 
+  const {
+    question_text,
+    question_image,
+    answer_text,
+    answer_image,
+    hint,
+    tags,
+    owner
   } = req.payload;
 
   if (!question_text || !answer_text || !owner) {
@@ -80,7 +80,7 @@ resolver.define('getAllFlashcards', async () => {
 
 // TODO: DECK
 resolver.define('createDeck', async (req) => {
-  const { 
+  const {
     title,
     description,
     owner,
@@ -137,7 +137,7 @@ resolver.define('getAllDecks', async () => {
 
 // TODO: GROUPS
 resolver.define('createGroup', async (req) => {
-  const { 
+  const {
     title,
     description,
     owner,
@@ -189,6 +189,45 @@ resolver.define('getAllGroups', async () => {
   return {
     success: true,
     groups: allGroups,
+  };
+});
+
+
+resolver.define('deleteFlashcard', async ({ payload }) => {
+  const { cardId } = payload;
+
+  if (!cards[cardId]) {
+    return {
+      success: false,
+      error: `no card found with id: ${cardId}`,
+    };
+  }
+
+  // Delete the flashcard
+  delete cards[cardId];
+
+  return {
+    success: true,
+    message: `Flashcard with id: ${cardId} deleted successfully`,
+  };
+});
+
+resolver.define('deleteDeck', async ({ payload }) => {
+  const { deckId } = payload;
+
+  if (!decks[deckId]) {
+    return {
+      success: false,
+      error: `no deck found with id: ${deckId}`,
+    };
+  }
+
+  // Delete the deck
+  delete decks[deckId];
+
+  return {
+    success: true,
+    message: `Deck with id: ${deckId} deleted successfully`,
   };
 });
 

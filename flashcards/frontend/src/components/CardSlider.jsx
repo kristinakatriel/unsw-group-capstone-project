@@ -5,7 +5,31 @@ import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
 import './CardSlider.css';
 
-const CardSlider = ({ cards = [], type }) => {
+const CardSlider = ({ cards = [], type, onDelete  }) => {
+
+
+  const handleDelete = async (cardId) => {
+    const confirmDelete = window.confirm("Are you sure you want to delete this flashcard?");
+
+    if (confirmDelete) {
+      try {
+        // Invoke the backend delete function
+        const response = await invoke('deleteFlashcard', { cardId });
+
+        if (response.success) {
+          alert('Flashcard deleted successfully!');
+          // Optionally refresh the flashcard list after deletion
+          // You can call a function here to re-fetch flashcards if needed
+        } else {
+          alert('Error deleting flashcard: ' + response.error);
+        }
+      } catch (error) {
+        console.error('Error invoking deleteFlashcard:', error);
+        alert('An error occurred. Please try again.');
+      }
+    }
+  };
+
 
   return (
     <div className='container'>
@@ -47,7 +71,7 @@ const CardSlider = ({ cards = [], type }) => {
                   <h4 className='card-owner'>By {card.owner || 'Unknown'}</h4>
                   <div className='card-button'>
                     <EditIcon className='card-edit-button' />
-                    <DeleteIcon className='card-delete-button' />
+                    <DeleteIcon className='card-delete-button' onClick={() => onDelete(card)} />
                   </div>
                 </div>
               </SplideSlide>
