@@ -5,7 +5,7 @@ import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
 import './CardSlider.css';
 
-const CardSlider = ({ cards = [], onDelete  }) => {
+const CardSlider = ({ cards = [], type, onDelete  }) => {
 
 
   const handleDelete = async (cardId) => {
@@ -53,17 +53,28 @@ const CardSlider = ({ cards = [], onDelete  }) => {
           >
             {cards.map((card) => (
               <SplideSlide key={card.id} className='card-item'>
-              <div className="card-link">
-                <p className='badge blue'>Blue Tag</p>
-                <h4 className='card-name'>Card</h4>
-                <h4 className='card-description'>{card.description || 'No description available'}</h4>
-                <h4 className='card-owner'>By {card.owner || 'Unknown'}</h4>
-                <div className='card-button'>
-                  <EditIcon className='card-edit-button' />
-                  <DeleteIcon className='card-delete-button' onClick={() => onDelete(card)} />
+                <div className="card-link">
+                  <p className='badge blue'>Blue Tag</p>
+                  {type === 'flashcard' ? (
+                    <>
+                      <h4 className='card-name'>Flashcard</h4>
+                      <h4 className='card-description'>{card.question_text || 'No question available'}</h4>
+                    </>
+                  ) : (
+                    <>
+                      <h4 className='card-name'>Deck</h4>
+                      <h4 className='card-description'>{card.description || 'No description available'}</h4>
+                      <h4 className='card-flashcard-amount'>Flashcards: {card.flashcards?.length || 0}</h4>
+
+                    </>
+                  )}
+                  <h4 className='card-owner'>By {card.owner || 'Unknown'}</h4>
+                  <div className='card-button'>
+                    <EditIcon className='card-edit-button' />
+                    <DeleteIcon className='card-delete-button' onClick={() => onDelete(card)} />
+                  </div>
                 </div>
-              </div>
-            </SplideSlide>
+              </SplideSlide>
             ))}
           </Splide>
         </ul>

@@ -8,6 +8,10 @@ import CardSlider from './components/CardSlider';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
 import './globalPageModule.css';
 import CreateDeckGlobal from './deckGlobalModuleCreate';
+import DeckSlider from './components/DeckSlider'; // Import the new DeckSlider component
+
+
+
 
 function globalPageModule() {
 
@@ -21,35 +25,53 @@ function globalPageModule() {
   const [isDeckModalOpen, setIsDeckModalOpen] = useState(false);
 
 
-  // Add a new state to track the flashcard being deleted and if the confirmation modal is open
+
+  // State for flashcard deletion
   const [flashcardToDelete, setFlashcardToDelete] = useState(null);
-  const [isDeleteConfirmOpen, setIsDeleteConfirmOpen] = useState(false);
+  const [isDeleteFlashcardConfirmOpen, setIsDeleteFlashcardConfirmOpen] = useState(false);
 
+  // State for deck deletion
+  const [deckToDelete, setDeckToDelete] = useState(null);
+  const [isDeleteDeckConfirmOpen, setIsDeleteDeckConfirmOpen] = useState(false);
 
-  // Open delete confirmation modal
+  // Open delete confirmation modal for flashcard
   const confirmDeleteFlashcard = (flashcard) => {
-    console.log('Flashcard to delete:', flashcard);  // Log flashcard to ensure it has an id
     setFlashcardToDelete(flashcard);
-    setIsDeleteConfirmOpen(true);
+    setIsDeleteFlashcardConfirmOpen(true);
   };
 
-  // Close delete confirmation modal
-  const closeDeleteConfirm = () => {
-    setIsDeleteConfirmOpen(false);
+
+  const confirmDeleteDeck = (deck) => {
+    console.log('Deck to delete:', deck);  // Log the deck to be deleted
+    setDeckToDelete(deck);
+    setIsDeleteDeckConfirmOpen(true);
+};
+
+  // Close delete confirmation modal for flashcard
+  const closeDeleteFlashcardConfirm = () => {
+    setIsDeleteFlashcardConfirmOpen(false);
     setFlashcardToDelete(null);
   };
 
-  // Perform the delete action after confirmation
+  const closeDeleteDeckConfirm = () => {
+    console.log('Closing delete deck confirmation modal');  // Log when closing the modal
+    setIsDeleteDeckConfirmOpen(false);
+    setDeckToDelete(null);
+};
+
+
   const deleteFlashcard = async () => {
     try {
       console.log('Deleting flashcard with id:', flashcardToDelete?.id);  // Check id before invoking API
-      const response = await invoke('deleteFlashcard', { cardId: flashcardToDelete.id }); // Replace with the actual API call
+      const response = await invoke('deleteFlashcard', { cardId: flashcardToDelete.id });
+      console.log('Delete response:', response); // Check the response structure
       if (response.success) {
-        setFlashcards((prevFlashcards) =>
-          prevFlashcards.filter((card) => card.id !== flashcardToDelete.id)
-        );
-        setIsDeleteConfirmOpen(false);
+        setFlashcards((prevFlashcards) => {
+          console.log('Current flashcards before delete:', prevFlashcards);
+          return prevFlashcards.filter((card) => card.id !== flashcardToDelete.id);
+        });
         setFlashcardToDelete(null);
+        closeDeleteFlashcardConfirm();
       } else {
         console.error('Error deleting flashcard:', response.error);
       }
@@ -57,6 +79,28 @@ function globalPageModule() {
       console.error('Error deleting flashcard:', error);
     }
   };
+
+
+
+
+  const deleteDeck = async () => {
+    try {
+        console.log('Attempting to delete deck with id:', deckToDelete?.id);  // Log the deck ID
+        const response = await invoke('deleteDeck', { deckId: deckToDelete.id });
+        console.log('Delete response for deck:', response);  // Log the response from the delete action
+        if (response.success) {
+            setDecks((prevDecks) =>
+                prevDecks.filter((deck) => deck.id !== deckToDelete.id)
+            );
+
+            closeDeleteDeckConfirm();
+        } else {
+            console.error('Error deleting deck:', response.error);
+        }
+    } catch (error) {
+        console.error('Error deleting deck:', error);
+    }
+};
 
 
   //Fetching Flashcards & Decks:
@@ -131,15 +175,12 @@ function globalPageModule() {
   // );
 
   const renderFlashcardsList = (flashcards) => (
-    <CardSlider cards={flashcards} type="flashcard" onDelete={confirmDeleteFlashcard} />
+    <CardSlider cards={flashcards} onDelete={confirmDeleteFlashcard} />
   );
 
   const renderDecksList = (flashdecks) => (
-    <CardSlider cards={flashdecks} type="deck" onDelete={confirmDeleteFlashcard} />
+    <DeckSlider decks={flashdecks} onDelete={confirmDeleteDeck} />
   );
-
-
-
 
   return (
     <div className='global-page-container'>
@@ -197,12 +238,22 @@ function globalPageModule() {
         </ModalDialog>
       )}
 
-      {/* Delete Confirmation Modal */}
-      {isDeleteConfirmOpen && (
-        <ModalDialog heading="Delete Flashcard?" onClose={closeDeleteConfirm}>
+      {/* Flashcard Delete Confirmation Modal */}
+      {isDeleteFlashcardConfirmOpen && (
+        <ModalDialog heading="Delete Flashcard?" onClose={closeDeleteFlashcardConfirm}>
           <p>Are you sure you want to delete this flashcard?</p>
           <button onClick={deleteFlashcard}>Yes, Delete</button>
-          <button onClick={closeDeleteConfirm}>Cancel</button>
+          <button onClick={closeDeleteFlashcardConfirm}>Cancel</button>
+        </ModalDialog>
+      )}
+
+      {/* Deck Delete Confirmation Modal */}
+      {isDeleteDeckConfirmOpen && (
+        console.log('Displaying delete deck confirmation modal for deck:', deckToDelete),  // Log the deck being confirmed
+        <ModalDialog heading="Delete Deck?" onClose={closeDeleteDeckConfirm}>
+          <p>Are you sure you want to delete this deck?</p>
+          <button onClick={deleteDeck}>Yes, Delete</button>
+          <button onClick={closeDeleteDeckConfirm}>Cancel</button>
         </ModalDialog>
       )}
 
