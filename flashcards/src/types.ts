@@ -30,9 +30,8 @@ export interface Tag {
 }
 
 // adding study sesh in
-// one deck,, one deck
 export interface StudySession {
     Deck: Deck;
-    // left_to_master: number; -> number of cards left to learn
-    // num_looked:  number; -> number of times the study session was done 
+    left_to_master: number; // -> number of cards left to learn
+    num_looked:  number; // -> number of times the study session was done 
 }
