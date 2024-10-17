@@ -9,7 +9,8 @@ import FlashOnIcon from '@mui/icons-material/FlashOn';
 import './globalPageModule.css';
 import CreateDeckGlobal from './deckGlobalModuleCreate';
 import DeckSlider from './components/DeckSlider'; // Import the new DeckSlider component
-
+import DeckDisplay from './components/DeckDisplay';
+import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs'; 
 
 // ********************************** GLOBAL PAGE MODULE **********************************
 
@@ -32,6 +33,12 @@ function globalPageModule() {
   // State for DECK deletion and confirmation
   const [deckToDelete, setDeckToDelete] = useState(null);
   const [isDeleteDeckConfirmOpen, setIsDeleteDeckConfirmOpen] = useState(false);
+
+  // State for DECK display
+  const [selectedDeck, setSelectedDeck] = useState(null); 
+
+  // State for breadcrumbs
+  const [breadcrumbItems, setBreadcrumbItems] = useState([{ href: '#', text: 'Home' }]); 
 
   //************************** DELETION LOGIC *****************************/
   const confirmDeleteFlashcard = (flashcard) => {
@@ -162,22 +169,49 @@ function globalPageModule() {
   );
 
   const renderDecksList = (flashdecks) => (
-    <DeckSlider decks={flashdecks} onDelete={confirmDeleteDeck} />
+    <DeckSlider decks={flashdecks} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} />
   );
 
+  //************************** DECK DISPLAY FUNCTIONS *****************************/
+  const onDeckClick = (deck) => {
+    console.log(`Deck clicked: ${deck.title}`);
+    setSelectedDeck(deck); 
+    setBreadcrumbItems([{ href: '#', text: 'Home' }, { href: '#', text: deck.title }]);
+  };
 
+  const goBackToHome = () => {
+    setSelectedDeck(null); 
+    setBreadcrumbItems([{ href: '#', text: 'Home' }]);
+    refreshDeckFrontend();
+  };
+
+  if (selectedDeck) {
+    return (
+      <div>
+        <Breadcrumbs>
+          {breadcrumbItems.map((item, index) => (
+            <BreadcrumbsItem key={index} href={item.href} text={item.text} onClick={item.text === 'Home' ? goBackToHome : undefined} />
+          ))}
+        </Breadcrumbs>
+        <DeckDisplay deck={selectedDeck} />
+      </div>
+    );
+  }
 
   return (
     <div className='global-page-container'>
 
+      <Breadcrumbs>
+        {breadcrumbItems.map((item, index) => (
+          <BreadcrumbsItem key={index} href={item.href} text={item.text} onClick={item.text === 'Home' ? goBackToHome : undefined} />
+        ))}
+      </Breadcrumbs>
+
       <div className='global-page-headline'><FlashOnIcon className='global-page-flash-icon'/> FLASH</div>
       <div className='global-page-subheadline'>The Forge App that allows you to create flashcards in a flash</div>
 
-
       <div className='global-page-recents'>
         Recents
-
-
       </div>
 
       {loading ? (

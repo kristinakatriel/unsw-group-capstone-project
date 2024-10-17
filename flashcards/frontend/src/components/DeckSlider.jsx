@@ -1,11 +1,12 @@
 import React from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
 import './DeckSlider.css';
 
-const DeckSlider = ({ decks = [], onDelete }) => {
+const DeckSlider = ({ decks = [], onDelete, onDeckClick }) => {
 
   return (
     <div className='container'>
@@ -35,7 +36,7 @@ const DeckSlider = ({ decks = [], onDelete }) => {
                   <p className='badge blue'>Blue Tag</p>
                   <h4 className='deck-name'>{deck.title || 'Unnamed Deck'}</h4>
                   <h4 className='deck-description'>{deck.description || 'No description available'}</h4>
-                  <h4 className='deck-flashcard-amount'>Flashcards: {deck.flashcards?.length || 0}</h4>
+                  <h4 className='deck-flashcard-amount'>Flashcards: {deck.cards?.length || 0}</h4>
                   <h4 className='deck-owner'>By {deck.owner || 'Unknown'}</h4>
                   <div className='deck-button'>
                     <EditIcon className='deck-edit-button' />
@@ -45,6 +46,13 @@ const DeckSlider = ({ decks = [], onDelete }) => {
                             console.log('Delete icon clicked for deck:', deck);  // Log the deck for which delete was clicked
                             onDelete(deck);
                         }}
+                    />
+                    <OpenInNewIcon 
+                      className='deck-open-button' 
+                      onClick={() => {
+                        console.log(`Deck ${deck.id} has been clicked by user`)
+                        onDeckClick(deck)
+                      }}
                     />
                   </div>
                 </div>
