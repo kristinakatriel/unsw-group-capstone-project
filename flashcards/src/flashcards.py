@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from transformers import pipeline, AutoTokenizer, AutoModelForQuestionAnswering
+from transformers import pipeline, AutoModelWithLMHead, AutoTokenizer
 import re
 from nltk.tokenize import sent_tokenize, word_tokenize
 import math
@@ -13,15 +13,14 @@ app = FastAPI()
 
 # Models for 
 # 1. QG
-qg_model = "valhalla/t5-base-qg-hl"
+# qg_model = "valhalla/t5-base-qg-hl"
+qg_model = AutoModelWithLMHead.from_pretrained("mrm8488/t5-base-finetuned-question-generation-ap")
 # 2. QA
 qa_model = "mrm8488/spanbert-finetuned-squadv1"
-# model = AutoModelForQuestionAnswering.from_pretrained('deepset/bert-base-cased-squad2')
-# tokenizer = AutoTokenizer.from_pretrained('deepset/bert-base-cased-squad2')
 
 # Pipelines
 qg_pipeline = pipeline("text2text-generation", model=qg_model)
-qa_pipeline = pipeline("question-answering", model=qa_model)
+qa_pipeline = pipeline("question-answering", model=qa_model, tokenizer=qa_model)
 
 nltk.download('punkt')
 nltk.download('stopwords')
