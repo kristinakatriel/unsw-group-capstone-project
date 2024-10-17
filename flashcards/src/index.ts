@@ -131,6 +131,34 @@ resolver.define('getAllFlashcards', async () => {
   };
 });
 
+// adding generating q&a through ai flashcards
+// resolver.define('generateQA', async (req) => {
+//   const { text } = req.payload;
+//   console.log("Here!");
+
+//   const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_qa", {  // the url which we need 
+//     method: 'POST',
+//     headers: {
+//       Accept: 'application/json',
+//       'Content-Type': 'application/json',
+//     },
+//     body: JSON.stringify({ text }),
+//   });
+
+//   const data = await response.json();
+//   // Print all question/answer pairs
+//   if (Array.isArray(data)) {
+//     data.forEach((flashcard, index) => {
+//       console.log(`Flashcard ${index + 1}:`);
+//       console.log(`Question: ${flashcard.question}`);
+//       console.log(`Answer: ${flashcard.answer}`);
+//     });
+//   } else {
+//     console.log("Unexpected data format:", data);
+//   }
+//   return data;
+// });
+
 
 resolver.define('createDeck', async (req) => {
   const { title, description, owner, cards: flashcards } = req.payload as Omit<Deck, 'id'>;
