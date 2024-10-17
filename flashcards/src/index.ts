@@ -132,32 +132,24 @@ resolver.define('getAllFlashcards', async () => {
 });
 
 // adding generating q&a through ai flashcards
-// resolver.define('generateQA', async (req) => {
-//   const { text } = req.payload;
-//   console.log("Here!");
+resolver.define('generateQA', async (req) => {
+  // get text
+  const { text } = req.payload;
 
-//   const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_qa", {  // the url which we need 
-//     method: 'POST',
-//     headers: {
-//       Accept: 'application/json',
-//       'Content-Type': 'application/json',
-//     },
-//     body: JSON.stringify({ text }),
-//   });
+  // get the flashcards generated using the external url
+  const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_qa", {  // the url which we need to generate the flashcards
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ text }),
+  });
 
-//   const data = await response.json();
-//   // Print all question/answer pairs
-//   if (Array.isArray(data)) {
-//     data.forEach((flashcard, index) => {
-//       console.log(`Flashcard ${index + 1}:`);
-//       console.log(`Question: ${flashcard.question}`);
-//       console.log(`Answer: ${flashcard.answer}`);
-//     });
-//   } else {
-//     console.log("Unexpected data format:", data);
-//   }
-//   return data;
-// });
+  const data = await response.json();
+  // this returns a json of q&a pairs, which can be displayed in the context menu
+  return data;
+});
 
 
 resolver.define('createDeck', async (req) => {
