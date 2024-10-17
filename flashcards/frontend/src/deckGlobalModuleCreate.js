@@ -3,6 +3,8 @@ import { invoke, view } from '@forge/bridge';
 import './globalPageModule.js';
 import './deckGlobalModuleCreate.css';
 
+
+
 function CreateDeckGlobal( { closeDeckModal }) {
   const [deckTitle, setDeckTitle] = useState('');
   const [description, setDescription] = useState('');
