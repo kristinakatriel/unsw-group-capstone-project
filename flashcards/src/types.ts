@@ -18,9 +18,8 @@ export interface Deck {
     description?: string;
     owner: string;
     cards?: Card[];
-    // adding 2 other fields here
-    // left_to_master: number; -> number of cards left to learn
-    // num_looked:  number; -> number of cards left to learn as well yay
+    // adding 1 other fields here
+    // num_looked:  number; -> number of times the study session was done 
 }
 
 export interface Tag {
@@ -31,8 +30,9 @@ export interface Tag {
 }
 
 // adding study sesh in
+// one deck,, one deck
 export interface StudySession {
-    Deck: Deck[];
-    known: number;
-    unknown: number;
+    Deck: Deck;
+    // left_to_master: number; -> number of cards left to learn
+    // num_looked:  number; -> number of times the study session was done 
 }
