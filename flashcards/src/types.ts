@@ -29,3 +29,10 @@ export interface Tag {
     description?: string;
     owner: string;
 }
+
+// adding study sesh in
+export interface StudySession {
+    Deck: Deck[];
+    known: number;
+    unknown: number;
+}
