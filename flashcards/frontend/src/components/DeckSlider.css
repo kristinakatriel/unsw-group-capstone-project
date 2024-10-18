@@ -113,13 +113,15 @@ FIX Option 2 (call different thingys in the .css file depending on if cards or d
 }
 
 .deck-list .deck-link .deck-edit-button,
-.deck-list .deck-link .deck-delete-button {
+.deck-list .deck-link .deck-delete-button,
+.deck-list .deck-link .deck-open-button {
   color: lightgrey;
   cursor: pointer;
 }
 
 .deck-list .deck-link .deck-edit-button:hover,
-.deck-list .deck-link .deck-delete-button:hover {
+.deck-list .deck-link .deck-delete-button:hover,
+.deck-list .deck-link .deck-open-button:hover {
   color: darkgrey;
 }
 

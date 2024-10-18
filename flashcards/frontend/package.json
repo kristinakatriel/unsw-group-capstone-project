@@ -4,6 +4,7 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
+    "@atlaskit/breadcrumbs": "^13.0.1",
     "@atlaskit/css-reset": "^6.6.2",
     "@atlaskit/modal-dialog": "^12.17.5",
     "@emotion/react": "^11.13.3",
