@@ -63,7 +63,7 @@ const CardSlider = ({ cards = [], onDelete  }) => {
                   <DeleteIcon className='card-delete-button' onClick={() => onDelete(card)} />
                 </div>
               </div>
-            </SplideSlide>
+              </SplideSlide>
             ))}
           </Splide>
         </ul>
