@@ -19,6 +19,7 @@
     "swiper": "^11.1.14"
   },
   "devDependencies": {
+    "@types/uuid": "^10.0.0",
     "react-scripts": "^5.0.1"
   },
   "scripts": {

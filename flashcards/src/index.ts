@@ -2,6 +2,8 @@ import Resolver from '@forge/resolver';
 import { storage } from '@forge/api';
 import { Card, Deck, Tag } from './types';
 import { v4 as uuidv4 } from 'uuid';
+import api, { route } from '@forge/api';
+
 
 const resolver = new Resolver();
 
@@ -15,33 +17,59 @@ resolver.define('getModule', async (req) => {
 
 
 resolver.define('createFlashcard', async (req) => {
-  const { question_text, question_image, answer_text, answer_image, hint, tags, owner } = req.payload as Omit<Card, 'id'>;
+  const { question_text, question_image, answer_text, answer_image, hint, tags } = req.payload as Omit<Card, 'id'>;
 
-  if (!question_text || !answer_text || !owner) {
+  if (!question_text || !answer_text || !req.context.accountId) {
     return {
       success: false,
       error: 'Invalid input: question, answer, owner required',
     };
   }
 
+  let name = "unknown"
+
+  if (req.context.accountId) {
+    let bodyData = `{
+      "accountIds": [
+        "${req.context.accountId}"
+      ]
+    }`;
+
+    const response = await api.asApp().requestConfluence(route`/wiki/api/v2/users-bulk`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: bodyData
+    });
+    if (response.status === 200) {
+      let data = await response.json();
+      name = data.results[0].publicName;
+    } else {
+      name = "unknown2"
+    };
+  }
+
   const cardId = createId();
-  const newCard: Card = {
-    id: cardId,
+  const card = {
     question_text,
     question_image,
     answer_text,
     answer_image,
     hint,
-    tags: tags || [],
-    owner,
+    tags,
+    owner: req.context.accountId,
+    id: cardId,
+    name: name
   };
 
-  await storage.set(cardId, newCard);
+  await storage.set(cardId, card);
 
   return {
     success: true,
     id: cardId,
-    card: newCard,
+    card: card,
   };
 });
 
