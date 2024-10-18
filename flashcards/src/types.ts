@@ -6,7 +6,8 @@ export interface Card {
     answer_image?: string;
     hint?: string;
     tags?: Tag[];
-    owner: string;
+    owner?: string;
+    name: string
 }
 
 export interface Deck {

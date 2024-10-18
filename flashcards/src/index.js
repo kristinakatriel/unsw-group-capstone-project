@@ -1,4 +1,5 @@
 import Resolver from '@forge/resolver';
+import api, { route } from '@forge/api';
 // import { storage } from forge resolver
 
 const resolver = new Resolver();
@@ -24,13 +25,36 @@ resolver.define('createFlashcard', async (req) => {
     answer_image,
     hint,
     tags,
-    owner
   } = req.payload;
 
-  if (!question_text || !answer_text || !owner) {
+  if (!question_text || !answer_text || !req.context.accountId) {
     return {
       success: false,
       error: 'invalid input: owner, question, answer',
+    };
+  }
+  let name = "unknown"
+
+  if (req.context.accountId) {
+    let bodyData = `{
+      "accountIds": [
+        "${req.context.accountId}"
+      ]
+    }`;
+
+    const response = await api.asApp().requestConfluence(route`/wiki/api/v2/users-bulk`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: bodyData
+    });
+    if (response.status === 200) {
+      let data = await response.json();
+      name = data.results[0].publicName;
+    } else {
+      name = "unknown2"
     };
   }
 
@@ -42,8 +66,9 @@ resolver.define('createFlashcard', async (req) => {
     answer_image,
     hint,
     tags,
-    owner,
+    owner: req.context.accountId,
     id: cardId,
+    name: name
   };
   cards[cardId] = card;
 
