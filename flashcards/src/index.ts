@@ -181,8 +181,42 @@ resolver.define('generateQA', async (req) => {
   });
 
   const data = await response.json();
+  if (!response.ok) {
+    return {
+      success: false,
+      error: 'Failed to generate Q&A from text',
+    };
+  }
   // this returns a json of q&a pairs, which can be displayed in the context menu
   return data;
+  // alternative solution: if the q&a pairs are not meant to be shown for the user to select,
+  // then it can be created as flashcards right away
+  // const generatedFlashcards = await response.json();  // Q&A pairs
+
+  // // Store the created flashcards in the system
+  // const createdFlashcards = [];
+  // for (const { question, answer } of generatedFlashcards) {
+  //   const cardId = createId();
+  //   const newCard = {
+  //     id: cardId,
+  //     question_text: question,
+  //     answer_text: answer,
+  //     owner: req.context.accountId,
+  //     tags: [],  // you can extend this as needed
+  //     hint: '',
+  //     question_image: null,  // assuming no images in this case
+  //     answer_image: null,
+  //   };
+
+  //   // Save the new card in storage
+  //   await storage.set(cardId, newCard);
+  //   createdFlashcards.push(newCard);
+  // }
+
+  // return {
+  //   success: true,
+  //   cards: createdFlashcards,
+  // };
 });
 
 
