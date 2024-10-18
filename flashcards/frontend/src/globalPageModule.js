@@ -9,7 +9,24 @@ import FlashOnIcon from '@mui/icons-material/FlashOn';
 import './globalPageModule.css';
 import CreateDeckGlobal from './deckGlobalModuleCreate';
 import DeckSlider from './components/DeckSlider'; // Import the new DeckSlider component
+import DeckDisplay from './components/DeckDisplay';
+import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs'; 
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
+import Button, { IconButton } from '@atlaskit/button/new';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import { Flex, Grid, xcss } from '@atlaskit/primitives';
 
+const gridStyles = xcss({
+    width: '100%',
+});
+
+const closeContainerStyles = xcss({
+    gridArea: 'close',
+});
+
+const titleContainerStyles = xcss({
+    gridArea: 'title',
+});
 
 // ********************************** GLOBAL PAGE MODULE **********************************
 
@@ -32,6 +49,12 @@ function globalPageModule() {
   // State for DECK deletion and confirmation
   const [deckToDelete, setDeckToDelete] = useState(null);
   const [isDeleteDeckConfirmOpen, setIsDeleteDeckConfirmOpen] = useState(false);
+
+  // State for DECK display
+  const [selectedDeck, setSelectedDeck] = useState(null); 
+
+  // State for breadcrumbs
+  const [breadcrumbItems, setBreadcrumbItems] = useState([{ href: '#', text: 'Home' }]); 
 
   //************************** DELETION LOGIC *****************************/
   const confirmDeleteFlashcard = (flashcard) => {
@@ -162,22 +185,49 @@ function globalPageModule() {
   );
 
   const renderDecksList = (flashdecks) => (
-    <DeckSlider decks={flashdecks} onDelete={confirmDeleteDeck} />
+    <DeckSlider decks={flashdecks} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} />
   );
 
+  //************************** DECK DISPLAY FUNCTIONS *****************************/
+  const onDeckClick = (deck) => {
+    console.log(`Deck clicked: ${deck.title}`);
+    setSelectedDeck(deck); 
+    setBreadcrumbItems([{ href: '#', text: 'Home' }, { href: '#', text: deck.title }]);
+  };
 
+  const goBackToHome = () => {
+    setSelectedDeck(null); 
+    setBreadcrumbItems([{ href: '#', text: 'Home' }]);
+    refreshDeckFrontend();
+  };
+
+  if (selectedDeck) {
+    return (
+      <div>
+        <Breadcrumbs>
+          {breadcrumbItems.map((item, index) => (
+            <BreadcrumbsItem key={index} href={item.href} text={item.text} onClick={item.text === 'Home' ? goBackToHome : undefined} />
+          ))}
+        </Breadcrumbs>
+        <DeckDisplay deck={selectedDeck} />
+      </div>
+    );
+  }
 
   return (
     <div className='global-page-container'>
 
+      <Breadcrumbs>
+        {breadcrumbItems.map((item, index) => (
+          <BreadcrumbsItem key={index} href={item.href} text={item.text} onClick={item.text === 'Home' ? goBackToHome : undefined} />
+        ))}
+      </Breadcrumbs>
+
       <div className='global-page-headline'><FlashOnIcon className='global-page-flash-icon'/> FLASH</div>
       <div className='global-page-subheadline'>The Forge App that allows you to create flashcards in a flash</div>
 
-
       <div className='global-page-recents'>
         Recents
-
-
       </div>
 
       {loading ? (
@@ -223,31 +273,65 @@ function globalPageModule() {
         </ModalDialog>
       )}
 
-
-
       {/* Flashcard Delete Confirmation Modal */}
-      {isDeleteFlashcardConfirmOpen && (
-        <ModalDialog heading="Delete Flashcard?" onClose={closeDeleteFlashcardConfirm}>
-
-          <p>Are you sure you want to delete this flashcard?</p>
-          <button onClick={deleteFlashcard}>Yes, Delete</button>
-          <button onClick={closeDeleteFlashcardConfirm}>Cancel</button>
-
-        </ModalDialog>
-      )}
+      <ModalTransition>
+          {isDeleteFlashcardConfirmOpen && (
+              <Modal onClose={closeDeleteFlashcardConfirm}>
+                  <ModalHeader>
+                      <Grid gap="space.200" templateAreas={['title close']} xcss={gridStyles}>
+                          <Flex xcss={closeContainerStyles} justifyContent="end">
+                              <IconButton
+                                  appearance="subtle"
+                                  icon={CrossIcon}
+                                  label="Close Modal"
+                                  onClick={closeDeleteFlashcardConfirm}
+                              />
+                          </Flex>
+                          <Flex xcss={titleContainerStyles} justifyContent="start">
+                              <ModalTitle appearance="danger">Delete Flashcard?</ModalTitle>
+                          </Flex>
+                      </Grid>
+                  </ModalHeader>
+                  <ModalBody>
+                      <p>Are you sure you want to delete this flashcard? This action cannot be undone.</p>
+                  </ModalBody>
+                  <ModalFooter>
+                      <Button appearance="subtle" onClick={closeDeleteFlashcardConfirm}>Cancel</Button>
+                      <Button appearance="danger" onClick={deleteFlashcard}>Yes, Delete</Button>
+                  </ModalFooter>
+              </Modal>
+          )}
+      </ModalTransition>
 
       {/* Deck Delete Confirmation Modal */}
-      {isDeleteDeckConfirmOpen && (
-        <ModalDialog heading="Delete Deck?" onClose={closeDeleteDeckConfirm}>
-
-          <p>Are you sure you want to delete this deck?</p>
-          <button onClick={deleteDeck}>Yes, Delete</button>
-          <button onClick={closeDeleteDeckConfirm}>Cancel</button>
-
-        </ModalDialog>
-      )}
-
-
+      <ModalTransition>
+          {isDeleteDeckConfirmOpen && (
+              <Modal onClose={closeDeleteDeckConfirm}>
+                  <ModalHeader>
+                      <Grid gap="space.200" templateAreas={['title close']} xcss={gridStyles}>
+                          <Flex xcss={closeContainerStyles} justifyContent="end">
+                              <IconButton
+                                  appearance="subtle"
+                                  icon={CrossIcon}
+                                  label="Close Modal"
+                                  onClick={closeDeleteDeckConfirm}
+                              />
+                          </Flex>
+                          <Flex xcss={titleContainerStyles} justifyContent="start">
+                              <ModalTitle appearance="danger">Delete Deck?</ModalTitle>
+                          </Flex>
+                      </Grid>
+                  </ModalHeader>
+                  <ModalBody>
+                      <p>Are you sure you want to delete this deck? This action cannot be undone.</p>
+                  </ModalBody>
+                  <ModalFooter>
+                      <Button appearance="subtle" onClick={closeDeleteDeckConfirm}>Cancel</Button>
+                      <Button appearance="danger" onClick={deleteDeck}>Yes, Delete</Button>
+                  </ModalFooter>
+              </Modal>
+          )}
+      </ModalTransition>
     </div>
   );
 }

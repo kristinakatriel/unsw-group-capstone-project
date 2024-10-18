@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { invoke, view } from '@forge/bridge';
+import { invoke } from '@forge/bridge';
 import './globalPageModule.js';
 import './deckGlobalModuleCreate.css';
 
-
-
-function CreateDeckGlobal( { closeDeckModal }) {
+function CreateDeckGlobal({ closeDeckModal }) {
   const [deckTitle, setDeckTitle] = useState('');
   const [description, setDescription] = useState('');
   const [selectedFlashcards, setSelectedFlashcards] = useState([]);
@@ -24,8 +22,10 @@ function CreateDeckGlobal( { closeDeckModal }) {
   useEffect(() => {
     const fetchFlashcards = async () => {
       try {
+        console.log('Fetching flashcards...');
         const response = await invoke('getAllFlashcards', {});
         if (response.success) {
+          console.log('Flashcards fetched successfully:', response.cards);
           setFlashcards(response.cards);
         } else {
           console.error('Error getting flashcards:', response.error);
@@ -39,34 +39,63 @@ function CreateDeckGlobal( { closeDeckModal }) {
   }, []);
 
   const handleSave = async () => {
+    console.log('Saving deck...');
+    console.log('Selected Flashcards:', selectedFlashcards);
+    
+    if (!deckTitle.trim()) {
+      console.error('Deck title cannot be empty.');
+      return; // Prevents further execution
+  }
+  
     try {
       const response = await invoke('createDeck', {
         title: deckTitle,
         description: description,
-        flashcards: selectedFlashcards
+        owner: '@aaa',
+        flashcards: [],
       });
 
-      console.log('Deck saved successfully:', response);
+      if (response.success) {
+        console.log('Deck created successfully:', response.deck);
+  
+        const deckId = response.id;
 
-      // Reset fields after saving
-      setDeckTitle('');
-      setDescription('');
-      setSelectedFlashcards([]);
+        // Adding each selected flashcard to the deck
+        for (const cardId of selectedFlashcards) {
+          console.log(`Invoking addCardToDeck for cardId: ${cardId} and deckId: ${deckId}`);
+          const addCardResponse = await invoke('addCardToDeck', {
+            deckId: deckId,
+            cardId: cardId
+          });
+  
+          if (addCardResponse.success) {
+            console.log(`Flashcard ${cardId} added to deck ${deckId}`);
+          } else {
+            console.error(`Failed to add flashcard ${cardId} to deck:`, addCardResponse.error);
+          }
+        }
+  
+        setDeckTitle('');
+        setDescription('');
+        setSelectedFlashcards([]);
+      } else {
+        console.error('Failed to create deck:', response.error);
+      }
     } catch (error) {
       console.error('Error invoking createDeck:', error);
     }
   };
 
-//   const handleClose = () => {
-//     view.close(); // Close the modal
-//   };
-
   const handleCheckboxChange = (flashcardId) => {
+    console.log('Checkbox change detected for flashcard:', flashcardId);
     if (selectedFlashcards.includes(flashcardId)) {
-      setSelectedFlashcards(selectedFlashcards.filter(id => id !== flashcardId));
+      console.log('Flashcard removed from selected list:', flashcardId);
+      setSelectedFlashcards(selectedFlashcards.filter((id) => id !== flashcardId));
     } else {
+      console.log('Flashcard added to selected list:', flashcardId);
       setSelectedFlashcards([...selectedFlashcards, flashcardId]);
     }
+    console.log('Updated selected flashcards:', selectedFlashcards);
   };
 
   return (
@@ -99,7 +128,7 @@ function CreateDeckGlobal( { closeDeckModal }) {
       <div className="form-group">
         <label>Select Flashcards</label>
         {flashcards.length > 0 ? (
-          flashcards.map(flashcard => (
+          flashcards.map((flashcard) => (
             <div key={flashcard.id}>
               <input
                 type="checkbox"
@@ -107,7 +136,9 @@ function CreateDeckGlobal( { closeDeckModal }) {
                 checked={selectedFlashcards.includes(flashcard.id)}
                 onChange={() => handleCheckboxChange(flashcard.id)}
               />
-              <label htmlFor={`flashcard-${flashcard.id}`}>{flashcard.question_text || 'No question available'}</label>
+              <label htmlFor={`flashcard-${flashcard.id}`}>
+                {flashcard.question_text || 'No question available'}
+              </label>
             </div>
           ))
         ) : (
