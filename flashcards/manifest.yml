@@ -30,6 +30,7 @@ permissions:
     - storage:app
     - read:confluence-user
     - read:content-details:confluence
+    - read:user:confluence
   content:
     styles:
       - 'unsafe-inline'

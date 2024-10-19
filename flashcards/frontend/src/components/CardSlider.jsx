@@ -52,20 +52,18 @@ const CardSlider = ({ cards = [], onDelete  }) => {
             }}
           >
             {cards.map((card) => (
-              card.question_text && (
-                <SplideSlide key={card.id} className='card-item'>
-                <div className="card-link">
-                  <p className='badge blue'>Blue Tag</p>
-                  <h4 className='card-question'>{card.question_text || 'No question available'}</h4>
-                  <h4 className='card-answer'>{card.answer_text || 'No question available'}</h4>
-                  <h4 className='card-owner'>By {card.owner || 'Unknown'}</h4>
-                  <div className='card-button'>
-                    <EditIcon className='card-edit-button' />
-                    <DeleteIcon className='card-delete-button' onClick={() => onDelete(card)} />
-                  </div>
+              <SplideSlide key={card.id} className='card-item'>
+              <div className="card-link">
+                <p className='badge blue'>Blue Tag</p>
+                <h4 className='card-question'>{card.question_text || 'No question available'}</h4>
+                <h4 className='card-answer'>{card.answer_text || 'No question available'}</h4>
+                <h4 className='card-owner'>By {card.name || 'Unknown'}</h4>
+                <div className='card-button'>
+                  <EditIcon className='card-edit-button' />
+                  <DeleteIcon className='card-delete-button' onClick={() => onDelete(card)} />
                 </div>
+              </div>
               </SplideSlide>
-              )
             ))}
           </Splide>
         </ul>
