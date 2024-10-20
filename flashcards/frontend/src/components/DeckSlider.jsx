@@ -37,7 +37,7 @@ const DeckSlider = ({ decks = [], onDelete, onDeckClick }) => {
                     <h4 className='deck-name'>{deck.title || 'Unnamed Deck'}</h4>
                     <h4 className='deck-description'>{deck.description || 'No description available'}</h4>
                     <h4 className='deck-flashcard-amount'>Flashcards: {deck.cards?.length || 0}</h4>
-                    <h4 className='deck-owner'>By {deck.owner || 'Unknown'}</h4>
+                    <h4 className='deck-owner'>By {deck.name || 'Unknown'}</h4>
                     <div className='deck-button'>
                       <EditIcon className='deck-edit-button' />
                       <DeleteIcon

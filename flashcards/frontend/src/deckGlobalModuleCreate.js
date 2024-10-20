@@ -51,7 +51,6 @@ function CreateDeckGlobal({ closeDeckModal }) {
       const response = await invoke('createDeck', {
         title: deckTitle,
         description: description,
-        owner: '@aaa',
         flashcards: [],
       });
 
