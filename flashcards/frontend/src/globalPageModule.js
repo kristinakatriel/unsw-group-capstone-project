@@ -240,7 +240,7 @@ function globalPageModule() {
             />
           ))}
         </Breadcrumbs>
-        <QuizMode deck={selectedDeck} onBack={goBackToDeck} />;
+        <QuizMode deck={selectedDeck} onBack={goBackToDeck} />
       </div>
     );
   }
