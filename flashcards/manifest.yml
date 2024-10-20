@@ -13,6 +13,12 @@ modules:
         function: resolver
       title: Flashcards Global Page
       route: flashcard-global-page
+  confluence:contextMenu:
+    - key: flashcard-context-menu
+      resource: main
+      resolver:
+        function: resolver
+      title: Flashcard Context Menu
   function:
     - key: resolver
       handler: index.handler

@@ -7,6 +7,7 @@ import { invoke } from '@forge/bridge';
 
 const MainComponent = () => {
   const [moduleKey, setModuleKey] = useState(null);
+  const [highlightedText, setHighlightedText] = useState('');
 
   useEffect(() => {
     invoke('getModule')
@@ -18,10 +19,22 @@ const MainComponent = () => {
       });
   }, []);
 
+  useEffect(() => {
+    invoke('getSelectedText')
+      .then((selectedText) => {
+        setHighlightedText(selectedText || 'No text selected');
+      })
+      .catch((err) => {
+        console.error('Error fetching selected text:', err);
+      });
+  }, []);
+
   if (moduleKey === 'content-action-menu-flashcards') {
     return <FlashcardContentActionModuleCreate />;
   } else if (moduleKey === 'flashcard-global-page') {
     return <GlobalPageModule />;
+  } else if (moduleKey === 'flashcard-context-menu') {
+    return <div>{highlightedText}</div>;
   }
   return <div>Loading...</div>;
 };
