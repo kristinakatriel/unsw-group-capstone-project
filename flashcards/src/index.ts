@@ -2,7 +2,6 @@ import Resolver from '@forge/resolver';
 import api, { route, storage } from '@forge/api';
 import { Card, Deck, Tag } from './types';
 import { v4 as uuidv4 } from 'uuid';
-import api, { route } from '@forge/api';
 
 
 const resolver = new Resolver();
