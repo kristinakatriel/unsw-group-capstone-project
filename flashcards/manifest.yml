@@ -31,6 +31,7 @@ permissions:
     - read:confluence-user
     - read:user:confluence
     - read:content-details:confluence
+    - read:user:confluence
   content:
     styles:
       - 'unsafe-inline'

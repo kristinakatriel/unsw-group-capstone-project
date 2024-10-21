@@ -6,10 +6,8 @@ export interface Card {
     answer_image?: string;
     hint?: string;
     tags?: Tag[];
-    owner: string;
-    // adding 2 other fields here yay
-    // mistakes_made: number; -> how many times this card was wrong ??
-    // known: boolean; -> is it known now or unknown ?
+    owner?: string;
+    name: string
 }
 
 export interface Deck {
