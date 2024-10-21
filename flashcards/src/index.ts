@@ -17,7 +17,7 @@ resolver.define('getModule', async (req) => {
 
 
 resolver.define('createFlashcard', async (req) => {
-  const { question_text, question_image, answer_text, answer_image, hint, tags } = req.payload as Omit<Card, 'id'>;
+  const { question_text, question_image, answer_text, answer_image, hint, tags } = req.payload as Omit<Card, 'id' | 'owner'>;
 
   if (!question_text || !answer_text || !req.context.accountId) {
     return {
@@ -161,12 +161,37 @@ resolver.define('getAllFlashcards', async () => {
 
 
 resolver.define('createDeck', async (req) => {
-  const { title, description, owner, cards: flashcards } = req.payload as Omit<Deck, 'id'>;
+  const { title, description, cards: flashcards } = req.payload as Omit<Deck, 'id'>;
 
-  if (!title || !owner) {
+  if (!title || !req.context.accountId) {
     return {
       success: false,
       error: 'Invalid input: title and owner required',
+    };
+  }
+
+  let name = "unknown"
+
+  if (req.context.accountId) {
+    let bodyData = `{
+      "accountIds": [
+        "${req.context.accountId}"
+      ]
+    }`;
+
+    const response = await api.asApp().requestConfluence(route`/wiki/api/v2/users-bulk`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: bodyData
+    });
+    if (response.status === 200) {
+      let data = await response.json();
+      name = data.results[0].publicName;
+    } else {
+      name = "unknown2"
     };
   }
 
@@ -175,8 +200,9 @@ resolver.define('createDeck', async (req) => {
     id: deckId,
     title,
     description,
-    owner,
+    owner: req.context.accountId,
     cards: flashcards || [],
+    name: name
   };
 
   await storage.set(deckId, newDeck);
@@ -316,6 +342,7 @@ resolver.define('removeCardFromDeck', async (req) => {
         message: 'Removed card from deck',
     };
 });
+
 
 
 export const handler = resolver.getDefinitions();
