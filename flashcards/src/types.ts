@@ -33,3 +33,7 @@ export interface StudySession {
     left_to_master: number; // -> number of cards left to learn
     num_looked:  number; // -> number of times the study session was done 
 }
+
+export enum AICardsThreshold {
+    minimumLength = 3
+}

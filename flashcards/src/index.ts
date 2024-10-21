@@ -1,6 +1,6 @@
 import Resolver from '@forge/resolver';
 import api, { route, storage } from '@forge/api';
-import { Card, Deck, Tag } from './types';
+import { Card, Deck, Tag, AICardsThreshold as aicards } from './types';
 import { v4 as uuidv4 } from 'uuid';
 
 
@@ -194,6 +194,14 @@ resolver.define('getAllFlashcards', async () => {
 resolver.define('generateQA', async (req) => {
   // get text
   const { text } = req.payload;
+
+  // Check if text exists and get its length; if not, set length to 0
+  const length = text ? text.length : 0;
+
+  // Check if the length is less than or equal to 3 (set as enum)
+  if (length <= aicards.minimumLength) {
+    throw new Error("Not enough words to generate flashcards");
+  }
 
   // get the flashcards generated using the external url
   const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_qa", {  // the url which we need to generate the flashcards
