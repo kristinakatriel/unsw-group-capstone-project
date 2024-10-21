@@ -1,0 +1,12 @@
+.context-menu {
+    padding: 20px;
+    border: 1px solid #ccc;
+    background-color: #f9f9f9;
+    width: 300px;
+    margin: 10px;
+  }
+
+  .menu-content {
+    font-size: 14px;
+    color: #333;
+  }

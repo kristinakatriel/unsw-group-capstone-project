@@ -57,14 +57,13 @@ def preprocess_for_question_generation(text):
 
 @app.post("/generate_qa")
 async def generate_qa(input: TextInput):
-    # number of questions to be made
+    # number of questions
+    # NOTE: capped at 5 words
     num_q = 0
     if len(input.text) > 1500:
-        num_q = 20
-    elif len(input.text) > 50:
-        num_q = 10
-    else :
-        num_q = 5
+        num_q = 15
+    else:
+        num_q = (math.floor(len(input.text))) + 3
     
     # generate questions
     generated_questions = qg_pipeline(

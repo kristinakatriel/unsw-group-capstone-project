@@ -4,9 +4,11 @@ import FlashcardContentActionModuleCreate from './flashcardContentActionModuleCr
 import GlobalPageModule from './globalPageModule';
 import '@atlaskit/css-reset';
 import { invoke } from '@forge/bridge';
+import ContextMenu from './ContextMenu';
 
 const MainComponent = () => {
   const [moduleKey, setModuleKey] = useState(null);
+  const [highlightedText, setHighlightedText] = useState('');
 
   useEffect(() => {
     invoke('getModule')
@@ -18,10 +20,22 @@ const MainComponent = () => {
       });
   }, []);
 
+  // useEffect(() => {
+  //   invoke('getSelectedText')
+  //     .then((selectedText) => {
+  //       setHighlightedText(selectedText || 'No text selected');
+  //     })
+  //     .catch((err) => {
+  //       console.error('Error fetching selected text:', err);
+  //     });
+  // }, []);
+
   if (moduleKey === 'content-action-menu-flashcards') {
     return <FlashcardContentActionModuleCreate />;
   } else if (moduleKey === 'flashcard-global-page') {
     return <GlobalPageModule />;
+  } else if (moduleKey === 'flashcard-context-menu') {
+    return <ContextMenu />; 
   }
   return <div>Loading...</div>;
 };
