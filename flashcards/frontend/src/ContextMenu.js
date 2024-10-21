@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { invoke } from '@forge/bridge';
-import './contextMenu.css';
+import './ContextMenu.css';
 
 function ContextMenu() {
   const [data, setData] = useState(null); // Data from invoke method
