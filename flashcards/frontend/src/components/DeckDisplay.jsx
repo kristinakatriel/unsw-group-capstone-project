@@ -134,7 +134,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                                 )}
                                 <h4 className="card-question">{flashcard.question_text || 'No question available'}</h4>
                                 <h4 className="card-answer">{flashcard.answer_text || 'No answer available'}</h4>
-                                <h4 className="card-owner">By {flashcard.owner || 'Unknown'}</h4>
+                                <h4 className="card-owner">By {flashcard.name || 'Unknown'}</h4>
 
                                 {flashcard.question_image && (
                                     <img src={flashcard.question_image} alt="Question" className="question-image" />
