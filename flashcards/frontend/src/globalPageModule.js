@@ -8,13 +8,14 @@ import CardSlider from './components/CardSlider';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
 import './globalPageModule.css';
 import CreateDeckGlobal from './deckGlobalModuleCreate';
-import DeckSlider from './components/DeckSlider'; // Import the new DeckSlider component
+import DeckSlider from './components/DeckSlider';
 import DeckDisplay from './components/DeckDisplay';
 import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs'; 
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
+import QuizMode from './components/QuizMode';
 
 const gridStyles = xcss({
     width: '100%',
@@ -54,7 +55,10 @@ function globalPageModule() {
   const [selectedDeck, setSelectedDeck] = useState(null); 
 
   // State for breadcrumbs
-  const [breadcrumbItems, setBreadcrumbItems] = useState([{ href: '#', text: 'Home' }]); 
+  const [breadcrumbItems, setBreadcrumbItems] = useState([{ href: '#', text: 'Home' }]);
+  
+  // State for quizmode
+  const [isQuizMode, setIsQuizMode] = useState(false); 
 
   //************************** DELETION LOGIC *****************************/
   const confirmDeleteFlashcard = (flashcard) => {
@@ -192,24 +196,68 @@ function globalPageModule() {
   const onDeckClick = (deck) => {
     console.log(`Deck clicked: ${deck.title}`);
     setSelectedDeck(deck); 
+    setIsQuizMode(false);
     setBreadcrumbItems([{ href: '#', text: 'Home' }, { href: '#', text: deck.title }]);
   };
 
   const goBackToHome = () => {
     setSelectedDeck(null); 
+    setIsQuizMode(false); 
     setBreadcrumbItems([{ href: '#', text: 'Home' }]);
     refreshDeckFrontend();
   };
+
+  //************************** QUIZ MODE FUNCTIONS *****************************/
+  const quizMode = () => {
+    setIsQuizMode(true);
+    setBreadcrumbItems(prevItems => [
+      ...prevItems,
+      { href: '#', text: 'Quiz Mode' }
+    ]);
+  };
+
+  const goBackToDeck = () => {
+    setIsQuizMode(false);
+    setBreadcrumbItems(prevItems => prevItems.slice(0, -1));
+  };
+
+  if (isQuizMode) {
+    return (
+      <div>
+        <Breadcrumbs>
+          {breadcrumbItems.map((item, index) => (
+            <BreadcrumbsItem 
+              key={index} 
+              href={item.href} 
+              text={item.text} 
+              onClick={() => {
+                if (item.text === 'Home') {
+                  goBackToHome();
+                } else if (item.text === selectedDeck.title) {
+                  goBackToDeck();
+                }
+              }} 
+            />
+          ))}
+        </Breadcrumbs>
+        <QuizMode deck={selectedDeck} onBack={goBackToDeck} />
+      </div>
+    );
+  }
 
   if (selectedDeck) {
     return (
       <div>
         <Breadcrumbs>
           {breadcrumbItems.map((item, index) => (
-            <BreadcrumbsItem key={index} href={item.href} text={item.text} onClick={item.text === 'Home' ? goBackToHome : undefined} />
+            <BreadcrumbsItem 
+              key={index} 
+              href={item.href} 
+              text={item.text} 
+              onClick={item.text === 'Home' ? goBackToHome : undefined} />
           ))}
         </Breadcrumbs>
-        <DeckDisplay deck={selectedDeck} />
+        <DeckDisplay deck={selectedDeck} startQuizMode={quizMode} /> 
       </div>
     );
   }
@@ -225,6 +273,15 @@ function globalPageModule() {
 
       <div className='global-page-headline'><FlashOnIcon className='global-page-flash-icon'/> FLASH</div>
       <div className='global-page-subheadline'>The Forge App that allows you to create flashcards in a flash</div>
+
+      <div className='global-page-decks'>Decks<button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button></div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : flashdecks.length === 0 ? (
+        <p>No decks created. Create a deck to display here.</p>
+      ) : (
+        renderDecksList(flashdecks)
+      )}
 
       <div className='global-page-recents'>
         Recents
@@ -246,18 +303,6 @@ function globalPageModule() {
       ) : (
         renderFlashcardsList(flashcards)
       )}
-
-      <div className='global-page-decks'>Decks<button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button></div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : flashdecks.length === 0 ? (
-        <p>No decks created. Create a deck to display here.</p>
-      ) : (
-        renderDecksList(flashdecks)
-      )}
-
-
-
 
       {/* Flashcard Modal */}
       {isFlashcardModalOpen && (
