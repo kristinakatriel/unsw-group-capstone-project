@@ -47,6 +47,10 @@ function globalPageModule() {
   const [flashcardToDelete, setFlashcardToDelete] = useState(null);
   const [isDeleteFlashcardConfirmOpen, setIsDeleteFlashcardConfirmOpen] = useState(false);
 
+  // State for FLASHCARD editing and confirmation
+  const [flashcardToEdit, setFlashcardToEdit] = useState(null);
+  const [isEditFlashcardConfirmOpen, setIsEditFlashcardConfirmOpen] = useState(false);
+
   // State for DECK deletion and confirmation
   const [deckToDelete, setDeckToDelete] = useState(null);
   const [isDeleteDeckConfirmOpen, setIsDeleteDeckConfirmOpen] = useState(false);
