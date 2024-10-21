@@ -115,6 +115,10 @@ function globalPageModule() {
     }
   };
 
+  //************************** EDITING LOGIC *****************************/
+
+  // etc etc
+
   //************************** FETCHING DATA (REUSABLE) *****************************/
   const loadFlashcards = async () => {
     try {
@@ -351,6 +355,36 @@ function globalPageModule() {
               </Modal>
           )}
       </ModalTransition>
+
+    {/* Flashcard EDIT Confirmation Modal */}
+    {/* <ModalTransition>
+          {isDeleteFlashcardConfirmOpen && (
+              <Modal onClose={closeDeleteFlashcardConfirm}>
+                  <ModalHeader>
+                      <Grid gap="space.200" templateAreas={['title close']} xcss={gridStyles}>
+                          <Flex xcss={closeContainerStyles} justifyContent="end">
+                              <IconButton
+                                  appearance="subtle"
+                                  icon={CrossIcon}
+                                  label="Close Modal"
+                                  onClick={closeDeleteFlashcardConfirm}
+                              />
+                          </Flex>
+                          <Flex xcss={titleContainerStyles} justifyContent="start">
+                              <ModalTitle appearance="danger">Delete Flashcard?</ModalTitle>
+                          </Flex>
+                      </Grid>
+                  </ModalHeader>
+                  <ModalBody>
+                      <p>Are you sure you want to delete this flashcard? This action cannot be undone.</p>
+                  </ModalBody>
+                  <ModalFooter>
+                      <Button appearance="subtle" onClick={closeDeleteFlashcardConfirm}>Cancel</Button>
+                      <Button appearance="danger" onClick={deleteFlashcard}>Yes, Delete</Button>
+                  </ModalFooter>
+              </Modal>
+          )}
+      </ModalTransition> */}
 
       {/* Deck Delete Confirmation Modal */}
       <ModalTransition>
