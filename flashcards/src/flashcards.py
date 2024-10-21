@@ -44,7 +44,7 @@ def preprocess_for_question_generation(text):
         # Step 3: Cleaning Text (Remove HTML tags, numbers, URLs, and emails)
         sentence = BeautifulSoup(sentence, "html.parser").get_text()  # Remove HTML tags
         # sentence = re.sub(r'\d+', '', sentence)  # Remove numbers
-        sentence = re.sub(r'http\S+|www\S+|@\S+', '', sentence)  # Remove URLs and emails
+        # sentence = re.sub(r'http\S+|www\S+|@\S+', '', sentence)  # Remove URLs and emails
 
         # Step 4: Word Tokenization (Converting sentences to word tokens)
         word_tokens = word_tokenize(sentence)
@@ -59,10 +59,12 @@ def preprocess_for_question_generation(text):
 async def generate_qa(input: TextInput):
     # number of questions to be made
     num_q = 0
-    if len(input.text) > 50:
-        num_q = math.ceil((len(input.text) / 50) * 5)
-    else:
-        num_q = math.ceil(len(input.text) / 50)
+    if len(input.text) > 1500:
+        num_q = 20
+    elif len(input.text) > 50:
+        num_q = 10
+    else :
+        num_q = 5
     
     # generate questions
     generated_questions = qg_pipeline(
