@@ -35,5 +35,5 @@ export interface StudySession {
 }
 
 export enum AICardsThreshold {
-    minimumLength = 3
+    minimumLength = 2
 }

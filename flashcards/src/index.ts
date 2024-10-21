@@ -198,7 +198,7 @@ resolver.define('generateQA', async (req) => {
   // Check if text exists and get its length; if not, set length to 0
   const length = text ? text.length : 0;
 
-  // Check if the length is less than or equal to 3 (set as enum)
+  // Check if the length is less than or equal to 2 (set as enum)
   if (length <= aicards.minimumLength) {
     throw new Error("Not enough words to generate flashcards");
   }
