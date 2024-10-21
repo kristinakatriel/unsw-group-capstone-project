@@ -4,7 +4,7 @@ import FlashcardContentActionModuleCreate from './flashcardContentActionModuleCr
 import GlobalPageModule from './globalPageModule';
 import '@atlaskit/css-reset';
 import { invoke } from '@forge/bridge';
-import { faTruckLoading } from '@fortawesome/free-solid-svg-icons';
+import ContextMenu from './ContextMenu';
 
 const MainComponent = () => {
   const [moduleKey, setModuleKey] = useState(null);
@@ -35,7 +35,7 @@ const MainComponent = () => {
   } else if (moduleKey === 'flashcard-global-page') {
     return <GlobalPageModule />;
   } else if (moduleKey === 'flashcard-context-menu') {
-    return <div>Loading...</div>;
+    return <ContextMenu />; 
   }
   return <div>Loading...</div>;
 };
