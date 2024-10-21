@@ -274,6 +274,15 @@ function globalPageModule() {
       <div className='global-page-headline'><FlashOnIcon className='global-page-flash-icon'/> FLASH</div>
       <div className='global-page-subheadline'>The Forge App that allows you to create flashcards in a flash</div>
 
+      <div className='global-page-decks'>Decks<button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button></div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : flashdecks.length === 0 ? (
+        <p>No decks created. Create a deck to display here.</p>
+      ) : (
+        renderDecksList(flashdecks)
+      )}
+
       <div className='global-page-recents'>
         Recents
       </div>
@@ -294,18 +303,6 @@ function globalPageModule() {
       ) : (
         renderFlashcardsList(flashcards)
       )}
-
-      <div className='global-page-decks'>Decks<button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button></div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : flashdecks.length === 0 ? (
-        <p>No decks created. Create a deck to display here.</p>
-      ) : (
-        renderDecksList(flashdecks)
-      )}
-
-
-
 
       {/* Flashcard Modal */}
       {isFlashcardModalOpen && (
