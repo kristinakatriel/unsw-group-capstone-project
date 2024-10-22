@@ -215,7 +215,7 @@ function globalPageModule() {
 
   //************************** RENDER FUNCTIONS *****************************/
   const renderFlashcardsList = (flashcards) => (
-    <CardSlider cards={flashcards} onDelete={confirmDeleteFlashcard} />
+    <CardSlider cards={flashcards} onDelete={confirmDeleteFlashcard} onEdit={openEditModal}/>
   );
 
   const renderDecksList = (flashdecks) => (

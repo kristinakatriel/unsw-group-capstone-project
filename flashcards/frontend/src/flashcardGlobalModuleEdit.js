@@ -24,6 +24,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardModal }) {
     }
   }, [flashcard]);
 
+  // handle this!
   const handleCloseGlobal = () => {
     if (typeof closeFlashcardModal === 'function') {
       closeFlashcardModal(); // Call the function passed as a prop
@@ -34,8 +35,14 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardModal }) {
 
   const handleSaveGlobal = async () => {
     try {
+      const temp = await invoke('getFlashcard');
+      if (!temp) {
+        console.error('No flashcard,,, booo');
+      }
+      console.log(temp.id);
+
       const response = await invoke('updateFlashcard', {
-        cardId: flashcard.id,
+        cardId: temp.id,
         question_text: question,
         question_image: questionImage,
         answer_text: answer,
