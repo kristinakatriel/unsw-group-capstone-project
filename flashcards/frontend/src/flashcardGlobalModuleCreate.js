@@ -46,7 +46,13 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
       setHint('');
       setQuestionImage(null);
       setAnswerImage(null);
-
+      console.log('Flashcard saved?:', response.card);
+      if (response && response.success) {
+          // Pass the new flashcard back to the close function
+          closeFlashcardModal(response.card);
+      } else {
+          console.error('Failed to create flashcard:', response.error);
+      }
     } catch (error) {
       console.error('Error invoking createFlashcard:', error);
     }
@@ -108,7 +114,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
             placeholder="Type the hint here..."
             className="input-area"
           />
-          <DragNDrop onFilesSelected={(files) => console.log('Files selected:', files)} />
+          {/*<DragNDrop onFilesSelected={(files) => console.log('Files selected:', files)} />*/}
         </div>
       </div>
 

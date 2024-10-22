@@ -29,7 +29,7 @@ const DragNDrop = ({ onFilesSelected, width, height }) => {
   };
 
   useEffect(() => {
-    console.log('Files updated:', files); // Debug
+    //console.log('Files updated:', files); // Debug
     onFilesSelected(files);
   }, [files, onFilesSelected]);
 

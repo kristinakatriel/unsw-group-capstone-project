@@ -9,6 +9,9 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import './DeckDisplay.css';
+import CreateFlashcardGlobal from '../flashcardGlobalModuleCreate';
+import ModalDialog from '@atlaskit/modal-dialog';
+
 
 
 /* ===========================================
@@ -29,6 +32,8 @@ const titleContainerStyles = xcss({
 
 const DeckDisplay = ({ deck, startQuizMode }) => {
 
+
+
     // ========================
     // STATE MANAGEMENT
     // ========================
@@ -40,7 +45,8 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
     const [updatedDeck, setUpdatedDeck] = useState(deck);
 
 
-    // ========================
+
+    // =====   ===================
     // PLACEHOLDER HANDLERS
     // ========================
     // Placeholder function for adding the deck to a study session
@@ -52,13 +58,91 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
     const handleAddFlashcard = () => {
       console.log('Add Flashcard button clicked');
     };
-    const handleCreateFlashcard = () => {
-        console.log('Add Flashcard button clicked');
-      };
+
 
     // Placeholder function for editing the deck
     const handleEditDeck = () => {
       console.log('Edit Deck button clicked');
+    };
+
+
+    // ========================
+    // FLASHCARD CREATE FUNCTIONALITY
+    // ========================
+
+    const [flashcards, setFlashcards] = useState([]);
+    const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
+
+
+
+    // const closeFlashcardModal = (shouldRefresh = false) => {
+    //     setIsCreateFlashcardOpen(false);
+
+    //     //loadFlashcards();
+    //     refreshFlashcardFrontend();  // Refresh after closing modal if new flashcard was created****************************************************************************************************
+
+    // };
+
+    // const handleCreateFlashcard = () => {
+    //     setIsCreateFlashcardOpen(true); // Open modal to create flashcard
+    //     console.log('Add Flashcard button clicked');
+    // };
+
+
+    const closeFlashcardModal = async (newFlashcard) => {
+        // Log the initiation of the modal closing process
+        console.log('Closing flashcard modal. New flashcard:', newFlashcard);
+
+        setIsCreateFlashcardOpen(false);
+
+        if (newFlashcard) {
+            const deckId = deck.id; // Assuming `deck` is passed as a prop
+            const cardId = newFlashcard.id; // Make sure the newFlashcard has an ID after creation
+
+            // Log the deck and card IDs being used
+            console.log(`Deck ID: ${deckId}, Card ID: ${cardId}`);
+
+            console.log(`Invoking addCardToDeck for cardId: ${cardId} and deckId: ${deckId}`);
+            try {
+                const addCardResponse = await invoke('addCardToDeck', {
+                    deckId: deckId,
+                    cardId: cardId,
+                });
+
+                // Log the response from the invoke call
+                console.log('Response from addCardToDeck:', addCardResponse);
+
+                if (addCardResponse.success) {
+                    // Update the deck state to include the new flashcard
+                    setUpdatedDeck((prevDeck) => {
+                        console.log('Previous deck state before update:', prevDeck);
+                        const updatedCards = [...prevDeck.cards, newFlashcard]; // Add the new flashcard to the cards array
+                        console.log('New deck state after adding flashcard:', {
+                            ...prevDeck,
+                            cards: updatedCards,
+                        });
+                        return {
+                            ...prevDeck,
+                            cards: updatedCards,
+                        };
+                    });
+
+                    console.log(`Flashcard ${cardId} added to deck ${deckId}`);
+                } else {
+                    console.error(`Failed to add flashcard ${cardId} to deck:`, addCardResponse.error);
+                }
+            } catch (error) {
+                console.error('Error invoking addCardToDeck:', error);
+            }
+        } else {
+            console.warn('No new flashcard was provided.');
+        }
+    };
+
+
+    const handleCreateFlashcard = () => {
+        setIsCreateFlashcardOpen(true); // Open modal to create flashcard
+        console.log('Add Flashcard button clicked');
     };
 
     // ========================
@@ -264,6 +348,17 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                 </Modal>
             )}
         </ModalTransition>
+
+
+
+        {/* Flashcard Modal */}
+        {isFlashcardModalOpen && (
+            <ModalDialog heading="Create Flashcard" onClose={() => closeFlashcardModal(true)}>
+              <CreateFlashcardGlobal closeFlashcardModal={closeFlashcardModal} />
+            </ModalDialog>
+        )}
+
+
       </div>
     );
 };
