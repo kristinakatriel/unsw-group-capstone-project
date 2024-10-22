@@ -10,7 +10,7 @@ import './globalPageModule.css';
 import CreateDeckGlobal from './deckGlobalModuleCreate';
 import DeckSlider from './components/DeckSlider';
 import DeckDisplay from './components/DeckDisplay';
-import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs'; 
+import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
@@ -57,13 +57,13 @@ function globalPageModule() {
   const [isDeleteDeckConfirmOpen, setIsDeleteDeckConfirmOpen] = useState(false);
 
   // State for DECK display
-  const [selectedDeck, setSelectedDeck] = useState(null); 
+  const [selectedDeck, setSelectedDeck] = useState(null);
 
   // State for breadcrumbs
   const [breadcrumbItems, setBreadcrumbItems] = useState([{ href: '#', text: 'Home' }]);
-  
+
   // State for quizmode
-  const [isQuizMode, setIsQuizMode] = useState(false); 
+  const [isQuizMode, setIsQuizMode] = useState(false);
 
   //************************** DELETION LOGIC *****************************/
   const confirmDeleteFlashcard = (flashcard) => {
@@ -114,6 +114,7 @@ function globalPageModule() {
     } catch (error) {
       console.error('Error deleting deck:', error);
     }
+
   };
 
   //************************** EDITING LOGIC *****************************/
@@ -150,8 +151,12 @@ function globalPageModule() {
 
   //************************** FETCHING DATA (REUSABLE) *****************************/
   const loadFlashcards = async () => {
+
+    console.log('Current flashcards state before fetch:', flashcards); // Log the current state of flashcards
     try {
       const response = await invoke('getAllFlashcards', {});
+      console.log('Response received from getAllFlashcards:', response); // Log the entire response
+
       if (response.success) {
         setFlashcards(response.cards);
       }
@@ -231,31 +236,40 @@ function globalPageModule() {
 
   //************************** DECK DISPLAY FUNCTIONS *****************************/
   const onDeckClick = (deck) => {
-    console.log(`Deck clicked: ${deck.title}`);
-    setSelectedDeck(deck); 
+    console.log(`Deck clicked: ${deck.title}`); // Log when a deck is clicked
+    setSelectedDeck(deck);
     setIsQuizMode(false);
     setBreadcrumbItems([{ href: '#', text: 'Home' }, { href: '#', text: deck.title }]);
+    console.log('Selected Deck:', deck); // Log the currently selected deck
+    console.log('Current Breadcrumb Items:', [{ href: '#', text: 'Home' }, { href: '#', text: deck.title }]); // Log breadcrumb items
   };
 
   const goBackToHome = () => {
-    setSelectedDeck(null); 
-    setIsQuizMode(false); 
+    console.log('Going back to Home'); // Log when going back to Home
+    setSelectedDeck(null);
+    setIsQuizMode(false);
     setBreadcrumbItems([{ href: '#', text: 'Home' }]);
     refreshDeckFrontend();
+    refreshFlashcardFrontend();
+    console.log('Current Breadcrumb Items:', [{ href: '#', text: 'Home' }]); // Log breadcrumb items
   };
 
   //************************** QUIZ MODE FUNCTIONS *****************************/
   const quizMode = () => {
+    console.log('Entering Quiz Mode'); // Log when entering quiz mode
     setIsQuizMode(true);
     setBreadcrumbItems(prevItems => [
-      ...prevItems,
-      { href: '#', text: 'Quiz Mode' }
+        ...prevItems,
+        { href: '#', text: 'Quiz Mode' }
     ]);
+    console.log('Current Breadcrumb Items:', [...prevItems, { href: '#', text: 'Quiz Mode' }]); // Log breadcrumb items
   };
 
   const goBackToDeck = () => {
+    console.log('Going back to Deck'); // Log when going back to the deck
     setIsQuizMode(false);
     setBreadcrumbItems(prevItems => prevItems.slice(0, -1));
+    console.log('Current Breadcrumb Items:', prevItems.slice(0, -1)); // Log breadcrumb items
   };
 
   if (isQuizMode) {
@@ -263,17 +277,17 @@ function globalPageModule() {
       <div>
         <Breadcrumbs>
           {breadcrumbItems.map((item, index) => (
-            <BreadcrumbsItem 
-              key={index} 
-              href={item.href} 
-              text={item.text} 
+            <BreadcrumbsItem
+              key={index}
+              href={item.href}
+              text={item.text}
               onClick={() => {
                 if (item.text === 'Home') {
                   goBackToHome();
                 } else if (item.text === selectedDeck.title) {
                   goBackToDeck();
                 }
-              }} 
+              }}
             />
           ))}
         </Breadcrumbs>
@@ -287,14 +301,14 @@ function globalPageModule() {
       <div>
         <Breadcrumbs>
           {breadcrumbItems.map((item, index) => (
-            <BreadcrumbsItem 
-              key={index} 
-              href={item.href} 
-              text={item.text} 
+            <BreadcrumbsItem
+              key={index}
+              href={item.href}
+              text={item.text}
               onClick={item.text === 'Home' ? goBackToHome : undefined} />
           ))}
         </Breadcrumbs>
-        <DeckDisplay deck={selectedDeck} startQuizMode={quizMode} /> 
+        <DeckDisplay deck={selectedDeck} startQuizMode={quizMode} />
       </div>
     );
   }
@@ -321,7 +335,7 @@ function globalPageModule() {
       )}
 
       <div className='global-page-recents'>
-        Recents
+        Suggested
       </div>
 
       {loading ? (

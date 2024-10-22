@@ -2,6 +2,7 @@ import Resolver from '@forge/resolver';
 import api, { route, storage } from '@forge/api';
 import { Card, Deck, Tag, AICardsThreshold as aicards } from './types';
 import { v4 as uuidv4 } from 'uuid';
+import { basename } from 'path';
 
 
 const resolver = new Resolver();
@@ -48,7 +49,7 @@ resolver.define('getModule', async (req) => {
 
 
 resolver.define('createFlashcard', async (req) => {
-  const { question_text, question_image, answer_text, answer_image, hint, tags } = req.payload as Omit<Card, 'id'>;
+  const { question_text, question_image, answer_text, answer_image, hint, tags } = req.payload as Omit<Card, 'id' | 'owner'>;
 
   if (!question_text || !answer_text || !req.context.accountId) {
     return {
@@ -138,7 +139,7 @@ resolver.define('updateFlashcard', async (req) => {
 
 resolver.define('deleteFlashcard', async (req) => {
     const { cardId } = req.payload;
-  
+
     const card = await storage.get(cardId);
     if (!card) {
       return {
@@ -146,15 +147,15 @@ resolver.define('deleteFlashcard', async (req) => {
         error: `No card found with id: ${cardId}`,
       };
     }
-  
+
     await storage.delete(cardId);
-  
+
     return {
       success: true,
       message: `Deleted card with id: ${cardId}`,
     };
 });
-  
+
 
 resolver.define('getFlashcard', async ({ payload }) => {
   const { cardId } = payload;
@@ -179,10 +180,24 @@ resolver.define('getAllFlashcards', async () => {
   const allFlashcards: Card[] = [];
 
   const result = await storage.query().limit(25).getMany();
+  // const result = await storage.query()
+  // .filter((item) => item.type === 'Card') // Adjust to your storage schema
+  // .limit(25)
+  // .getMany();
+  // Log the result from storage query
+  console.log('Storage query result:', result);
+
 
   result.results.forEach(({ value }) => {
-    allFlashcards.push(value as Card);
+    console.log('value:', value);
+    if ('answer_text' in value) {
+
+      allFlashcards.push(value as Card);
+    }
   });
+
+  console.log('Fetched flashcards:', allFlashcards);
+
 
   return {
     success: true,
@@ -285,12 +300,37 @@ resolver.define('createAiFlashcards', async (req) => {
 
 
 resolver.define('createDeck', async (req) => {
-  const { title, description, owner, cards: flashcards } = req.payload as Omit<Deck, 'id'>;
+  const { title, description, cards: flashcards } = req.payload as Omit<Deck, 'id'>;
 
-  if (!title || !owner) {
+  if (!title || !req.context.accountId) {
     return {
       success: false,
       error: 'Invalid input: title and owner required',
+    };
+  }
+
+  let name = "unknown"
+
+  if (req.context.accountId) {
+    let bodyData = `{
+      "accountIds": [
+        "${req.context.accountId}"
+      ]
+    }`;
+
+    const response = await api.asApp().requestConfluence(route`/wiki/api/v2/users-bulk`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: bodyData
+    });
+    if (response.status === 200) {
+      let data = await response.json();
+      name = data.results[0].publicName;
+    } else {
+      name = "unknown2"
     };
   }
 
@@ -299,8 +339,9 @@ resolver.define('createDeck', async (req) => {
     id: deckId,
     title,
     description,
-    owner,
+    owner: req.context.accountId,
     cards: flashcards || [],
+    name: name
   };
 
   await storage.set(deckId, newDeck);
@@ -351,9 +392,9 @@ resolver.define('deleteDeck', async (req) => {
         error: `No deck found with id: ${deckId}`,
       };
     }
-  
+
     await storage.delete(deckId);
-  
+
     return {
       success: true,
       message: `Deleted deck with id: ${deckId}`,
@@ -384,11 +425,11 @@ resolver.define('getAllDecks', async () => {
     const allDecks: Deck[] = [];
 
     const queryResult = await storage.query().limit(25).getMany();
-  
+
     queryResult.results.forEach(({ value }) => {
       allDecks.push(value as Deck);
     });
-  
+
     return {
       success: true,
       decks: allDecks,
@@ -440,6 +481,7 @@ resolver.define('removeCardFromDeck', async (req) => {
         message: 'Removed card from deck',
     };
 });
+
 
 
 export const handler = resolver.getDefinitions();

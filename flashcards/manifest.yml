@@ -5,20 +5,20 @@ modules:
       resolver:
         function: resolver
       viewportSize: medium
-      title: Create Flashcards
+      title: FLASH - Create A Flashcard
   confluence:globalPage:
     - key: flashcard-global-page
       resource: main
       resolver:
         function: resolver
-      title: Flashcards Global Page
+      title: FLASH - Home
       route: flashcard-global-page
   confluence:contextMenu:
     - key: flashcard-context-menu
       resource: main
       resolver:
         function: resolver
-      title: Flashcard Context Menu
+      title: FLASH - Create Flashcard(s) (AI Generation)
   function:
     - key: resolver
       handler: index.handler

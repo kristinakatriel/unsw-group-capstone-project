@@ -41,23 +41,22 @@ function CreateDeckGlobal({ closeDeckModal }) {
   const handleSave = async () => {
     console.log('Saving deck...');
     console.log('Selected Flashcards:', selectedFlashcards);
-    
+
     if (!deckTitle.trim()) {
       console.error('Deck title cannot be empty.');
       return; // Prevents further execution
   }
-  
+
     try {
       const response = await invoke('createDeck', {
         title: deckTitle,
         description: description,
-        owner: '@aaa',
         flashcards: [],
       });
 
       if (response.success) {
         console.log('Deck created successfully:', response.deck);
-  
+
         const deckId = response.id;
 
         // Adding each selected flashcard to the deck
@@ -67,14 +66,14 @@ function CreateDeckGlobal({ closeDeckModal }) {
             deckId: deckId,
             cardId: cardId
           });
-  
+
           if (addCardResponse.success) {
             console.log(`Flashcard ${cardId} added to deck ${deckId}`);
           } else {
             console.error(`Failed to add flashcard ${cardId} to deck:`, addCardResponse.error);
           }
         }
-  
+
         setDeckTitle('');
         setDescription('');
         setSelectedFlashcards([]);

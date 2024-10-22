@@ -7,6 +7,8 @@ import './CardSlider.css';
 
 const CardSlider = ({ cards = [], onDelete  }) => {
 
+  // Log the cards received as props
+  console.log('Cards received in CARDSLIDER:', cards);
 
   const handleDelete = async (cardId) => {
     const confirmDelete = window.confirm("Are you sure you want to delete this flashcard?");
