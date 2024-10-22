@@ -416,7 +416,7 @@ function globalPageModule() {
       </ModalTransition>
     
     {/* EDIT FUNCTIONALITY */}
-    {/* Flashcard EDIT Modal */}
+    {/* Flashcard EDIT */}
     {isEditFlashcardModalOpen && flashcardToEdit && (
         <ModalDialog heading="Edit Flashcard" onClose={closeEditFlashcardModal}>
           <EditFlashcardModal
