@@ -194,31 +194,40 @@ function globalPageModule() {
 
   //************************** DECK DISPLAY FUNCTIONS *****************************/
   const onDeckClick = (deck) => {
-    console.log(`Deck clicked: ${deck.title}`);
+    console.log(`Deck clicked: ${deck.title}`); // Log when a deck is clicked
     setSelectedDeck(deck);
     setIsQuizMode(false);
     setBreadcrumbItems([{ href: '#', text: 'Home' }, { href: '#', text: deck.title }]);
+    console.log('Selected Deck:', deck); // Log the currently selected deck
+    console.log('Current Breadcrumb Items:', [{ href: '#', text: 'Home' }, { href: '#', text: deck.title }]); // Log breadcrumb items
   };
 
   const goBackToHome = () => {
+    console.log('Going back to Home'); // Log when going back to Home
     setSelectedDeck(null);
     setIsQuizMode(false);
     setBreadcrumbItems([{ href: '#', text: 'Home' }]);
     refreshDeckFrontend();
+    refreshFlashcardFrontend();
+    console.log('Current Breadcrumb Items:', [{ href: '#', text: 'Home' }]); // Log breadcrumb items
   };
 
   //************************** QUIZ MODE FUNCTIONS *****************************/
   const quizMode = () => {
+    console.log('Entering Quiz Mode'); // Log when entering quiz mode
     setIsQuizMode(true);
     setBreadcrumbItems(prevItems => [
-      ...prevItems,
-      { href: '#', text: 'Quiz Mode' }
+        ...prevItems,
+        { href: '#', text: 'Quiz Mode' }
     ]);
+    console.log('Current Breadcrumb Items:', [...prevItems, { href: '#', text: 'Quiz Mode' }]); // Log breadcrumb items
   };
 
   const goBackToDeck = () => {
+    console.log('Going back to Deck'); // Log when going back to the deck
     setIsQuizMode(false);
     setBreadcrumbItems(prevItems => prevItems.slice(0, -1));
+    console.log('Current Breadcrumb Items:', prevItems.slice(0, -1)); // Log breadcrumb items
   };
 
   if (isQuizMode) {
