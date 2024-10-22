@@ -128,12 +128,12 @@ function globalPageModule() {
 
   // Close the edit modal and refresh flashcards
   const closeEditModal = async (updatedFlashcard) => {
-    setIsEditModalOpen(false);
-    setIsEditFlashcardModalOpen(null);
+    setIsEditFlashcardModalOpen(false);
 
     // Refresh the flashcard list by fetching flashcards
     if (updatedFlashcard) {
-      await loadFlashcards();
+      refreshFlashcardFrontend(); 
+      refreshDeckFrontend();
     }
   };
 
@@ -423,7 +423,7 @@ function globalPageModule() {
       <ModalDialog heading="Edit Flashcard" onClose={closeEditModal}>
         <EditFlashcardModal
           flashcard={editingFlashcard} // Pass the flashcard to the modal
-          closeEditModal={closeEditModal}
+          closeFlashcardModal={closeEditModal}
         />
       </ModalDialog>
     )}

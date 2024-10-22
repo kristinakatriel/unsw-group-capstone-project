@@ -35,14 +35,9 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardModal }) {
 
   const handleSaveGlobal = async () => {
     try {
-      const temp = await invoke('getFlashcard');
-      if (!temp) {
-        console.error('No flashcard,,, booo');
-      }
-      console.log(temp.id);
-
+      console.log(flashcard.id);
       const response = await invoke('updateFlashcard', {
-        cardId: temp.id,
+        id: flashcard.id,
         question_text: question,
         question_image: questionImage,
         answer_text: answer,
@@ -57,7 +52,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardModal }) {
         console.error('Failed to update flashcard:', response.error);
       }
     } catch (error) {
-      console.error('Error invoking editFlashcard:', error);
+      console.error('Error invoking updateFlashcard:', error);
     }
   };
 
