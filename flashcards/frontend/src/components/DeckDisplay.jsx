@@ -52,6 +52,9 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
     const handleAddFlashcard = () => {
       console.log('Add Flashcard button clicked');
     };
+    const handleCreateFlashcard = () => {
+        console.log('Add Flashcard button clicked');
+      };
 
     // Placeholder function for editing the deck
     const handleEditDeck = () => {
@@ -146,6 +149,9 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
             </div>
           </div>
           <div className='right-buttons'>
+            <button className='deck-display-create-flashcard-icon' onClick={handleCreateFlashcard}>
+              <AddIcon fontSize='small' /> Create Flashcard
+            </button>
             <button className='deck-display-add-flashcard-icon' onClick={handleAddFlashcard}>
               <AddIcon fontSize='small' /> Add Flashcard
             </button>
