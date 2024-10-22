@@ -1,75 +1,120 @@
-import { useState } from 'react';
-import { ModalDialog, Button, TextField } from '@forge/bridge';
+import React, { useState, useEffect } from 'react';
+import { invoke } from '@forge/bridge';
+import './flashcardGlobalModuleCreate.css'; // using the same css file as the flashcardGlobalModuleCreate
+import './globalPageModule.js';
+import DragNDrop from './components/DragNDrop.jsx';
 
-function EditFlashcardModal({ flashcardData, onSave }) {
-    const [isEditing, setIsEditing] = useState(false); // Toggle edit mode
-    const [showConfirm, setShowConfirm] = useState(false); // Show confirm modal
-    const [editedData, setEditedData] = useState(flashcardData); // Local state for flashcard details
+function EditFlashcardGlobal({ flashcard, closeFlashcardModal }) {
+  const [question, setQuestion] = useState('');
+  const [answer, setAnswer] = useState('');
+  const [hint, setHint] = useState('');
+  const [ownerEmail, setOwnerEmail] = useState('');
+  const [questionImage, setQuestionImage] = useState(null);
+  const [answerImage, setAnswerImage] = useState(null);
 
-    const handleEditClick = () => {
-    setIsEditing(true); // Enable editing mode
-    };
+  // Pre-fill the form with the current flashcard details
+  useEffect(() => {
+    if (flashcard) {
+      setQuestion(flashcard.question_text || '');
+      setAnswer(flashcard.answer_text || '');
+      setHint(flashcard.hint || '');
+      setOwnerEmail(flashcard.owner || '');
+      setQuestionImage(flashcard.question_image || null);
+      setAnswerImage(flashcard.answer_image || null);
+    }
+  }, [flashcard]);
 
-    const handleInputChange = (e) => {
-    setEditedData({
-        ...editedData,
-        [e.target.name]: e.target.value, // Update the field being edited
-    });
-    };
+  const handleCloseGlobal = () => {
+    if (typeof closeFlashcardModal === 'function') {
+      closeFlashcardModal(); // Call the function passed as a prop
+    } else {
+      console.error('closeFlashcardModal is not a function:', closeFlashcardModal);
+    }
+  };
 
-    const handleSaveClick = () => {
-    setShowConfirm(true); // Show confirmation modal
-    };
+  const handleSaveGlobal = async () => {
+    try {
+      const response = await invoke('editFlashcard', {
+        cardId: flashcard.id,
+        question_text: question,
+        question_image: questionImage,
+        answer_text: answer,
+        answer_image: answerImage,
+        hint: hint,
+      });
 
-    const confirmSave = () => {
-        onSave(editedData); // Save the edited data
-        setIsEditing(false); // Disable edit mode
-        setShowConfirm(false); // Close confirmation
-    };
+      if (response && response.success) {
+        // Close the modal and pass updated card back
+        closeFlashcardModal(response.card);
+      } else {
+        console.error('Failed to update flashcard:', response.error);
+      }
+    } catch (error) {
+      console.error('Error invoking editFlashcard:', error);
+    }
+  };
 
-    return (
-    <>
-        <ModalDialog>
-        <h2>Flashcard Details</h2>
-        <TextField
-            label="Question"
-            value={editedData.question}
-            name="question"
-            onChange={handleInputChange}
-            isDisabled={!isEditing} // Disable if not editing
+  const handleQuestionImageSelected = (files) => {
+    if (files.length > 0) {
+      setQuestionImage(files[0]);
+    }
+  };
+
+  const handleAnswerImageSelected = (files) => {
+    if (files.length > 0) {
+      setAnswerImage(files[0]);
+    }
+  };
+
+  return (
+    <div className="global-flashcard-edit">
+      <h2 className="flashcard-title">Edit Flashcard</h2>
+
+      <div className="form-group">
+        <label htmlFor="question">Question</label>
+        <div className="input-drag-container">
+          <textarea
+            id="question"
+            value={question}
+            onChange={(e) => setQuestion(e.target.value)}
+            placeholder="Edit the question here..."
+            className="input-area"
+          />
+          <DragNDrop onFilesSelected={handleQuestionImageSelected} />
+        </div>
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="answer">Answer</label>
+        <div className="input-drag-container">
+          <textarea
+            id="answer"
+            value={answer}
+            onChange={(e) => setAnswer(e.target.value)}
+            placeholder="Edit the answer here..."
+            className="input-area"
+          />
+          <DragNDrop onFilesSelected={handleAnswerImageSelected} />
+        </div>
+      </div>
+
+      <div className="form-group">
+        <label htmlFor="hint">Hint</label>
+        <textarea
+          id="hint"
+          value={hint ? hint : ''}
+          onChange={(e) => setHint(e.target.value)}
+          placeholder="Edit/Add hint here..."
+          className="input-area"
         />
-        <TextField
-            label="Answer"
-            value={editedData.answer}
-            name="answer"
-            onChange={handleInputChange}
-            isDisabled={!isEditing} // Disable if not editing
-        />
-        <TextField
-            label="Hint"
-            value={editedData.hint}
-            name="hint"
-            onChange={handleInputChange}
-            isDisabled={!isEditing} // Disable if not editing
-        />
-        
-        {!isEditing ? (
-            <Button text="Edit" onClick={handleEditClick} /> // Edit button
-        ) : (
-            <Button text="Save Changes" onClick={handleSaveClick} /> // Save button
-        )}
-        </ModalDialog>
+      </div>
 
-        {showConfirm && (
-        <ModalDialog>
-            <h3>Confirm Changes</h3>
-            <p>Are you sure you want to save the changes?</p>
-            <Button text="Confirm" onClick={confirmSave} />
-            <Button text="Cancel" onClick={() => setShowConfirm(false)} />
-        </ModalDialog>
-        )}
-    </>
-    );
+      <div className="button-group">
+        <button className="save-button" onClick={handleSaveGlobal}>Save</button>
+        <button className="close-button" onClick={handleCloseGlobal}>Close</button>
+      </div>
+    </div>
+  );
 }
 
-export default EditFlashcardModal;
+export default EditFlashcardGlobal;
