@@ -3,13 +3,18 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import QuizIcon from '@mui/icons-material/Quiz';
-import { invoke } from '@forge/bridge'; 
+import { invoke } from '@forge/bridge';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import './DeckDisplay.css';
 
+
+/* ===========================================
+ * STYLE DEFINITIONS
+ * ===========================================
+ */
 const gridStyles = xcss({
     width: '100%',
 });
@@ -23,41 +28,61 @@ const titleContainerStyles = xcss({
 });
 
 const DeckDisplay = ({ deck, startQuizMode }) => {
+
+    // ========================
+    // STATE MANAGEMENT
+    // ========================
+
+    // State hooks to manage modal visibility, the selected flashcard for deletion, and the updated deck state
     const [isModalOpen, setIsModalOpen] = useState(false);
-    const [isDeckModalOpen, setIsDeckModalOpen] = useState(false); 
+    const [isDeckModalOpen, setIsDeckModalOpen] = useState(false);
     const [flashcardToDelete, setFlashcardToDelete] = useState(null);
     const [updatedDeck, setUpdatedDeck] = useState(deck);
 
+
+    // ========================
+    // PLACEHOLDER HANDLERS
+    // ========================
+    // Placeholder function for adding the deck to a study session
     const handleAddToStudySession = () => {
       console.log('Add to study session button clicked');
     };
-    
+
+    // Placeholder function for adding a new flashcard
     const handleAddFlashcard = () => {
       console.log('Add Flashcard button clicked');
     };
-    
+
+    // Placeholder function for editing the deck
     const handleEditDeck = () => {
       console.log('Edit Deck button clicked');
     };
 
-    // Functions for individual flashcard deletion
-    const openModal = (flashcard) => {
+    // ========================
+    // FLASHCARD DELETE FUNCTIONALITY
+    // ========================
+
+
+    // Opens the flashcard delete confirmation modal and sets the selected flashcard to delete
+    const openFlashcardDeleteModal = (flashcard) => {
         setFlashcardToDelete(flashcard);
         setIsModalOpen(true);
     };
 
-    const closeModal = () => {
+    // Closes the flashcard delete confirmation modal and resets the selected flashcard
+    const closeFlashcardDeleteModal = () => {
         setIsModalOpen(false);
         setFlashcardToDelete(null);
     };
 
-    const handleDelete = async () => {
+    // Handles the deletion of a flashcard from the deck
+    const confirmFlashcardDelete = async () => {
       if (!flashcardToDelete) return;
 
       console.log(`Delete clicked for flashcard ID: ${flashcardToDelete.id} for deck ID: ${deck.id}`);
       try {
           const response = await invoke('removeCardFromDeck', { deckId: deck.id, cardId: flashcardToDelete.id });
-          
+
           if (response.success) {
               console.log('Flashcard removed from deck successfully.');
               setUpdatedDeck((prevDeck) => ({
@@ -70,29 +95,33 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
       } catch (error) {
           console.error('Error in deleting flashcard:', error);
       } finally {
-          closeModal();
+          closeFlashcardDeleteModal();
       }
     };
 
+
+
+    // ========================
+    // DECK DELETE FUNCTIONALITY
+    // ========================
+
+
     // Functions for deck deletion
-    const closeDeckModal = () => {
+    const closeDeckDeleteModal = () => {
       setIsDeckModalOpen(false);
     };
 
-    const openDeckModal = () => {
+    const openDeckDeleteModal = () => {
         setIsDeckModalOpen(true);
     };
 
-    const handleDeleteDeck = () => {
-      console.log('Delete Deck button clicked');
-      openDeckModal();
-    };
-
-    const handleDeckDelete = async () => {
+    const confirmDeckDelete = async () => {
         console.log('Deleting deck permanently')
         // TODO
-        closeDeckModal();
+        closeDeckDeleteModal();
     };
+
+
 
     return (
       <div className='deck-display-container'>
@@ -150,7 +179,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                                     />
                                     <DeleteIcon
                                         className="card-delete-button"
-                                        onClick={() => openModal(flashcard)} 
+                                        onClick={() => openFlashcardDeleteModal(flashcard)}
                                     />
                                 </div>
                             </div>
@@ -165,7 +194,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
         {/* Flashcard Delete Modal */}
         <ModalTransition>
             {isModalOpen && (
-                <Modal onClose={closeModal}>
+                <Modal onClose={closeFlashcardDeleteModal}>
                     <ModalHeader>
                         <Grid gap="space.200" templateAreas={['title close']} xcss={gridStyles}>
                             <Flex xcss={closeContainerStyles} justifyContent="end">
@@ -173,7 +202,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                                     appearance="subtle"
                                     icon={CrossIcon}
                                     label="Close Modal"
-                                    onClick={closeModal}
+                                    onClick={closeFlashcardDeleteModal}
                                 />
                             </Flex>
                             <Flex xcss={titleContainerStyles} justifyContent="start">
@@ -185,8 +214,8 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                         <p>This action cannot be undone.</p>
                     </ModalBody>
                     <ModalFooter>
-                        <Button appearance="subtle" onClick={closeModal}>No</Button>
-                        <Button appearance="danger" onClick={handleDelete}>Yes</Button>
+                        <Button appearance="subtle" onClick={closeFlashcardDeleteModal}>No</Button>
+                        <Button appearance="danger" onClick={confirmFlashcardDelete}>Yes</Button>
                     </ModalFooter>
                 </Modal>
             )}
@@ -195,7 +224,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
         {/* Deck Delete Modal */}
         <ModalTransition>
             {isDeckModalOpen && (
-                <Modal onClose={closeDeckModal}>
+                <Modal onClose={closeDeckDeleteModal}>
                     <ModalHeader>
                         <Grid gap="space.200" templateAreas={['title close']} xcss={gridStyles}>
                             <Flex xcss={closeContainerStyles} justifyContent="end">
@@ -203,7 +232,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                                     appearance="subtle"
                                     icon={CrossIcon}
                                     label="Close Modal"
-                                    onClick={closeDeckModal}
+                                    onClick={closeDeckDeleteModal}
                                 />
                             </Flex>
                             <Flex xcss={titleContainerStyles} justifyContent="start">
@@ -215,8 +244,8 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                         <p>This action cannot be undone.</p>
                     </ModalBody>
                     <ModalFooter>
-                        <Button appearance="subtle" onClick={closeDeckModal}>No</Button>
-                        <Button appearance="danger" onClick={handleDeckDelete}>Yes</Button>
+                        <Button appearance="subtle" onClick={closeDeckDeleteModal}>No</Button>
+                        <Button appearance="danger" onClick={confirmDeckDelete}>Yes</Button>
                     </ModalFooter>
                 </Modal>
             )}
