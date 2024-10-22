@@ -11,7 +11,7 @@ import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition
 import './DeckDisplay.css';
 import CreateFlashcardGlobal from '../flashcardGlobalModuleCreate';
 import ModalDialog from '@atlaskit/modal-dialog';
-
+import AddFlashcardsToDeck from '../addFlashcardsToExistingDeck';
 
 
 /* ===========================================
@@ -54,10 +54,6 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
       console.log('Add to study session button clicked');
     };
 
-    // Placeholder function for adding a new flashcard
-    const handleAddFlashcard = () => {
-      console.log('Add Flashcard button clicked');
-    };
 
 
     // Placeholder function for editing the deck
@@ -72,22 +68,6 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
 
     const [flashcards, setFlashcards] = useState([]);
     const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
-
-
-
-    // const closeFlashcardModal = (shouldRefresh = false) => {
-    //     setIsCreateFlashcardOpen(false);
-
-    //     //loadFlashcards();
-    //     refreshFlashcardFrontend();  // Refresh after closing modal if new flashcard was created****************************************************************************************************
-
-    // };
-
-    // const handleCreateFlashcard = () => {
-    //     setIsCreateFlashcardOpen(true); // Open modal to create flashcard
-    //     console.log('Add Flashcard button clicked');
-    // };
-
 
     const closeFlashcardModal = async (newFlashcard) => {
         // Log the initiation of the modal closing process
@@ -144,6 +124,64 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
         setIsCreateFlashcardOpen(true); // Open modal to create flashcard
         console.log('Add Flashcard button clicked');
     };
+
+
+
+
+
+
+     // ========================
+    // FLASHCARD ADDITION FUNCTIONALITY
+    // ========================
+
+    const [isAddFlashcardModalOpen, setIsAddFlashcardModalOpen] = useState(false);
+
+    const handleAddFlashcard = () => {
+        setIsAddFlashcardModalOpen(true);
+        console.log('Add Flashcard button clicked');
+    };
+
+    const closeAddDeckModal = async () => {
+        setIsAddFlashcardModalOpen(false);
+
+        if (selectedFlashcards.length > 0) {
+            const deckId = deck.id;
+
+            for (const cardId of selectedFlashcards) {
+                console.log(`Invoking addCardToDeck for cardId: ${cardId} and deckId: ${deckId}`);
+                try {
+                    const addCardResponse = await invoke('addCardToDeck', {
+                        deckId: deckId,
+                        cardId: cardId,
+                    });
+
+                    if (addCardResponse.success) {
+                        console.log(`Flashcard ${cardId} added to deck ${deckId}`);
+                        setUpdatedDeck((prevDeck) => ({
+                            ...prevDeck,
+                            cards: [...prevDeck.cards, flashcards.find(card => card.id === cardId)],
+                        }));
+                    } else {
+                        console.error(`Failed to add flashcard ${cardId} to deck:`, addCardResponse.error);
+                    }
+                } catch (error) {
+                    console.error('Error invoking addCardToDeck:', error);
+                }
+            }
+        }
+        setSelectedFlashcards([]);
+    };
+
+    const handleCheckboxChange = (flashcardId) => {
+        if (selectedFlashcards.includes(flashcardId)) {
+            setSelectedFlashcards(selectedFlashcards.filter(id => id !== flashcardId));
+        } else {
+            setSelectedFlashcards([...selectedFlashcards, flashcardId]);
+        }
+    };
+
+
+
 
     // ========================
     // FLASHCARD DELETE FUNCTIONALITY
@@ -358,6 +396,13 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
             </ModalDialog>
         )}
 
+        {/* Deck Modal */}
+        {isAddFlashcardModalOpen && (
+            <ModalDialog heading="Add Flashcards To Deck" onClose={() => closeAddDeckModal(true)}>
+
+                <AddFlashcardsToDeck deck={deck} closeAddDeckModal = {closeAddDeckModal}/>
+            </ModalDialog>
+        )}
 
       </div>
     );
