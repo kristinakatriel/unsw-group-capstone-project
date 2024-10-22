@@ -3,6 +3,7 @@ import { storage } from '@forge/api';
 import { Card, Deck, Tag } from './types';
 import { v4 as uuidv4 } from 'uuid';
 import api, { route } from '@forge/api';
+import { basename } from 'path';
 
 
 const resolver = new Resolver();
@@ -107,7 +108,7 @@ resolver.define('updateFlashcard', async (req) => {
 
 resolver.define('deleteFlashcard', async (req) => {
     const { cardId } = req.payload;
-  
+
     const card = await storage.get(cardId);
     if (!card) {
       return {
@@ -115,15 +116,15 @@ resolver.define('deleteFlashcard', async (req) => {
         error: `No card found with id: ${cardId}`,
       };
     }
-  
+
     await storage.delete(cardId);
-  
+
     return {
       success: true,
       message: `Deleted card with id: ${cardId}`,
     };
 });
-  
+
 
 resolver.define('getFlashcard', async ({ payload }) => {
   const { cardId } = payload;
@@ -148,10 +149,24 @@ resolver.define('getAllFlashcards', async () => {
   const allFlashcards: Card[] = [];
 
   const result = await storage.query().limit(25).getMany();
+  // const result = await storage.query()
+  // .filter((item) => item.type === 'Card') // Adjust to your storage schema
+  // .limit(25)
+  // .getMany();
+  // Log the result from storage query
+  console.log('Storage query result:', result);
+
 
   result.results.forEach(({ value }) => {
-    allFlashcards.push(value as Card);
+    console.log('value:', value);
+    if ('answer_text' in value) {
+
+      allFlashcards.push(value as Card);
+    }
   });
+
+  console.log('Fetched flashcards:', allFlashcards);
+
 
   return {
     success: true,
@@ -253,9 +268,9 @@ resolver.define('deleteDeck', async (req) => {
         error: `No deck found with id: ${deckId}`,
       };
     }
-  
+
     await storage.delete(deckId);
-  
+
     return {
       success: true,
       message: `Deleted deck with id: ${deckId}`,
@@ -286,11 +301,11 @@ resolver.define('getAllDecks', async () => {
     const allDecks: Deck[] = [];
 
     const queryResult = await storage.query().limit(25).getMany();
-  
+
     queryResult.results.forEach(({ value }) => {
       allDecks.push(value as Deck);
     });
-  
+
     return {
       success: true,
       decks: allDecks,

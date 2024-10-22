@@ -109,12 +109,17 @@ function globalPageModule() {
     } catch (error) {
       console.error('Error deleting deck:', error);
     }
+
   };
 
   //************************** FETCHING DATA (REUSABLE) *****************************/
   const loadFlashcards = async () => {
+
+    console.log('Current flashcards state before fetch:', flashcards); // Log the current state of flashcards
     try {
       const response = await invoke('getAllFlashcards', {});
+      console.log('Response received from getAllFlashcards:', response); // Log the entire response
+
       if (response.success) {
         setFlashcards(response.cards);
       }
