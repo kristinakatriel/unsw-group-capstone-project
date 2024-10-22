@@ -49,8 +49,8 @@ function globalPageModule() {
   const [isDeleteFlashcardConfirmOpen, setIsDeleteFlashcardConfirmOpen] = useState(false);
 
   // State for FLASHCARD editing and confirmation
-  const [flashcardToEdit, setFlashcardToEdit] = useState(null);
-  const [isEditFlashcardConfirmOpen, setIsEditFlashcardConfirmOpen] = useState(false);
+  const [editingFlashcard, setEditingFlashcard] = useState(null); // Store the flashcard being edited
+  const [isEditFlashcardModalOpen, setIsEditFlashcardModalOpen] = useState(false);
 
   // State for DECK deletion and confirmation
   const [deckToDelete, setDeckToDelete] = useState(null);
@@ -119,34 +119,22 @@ function globalPageModule() {
 
   //************************** EDITING LOGIC *****************************/
 
-  // etc etc
-  const confirmEditFlashcard = (flashcard) => {
-    setFlashcardToEdit(flashcard);
+  // TODO: to move it to the modal logic
+  // Open the edit modal
+  const openEditModal = (flashcard) => {
+    setEditingFlashcard(flashcard);
     setIsEditFlashcardModalOpen(true);
   };
 
-  const closeEditFlashcardModal = () => {
-      setIsEditFlashcardModalOpen(false);
-      setFlashcardToEdit(null);
-  };
+  // Close the edit modal and refresh flashcards
+  const closeEditModal = async (updatedFlashcard) => {
+    setIsEditModalOpen(false);
+    setIsEditFlashcardModalOpen(null);
 
-  const editFlashcard = async (updatedFlashcard) => {
-      try {
-          const response = await invoke('updateFlashcard', { cardId: flashcardToEdit.id, updatedData: updatedFlashcard });
-          if (response.success) {
-              setFlashcards(prevFlashcards => 
-                  prevFlashcards.map(card => 
-                      card.id === flashcardToEdit.id ? { ...card, ...updatedFlashcard } : card
-                  )
-              );
-              closeEditFlashcardModal();
-              refreshFlashcardFrontend();
-          } else {
-              console.error('Error editing flashcard:', response.error);
-          }
-      } catch (error) {
-          console.error('Error editing flashcard:', error);
-      }
+    // Refresh the flashcard list by fetching flashcards
+    if (updatedFlashcard) {
+      await loadFlashcards();
+    }
   };
 
   //************************** FETCHING DATA (REUSABLE) *****************************/
@@ -431,15 +419,14 @@ function globalPageModule() {
     
     {/* EDIT FUNCTIONALITY */}
     {/* Flashcard EDIT */}
-    {isEditFlashcardModalOpen && flashcardToEdit && (
-        <ModalDialog heading="Edit Flashcard" onClose={closeEditFlashcardModal}>
-          <EditFlashcardModal
-            flashcard={flashcardToEdit}  // Pass the flashcard to edit
-            onSubmit={(updatedFlashcard) => editFlashcard(updatedFlashcard)}  // Submit the updated flashcard
-            onCancel={closeEditFlashcardModal}
-          />
-        </ModalDialog>
-      )}
+    {isEditFlashcardModalOpen && (
+      <ModalDialog heading="Edit Flashcard" onClose={closeEditModal}>
+        <EditFlashcardModal
+          flashcard={editingFlashcard} // Pass the flashcard to the modal
+          closeEditModal={closeEditModal}
+        />
+      </ModalDialog>
+    )}
     </div>
   );
 }

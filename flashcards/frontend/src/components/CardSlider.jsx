@@ -5,7 +5,8 @@ import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
 import './CardSlider.css';
 
-const CardSlider = ({ cards = [], onDelete  }) => {
+// added onEdit as well!
+const CardSlider = ({ cards = [], onDelete, onEdit  }) => {
 
   // Log the cards received as props
   console.log('Cards received in CARDSLIDER:', cards);
@@ -61,7 +62,7 @@ const CardSlider = ({ cards = [], onDelete  }) => {
                 <h4 className='card-answer'>{card.answer_text || 'No question available'}</h4>
                 <h4 className='card-owner'>By {card.name || 'Unknown'}</h4>
                 <div className='card-button'>
-                  <EditIcon className='card-edit-button' />
+                  <EditIcon className='card-edit-button'  onClick={() => onEdit(card)}/>
                   <DeleteIcon className='card-delete-button' onClick={() => onDelete(card)} />
                 </div>
               </div>

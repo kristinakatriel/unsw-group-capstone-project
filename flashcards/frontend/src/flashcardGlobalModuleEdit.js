@@ -34,7 +34,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardModal }) {
 
   const handleSaveGlobal = async () => {
     try {
-      const response = await invoke('editFlashcard', {
+      const response = await invoke('updateFlashcard', {
         cardId: flashcard.id,
         question_text: question,
         question_image: questionImage,
