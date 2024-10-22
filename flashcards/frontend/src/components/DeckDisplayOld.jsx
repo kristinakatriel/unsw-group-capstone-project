@@ -10,11 +10,6 @@ import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import './DeckDisplay.css';
 
-
-/* ===========================================
- * STYLE DEFINITIONS
- * ===========================================
- */
 const gridStyles = xcss({
     width: '100%',
 });
@@ -28,55 +23,35 @@ const titleContainerStyles = xcss({
 });
 
 const DeckDisplay = ({ deck, startQuizMode }) => {
-
-    // ========================
-    // STATE MANAGEMENT
-    // ========================
-
-    // State hooks to manage modal visibility, the selected flashcard for deletion, and the updated deck state
-    const [isFlashcardDeleteModalOpen, setFlashcardDeleteModalOpen] = useState(false);
-    const [isDeckDeleteModalOpen, setDeckDeleteModalOpen] = useState(false);
+    const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeckModalOpen, setIsDeckModalOpen] = useState(false);
     const [flashcardToDelete, setFlashcardToDelete] = useState(null);
     const [updatedDeck, setUpdatedDeck] = useState(deck);
 
-
-    // ========================
-    // PLACEHOLDER HANDLERS
-    // ========================
-    // Placeholder function for adding the deck to a study session
     const handleAddToStudySession = () => {
       console.log('Add to study session button clicked');
     };
 
-    // Placeholder function for adding a new flashcard
     const handleAddFlashcard = () => {
       console.log('Add Flashcard button clicked');
     };
 
-    // Placeholder function for editing the deck
     const handleEditDeck = () => {
       console.log('Edit Deck button clicked');
     };
 
-    // ========================
-    // FLASHCARD DELETE FUNCTIONALITY
-    // ========================
-
-
-    // Opens the flashcard delete confirmation modal and sets the selected flashcard to delete
-    const openFlashcardDeleteModal = (flashcard) => {
+    // Functions for individual flashcard deletion
+    const openModal = (flashcard) => {
         setFlashcardToDelete(flashcard);
-        setFlashcardDeleteModalOpen(true);
+        setIsModalOpen(true);
     };
 
-    // Closes the flashcard delete confirmation modal and resets the selected flashcard
-    const closeFlashcardDeleteModal = () => {
-        setFlashcardDeleteModalOpen(false);
+    const closeModal = () => {
+        setIsModalOpen(false);
         setFlashcardToDelete(null);
     };
 
-    // Handles the deletion of a flashcard from the deck
-    const confirmFlashcardDelete = async () => {
+    const handleDelete = async () => {
       if (!flashcardToDelete) return;
 
       console.log(`Delete clicked for flashcard ID: ${flashcardToDelete.id} for deck ID: ${deck.id}`);
@@ -95,41 +70,29 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
       } catch (error) {
           console.error('Error in deleting flashcard:', error);
       } finally {
-          closeFlashcardDeleteModal();
+          closeModal();
       }
     };
 
-
-
-    // ========================
-    // DECK DELETE FUNCTIONALITY
-    // ========================
-
-
     // Functions for deck deletion
-    const closeDeckDeleteModal = () => {
-      setDeckDeleteModalOpen(false);
+    const closeDeckModal = () => {
+      setIsDeckModalOpen(false);
     };
 
-    const openDeckDeleteModal = () => {
-        setDeckDeleteModalOpen(true);
+    const openDeckModal = () => {
+        setIsDeckModalOpen(true);
     };
 
     const handleDeleteDeck = () => {
-        console.log('Delete Deck button clicked');
-        openDeckDeleteModal();
-      };
-
-    const confirmDeckDelete = async () => {
-        console.log('Deleting deck permanently')
-        // TODO
-        closeDeckDeleteModal();
+      console.log('Delete Deck button clicked');
+      openDeckModal();
     };
 
-
-
-
-
+    const handleDeckDelete = async () => {
+        console.log('Deleting deck permanently')
+        // TODO
+        closeDeckModal();
+    };
 
     return (
       <div className='deck-display-container'>
@@ -187,7 +150,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                                     />
                                     <DeleteIcon
                                         className="card-delete-button"
-                                        onClick={() => openFlashcardDeleteModal(flashcard)}
+                                        onClick={() => openModal(flashcard)}
                                     />
                                 </div>
                             </div>
@@ -201,8 +164,8 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
 
         {/* Flashcard Delete Modal */}
         <ModalTransition>
-            {isFlashcardDeleteModalOpen && (
-                <Modal onClose={closeFlashcardDeleteModal}>
+            {isModalOpen && (
+                <Modal onClose={closeModal}>
                     <ModalHeader>
                         <Grid gap="space.200" templateAreas={['title close']} xcss={gridStyles}>
                             <Flex xcss={closeContainerStyles} justifyContent="end">
@@ -210,7 +173,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                                     appearance="subtle"
                                     icon={CrossIcon}
                                     label="Close Modal"
-                                    onClick={closeFlashcardDeleteModal}
+                                    onClick={closeModal}
                                 />
                             </Flex>
                             <Flex xcss={titleContainerStyles} justifyContent="start">
@@ -222,8 +185,8 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                         <p>This action cannot be undone.</p>
                     </ModalBody>
                     <ModalFooter>
-                        <Button appearance="subtle" onClick={closeFlashcardDeleteModal}>No</Button>
-                        <Button appearance="danger" onClick={confirmFlashcardDelete}>Yes</Button>
+                        <Button appearance="subtle" onClick={closeModal}>No</Button>
+                        <Button appearance="danger" onClick={handleDelete}>Yes</Button>
                     </ModalFooter>
                 </Modal>
             )}
@@ -231,8 +194,8 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
 
         {/* Deck Delete Modal */}
         <ModalTransition>
-            {isDeckDeleteModalOpen && (
-                <Modal onClose={closeDeckDeleteModal}>
+            {isDeckModalOpen && (
+                <Modal onClose={closeDeckModal}>
                     <ModalHeader>
                         <Grid gap="space.200" templateAreas={['title close']} xcss={gridStyles}>
                             <Flex xcss={closeContainerStyles} justifyContent="end">
@@ -240,7 +203,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                                     appearance="subtle"
                                     icon={CrossIcon}
                                     label="Close Modal"
-                                    onClick={closeDeckDeleteModal}
+                                    onClick={closeDeckModal}
                                 />
                             </Flex>
                             <Flex xcss={titleContainerStyles} justifyContent="start">
@@ -252,8 +215,8 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                         <p>This action cannot be undone.</p>
                     </ModalBody>
                     <ModalFooter>
-                        <Button appearance="subtle" onClick={closeDeckDeleteModal}>No</Button>
-                        <Button appearance="danger" onClick={confirmDeckDelete}>Yes</Button>
+                        <Button appearance="subtle" onClick={closeDeckModal}>No</Button>
+                        <Button appearance="danger" onClick={handleDeckDelete}>Yes</Button>
                     </ModalFooter>
                 </Modal>
             )}
