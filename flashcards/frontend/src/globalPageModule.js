@@ -117,26 +117,6 @@ function globalPageModule() {
 
   };
 
-  //************************** EDITING LOGIC *****************************/
-
-  // TODO: to move it to the modal logic
-  // Open the edit modal
-  const openEditModal = (flashcard) => {
-    setEditingFlashcard(flashcard);
-    setIsEditFlashcardModalOpen(true);
-  };
-
-  // Close the edit modal and refresh flashcards
-  const closeEditModal = async (updatedFlashcard) => {
-    setIsEditFlashcardModalOpen(false);
-
-    // Refresh the flashcard list by fetching flashcards
-    if (updatedFlashcard) {
-      refreshFlashcardFrontend(); 
-      refreshDeckFrontend();
-    }
-  };
-
   //************************** FETCHING DATA (REUSABLE) *****************************/
   const loadFlashcards = async () => {
 
@@ -201,6 +181,23 @@ function globalPageModule() {
     //loadDecks();
     refreshDeckFrontend();  // Refresh after closing modal if new deck was created ****************************************************************************************************
 
+  };
+
+  // Modal logic for editing flashcards
+  // Open the edit modal
+  const openEditModal = (flashcard) => {
+    setEditingFlashcard(flashcard);
+    setIsEditFlashcardModalOpen(true);
+  };
+
+  // Close the edit modal and refresh flashcards
+  // updatedFlashcard is not really needed at the moment
+  const closeEditModal = (updatedFlashcard) => {
+    setIsEditFlashcardModalOpen(false);
+
+    // Refresh the flashcard list by fetching flashcards
+    refreshFlashcardFrontend(); 
+    refreshDeckFrontend();
   };
 
   //************************** INITIAL FETCH ON COMPONENT MOUNT *****************************/
