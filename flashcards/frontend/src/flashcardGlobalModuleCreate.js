@@ -33,7 +33,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
         question_image: null,
         answer_text: answer,
         answer_image: null,
-        hint: 'abababb hint',
+        hint: hint,
         tags: ['no', 'yes'],
       });
 

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { invoke } from '@forge/bridge';
-import './flashcardGlobalModuleCreate.css'; // using the same css file as the flashcardGlobalModuleCreate
+import './flashcardGlobalModuleEdit.css'; // just wanna try this for now... wait
 import './globalPageModule.js';
 import DragNDrop from './components/DragNDrop.jsx';
 
