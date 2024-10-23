@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react';
+import React, { useCallback, useState, useEffect} from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -12,7 +12,7 @@ import './DeckDisplay.css';
 import CreateFlashcardGlobal from '../flashcardGlobalModuleCreate';
 import EditFlashcardGlobal from '../flashcardGlobalModuleEdit'; // for editing flashcards in deck!
 import ModalDialog from '@atlaskit/modal-dialog';
-
+import AddFlashcardsToDeck from '../addFlashcardsToExistingDeck';
 
 
 /* ===========================================
@@ -32,6 +32,35 @@ const titleContainerStyles = xcss({
 });
 
 const DeckDisplay = ({ deck, startQuizMode }) => {
+
+    // //refactoring
+    // const [deckx, setDeck] = useState(null); // To hold the deck data
+    // const [loading, setLoading] = useState(true); // Loading state for the deck
+
+    // const deckId = deck.id;
+    // // Fetch the deck data when the component mounts
+
+    // const loadDecks = async () => {
+    //     try {
+    //         const response = await invoke('getDeck', { payload: { deckId } });
+    //         if (response.success) {
+    //             setDeck(response.deck);
+    //             setUpdatedDeck(response.deck); // Set the initial updatedDeck state
+    //         } else {
+    //             console.error(response.error);
+    //         }
+    //     } catch (error) {
+    //         console.error('Error fetching deck:', error);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // };
+
+
+    // useEffect(() => {
+    //    loadDecks();
+    // }, []); // Dependency array to refetch if deckId changes
+
 
 
 
@@ -56,10 +85,6 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
       console.log('Add to study session button clicked');
     };
 
-    // Placeholder function for adding a new flashcard
-    const handleAddFlashcard = () => {
-      console.log('Add Flashcard button clicked');
-    };
 
 
     // Placeholder function for editing the deck
@@ -74,22 +99,6 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
 
     const [flashcards, setFlashcards] = useState([]);
     const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
-
-
-
-    // const closeFlashcardModal = (shouldRefresh = false) => {
-    //     setIsCreateFlashcardOpen(false);
-
-    //     //loadFlashcards();
-    //     refreshFlashcardFrontend();  // Refresh after closing modal if new flashcard was created****************************************************************************************************
-
-    // };
-
-    // const handleCreateFlashcard = () => {
-    //     setIsCreateFlashcardOpen(true); // Open modal to create flashcard
-    //     console.log('Add Flashcard button clicked');
-    // };
-
 
     const closeFlashcardModal = async (newFlashcard) => {
         // Log the initiation of the modal closing process
@@ -139,6 +148,8 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
         } else {
             console.warn('No new flashcard was provided.');
         }
+
+        //loadDecks();
     };
 
 
@@ -146,6 +157,96 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
         setIsCreateFlashcardOpen(true); // Open modal to create flashcard
         console.log('Add Flashcard button clicked');
     };
+
+
+
+
+
+
+    // ========================
+    // FLASHCARD ADDITION FUNCTIONALITY
+    // ========================
+
+    const [isAddFlashcardModalOpen, setIsAddFlashcardModalOpen] = useState(false);
+
+    const handleAddFlashcard = () => {
+        setIsAddFlashcardModalOpen(true);
+        console.log('Add Flashcard button clicked');
+    };
+
+    const closeAddDeckModal = async (selectedFlashcards = []) => {
+        console.log('closeAddDeckModal invoked. Selected flashcards:', selectedFlashcards);
+
+        setIsAddFlashcardModalOpen(false);
+        console.log('Modal closed. isAddFlashcardModalOpen set to:', false);
+
+        // Resetting the updated deck to the original deck
+        setUpdatedDeck(deck);
+        console.log('Updated deck reset to initial deck state:', deck);
+
+        if (selectedFlashcards.length > 0) {
+            const deckId = deck.id;
+            console.log('Selected flashcards are non-empty. Deck ID:', deckId);
+
+            for (const cardId of selectedFlashcards) {
+                console.log(`Processing flashcard ID: ${cardId} for deck ID: ${deckId}`);
+
+                try {
+                    console.log('Invoking addCardToDeck...');
+                    const addCardResponse = await invoke('addCardToDeck', {
+                        deckId: deckId,
+                        cardId: cardId,
+                    });
+
+                    console.log('Response from addCardToDeck:', addCardResponse);
+
+                    if (addCardResponse.success) {
+                        console.log(`Success: Flashcard ${cardId} added to deck ${deckId}`);
+
+                        setUpdatedDeck((prevDeck) => {
+                            console.log('Previous deck state:', prevDeck);
+                            const cardToAdd = flashcards.find(card => card.id === cardId);
+                            console.log('Card to add:', cardToAdd);
+
+                            if (!cardToAdd) {
+                                console.error(`Card with ID ${cardId} not found in flashcards.`);
+                                return prevDeck; // Return without modifying state
+                            }
+
+                            const newDeckState = {
+                                ...prevDeck,
+                                cards: [...prevDeck.cards, cardToAdd],
+                            };
+
+                            console.log('New deck state after adding flashcard:', newDeckState);
+                            return newDeckState;
+                        });
+                    } else {
+                        console.error(`Failed to add flashcard ${cardId} to deck:`, addCardResponse.error);
+                    }
+                } catch (error) {
+                    console.error('Error invoking addCardToDeck:', error);
+                }
+            }
+        } else {
+            console.warn('No flashcards selected to add.');
+        }
+        //loadDecks();
+
+
+    };
+
+
+    // const handleCheckboxChange = (flashcardId) => {
+    //     if (selectedFlashcards.includes(flashcardId)) {
+    //         setSelectedFlashcards(selectedFlashcards.filter(id => id !== flashcardId));
+    //     } else {
+    //         setSelectedFlashcards([...selectedFlashcards, flashcardId]);
+    //     }
+    // };
+
+
+
 
     // ========================
     // FLASHCARD DELETE FUNCTIONALITY
@@ -387,6 +488,13 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
             </ModalDialog>
         )}
 
+        {/* Deck Modal */}
+        {isAddFlashcardModalOpen && (
+            <ModalDialog heading="Add Flashcards To Deck" onClose={() => closeAddDeckModal(true)}>
+
+                <AddFlashcardsToDeck deck={deck} closeAddDeckModal = {closeAddDeckModal}/>
+            </ModalDialog>
+        )}
         {/* Flashcard Edit Modal */}
         {isFlashcardEditModalOpen && (
             <ModalDialog heading="Edit Flashcard" onClose={() => closeFlashcardEditModal(true)}>
