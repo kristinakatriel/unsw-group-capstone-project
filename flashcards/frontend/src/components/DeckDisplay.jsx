@@ -223,7 +223,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
         setIsEditFlashcardOpen(true);  // Open the edit modal
     };
 
-    const closeEditFlashcardModal = async (updatedFlashcard) => {
+    const closeFlashcardEditModal = async (updatedFlashcard) => {
         setIsEditFlashcardOpen(false); // Close the edit modal
 
         // just to update the flashcard deck display
@@ -389,10 +389,10 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
 
         {/* Flashcard Edit Modal */}
         {isFlashcardEditModalOpen && (
-            <ModalDialog heading="Edit Flashcard" onClose={() => closeEditFlashcardModal(true)}>
+            <ModalDialog heading="Edit Flashcard" onClose={() => closeFlashcardEditModal(true)}>
               <EditFlashcardGlobal
                 flashcard={flashcardToEdit} // editing the flashcard
-                closeEditFlashcardModal={closeEditFlashcardModal} // handle closing etc
+                closeFlashcardEditModal={closeFlashcardEditModal} // handle closing etc
               />
             </ModalDialog>
         )}

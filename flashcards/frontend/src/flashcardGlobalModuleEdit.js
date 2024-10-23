@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { invoke } from '@forge/bridge';
 import './flashcardGlobalModule.css'; // made the css file common
 import './globalPageModule.js';
+import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import DragNDrop from './components/DragNDrop.jsx';
 
-function EditFlashcardGlobal({ flashcard, closeEditFlashcardModal }) {
+function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [hint, setHint] = useState('');
@@ -24,10 +25,10 @@ function EditFlashcardGlobal({ flashcard, closeEditFlashcardModal }) {
 
   // handle this!
   const handleCloseGlobal = () => {
-    if (typeof closeEditFlashcardModal === 'function') {
-      closeFlashcardModal(); // Call the function passed as a prop
+    if (typeof closeFlashcardEditModal === 'function') {
+      closeFlashcardEditModal(); // Call the function passed as a prop
     } else {
-      console.error('closeFlashcardModal is not a function:', closeEditFlashcardModal);
+      console.error('closeFlashcardModal is not a function:', closeFlashcardEditModal);
     }
   };
 
@@ -45,7 +46,7 @@ function EditFlashcardGlobal({ flashcard, closeEditFlashcardModal }) {
 
       if (response && response.success) {
         // Close the modal and pass updated card back
-        closeEditFlashcardModal(response.card);
+        closeFlashcardEditModal(response.card);
       } else {
         console.error('Failed to update flashcard:', response.error);
       }
@@ -68,7 +69,7 @@ function EditFlashcardGlobal({ flashcard, closeEditFlashcardModal }) {
 
   return (
     <div className="global-flashcard-edit">
-      <h2 className="flashcard-title">Edit Flashcard</h2>
+      <h2 className="flashcard-title"><DriveFileRenameOutlineIcon class='global-flashcard-edit-icon'/>Edit Flashcard</h2>
 
       <div className="form-group">
         <label htmlFor="question">Question</label>

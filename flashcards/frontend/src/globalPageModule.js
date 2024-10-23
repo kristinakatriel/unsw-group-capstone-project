@@ -419,7 +419,7 @@ function globalPageModule() {
       <ModalDialog heading="Edit Flashcard" onClose={closeFlashcardEditModal}>
         <EditFlashcardModal
           flashcard={editingFlashcard} // Pass the flashcard to the modal
-          closeEditFlashcardModal={closeFlashcardEditModal}
+          closeFlashcardEditModal={closeFlashcardEditModal}
         />
       </ModalDialog>
     )}
