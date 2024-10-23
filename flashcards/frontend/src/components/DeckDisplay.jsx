@@ -10,6 +10,7 @@ import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import './DeckDisplay.css';
 import CreateFlashcardGlobal from '../flashcardGlobalModuleCreate';
+import EditFlashcardGlobal from '../flashcardGlobalModuleEdit'; // for editing flashcards in deck!
 import ModalDialog from '@atlaskit/modal-dialog';
 
 
@@ -43,7 +44,8 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
     const [isDeckDeleteModalOpen, setDeckDeleteModalOpen] = useState(false);
     const [flashcardToDelete, setFlashcardToDelete] = useState(null);
     const [updatedDeck, setUpdatedDeck] = useState(deck);
-
+    const [isFlashcardEditModalOpen, setIsEditFlashcardOpen] = useState(false); // New state for edit modal
+    const [flashcardToEdit, setFlashcardToEdit] = useState(null); // State to hold the fl
 
 
     // =====   ===================
@@ -213,9 +215,26 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
         closeDeckDeleteModal();
     };
 
+    // ========================
+    // FLASHCARD EDIT FUNCTIONALITY
+    // ========================
+    const handleEdit = (flashcard) => {
+        setFlashcardToEdit(flashcard); // Set the flashcard to be edited
+        setIsEditFlashcardOpen(true);  // Open the edit modal
+    };
 
+    const closeEditFlashcardModal = async (updatedFlashcard) => {
+        setIsEditFlashcardOpen(false); // Close the edit modal
 
-
+        // just to update the flashcard deck display
+        if (updatedFlashcard) {
+            // Update the deck with the edited flashcard
+            setUpdatedDeck((prevDeck) => ({
+                ...prevDeck,
+                cards: prevDeck.cards.map(card => card.id === updatedFlashcard.id ? updatedFlashcard : card),
+            }));
+        }
+    };
 
 
     return (
@@ -358,6 +377,15 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
             </ModalDialog>
         )}
 
+        {/* Flashcard Edit Modal */}
+        {isFlashcardEditModalOpen && (
+            <ModalDialog heading="Edit Flashcard" onClose={() => closeEditFlashcardModal(true)}>
+              <EditFlashcardGlobal
+                flashcard={flashcardToEdit} // editing the flashcard
+                closeFlashcardModal={closeEditFlashcardModal} // handle closing etc
+              />
+            </ModalDialog>
+        )}
 
       </div>
     );
