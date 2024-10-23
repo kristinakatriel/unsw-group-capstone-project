@@ -130,6 +130,34 @@ resolver.define('updateFlashcard', async (req) => {
 
     await storage.set(id, updatedCard);
 
+    // setting the deck with the updated flashcard
+    // Update the flashcard in storage
+    await storage.set(id, updatedCard);
+
+    // Update any decks containing this card
+    const decksResult = await storage.query().limit(25).getMany();
+    if (!decksResult) {
+      return {
+        success: true,
+        card: updatedCard,
+      };
+    }
+
+    for (const { value } of decksResult.results) {
+        const deck = value as Deck;
+
+        // Check if the deck contains the updated card
+        const cardIndex = deck.cards?.findIndex(c => c.id === id);
+        // if it does contain the card + the deck has cards (redundant btw might need to delete later)
+        if (cardIndex !== undefined && cardIndex >= 0 && deck.cards) {
+          // Replace the card in the deck with current card
+            deck.cards[cardIndex] = updatedCard;  
+
+            // Save the updated deck
+            await storage.set(deck.id, deck);
+        }
+    }
+
     return {
         success: true,
         card: updatedCard,
