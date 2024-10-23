@@ -63,7 +63,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
 
 
     // Placeholder function for editing the deck
-    const handleEditDeck = () => {
+    const openFlashcardEditModalDeck = () => {
       console.log('Edit Deck button clicked');
     };
 
@@ -218,7 +218,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
     // ========================
     // FLASHCARD EDIT FUNCTIONALITY
     // ========================
-    const handleEdit = (flashcard) => {
+    const openFlashcardEditModal = (flashcard) => {
         setFlashcardToEdit(flashcard); // Set the flashcard to be edited
         setIsEditFlashcardOpen(true);  // Open the edit modal
     };
@@ -258,7 +258,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
             <button className='deck-display-add-flashcard-icon' onClick={handleAddFlashcard}>
               <AddIcon fontSize='small' /> Add Flashcard
             </button>
-            <button className='deck-display-edit-icon' onClick={handleEditDeck}>
+            <button className='deck-display-edit-icon' onClick={openFlashcardEditModalDeck}>
               <EditIcon fontSize='small' /> Edit Deck
             </button>
             <button className='deck-display-delete-icon' onClick={handleDeleteDeck}>
@@ -292,7 +292,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                                 <div className="card-button">
                                     <EditIcon
                                         className="card-edit-button"
-                                        onClick={() => handleEdit(flashcard)}
+                                        onClick={() => openFlashcardEditModal(flashcard)}
                                     />
                                     <DeleteIcon
                                         className="card-delete-button"
