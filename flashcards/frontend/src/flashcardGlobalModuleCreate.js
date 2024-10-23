@@ -8,7 +8,6 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [hint, setHint] = useState('');
-  const [ownerEmail, setOwnerEmail] = useState('');
   const [questionImage, setQuestionImage] = useState(null);
   const [answerImage, setAnswerImage] = useState(null);
 
