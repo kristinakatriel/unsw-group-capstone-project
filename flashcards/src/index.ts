@@ -86,6 +86,13 @@ resolver.define('updateFlashcard', async (req) => {
         };
     }
 
+    if (req.context.accountId && req.context.accountId != owner) {
+      return {
+        success: false,
+        error: "cannot edit someone else's flashcard"
+      }
+    }
+
     const updatedCard: Card = {
         ...existingCard,
         question_text: question_text || existingCard.question_text,
@@ -115,6 +122,13 @@ resolver.define('deleteFlashcard', async (req) => {
         success: false,
         error: `No card found with id: ${cardId}`,
       };
+    }
+
+    if (req.context.accountId && req.context.accountId != card.owner) {
+      return {
+        success: false,
+        error: "cannot delete someone else's flashcard"
+      }
     }
 
     await storage.delete(cardId);
@@ -241,6 +255,13 @@ resolver.define('updateDeck', async (req) => {
         };
     }
 
+    if (req.context.accountId && req.context.accountId != owner) {
+      return {
+        success: false,
+        error: "cannot edit someone else's deck"
+      }
+    }
+
     const updatedDeck: Deck = {
         ...existingDeck,
         title: title || existingDeck.title,
@@ -267,6 +288,13 @@ resolver.define('deleteDeck', async (req) => {
         success: false,
         error: `No deck found with id: ${deckId}`,
       };
+    }
+
+    if (req.context.accountId && req.context.accountId != deck.owner) {
+      return {
+        success: false,
+        error: "cannot delete someone else's deck"
+      }
     }
 
     await storage.delete(deckId);
@@ -326,6 +354,13 @@ resolver.define('addCardToDeck', async (req) => {
         };
     }
 
+    if (req.context.accountId && req.context.accountId != deck.owner) {
+      return {
+        success: false,
+        error: "cannot edit someone else's deck"
+      }
+    }
+
     deck.cards = [...(deck.cards || []), card];
 
     await storage.set(deckId, deck);
@@ -346,6 +381,13 @@ resolver.define('removeCardFromDeck', async (req) => {
             success: false,
             error: 'Item not found',
         };
+    }
+
+    if (req.context.accountId && req.context.accountId != deck.owner) {
+      return {
+        success: false,
+        error: "cannot edit someone else's deck"
+      }
     }
 
     deck.cards = deck.cards?.filter(c => c.id !== cardId) || [];
