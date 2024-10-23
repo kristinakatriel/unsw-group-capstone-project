@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { invoke, view } from '@forge/bridge';
-import './flashcardGlobalModuleCreate.css';
+import './flashcardGlobalModule.css';
 import './globalPageModule.js';
 import DragNDrop from './components/DragNDrop.jsx';
 

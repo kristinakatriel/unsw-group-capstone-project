@@ -11,6 +11,19 @@
   padding: 30px;
 }
 
+.global-flashcard-edit {
+  background-color: white;
+  font-family: 'Arial', sans-serif;
+  max-width: 400px;
+  margin: 0 auto;
+  padding-top: 30px;
+  padding-right: 30px;
+  padding-left: 30px;
+  padding-bottom: 30px;
+  position: relative;
+  width: 100vw;
+}
+
 h2 {
   font-size: 24px;
   font-weight: bold;
