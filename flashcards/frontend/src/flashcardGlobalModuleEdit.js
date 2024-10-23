@@ -4,12 +4,12 @@ import './flashcardGlobalModule.css'; // made the css file common
 import './globalPageModule.js';
 import DragNDrop from './components/DragNDrop.jsx';
 
-function EditFlashcardGlobal({ flashcard, closeFlashcardModal }) {
+function EditFlashcardGlobal({ flashcard, closeEditFlashcardModal }) {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [hint, setHint] = useState('');
-  const [questionImage, setQuestionImage] = useState(null);
-  const [answerImage, setAnswerImage] = useState(null);
+  // const [questionImage, setQuestionImage] = useState(null);
+  // const [answerImage, setAnswerImage] = useState(null);
 
   // Pre-fill the form with the current flashcard details
   useEffect(() => {
@@ -17,18 +17,17 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardModal }) {
       setQuestion(flashcard.question_text || '');
       setAnswer(flashcard.answer_text || '');
       setHint(flashcard.hint || '');
-      setOwnerEmail(flashcard.owner || '');
-      setQuestionImage(flashcard.question_image || null);
-      setAnswerImage(flashcard.answer_image || null);
+      // setQuestionImage(flashcard.question_image || null);
+      // setAnswerImage(flashcard.answer_image || null);
     }
   }, [flashcard]);
 
   // handle this!
   const handleCloseGlobal = () => {
-    if (typeof closeFlashcardModal === 'function') {
+    if (typeof closeEditFlashcardModal === 'function') {
       closeFlashcardModal(); // Call the function passed as a prop
     } else {
-      console.error('closeFlashcardModal is not a function:', closeFlashcardModal);
+      console.error('closeFlashcardModal is not a function:', closeEditFlashcardModal);
     }
   };
 
@@ -38,15 +37,15 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardModal }) {
       const response = await invoke('updateFlashcard', {
         id: flashcard.id,
         question_text: question,
-        question_image: questionImage,
+        // question_image: questionImage,
         answer_text: answer,
-        answer_image: answerImage,
+        // answer_image: answerImage,
         hint: hint,
       });
 
       if (response && response.success) {
         // Close the modal and pass updated card back
-        closeFlashcardModal(response.card);
+        closeEditFlashcardModal(response.card);
       } else {
         console.error('Failed to update flashcard:', response.error);
       }
@@ -55,17 +54,17 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardModal }) {
     }
   };
 
-  const handleQuestionImageSelected = (files) => {
-    if (files.length > 0) {
-      setQuestionImage(files[0]);
-    }
-  };
+  // const handleQuestionImageSelected = (files) => {
+  //   if (files.length > 0) {
+  //     setQuestionImage(files[0]);
+  //   }
+  // };
 
-  const handleAnswerImageSelected = (files) => {
-    if (files.length > 0) {
-      setAnswerImage(files[0]);
-    }
-  };
+  // const handleAnswerImageSelected = (files) => {
+  //   if (files.length > 0) {
+  //     setAnswerImage(files[0]);
+  //   }
+  // };
 
   return (
     <div className="global-flashcard-edit">
@@ -81,7 +80,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardModal }) {
             placeholder="Edit the question here..."
             className="input-area"
           />
-          <DragNDrop onFilesSelected={handleQuestionImageSelected} />
+          {/* <DragNDrop onFilesSelected={handleQuestionImageSelected} /> */}
         </div>
       </div>
 
@@ -95,12 +94,12 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardModal }) {
             placeholder="Edit the answer here..."
             className="input-area"
           />
-          <DragNDrop onFilesSelected={handleAnswerImageSelected} />
+          {/* <DragNDrop onFilesSelected={handleAnswerImageSelected} /> */}
         </div>
       </div>
 
       <div className="form-group">
-        <label htmlFor="hint">Hint</label>
+        <label htmlFor="hint">Hint (Optional) </label>
         <textarea
           id="hint"
           value={hint ? hint : ''}

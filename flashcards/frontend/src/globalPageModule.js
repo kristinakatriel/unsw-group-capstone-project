@@ -185,14 +185,14 @@ function globalPageModule() {
 
   // Modal logic for editing flashcards
   // Open the edit modal
-  const openEditModal = (flashcard) => {
+  const openFlashcardEditModal = (flashcard) => {
     setEditingFlashcard(flashcard);
     setIsEditFlashcardModalOpen(true);
   };
 
   // Close the edit modal and refresh flashcards
   // updatedFlashcard is not really needed at the moment
-  const closeEditModal = (updatedFlashcard) => {
+  const closeFlashcardEditModal = (updatedFlashcard) => {
     setIsEditFlashcardModalOpen(false);
 
     // Refresh the flashcard list by fetching flashcards
@@ -212,7 +212,7 @@ function globalPageModule() {
 
   //************************** RENDER FUNCTIONS *****************************/
   const renderFlashcardsList = (flashcards) => (
-    <CardSlider cards={flashcards} onDelete={confirmDeleteFlashcard} onEdit={openEditModal}/>
+    <CardSlider cards={flashcards} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
   );
 
   const renderDecksList = (flashdecks) => (
@@ -414,13 +414,12 @@ function globalPageModule() {
           )}
       </ModalTransition>
     
-    {/* EDIT FUNCTIONALITY */}
-    {/* Flashcard EDIT */}
+    {/* EDIT FUNCTIONALITY: Flashcard Edit Modal */}
     {isEditFlashcardModalOpen && (
-      <ModalDialog heading="Edit Flashcard" onClose={closeEditModal}>
+      <ModalDialog heading="Edit Flashcard" onClose={closeFlashcardEditModal}>
         <EditFlashcardModal
           flashcard={editingFlashcard} // Pass the flashcard to the modal
-          closeFlashcardModal={closeEditModal}
+          closeEditFlashcardModal={closeFlashcardEditModal}
         />
       </ModalDialog>
     )}

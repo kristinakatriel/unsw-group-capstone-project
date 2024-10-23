@@ -382,7 +382,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
             <ModalDialog heading="Edit Flashcard" onClose={() => closeEditFlashcardModal(true)}>
               <EditFlashcardGlobal
                 flashcard={flashcardToEdit} // editing the flashcard
-                closeFlashcardModal={closeEditFlashcardModal} // handle closing etc
+                closeEditFlashcardModal={closeEditFlashcardModal} // handle closing etc
               />
             </ModalDialog>
         )}

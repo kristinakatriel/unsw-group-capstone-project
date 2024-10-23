@@ -33,6 +33,7 @@ export interface StudySession {
     num_looked:  number; // -> number of times the study session was done 
 }
 
-export enum AICardsThreshold {
-    minimumLength = 2
-}
+// NOTE: to be used later
+// export enum AICardsThreshold {
+//     minimumLength = 2
+// }

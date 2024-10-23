@@ -1,46 +1,12 @@
 import Resolver from '@forge/resolver';
 import api, { route, storage } from '@forge/api';
-import { Card, Deck, Tag, AICardsThreshold as aicards } from './types';
+import { Card, Deck, Tag } from './types';
 import { v4 as uuidv4 } from 'uuid';
 import { basename } from 'path';
-
 
 const resolver = new Resolver();
 
 const createId = () => uuidv4();
-
-// get user name
-// const getUserName = async (accountId: string) => {
-//   // Construct the body data
-//   const bodyData = {
-//     accountIds: [accountId],  // Confluence expects an array of account IDs
-//   };
-
-//   // Make the API call to fetch the user info
-//   const response = await api.asApp().requestConfluence(route`/wiki/rest/api/user/bulk`, {
-//     method: 'POST',
-//     headers: {
-//       'Accept': 'application/json',
-//       'Content-Type': 'application/json',
-//     },
-//     body: JSON.stringify(bodyData),
-//   });
-
-//   // Check if the response is okay
-//   if (!response.ok) {
-//     throw new Error(`Failed to fetch user information: ${response.status} ${response.statusText}`);
-//   }
-
-//   const data = await response.json();
-
-//   // Return the `publicName` of the user if found
-//   const user = data.results[0];  // Assuming only one accountId is passed, get the first result
-//   if (!user) {
-//     throw new Error('User not found');
-//   }
-
-//   return user.publicName;
-// };
 
 resolver.define('getModule', async (req) => {
   const { moduleKey } = req.context;
