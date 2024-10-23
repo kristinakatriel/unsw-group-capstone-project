@@ -45,7 +45,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
     if (!deckTitle.trim()) {
       console.error('Deck title cannot be empty.');
       return; // Prevents further execution
-  }
+    }
 
     try {
       const response = await invoke('createDeck', {
