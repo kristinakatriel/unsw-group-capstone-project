@@ -35,8 +35,13 @@ permissions:
     - write:confluence-content
     - storage:app
     - read:confluence-user
+    - read:user:confluence
     - read:content-details:confluence
     - read:user:confluence
   content:
     styles:
       - 'unsafe-inline'
+  # external:
+  #   fetch:
+  #     backend:
+  #       - marlin-excited-gibbon.ngrok-free.app

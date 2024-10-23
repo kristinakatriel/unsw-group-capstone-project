@@ -10,6 +10,7 @@ import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import './DeckDisplay.css';
 import CreateFlashcardGlobal from '../flashcardGlobalModuleCreate';
+import EditFlashcardGlobal from '../flashcardGlobalModuleEdit'; // for editing flashcards in deck!
 import ModalDialog from '@atlaskit/modal-dialog';
 import AddFlashcardsToDeck from '../addFlashcardsToExistingDeck';
 
@@ -72,7 +73,8 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
     const [isDeckDeleteModalOpen, setDeckDeleteModalOpen] = useState(false);
     const [flashcardToDelete, setFlashcardToDelete] = useState(null);
     const [updatedDeck, setUpdatedDeck] = useState(deck);
-
+    const [isFlashcardEditModalOpen, setIsEditFlashcardOpen] = useState(false); // New state for edit modal
+    const [flashcardToEdit, setFlashcardToEdit] = useState(null); // State to hold the fl
 
 
     // =====   ===================
@@ -86,7 +88,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
 
 
     // Placeholder function for editing the deck
-    const handleEditDeck = () => {
+    const openFlashcardEditModalDeck = () => {
       console.log('Edit Deck button clicked');
     };
 
@@ -314,9 +316,36 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
         closeDeckDeleteModal();
     };
 
+    // ========================
+    // FLASHCARD EDIT FUNCTIONALITY
+    // ========================
+    const openFlashcardEditModal = (flashcard) => {
+        setFlashcardToEdit(flashcard); // Set the flashcard to be edited
+        setIsEditFlashcardOpen(true);  // Open the edit modal
+    };
 
+    const closeFlashcardEditModal = async (updatedFlashcard) => {
+        setIsEditFlashcardOpen(false); // Close the edit modal
 
-
+        // just to update the flashcard deck display
+        if (updatedFlashcard) {
+            try {
+                // Fetch the updated deck from the resolver
+                const deckResponse = await invoke('getDeck', {
+                    deckId: updatedDeck.id,  // Use the current deck ID
+                });
+    
+                if (deckResponse.success) {
+                    // Update the deck with the fetched deck data
+                    setUpdatedDeck(deckResponse.deck);
+                } else {
+                    console.error('Failed to fetch the updated deck:', deckResponse.error);
+                }
+            } catch (error) {
+                console.error('Error fetching the updated deck:', error);
+            }
+        }
+    };
 
 
     return (
@@ -340,7 +369,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
             <button className='deck-display-add-flashcard-icon' onClick={handleAddFlashcard}>
               <AddIcon fontSize='small' /> Add Flashcard
             </button>
-            <button className='deck-display-edit-icon' onClick={handleEditDeck}>
+            <button className='deck-display-edit-icon' onClick={openFlashcardEditModalDeck}>
               <EditIcon fontSize='small' /> Edit Deck
             </button>
             <button className='deck-display-delete-icon' onClick={handleDeleteDeck}>
@@ -374,7 +403,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                                 <div className="card-button">
                                     <EditIcon
                                         className="card-edit-button"
-                                        onClick={() => handleEdit(flashcard)}
+                                        onClick={() => openFlashcardEditModal(flashcard)}
                                     />
                                     <DeleteIcon
                                         className="card-delete-button"
@@ -464,6 +493,15 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
             <ModalDialog heading="Add Flashcards To Deck" onClose={() => closeAddDeckModal(true)}>
 
                 <AddFlashcardsToDeck deck={deck} closeAddDeckModal = {closeAddDeckModal}/>
+            </ModalDialog>
+        )}
+        {/* Flashcard Edit Modal */}
+        {isFlashcardEditModalOpen && (
+            <ModalDialog heading="Edit Flashcard" onClose={() => closeFlashcardEditModal(true)}>
+              <EditFlashcardGlobal
+                flashcard={flashcardToEdit} // editing the flashcard
+                closeFlashcardEditModal={closeFlashcardEditModal} // handle closing etc
+              />
             </ModalDialog>
         )}
 

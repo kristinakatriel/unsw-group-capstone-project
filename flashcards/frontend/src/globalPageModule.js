@@ -16,6 +16,7 @@ import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import QuizMode from './components/QuizMode';
+import EditFlashcardModal from './flashcardGlobalModuleEdit';
 
 const gridStyles = xcss({
     width: '100%',
@@ -46,6 +47,10 @@ function globalPageModule() {
   // State for FLASHCARD deletion and confirmation
   const [flashcardToDelete, setFlashcardToDelete] = useState(null);
   const [isDeleteFlashcardConfirmOpen, setIsDeleteFlashcardConfirmOpen] = useState(false);
+
+  // State for FLASHCARD editing and confirmation
+  const [editingFlashcard, setEditingFlashcard] = useState(null); // Store the flashcard being edited
+  const [isEditFlashcardModalOpen, setIsEditFlashcardModalOpen] = useState(false);
 
   // State for DECK deletion and confirmation
   const [deckToDelete, setDeckToDelete] = useState(null);
@@ -178,6 +183,23 @@ function globalPageModule() {
 
   };
 
+  // Modal logic for editing flashcards
+  // Open the edit modal
+  const openFlashcardEditModal = (flashcard) => {
+    setEditingFlashcard(flashcard);
+    setIsEditFlashcardModalOpen(true);
+  };
+
+  // Close the edit modal and refresh flashcards
+  // updatedFlashcard is not really needed at the moment
+  const closeFlashcardEditModal = (updatedFlashcard) => {
+    setIsEditFlashcardModalOpen(false);
+
+    // Refresh the flashcard list by fetching flashcards
+    refreshFlashcardFrontend(); 
+    refreshDeckFrontend();
+  };
+
   //************************** INITIAL FETCH ON COMPONENT MOUNT *****************************/
   useEffect(() => {
 
@@ -190,7 +212,7 @@ function globalPageModule() {
 
   //************************** RENDER FUNCTIONS *****************************/
   const renderFlashcardsList = (flashcards) => (
-    <CardSlider cards={flashcards} onDelete={confirmDeleteFlashcard} />
+    <CardSlider cards={flashcards} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
   );
 
   const renderDecksList = (flashdecks) => (
@@ -391,6 +413,16 @@ function globalPageModule() {
               </Modal>
           )}
       </ModalTransition>
+    
+    {/* EDIT FUNCTIONALITY: Flashcard Edit Modal */}
+    {isEditFlashcardModalOpen && (
+      <ModalDialog heading="Edit Flashcard" onClose={closeFlashcardEditModal}>
+        <EditFlashcardModal
+          flashcard={editingFlashcard} // Pass the flashcard to the modal
+          closeFlashcardEditModal={closeFlashcardEditModal}
+        />
+      </ModalDialog>
+    )}
     </div>
   );
 }
