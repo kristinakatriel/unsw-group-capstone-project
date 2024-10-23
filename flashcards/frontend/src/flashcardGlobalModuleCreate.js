@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { invoke, view } from '@forge/bridge';
-import './flashcardGlobalModuleCreate.css';
+import './flashcardGlobalModule.css';
 import './globalPageModule.js';
 import DragNDrop from './components/DragNDrop.jsx';
 
@@ -8,9 +8,8 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [hint, setHint] = useState('');
-  const [ownerEmail, setOwnerEmail] = useState('');
-  const [questionImage, setQuestionImage] = useState(null);
-  const [answerImage, setAnswerImage] = useState(null);
+  // const [questionImage, setQuestionImage] = useState(null);
+  // const [answerImage, setAnswerImage] = useState(null);
 
 
 
@@ -33,7 +32,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
         question_image: null,
         answer_text: answer,
         answer_image: null,
-        hint: 'abababb hint',
+        hint: hint,
         tags: ['no', 'yes'],
       });
 
@@ -44,8 +43,8 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
       setQuestion('');
       setAnswer('');
       setHint('');
-      setQuestionImage(null);
-      setAnswerImage(null);
+      // setQuestionImage(null);
+      // setAnswerImage(null);
       console.log('Flashcard saved?:', response.card);
       if (response && response.success) {
           // Pass the new flashcard back to the close function
@@ -58,19 +57,19 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
     }
   };
 
-  const handleQuestionImageSelected = (files) => {
-    //console.log('Function called: handleQuestionImageSelected');
-    if (files.length > 0) {
-      setQuestionImage(files[0]);
-    }
-  };
+  // const handleQuestionImageSelected = (files) => {
+  //   //console.log('Function called: handleQuestionImageSelected');
+  //   if (files.length > 0) {
+  //     setQuestionImage(files[0]);
+  //   }
+  // };
 
-  const handleAnswerImageSelected = (files) => {
-    //console.log('Function called: handleAnswerImageSelected');
-    if (files.length > 0) {
-      setAnswerImage(files[0]);
-    }
-  };
+  // const handleAnswerImageSelected = (files) => {
+  //   //console.log('Function called: handleAnswerImageSelected');
+  //   if (files.length > 0) {
+  //     setAnswerImage(files[0]);
+  //   }
+  // };
 
   return (
     <div className="global-flashcard-creation">
@@ -86,7 +85,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
             placeholder="Type the question here..."
             className="input-area"
           />
-          <DragNDrop onFilesSelected={handleQuestionImageSelected} />
+          {/* <DragNDrop onFilesSelected={handleQuestionImageSelected} /> */}
         </div>
       </div>
 
@@ -100,7 +99,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
             placeholder="Type the answer here..."
             className="input-area"
           />
-          <DragNDrop onFilesSelected={handleAnswerImageSelected} />
+          {/* <DragNDrop onFilesSelected={handleAnswerImageSelected} /> */}
         </div>
       </div>
 

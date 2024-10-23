@@ -25,3 +25,15 @@ export interface Tag {
     description?: string;
     owner: string;
 }
+
+// adding study sesh in
+export interface StudySession {
+    Deck: Deck;
+    left_to_master: number; // -> number of cards left to learn
+    num_looked:  number; // -> number of times the study session was done 
+}
+
+// NOTE: to be used later
+// export enum AICardsThreshold {
+//     minimumLength = 2
+// }
