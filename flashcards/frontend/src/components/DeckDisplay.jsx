@@ -228,11 +228,21 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
 
         // just to update the flashcard deck display
         if (updatedFlashcard) {
-            // Update the deck with the edited flashcard
-            setUpdatedDeck((prevDeck) => ({
-                ...prevDeck,
-                cards: prevDeck.cards.map(card => card.id === updatedFlashcard.id ? updatedFlashcard : card),
-            }));
+            try {
+                // Fetch the updated deck from the resolver
+                const deckResponse = await invoke('getDeck', {
+                    deckId: updatedDeck.id,  // Use the current deck ID
+                });
+    
+                if (deckResponse.success) {
+                    // Update the deck with the fetched deck data
+                    setUpdatedDeck(deckResponse.deck);
+                } else {
+                    console.error('Failed to fetch the updated deck:', deckResponse.error);
+                }
+            } catch (error) {
+                console.error('Error fetching the updated deck:', error);
+            }
         }
     };
 
