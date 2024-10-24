@@ -16,6 +16,7 @@ import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import QuizMode from './components/QuizMode';
+import StudyMode from './components/StudyMode';
 import EditFlashcardModal from './flashcardGlobalModuleEdit';
 
 const gridStyles = xcss({
@@ -61,6 +62,9 @@ function globalPageModule() {
 
   // State for breadcrumbs
   const [breadcrumbItems, setBreadcrumbItems] = useState([{ href: '#', text: 'FLASH (Home)' }]);
+
+  // State for study mode
+  const [isStudyMode, setIsStudyMode] = useState(false);
 
   // State for quizmode
   const [isQuizMode, setIsQuizMode] = useState(false);
@@ -223,6 +227,7 @@ function globalPageModule() {
   const onDeckClick = (deck) => {
     console.log(`Deck clicked: ${deck.title}`); // Log when a deck is clicked
     setSelectedDeck(deck);
+    setIsStudyMode(false);
     setIsQuizMode(false);
     setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]);
     console.log('Selected Deck:', deck); // Log the currently selected deck
@@ -232,6 +237,7 @@ function globalPageModule() {
   const goBackToHome = () => {
     console.log('Going back to FLASH (Home)'); // Log when going back to Home
     setSelectedDeck(null);
+    setIsStudyMode(false);
     setIsQuizMode(false);
     setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }]);
     refreshDeckFrontend();
@@ -239,6 +245,48 @@ function globalPageModule() {
     console.log('Current Breadcrumb Items:', [{ href: '#', text: 'FLASH (Home)' }]); // Log breadcrumb items
   };
 
+  const goBackToDeck = () => {
+    console.log('Going back to Deck'); // Log when going back to the deck
+    setIsStudyMode(false);
+    setIsQuizMode(false);
+    setBreadcrumbItems(prevItems => prevItems.slice(0, -1));
+    console.log('Current Breadcrumb Items:', prevItems.slice(0, -1)); // Log breadcrumb items
+  };
+
+  //************************** STUDY MODE FUNCTIONS *****************************/
+  const studyMode = () => {
+    console.log('Entering Study Mode'); // Log when entering study mode
+    setIsStudyMode(true);
+    setBreadcrumbItems(prevItems => [
+        ...prevItems,
+        { href: '#', text: 'Study Mode' }
+    ]);
+  };
+
+  if (isStudyMode) {
+    return (
+      <div>
+        <Breadcrumbs>
+          {breadcrumbItems.map((item, index) => (
+            <BreadcrumbsItem
+              key={index}
+              href={item.href}
+              text={item.text}
+              onClick={() => {
+                if (item.text === 'FLASH (Home)') {
+                  goBackToHome();
+                } else if (item.text === selectedDeck.title) {
+                  goBackToDeck();
+                }
+              }}
+            />
+          ))}
+        </Breadcrumbs>
+        <StudyMode deck={selectedDeck} onBack={goBackToDeck} />
+      </div>
+    );
+  }
+  
   //************************** QUIZ MODE FUNCTIONS *****************************/
   const quizMode = () => {
     console.log('Entering Quiz Mode'); // Log when entering quiz mode
@@ -247,14 +295,6 @@ function globalPageModule() {
         ...prevItems,
         { href: '#', text: 'Quiz Mode' }
     ]);
-    console.log('Current Breadcrumb Items:', [...prevItems, { href: '#', text: 'Quiz Mode' }]); // Log breadcrumb items
-  };
-
-  const goBackToDeck = () => {
-    console.log('Going back to Deck'); // Log when going back to the deck
-    setIsQuizMode(false);
-    setBreadcrumbItems(prevItems => prevItems.slice(0, -1));
-    console.log('Current Breadcrumb Items:', prevItems.slice(0, -1)); // Log breadcrumb items
   };
 
   if (isQuizMode) {
@@ -293,7 +333,7 @@ function globalPageModule() {
               onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined} />
           ))}
         </Breadcrumbs>
-        <DeckDisplay deck={selectedDeck} startQuizMode={quizMode} />
+        <DeckDisplay deck={selectedDeck} startStudyMode={studyMode} startQuizMode={quizMode} />
       </div>
     );
   }

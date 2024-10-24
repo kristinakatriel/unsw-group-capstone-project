@@ -4,9 +4,12 @@
   "private": true,
   "homepage": ".",
   "dependencies": {
+    "@atlaskit/analytics-next": "^10.1.1",
     "@atlaskit/breadcrumbs": "^13.0.1",
+    "@atlaskit/button": "^20.3.0",
     "@atlaskit/css-reset": "^6.6.2",
-    "@atlaskit/modal-dialog": "^12.17.5",
+    "@atlaskit/icon": "^22.23.0",
+    "@atlaskit/modal-dialog": "^12.17.8",
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@forge/bridge": "4.0.0",
@@ -20,6 +23,7 @@
     "uuid": "^10.0.0"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@types/uuid": "^10.0.0",
     "react-scripts": "^5.0.1"
   },

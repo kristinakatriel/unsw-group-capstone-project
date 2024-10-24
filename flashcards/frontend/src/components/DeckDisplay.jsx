@@ -3,6 +3,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import QuizIcon from '@mui/icons-material/Quiz';
+import StyleIcon from '@mui/icons-material/Style';
 import { invoke } from '@forge/bridge';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
@@ -31,7 +32,7 @@ const titleContainerStyles = xcss({
     gridArea: 'title',
 });
 
-const DeckDisplay = ({ deck, startQuizMode }) => {
+const DeckDisplay = ({ deck, startStudyMode, startQuizMode }) => {
 
     // //refactoring
     // const [deckx, setDeck] = useState(null); // To hold the deck data
@@ -376,8 +377,8 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
           <div className='title-left-buttons'>
             <h1>{updatedDeck.title}</h1>
             <div className='left-buttons'>
-              <button className='deck-display-add-study-session-icon' onClick={handleAddToStudySession}>
-                <AddIcon fontSize='small' /> Add to study session
+              <button className='deck-display-add-study-session-icon' onClick={startStudyMode}>
+                <StyleIcon fontSize='small' /> Study Mode
               </button>
               <button className='deck-display-quiz-icon' onClick={startQuizMode}>
                 <QuizIcon fontSize='small' /> Quiz Mode
