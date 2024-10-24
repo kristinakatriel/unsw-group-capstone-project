@@ -247,6 +247,7 @@ function globalPageModule() {
 
   const goBackToDeck = () => {
     console.log('Going back to Deck'); // Log when going back to the deck
+    setIsStudyMode(false);
     setIsQuizMode(false);
     setBreadcrumbItems(prevItems => prevItems.slice(0, -1));
     console.log('Current Breadcrumb Items:', prevItems.slice(0, -1)); // Log breadcrumb items
@@ -260,7 +261,6 @@ function globalPageModule() {
         ...prevItems,
         { href: '#', text: 'Study Mode' }
     ]);
-    console.log('Current Breadcrumb Items:', [...prevItems, { href: '#', text: 'Study Mode' }]); // Log breadcrumb items
   };
 
   if (isStudyMode) {
@@ -295,7 +295,6 @@ function globalPageModule() {
         ...prevItems,
         { href: '#', text: 'Quiz Mode' }
     ]);
-    console.log('Current Breadcrumb Items:', [...prevItems, { href: '#', text: 'Quiz Mode' }]); // Log breadcrumb items
   };
 
   if (isQuizMode) {

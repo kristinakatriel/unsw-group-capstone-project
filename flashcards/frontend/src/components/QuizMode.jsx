@@ -89,19 +89,19 @@ const QuizMode = ({ deck }) => {
             </h4>
           </div>
           <div
-            className={`flip-card ${isFlipped ? 'flipped' : ''} ${cardStatus === 'correct' ? 'correct-card' : cardStatus === 'wrong' ? 'wrong-card' : ''}`}
+            className={`quiz-flip-card ${isFlipped ? 'flipped' : ''} ${cardStatus === 'correct' ? 'correct-card' : cardStatus === 'wrong' ? 'wrong-card' : ''}`}
             onClick={toggleFlip}
             id="flipCard"
           >
-            <div className="flip-card-inner">
-              <div className="flip-card-front">
-                <div className="flip-card-front-hint" onClick={handleHintClick}>
+            <div className='quiz-flip-card-inner'>
+              <div className='quiz-flip-card-front'>
+                <div className='quiz-flip-card-front-hint' onClick={handleHintClick}>
                   <LightbulbIcon />
-                  <div className="flip-card-front-hint-hidden">Click to open Hint!</div>
+                  <div className='quiz-flip-card-front-hint-hidden'>Click to open Hint!</div>
                 </div>
                 <h1>{currentCard.question_text}</h1>
               </div>
-              <div className="flip-card-back">
+              <div className='quiz-flip-card-back'>
                 <h1>{currentCard.answer_text}</h1>
               </div>
             </div>
