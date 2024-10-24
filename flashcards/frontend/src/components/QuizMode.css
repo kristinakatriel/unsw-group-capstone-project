@@ -39,7 +39,7 @@
   background-color: transparent;
   perspective: 1000px;
   height: 300px;
-  width: 90%;
+  width: 80%;
   overflow: visible;
   box-sizing: border-box;
   margin: 0 auto;
@@ -69,6 +69,20 @@
   box-sizing: border-box; 
   overflow: hidden;
   border: 4px solid #f1f1f1;
+  flex-direction: column; 
+}
+
+.flip-card-front-hint {
+  position: absolute;
+  top: 10px;
+  right: 10px; 
+  cursor: pointer; 
+  color: lightgrey;
+  transition: color 0.3s; 
+}
+
+.flip-card-front-hint:hover {
+  color: darkgrey; 
 }
 
 .flip-card-back {
@@ -77,4 +91,14 @@
 
 .flip-card.flipped .flip-card-inner {
   transform: rotateX(180deg);
+}
+
+.flip-card-front-hint-hidden {
+  position: absolute;
+  transform: translateX(-50%);
+  display: none;
+}
+
+.flip-card-front-hint:hover .flip-card-front-hint-hidden {
+  display: block; 
 }
