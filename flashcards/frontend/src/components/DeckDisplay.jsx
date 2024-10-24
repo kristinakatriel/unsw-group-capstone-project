@@ -228,9 +228,31 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                     console.error('Error invoking addCardToDeck:', error);
                 }
             }
+
+
+
+
         } else {
             console.warn('No flashcards selected to add.');
         }
+
+        try {
+            // Fetch the updated deck from the resolver
+            const deckResponse = await invoke('getDeck', {
+                deckId: updatedDeck.id,  // Use the current deck ID
+            });
+
+            if (deckResponse.success) {
+                // Update the deck with the fetched deck data
+                setUpdatedDeck(deckResponse.deck);
+            } else {
+                console.error('Failed to fetch the updated deck:', deckResponse.error);
+            }
+        } catch (error) {
+            console.error('Error fetching the updated deck:', error);
+        }
+
+
         //loadDecks();
 
 
@@ -334,7 +356,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                 const deckResponse = await invoke('getDeck', {
                     deckId: updatedDeck.id,  // Use the current deck ID
                 });
-    
+
                 if (deckResponse.success) {
                     // Update the deck with the fetched deck data
                     setUpdatedDeck(deckResponse.deck);
