@@ -85,22 +85,17 @@ FIX Option 2 (call different thingys in the .css file depending on if cards or d
 }
 
 .card-list .card-link .card-question {
-  font-size: 12px;
-  color: lightgrey;
-  font-weight: bold;
-  margin-bottom: 5px;
-}
-
-.card-list .card-link .card-answer {
   font-size: 16px;
+  font-weight: bold;
   color: #000;
   margin-bottom: 10px;
 }
 
-.card-list .card-link .card-flashcard-amount {
-  font-size: 16px;
-  color: #777;
+.card-list .card-link .card-answer {
+  font-size: 12px;
+  color: #000;
   margin-bottom: 10px;
+  margin-bottom: 5px;
 }
 
 .card-list .card-link .card-owner {
