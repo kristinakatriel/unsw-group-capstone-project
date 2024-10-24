@@ -199,6 +199,61 @@ resolver.define('getAllFlashcards', async () => {
   };
 });
 
+// adding generating q&a through ai flashcards
+resolver.define('generateQA', async (req) => {
+  // get text
+  const { text } = req.payload;
+
+  // get the flashcards generated using the external url
+  const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_qa", {  // the url which we need to generate the flashcards
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ text }),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    return {
+      success: false,
+      error: 'Failed to generate Q&A from text',
+    };
+  }
+  // this returns a json of q&a pairs, which can be displayed in the context menu
+  return data;
+   // alternative solution: if the q&a pairs are not meant to be shown for the user to select,
+  // then it can be created as flashcards right away
+  // const generatedFlashcards = await response.json();  // Q&A pairs
+
+  // // Store the created flashcards in the system
+  // const createdFlashcards = [];
+  // for (const { question, answer } of generatedFlashcards) {
+  //   const cardId = createId();
+  //   const newCard = {
+  //     id: cardId,
+  //     question_text: question,
+  //     answer_text: answer,
+  //     owner: req.context.accountId,
+  //     tags: [],  // you can extend this as needed
+  //     hint: '',
+  //     question_image: null,  // assuming no images in this case
+  //     answer_image: null,
+  //   };
+
+  //   // Save the new card in storage
+  //   await storage.set(cardId, newCard);
+  //   createdFlashcards.push(newCard);
+  // }
+
+  // return {
+  //   success: true,
+  //   cards: createdFlashcards,
+  // };
+});
+
+
 resolver.define('createDeck', async (req) => {
   const { title, description, cards: flashcards } = req.payload as Omit<Deck, 'id'>;
 
