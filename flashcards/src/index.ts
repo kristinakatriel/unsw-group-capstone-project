@@ -15,9 +15,9 @@ resolver.define('getModule', async (req) => {
 
 
 resolver.define('createFlashcard', async (req) => {
-  const { question_text, question_image, answer_text, answer_image, hint, tags } = req.payload as Omit<Card, 'id' | 'owner'>;
+  const { front, back, hint } = req.payload as Omit<Card, 'id' | 'owner'>;
 
-  if (!question_text || !answer_text || !req.context.accountId) {
+  if (!front || !back || !req.context.accountId) {
     return {
       success: false,
       error: 'Invalid input: question, answer, owner required',
@@ -51,12 +51,9 @@ resolver.define('createFlashcard', async (req) => {
 
   const cardId = createId();
   const card = {
-    question_text,
-    question_image,
-    answer_text,
-    answer_image,
+    front,
+    back,
     hint,
-    tags,
     owner: req.context.accountId,
     id: cardId,
     name: name
@@ -73,7 +70,7 @@ resolver.define('createFlashcard', async (req) => {
 
 
 resolver.define('updateFlashcard', async (req) => {
-    const { id, question_text, question_image, answer_text, answer_image, hint, tags, owner } = req.payload as Card;
+    const { id, front, back, hint, owner } = req.payload as Card;
 
     const existingCard = await storage.get(id) as Card | undefined;
     if (!existingCard) {
@@ -85,12 +82,9 @@ resolver.define('updateFlashcard', async (req) => {
 
     const updatedCard: Card = {
         ...existingCard,
-        question_text: question_text || existingCard.question_text,
-        question_image: question_image || existingCard.question_image,
-        answer_text: answer_text || existingCard.answer_text,
-        answer_image: answer_image || existingCard.answer_image,
+        front: front || existingCard.front,
+        back: back || existingCard.back,
         hint: hint || existingCard.hint,
-        tags: tags || existingCard.tags,
         owner: owner || existingCard.owner,
     };
 
@@ -184,7 +178,7 @@ resolver.define('getAllFlashcards', async () => {
 
   result.results.forEach(({ value }) => {
     console.log('value:', value);
-    if ('answer_text' in value) {
+    if ('back' in value) {
 
       allFlashcards.push(value as Card);
     }
@@ -230,7 +224,7 @@ resolver.define('createDeck', async (req) => {
       let data = await response.json();
       name = data.results[0].publicName;
     } else {
-      name = "unknown2"
+      name = "unknown0"
     };
   }
 
