@@ -1,0 +1,24 @@
+# GIT IGNORE - ROOT SETTINGS
+
+/node_modules/
+
+/package-lock.json
+/yarn.lock
+
+/dist/
+/build/
+
+/*.log
+
+*.tmp
+.cache/
+
+.env
+.env.local
+
+.DS_Store
+Thumbs.db
+
+.vscode/
+.idea/
+*.sublime*/
