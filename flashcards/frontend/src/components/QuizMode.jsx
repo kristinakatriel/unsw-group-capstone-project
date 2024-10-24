@@ -4,20 +4,28 @@ import ArrowRightIcon from '@atlaskit/icon/glyph/arrow-right';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import QuestionIcon from '@atlaskit/icon/glyph/question';
 import CheckIcon from '@atlaskit/icon/glyph/check';
+import LightbulbIcon from '@atlaskit/icon/glyph/lightbulb'
 import './QuizMode.css';
 
 const QuizMode = ({ deck }) => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
+  const [isFlipped, setIsFlipped] = useState(false);
 
   const flashcards = deck.cards;
   const totalCards = flashcards.length;
 
   const goToPreviousCard = () => {
     setCurrentCardIndex((prevIndex) => Math.max(prevIndex - 1, 0));
+    setIsFlipped(false); 
   };
 
   const goToNextCard = () => {
     setCurrentCardIndex((prevIndex) => Math.min(prevIndex + 1, totalCards - 1));
+    setIsFlipped(false); 
+  };
+
+  const toggleFlip = () => {
+    setIsFlipped((prevFlipped) => !prevFlipped); 
   };
 
   const currentCard = flashcards[currentCardIndex];
@@ -30,12 +38,13 @@ const QuizMode = ({ deck }) => {
       <div className='quiz-mode-progress-bar'></div>
       <div className='quiz-mode-timer'></div>
       {currentCard ? (
-        <div class="flip-card">
-          <div class="flip-card-inner">
-            <div class="flip-card-front">
-            <h1>{currentCard.question_text}</h1>
+        <div className={`flip-card ${isFlipped ? 'flipped' : ''}`} onClick={toggleFlip} id="flipCard">
+          <div className='flip-card-inner'>
+            <div className='flip-card-front'>
+              <LightbulbIcon />
+              <h1>{currentCard.question_text}</h1>
             </div>
-            <div class="flip-card-back">
+            <div className='flip-card-back'>
               <h1>{currentCard.answer_text}</h1>
             </div>
           </div>
