@@ -26,35 +26,41 @@ FIX Option 2 (call different thingys in the .css file depending on if cards or d
 .deck-list .deck-item {
   list-style: none;
 }
+
 .deck-list .deck-item .deck-link {
-  display: block;
-  background: #ffffff;  /* Overall background */
-  padding: 14px;
+  margin: 40px 10px 8px 10px;
+  padding: 12px;
   border-radius: 10px;
-  text-decoration: none;
-  border: 2px solid transparent;
-  box-shadow: 0 0 6px rgba(0, 0, 0, 0.2);
-  margin: 8px 10px;
-  position: relative; /* To position the top banner */
-  overflow: hidden; /* Ensure the banner doesn't overlap the border */
+  filter: drop-shadow(0 0 3px grey);
+  background: white;
+  position: relative;
 }
 
-/* Add the top banner */
 .deck-list .deck-item .deck-link::before {
-  content: "";
-  display: block;
+    content:  '';
+    position: absolute;
+    top: -18px;
+    width: 200px;
+    height: 25px;
+    background: white;
+    border-radius: 25px 0 0 0;
+    clip-path: path('M 0 0 L 160 0 C 185 2, 175 16, 200 18 L 0 50 z');
+    left: 0;
+}
+
+.deck-list .deck-item .deck-link::after {
+  content: '';
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 10%;  /* Top 1/4 of the deck */
-  background-color: black;; /* Grey banner color */
-  border-top-left-radius: 10px;
-  border-top-right-radius: 10px;
+  left:  40px;
+  width: 85px;
+  height: 10px;
+  top: -18px;
+  background: rgb(12,102,228);
+  border-radius: 0 0 5px 5px;
 }
 
 .deck-list .deck-item .deck-link:hover {
-  border-color: #5372F0;
+  border-color: rgb(1,85,204);
 }
 
 .deck-list .deck-link .deck-tags {

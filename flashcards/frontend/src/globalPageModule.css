@@ -23,7 +23,7 @@
 }
 
 .global-page-flash-icon {
-  color: #5372F0;
+  color: rgb(12,102,228);
   margin-right: 10px;
   width: 40px !important;
   height: 40px !important;
@@ -48,7 +48,7 @@
 
 .global-page-create-flashcard-button,
 .global-page-create-deck-button {
-  background-color: #5372F0;
+  background-color: rgb(12,102,228);
   color: white;
   padding: 5px 10px;
   border: none;
@@ -60,5 +60,5 @@
 }
 
 .global-page-create-flashcard-button:hover {
-  background-color: #2A4BA0;
+  background-color: rgb(1,85,204);
 }
