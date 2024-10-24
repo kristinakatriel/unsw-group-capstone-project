@@ -23,6 +23,7 @@
   transition: background-color 0.3s;
   margin-top: 10px;
   margin-bottom: 10px;
+  border-radius: 10px;
 }
 
 .quiz-mode-wrong-button {
