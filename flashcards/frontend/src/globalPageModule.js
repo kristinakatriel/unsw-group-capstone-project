@@ -60,7 +60,7 @@ function globalPageModule() {
   const [selectedDeck, setSelectedDeck] = useState(null);
 
   // State for breadcrumbs
-  const [breadcrumbItems, setBreadcrumbItems] = useState([{ href: '#', text: 'Home' }]);
+  const [breadcrumbItems, setBreadcrumbItems] = useState([{ href: '#', text: 'FLASH (Home)' }]);
 
   // State for quizmode
   const [isQuizMode, setIsQuizMode] = useState(false);
@@ -224,19 +224,19 @@ function globalPageModule() {
     console.log(`Deck clicked: ${deck.title}`); // Log when a deck is clicked
     setSelectedDeck(deck);
     setIsQuizMode(false);
-    setBreadcrumbItems([{ href: '#', text: 'Home' }, { href: '#', text: deck.title }]);
+    setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]);
     console.log('Selected Deck:', deck); // Log the currently selected deck
-    console.log('Current Breadcrumb Items:', [{ href: '#', text: 'Home' }, { href: '#', text: deck.title }]); // Log breadcrumb items
+    console.log('Current Breadcrumb Items:', [{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]); // Log breadcrumb items
   };
 
   const goBackToHome = () => {
-    console.log('Going back to Home'); // Log when going back to Home
+    console.log('Going back to FLASH (Home)'); // Log when going back to Home
     setSelectedDeck(null);
     setIsQuizMode(false);
-    setBreadcrumbItems([{ href: '#', text: 'Home' }]);
+    setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }]);
     refreshDeckFrontend();
     refreshFlashcardFrontend();
-    console.log('Current Breadcrumb Items:', [{ href: '#', text: 'Home' }]); // Log breadcrumb items
+    console.log('Current Breadcrumb Items:', [{ href: '#', text: 'FLASH (Home)' }]); // Log breadcrumb items
   };
 
   //************************** QUIZ MODE FUNCTIONS *****************************/
@@ -267,7 +267,7 @@ function globalPageModule() {
               href={item.href}
               text={item.text}
               onClick={() => {
-                if (item.text === 'Home') {
+                if (item.text === 'FLASH (Home)') {
                   goBackToHome();
                 } else if (item.text === selectedDeck.title) {
                   goBackToDeck();
@@ -290,7 +290,7 @@ function globalPageModule() {
               key={index}
               href={item.href}
               text={item.text}
-              onClick={item.text === 'Home' ? goBackToHome : undefined} />
+              onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined} />
           ))}
         </Breadcrumbs>
         <DeckDisplay deck={selectedDeck} startQuizMode={quizMode} />
@@ -300,12 +300,6 @@ function globalPageModule() {
 
   return (
     <div className='global-page-container'>
-
-      <Breadcrumbs>
-        {breadcrumbItems.map((item, index) => (
-          <BreadcrumbsItem key={index} href={item.href} text={item.text} onClick={item.text === 'Home' ? goBackToHome : undefined} />
-        ))}
-      </Breadcrumbs>
 
       <div className='global-page-headline'><FlashOnIcon className='global-page-flash-icon'/> FLASH</div>
       <div className='global-page-subheadline'>The Forge App that allows you to create flashcards in a flash</div>
