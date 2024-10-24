@@ -44,3 +44,7 @@ forge install
 ## Support
 
 See [Get help](https://developer.atlassian.com/platform/forge/get-help/) for how to get help and provide feedback.
+
+## Update to frontend -> package.json
+
+```"start_uvicorn_ngrok": "../start_uvicorn_ngrok"```
