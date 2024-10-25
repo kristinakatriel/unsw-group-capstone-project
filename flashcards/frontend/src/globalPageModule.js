@@ -19,7 +19,7 @@ import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import QuizMode from './components/QuizMode';
 import StudyMode from './components/StudyMode';
 import EditFlashcardModal from './flashcardGlobalModuleEdit';
-
+import EditDeckModal from './deckModuleEdit';
 const gridStyles = xcss({
     width: '100%',
 });
@@ -53,6 +53,11 @@ function globalPageModule() {
   // State for FLASHCARD editing and confirmation
   const [editingFlashcard, setEditingFlashcard] = useState(null); // Store the flashcard being edited
   const [isEditFlashcardModalOpen, setIsEditFlashcardModalOpen] = useState(false);
+
+  // State for DECK editing and confirmation
+   const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
+   const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
+
 
   // State for DECK deletion and confirmation
   const [deckToDelete, setDeckToDelete] = useState(null);
@@ -219,9 +224,31 @@ function globalPageModule() {
     setIsEditFlashcardModalOpen(false);
 
     // Refresh the flashcard list by fetching flashcards
-    refreshFlashcardFrontend(); 
+    refreshFlashcardFrontend();
     refreshDeckFrontend();
   };
+
+
+
+
+
+  //DECK EDIT LOGIC
+
+  // Modal logic for editing flashcards
+  // Open the edit modal
+  const openDeckEditModal = (deck) => {
+    setEditingDeck(deck);
+    setIsEditDeckModalOpen(true);
+  };
+
+  // Close the edit modal and refresh flashcards
+  // updatedFlashcard is not really needed at the moment
+  const closeDeckEditModal = (updatedDeck) => {
+    setIsEditDeckModalOpen(false);
+    // Refresh the deck list by refetching decks
+    refreshDeckFrontend();
+  };
+
 
   //************************** INITIAL FETCH ON COMPONENT MOUNT *****************************/
   useEffect(() => {
@@ -239,7 +266,7 @@ function globalPageModule() {
   );
 
   const renderDecksList = (flashdecks) => (
-    <DeckSlider decks={flashdecks} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} />
+    <DeckSlider decks={flashdecks} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} />
   );
 
   //************************** DECK DISPLAY FUNCTIONS *****************************/
@@ -305,7 +332,7 @@ function globalPageModule() {
       </div>
     );
   }
-  
+
   //************************** QUIZ MODE FUNCTIONS *****************************/
   const quizMode = () => {
     console.log('Entering Quiz Mode'); // Log when entering quiz mode
@@ -352,7 +379,7 @@ function globalPageModule() {
               onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined} />
           ))}
         </Breadcrumbs>
-        <DeckDisplay deck={selectedDeck} startStudyMode={studyMode} startQuizMode={quizMode} />
+        <DeckDisplay deck={selectedDeck} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome}/>
       </div>
     );
   }
@@ -494,17 +521,34 @@ function globalPageModule() {
               </Modal>
           )}
       </ModalTransition>
-    
-    {/* EDIT FUNCTIONALITY: Flashcard Edit Modal */}
-    {isEditFlashcardModalOpen && (
-      <ModalDialog heading="Edit Flashcard" onClose={closeFlashcardEditModal}>
-        <EditFlashcardModal
-          flashcard={editingFlashcard} // Pass the flashcard to the modal
-          closeFlashcardEditModal={closeFlashcardEditModal}
-        />
-      </ModalDialog>
-    )}
+
+      {/* FLASHCARD EDIT FUNCTIONALITY: Flashcard Edit Modal */}
+      {isEditFlashcardModalOpen && (
+        <ModalDialog heading="Edit Flashcard" onClose={closeFlashcardEditModal}>
+          <EditFlashcardModal
+            flashcard={editingFlashcard} // Pass the flashcard to the modal
+            closeFlashcardEditModal={closeFlashcardEditModal}
+          />
+        </ModalDialog>
+      )}
+
+      {/* DECK EDIT FUNCTIONALITY: DECK Edit Modal */}
+      {isEditDeckModalOpen && (
+        <ModalDialog heading="Edit Deck" onClose={closeDeckEditModal}>
+          <EditDeckModal
+            deck={editingDeck} // Pass the flashcard to the modal
+            closeDeckEditModal={closeDeckEditModal}
+          />
+        </ModalDialog>
+      )}
+
+
+
+
     </div>
+
+
+
   );
 }
 

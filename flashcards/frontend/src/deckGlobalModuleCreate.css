@@ -12,6 +12,27 @@
     padding: 30px;
   }
 
+  .global-deck-edit {
+    background-color: white;
+    font-family: 'Arial', sans-serif;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 30px;
+    position: relative;
+    width: 100vw;
+  }
+
+  .deck-title {
+    margin-bottom: 10px;
+  }
+
+  .global-deck-edit-icon {
+    color: #5372F0;
+    margin-right: 10px;
+    width: 40px !important;
+    height: 40px !important;
+  }
+
   h2 {
     font-size: 24px;
     font-weight: bold;
