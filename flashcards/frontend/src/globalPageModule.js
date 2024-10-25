@@ -247,7 +247,7 @@ function globalPageModule() {
   );
 
   const renderDecksList = (flashdecks) => (
-    <DeckSlider decks={flashdecks} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal}/>
+    <DeckSlider decks={flashdecks} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} />
   );
 
   //************************** DECK DISPLAY FUNCTIONS *****************************/
@@ -360,7 +360,7 @@ function globalPageModule() {
               onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined} />
           ))}
         </Breadcrumbs>
-        <DeckDisplay deck={selectedDeck} startStudyMode={studyMode} startQuizMode={quizMode} />
+        <DeckDisplay deck={selectedDeck} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome}/>
       </div>
     );
   }

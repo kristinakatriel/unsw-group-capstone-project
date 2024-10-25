@@ -33,7 +33,7 @@ const titleContainerStyles = xcss({
     gridArea: 'title',
 });
 
-const DeckDisplay = ({ deck, startStudyMode, startQuizMode }) => {
+const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
 
 
 
@@ -315,12 +315,26 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode }) => {
     const handleDeleteDeck = () => {
         console.log('Delete Deck button clicked');
         openDeckDeleteModal();
-      };
+    };
 
     const confirmDeckDelete = async () => {
-        console.log('Deleting deck permanently')
-        // TODO
-        closeDeckDeleteModal();
+        console.log('Deleting deck permanently', deck);
+        console.log('Deleting updated permanently', updatedDeck);
+        try {
+            const response = await invoke('deleteDeck', { deckId: deck.id });
+            if (response.success) {
+
+                closeDeckDeleteModal();
+
+            } else {
+              console.error('Error deleting deck:', response.error);
+            }
+        } catch (error) {
+            console.error('Error deleting deck:', error);
+        }
+
+        goBackToHome();
+
     };
 
     // ========================
@@ -530,6 +544,10 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode }) => {
             />
             </ModalDialog>
         )}
+
+
+
+
 
       </div>
     );
