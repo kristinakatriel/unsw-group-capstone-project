@@ -34,35 +34,6 @@ const titleContainerStyles = xcss({
 
 const DeckDisplay = ({ deck, startStudyMode, startQuizMode }) => {
 
-    // //refactoring
-    // const [deckx, setDeck] = useState(null); // To hold the deck data
-    // const [loading, setLoading] = useState(true); // Loading state for the deck
-
-    // const deckId = deck.id;
-    // // Fetch the deck data when the component mounts
-
-    // const loadDecks = async () => {
-    //     try {
-    //         const response = await invoke('getDeck', { payload: { deckId } });
-    //         if (response.success) {
-    //             setDeck(response.deck);
-    //             setUpdatedDeck(response.deck); // Set the initial updatedDeck state
-    //         } else {
-    //             console.error(response.error);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error fetching deck:', error);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-
-    // useEffect(() => {
-    //    loadDecks();
-    // }, []); // Dependency array to refetch if deckId changes
-
-
 
 
     // ========================
@@ -260,16 +231,6 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode }) => {
     };
 
 
-    // const handleCheckboxChange = (flashcardId) => {
-    //     if (selectedFlashcards.includes(flashcardId)) {
-    //         setSelectedFlashcards(selectedFlashcards.filter(id => id !== flashcardId));
-    //     } else {
-    //         setSelectedFlashcards([...selectedFlashcards, flashcardId]);
-    //     }
-    // };
-
-
-
 
     // ========================
     // FLASHCARD DELETE FUNCTIONALITY
@@ -369,6 +330,14 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode }) => {
             }
         }
     };
+
+
+
+
+    // ========================
+    // DECK EDIT FUNCTIONALITY
+    // ========================
+
 
 
     return (
