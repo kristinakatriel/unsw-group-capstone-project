@@ -134,6 +134,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
           </Alert>
         </Collapse>
       }
+
       <div className="form-group">
         <label htmlFor="deckTitle">Deck Title</label>
         <input
@@ -177,11 +178,9 @@ function CreateDeckGlobal({ closeDeckModal }) {
           <p>No flashcards available to select.</p>
         )}
       </div>
-
       {saveSuccess && 
         <Alert severity="success"> New deck created successfully! </Alert>
       }
-
       <div className="button-group">
         <button className="save-button" onClick={handleSave}>Save</button>
         <button className="close-button" onClick={handleCloseGlobal}>Close</button>
