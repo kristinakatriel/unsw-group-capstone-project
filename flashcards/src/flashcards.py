@@ -59,10 +59,10 @@ def preprocess_for_question_generation(text):
 async def generate_qa(input: TextInput):
     # number of questions to be made
     num_q = 0
-    if len(input.text) > 50:
-        num_q = math.ceil((len(input.text) / 50) * 5)
+    if len(input.text) > 1500:
+        num_q = 15
     else:
-        num_q = math.ceil(len(input.text) / 50)
+        num_q = (math.floor(len(input.text))) + 3
     
     # generate questions
     generated_questions = qg_pipeline(
