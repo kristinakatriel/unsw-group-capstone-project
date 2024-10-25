@@ -284,12 +284,12 @@ resolver.define('updateDeck', async (req) => {
         };
     }
 
-    // Check ownership and log the accountId comparison
+    // Check ownershi
 
     if (req.context.accountId && req.context.accountId != existingDeck.owner) {
       return {
         success: false,
-        error: owner
+        error: "only edit someone elses deck"
       }
     }
 
