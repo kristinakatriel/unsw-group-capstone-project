@@ -81,7 +81,11 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
   return (
     <div className="global-flashcard-edit">
       <h2 className="flashcard-title"><DriveFileRenameOutlineIcon class='global-flashcard-edit-icon'/>Edit Flashcard</h2>
-
+      {errorMessage && 
+        <Text className="error-message">
+          {errorMessage} 
+        </Text>
+      }
       <div className="form-group">
         <label htmlFor="question">Question</label>
         <div className="input-drag-container">
@@ -127,13 +131,6 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
             Flashcard updated successfully!
           </Text>
       </SectionMessage>
-      }
-      {errorMessage && 
-        <SectionMessage appearance="error"> 
-          <Text>
-            {errorMessage} 
-          </Text>
-        </SectionMessage>
       }
 
       <div className="button-group">
