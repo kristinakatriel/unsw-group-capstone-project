@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Start Uvicorn on port 8000 in the background
-uvicorn src.resolvers.main:app --host 0.0.0.0 --port 8000 &
+uvicorn src.flashcards:app --host 0.0.0.0 --port 8000 &
 UVICORN_PID=$!  # Store the PID of the Uvicorn process
 
 # Start ngrok with a reserved subdomain
