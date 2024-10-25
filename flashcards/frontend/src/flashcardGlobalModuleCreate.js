@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { invoke, view } from '@forge/bridge';
 import './flashcardGlobalModule.css';
 import './globalPageModule.js';
-import { Alert } from '@mui/material';
+import { Alert, Collapse, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import DragNDrop from './components/DragNDrop.jsx';
 
 function CreateFlashcardGlobal( { closeFlashcardModal }) {
@@ -11,6 +12,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
   const [hint, setHint] = useState('');
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [closeError, setCloseError] = useState(true);
   // const [questionImage, setQuestionImage] = useState(null);
   // const [answerImage, setAnswerImage] = useState(null);
 
@@ -28,6 +30,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
 
   const handleSaveGlobal = async () => {
     setErrorMessage('');
+    setCloseError(true);
     console.log('SAVE BUTTON WAS JUST PRESSED (Function called: handleSaveGlobal)');
     try {
       console.log('Function called: handleSaveGlobal');
@@ -81,10 +84,28 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
   return (
     <div className="global-flashcard-creation">
       <h2 className="flashcard-title">Create New Flashcard</h2>
-      {errorMessage && 
-        <Alert severity="error">{errorMessage}</Alert>
+      { errorMessage && 
+        <Collapse in={closeError}>
+          <Alert
+            severity="error"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setCloseError(false);
+                }}
+              >
+              <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+            sx={{ mb: 2 }}
+          >
+            {errorMessage}
+          </Alert>
+        </Collapse>
       }
-
       <div className="form-group">
         <label htmlFor="question">Question</label>
         <div className="input-drag-container">

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { invoke } from '@forge/bridge';
-import { Alert } from '@mui/material';
+import { Alert, Collapse, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import './globalPageModule.js';
 import './deckGlobalModuleCreate.css';
 
@@ -11,6 +12,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
   const [flashcards, setFlashcards] = useState([]);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [closeError, setCloseError] = useState(true);
 
   const handleCloseGlobal = () => {
     console.log('Function called: handleCloseGlobal');
@@ -43,6 +45,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
 
   const handleSave = async () => {
     setErrorMessage('');
+    setCloseError(true);
     console.log('Saving deck...');
     console.log('Selected Flashcards:', selectedFlashcards);
 
@@ -109,8 +112,27 @@ function CreateDeckGlobal({ closeDeckModal }) {
   return (
     <div className="deck-creation">
       <h2 className="deck-title">Create New Deck</h2>
-      {errorMessage && 
-        <Alert severity="error">{errorMessage} </Alert>
+      { errorMessage && 
+        <Collapse in={closeError}>
+          <Alert
+            severity="error"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setCloseError(false);
+                }}
+              >
+              <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+            sx={{ mb: 2 }}
+          >
+            {errorMessage}
+          </Alert>
+        </Collapse>
       }
       <div className="form-group">
         <label htmlFor="deckTitle">Deck Title</label>
