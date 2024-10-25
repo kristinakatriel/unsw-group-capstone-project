@@ -2,12 +2,15 @@ import React, { useState, useEffect } from 'react';
 import { invoke, view } from '@forge/bridge';
 import './flashcardGlobalModule.css';
 import './globalPageModule.js';
+import { Text, SectionMessage, SectionMessageAction } from '@forge/react';
 import DragNDrop from './components/DragNDrop.jsx';
 
 function CreateFlashcardGlobal( { closeFlashcardModal }) {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [hint, setHint] = useState('');
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   // const [questionImage, setQuestionImage] = useState(null);
   // const [answerImage, setAnswerImage] = useState(null);
 
@@ -24,6 +27,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
 
 
   const handleSaveGlobal = async () => {
+    setErrorMessage('');
     console.log('SAVE BUTTON WAS JUST PRESSED (Function called: handleSaveGlobal)');
     try {
       console.log('Function called: handleSaveGlobal');
@@ -47,9 +51,12 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
       // setAnswerImage(null);
       console.log('Flashcard saved?:', response.card);
       if (response && response.success) {
-          // Pass the new flashcard back to the close function
-          closeFlashcardModal(response.card);
+          setSaveSuccess(true); // Show success message
+          setTimeout(() => {
+            closeFlashcardModal(response.card); // Delay closing modal
+          }, 2000); // Show success message for 2 seconds before closing
       } else {
+          setErrorMessage(response.error);
           console.error('Failed to create flashcard:', response.error);
       }
     } catch (error) {
@@ -121,6 +128,21 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
         <label htmlFor="select">Add to... (Optional)</label>
 
       </div>
+
+      {saveSuccess && 
+        <SectionMessage appearance="success">
+          <Text>
+            New flashcard created successfully!
+          </Text>
+        </SectionMessage>
+      }
+      {errorMessage && 
+        <SectionMessage appearance="error"> 
+          <Text>
+            {errorMessage} 
+          </Text>
+        </SectionMessage>
+      }
 
       <div className="button-group">
         <button className="save-button" onClick={handleSaveGlobal}>Save</button>
