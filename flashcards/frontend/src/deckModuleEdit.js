@@ -22,7 +22,7 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
   const handleCloseGlobal = () => {
     if (typeof closeDeckEditModal === 'function') {
       console.log('deck: ', deck);
-      closeDeckEditModal();
+      closeDeckEditModal(deck);
     } else {
       console.error('closeDeckEditModal is not a function:', closeDeckEditModal);
     }

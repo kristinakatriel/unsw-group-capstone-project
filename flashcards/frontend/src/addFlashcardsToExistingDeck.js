@@ -8,6 +8,8 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
   //console.log('Deck prop received:', deck);
   const [selectedFlashcards, setSelectedFlashcards] = useState([]);
   const [flashcards, setFlashcards] = useState([]);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleClose = () => {
     console.log('Function called: handleClose');
