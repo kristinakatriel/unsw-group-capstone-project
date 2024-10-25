@@ -3,12 +3,15 @@ import { invoke } from '@forge/bridge';
 import './flashcardGlobalModule.css'; // made the css file common
 import './globalPageModule.js';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
+import { SectionMessage, SectionMessageAction } from '@forge/react';
 import DragNDrop from './components/DragNDrop.jsx';
 
 function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [hint, setHint] = useState('');
+  const [isSaving, setIsSaving] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   // const [questionImage, setQuestionImage] = useState(null);
   // const [answerImage, setAnswerImage] = useState(null);
 
@@ -33,6 +36,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
   };
 
   const handleSaveGlobal = async () => {
+    setIsSaving(true);
     try {
       console.log(flashcard.id);
       const response = await invoke('updateFlashcard', {
@@ -42,16 +46,21 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
         answer_text: answer,
         // answer_image: answerImage,
         hint: hint,
+        owner: flashcard.owner
       });
 
       if (response && response.success) {
-        // Close the modal and pass updated card back
-        closeFlashcardEditModal(response.card);
-      } else {
+        setSaveSuccess(true); // Show success message
+        setTimeout(() => {
+          closeFlashcardEditModal(response.card); // Delay closing modal
+        }, 2000); // Show success message for 2 seconds before closing
+      }  else {
         console.error('Failed to update flashcard:', response.error);
       }
     } catch (error) {
       console.error('Error invoking updateFlashcard:', error);
+    } finally {
+      setIsSaving(false);
     }
   };
 
