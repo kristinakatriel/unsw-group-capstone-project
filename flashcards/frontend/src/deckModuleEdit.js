@@ -18,6 +18,7 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
 
   const handleCloseGlobal = () => {
     if (typeof closeDeckEditModal === 'function') {
+      console.log('deck: ', deck);
       closeDeckEditModal();
     } else {
       console.error('closeDeckEditModal is not a function:', closeDeckEditModal);
@@ -38,7 +39,9 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
       });
 
       if (response && response.success) {
-        closeDeckEditModal(response.updatedDeck);
+        console.log('responce.deck: ', response.deck);
+
+        closeDeckEditModal(response.deck);
       } else {
         console.error('Failed to update deck:', response.error);
       }

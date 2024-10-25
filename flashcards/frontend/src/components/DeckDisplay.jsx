@@ -14,6 +14,7 @@ import CreateFlashcardGlobal from '../flashcardGlobalModuleCreate';
 import EditFlashcardGlobal from '../flashcardGlobalModuleEdit'; // for editing flashcards in deck!
 import ModalDialog from '@atlaskit/modal-dialog';
 import AddFlashcardsToDeck from '../addFlashcardsToExistingDeck';
+import EditDeckModal from '../deckModuleEdit';
 
 
 /* ===========================================
@@ -50,12 +51,41 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode }) => {
 
 
 
+    // State for DECK editing and confirmation
+   const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
+   const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
 
 
-    // Placeholder function for editing the deck
-    const openFlashcardEditModalDeck = () => {
-      console.log('Edit Deck button clicked');
+
+
+
+
+    //DECK EDIT LOGIC
+
+    // Modal logic for editing flashcards
+    // Open the edit modal
+    const openDeckEditModal = (deck) => {
+        console.log('opening deck edit modal. current deck:', deck);
+
+        setEditingDeck(deck);
+        setIsEditDeckModalOpen(true);
     };
+
+    // Close the edit modal and refresh flashcards
+    // updatedFlashcard is not really needed at the moment
+    const closeDeckEditModal = (updatedDeck) => {
+        setIsEditDeckModalOpen(false);
+        // Refresh the deck list by refetching decks
+        console.log('Closing deck edit modal. New deck:', updatedDeck);
+        setUpdatedDeck(updatedDeck);
+
+
+
+        console.log('updated deck set', updatedDeck);
+
+
+    };
+
 
 
     // ========================
@@ -354,7 +384,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode }) => {
             <button className='deck-display-add-flashcard-icon' onClick={handleAddFlashcard}>
               <AddIcon fontSize='small' /> Add Flashcard
             </button>
-            <button className='deck-display-edit-icon' onClick={openFlashcardEditModalDeck}>
+            <button className='deck-display-edit-icon' onClick={openDeckEditModal}>
               <EditIcon fontSize='small' /> Edit Deck
             </button>
             <button className='deck-display-delete-icon' onClick={handleDeleteDeck}>
@@ -487,6 +517,17 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode }) => {
                 flashcard={flashcardToEdit} // editing the flashcard
                 closeFlashcardEditModal={closeFlashcardEditModal} // handle closing etc
               />
+            </ModalDialog>
+        )}
+
+
+        {/* DECK EDIT FUNCTIONALITY: DECK Edit Modal */}
+        {isEditDeckModalOpen && (
+            <ModalDialog heading="Edit Deck" onClose={() => closeDeckEditModal(true)}>
+            <EditDeckModal
+                deck={deck} // Pass the deck to the modal
+                closeDeckEditModal={closeDeckEditModal}
+            />
             </ModalDialog>
         )}
 
