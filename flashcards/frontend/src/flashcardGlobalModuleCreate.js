@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { invoke, view } from '@forge/bridge';
 import './flashcardGlobalModule.css';
 import './globalPageModule.js';
-import { Text, SectionMessage, SectionMessageAction } from '@forge/react';
+import { Alert } from '@mui/material';
 import DragNDrop from './components/DragNDrop.jsx';
 
 function CreateFlashcardGlobal( { closeFlashcardModal }) {
@@ -81,6 +81,9 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
   return (
     <div className="global-flashcard-creation">
       <h2 className="flashcard-title">Create New Flashcard</h2>
+      {errorMessage && 
+        <Alert severity="error">{errorMessage}</Alert>
+      }
 
       <div className="form-group">
         <label htmlFor="question">Question</label>
@@ -126,22 +129,10 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
 
       <div className="form-group">
         <label htmlFor="select">Add to... (Optional)</label>
-
       </div>
 
       {saveSuccess && 
-        <SectionMessage appearance="success">
-          <Text>
-            New flashcard created successfully!
-          </Text>
-        </SectionMessage>
-      }
-      {errorMessage && 
-        <SectionMessage appearance="error"> 
-          <Text>
-            {errorMessage} 
-          </Text>
-        </SectionMessage>
+        <Alert severity="success"> New flashcard created successfully! </Alert>
       }
 
       <div className="button-group">

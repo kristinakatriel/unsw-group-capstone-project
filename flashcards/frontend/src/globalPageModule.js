@@ -14,7 +14,7 @@ import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
-import { Text, SectionMessage, SectionMessageAction } from '@forge/react';
+import { Alert } from '@mui/material';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import QuizMode from './components/QuizMode';
 import StudyMode from './components/StudyMode';
@@ -55,9 +55,8 @@ function globalPageModule() {
   const [isEditFlashcardModalOpen, setIsEditFlashcardModalOpen] = useState(false);
 
   // State for DECK editing and confirmation
-   const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
-   const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
-
+  const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
+  const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
 
   // State for DECK deletion and confirmation
   const [deckToDelete, setDeckToDelete] = useState(null);
@@ -456,18 +455,10 @@ function globalPageModule() {
                   <ModalBody>
                       <p>Are you sure you want to delete this flashcard? This action cannot be undone.</p>
                       {deleteSuccess && 
-                        <SectionMessage appearance="success">
-                          <Text>
-                            Flashcard deleted successfully!
-                          </Text>
-                        </SectionMessage>
+                        <Alert severity="success"> {errorMessage} </Alert>
                       }
                       {errorMessage && 
-                        <SectionMessage appearance="error"> 
-                          <Text>
-                            {errorMessage} 
-                          </Text>
-                        </SectionMessage>
+                        <Alert severity="error">{errorMessage} </Alert>
                       }
                   </ModalBody>
                   <ModalFooter>
@@ -500,18 +491,10 @@ function globalPageModule() {
                   <ModalBody>
                       <p>Are you sure you want to delete this deck? This action cannot be undone.</p>
                       {deleteSuccess && 
-                        <SectionMessage appearance="success">
-                          <Text>
-                            Deck deleted successfully!
-                          </Text>
-                        </SectionMessage>
+                        <Alert>Deck deleted successfully!</Alert>
                       }
                       {errorMessage && 
-                        <SectionMessage appearance="error"> 
-                          <Text>
-                            {errorMessage} 
-                          </Text>
-                        </SectionMessage>
+                        <Alert severity="error"> {errorMessage} </Alert>
                       }
                   </ModalBody>
                   <ModalFooter>

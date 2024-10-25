@@ -20,7 +20,7 @@ resolver.define('createFlashcard', async (req) => {
   if (!question_text || !answer_text || !req.context.accountId) {
     return {
       success: false,
-      error: 'Invalid input: question, answer, owner required',
+      error: 'Invalid input: question and answer required',
     };
   }
 
@@ -73,7 +73,7 @@ resolver.define('createFlashcard', async (req) => {
 
 
 resolver.define('updateFlashcard', async (req) => {
-    const { id, question_text, question_image, answer_text, answer_image, hint, tags, owner } = req.payload as Card;
+    const { id, question_text, question_image, answer_text, answer_image, hint, tags } = req.payload as Card;
 
     const existingCard = await storage.get(id) as Card | undefined;
     if (!existingCard) {
@@ -98,7 +98,7 @@ resolver.define('updateFlashcard', async (req) => {
         answer_image: answer_image || existingCard.answer_image,
         hint: hint || existingCard.hint,
         tags: tags || existingCard.tags,
-        owner: owner || existingCard.owner,
+        owner: existingCard.owner,
     };
 
     await storage.set(id, updatedCard);
