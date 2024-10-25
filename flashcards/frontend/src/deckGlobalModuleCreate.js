@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { invoke } from '@forge/bridge';
+import { Text, SectionMessage, SectionMessageAction } from '@forge/react';
 import './globalPageModule.js';
 import './deckGlobalModuleCreate.css';
 
@@ -8,6 +9,8 @@ function CreateDeckGlobal({ closeDeckModal }) {
   const [description, setDescription] = useState('');
   const [selectedFlashcards, setSelectedFlashcards] = useState([]);
   const [flashcards, setFlashcards] = useState([]);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleCloseGlobal = () => {
     console.log('Function called: handleCloseGlobal');
@@ -39,13 +42,14 @@ function CreateDeckGlobal({ closeDeckModal }) {
   }, []);
 
   const handleSave = async () => {
+    setErrorMessage('');
     console.log('Saving deck...');
     console.log('Selected Flashcards:', selectedFlashcards);
 
-    if (!deckTitle.trim()) {
-      console.error('Deck title cannot be empty.');
-      return; // Prevents further execution
-    }
+    // if (!deckTitle.trim()) { // unnecessary as backend deals with this
+    //   console.error('Deck title cannot be empty.');
+    //   return; // Prevents further execution
+    // }
 
     try {
       const response = await invoke('createDeck', {
@@ -55,6 +59,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
       });
 
       if (response.success) {
+        setSaveSuccess(true); // Show success message
         console.log('Deck created successfully:', response.deck);
 
         const deckId = response.id;
@@ -77,7 +82,11 @@ function CreateDeckGlobal({ closeDeckModal }) {
         setDeckTitle('');
         setDescription('');
         setSelectedFlashcards([]);
+        setTimeout(() => {
+          closeDeckModal(); // Delay closing modal
+        }, 2000); // Show success message for 2 seconds before closing
       } else {
+        setErrorMessage(response.error);
         console.error('Failed to create deck:', response.error);
       }
     } catch (error) {
@@ -144,6 +153,21 @@ function CreateDeckGlobal({ closeDeckModal }) {
           <p>No flashcards available to select.</p>
         )}
       </div>
+
+      {saveSuccess && 
+        <SectionMessage appearance="success">
+          <Text>
+            New deck created successfully!
+          </Text>
+        </SectionMessage>
+      }
+      {errorMessage && 
+        <SectionMessage appearance="error"> 
+          <Text>
+            {errorMessage} 
+          </Text>
+        </SectionMessage>
+      }
 
       <div className="button-group">
         <button className="save-button" onClick={handleSave}>Save</button>
