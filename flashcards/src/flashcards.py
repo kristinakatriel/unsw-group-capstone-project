@@ -42,7 +42,7 @@ def preprocess_for_question_generation(text):
         sentence = re.sub(r'\s+', ' ', sentence).strip()  # Remove extra whitespaces
 
         # Step 3: Cleaning Text (Remove HTML tags, numbers, URLs, and emails)
-        sentence = BeautifulSoup(sentence, "html.parser").get_text()  # Remove HTML tags
+        # sentence = BeautifulSoup(sentence, "html.parser").get_text()  # Remove HTML tags
         # sentence = re.sub(r'\d+', '', sentence)  # Remove numbers
         sentence = re.sub(r'http\S+|www\S+|@\S+', '', sentence)  # Remove URLs and emails
 
