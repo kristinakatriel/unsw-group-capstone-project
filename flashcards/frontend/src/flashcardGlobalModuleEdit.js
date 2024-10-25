@@ -3,15 +3,15 @@ import { invoke } from '@forge/bridge';
 import './flashcardGlobalModule.css'; // made the css file common
 import './globalPageModule.js';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
-import { SectionMessage, SectionMessageAction } from '@forge/react';
+import { Text, SectionMessage, SectionMessageAction } from '@forge/react';
 import DragNDrop from './components/DragNDrop.jsx';
 
 function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [hint, setHint] = useState('');
-  const [isSaving, setIsSaving] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   // const [questionImage, setQuestionImage] = useState(null);
   // const [answerImage, setAnswerImage] = useState(null);
 
@@ -36,7 +36,6 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
   };
 
   const handleSaveGlobal = async () => {
-    setIsSaving(true);
     try {
       console.log(flashcard.id);
       const response = await invoke('updateFlashcard', {
@@ -56,12 +55,15 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
         }, 2000); // Show success message for 2 seconds before closing
       }  else {
         console.error('Failed to update flashcard:', response.error);
+        setErrorMessage(response.error);
+        setTimeout(() => {
+          closeFlashcardEditModal(flashcard); // Delay closing modal
+        }, 2000); // Show success message for 2 seconds before closing
+        setSaveSuccess(false);
       }
     } catch (error) {
       console.error('Error invoking updateFlashcard:', error);
-    } finally {
-      setIsSaving(false);
-    }
+    } 
   };
 
   // const handleQuestionImageSelected = (files) => {
@@ -118,6 +120,21 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
           className="input-area"
         />
       </div>
+
+      {saveSuccess && 
+        <SectionMessage appearance="success"> 
+          <Text>
+            Flashcard updated successfully! 
+          </Text>
+        </SectionMessage>
+      }
+      {errorMessage && 
+        <SectionMessage appearance="error"> 
+          <Text>
+            {errorMessage} 
+          </Text>
+        </SectionMessage>
+      }
 
       <div className="button-group">
         <button className="save-button" onClick={handleSaveGlobal}>Save</button>
