@@ -79,7 +79,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
 
   return (
     <div className="global-deck-edit">
-      <h2 className="deck-title"><DriveFileRenameOutlineIcon class='global-flashcard-edit-icon'/>Edit Flashcard</h2>
+      <h2 className="deck-title"><DriveFileRenameOutlineIcon className='global-flashcard-edit-icon'/>Edit Flashcard</h2>
       {errorMessage && 
         <Alert severity="error">{errorMessage}</Alert>
       }
