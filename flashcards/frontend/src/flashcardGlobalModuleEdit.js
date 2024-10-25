@@ -3,7 +3,7 @@ import { invoke } from '@forge/bridge';
 import './flashcardGlobalModule.css'; // made the css file common
 import './globalPageModule.js';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
-import { Text, SectionMessage, SectionMessageAction } from '@forge/react';
+import { Alert } from '@mui/material';
 import DragNDrop from './components/DragNDrop.jsx';
 
 function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
@@ -44,21 +44,20 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
         // question_image: questionImage,
         answer_text: answer,
         // answer_image: answerImage,
-        hint: hint,
-        owner: flashcard.owner
+        hint: hint
       });
 
       if (response && response.success) {
         setSaveSuccess(true); // Show success message
         setTimeout(() => {
           closeFlashcardEditModal(response.card); // Delay closing modal
-        }, 2000); // Show success message for 2 seconds before closing
+        }, 500); // Show success message for 0.5 before closing
       }  else {
         console.error('Failed to update flashcard:', response.error);
         setErrorMessage(response.error);
         setTimeout(() => {
           closeFlashcardEditModal(flashcard); // Delay closing modal
-        }, 2000); // Show success message for 2 seconds before closing
+        }, 1000); // Show success message for 1 seconds before closing
         setSaveSuccess(false);
       }
     } catch (error) {
@@ -82,9 +81,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
     <div className="global-flashcard-edit">
       <h2 className="flashcard-title"><DriveFileRenameOutlineIcon class='global-flashcard-edit-icon'/>Edit Flashcard</h2>
       {errorMessage && 
-        <Text className="error-message">
-          {errorMessage} 
-        </Text>
+        <Alert severity="error">{errorMessage}</Alert>
       }
       <div className="form-group">
         <label htmlFor="question">Question</label>
@@ -126,11 +123,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
       </div>
 
       {saveSuccess && 
-        <SectionMessage appearance="success">
-          <Text>
-            Flashcard updated successfully!
-          </Text>
-      </SectionMessage>
+        <Alert severity="success">Flashcard updated successfully!</Alert>
       }
 
       <div className="button-group">

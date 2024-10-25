@@ -83,7 +83,7 @@ resolver.define('updateFlashcard', async (req) => {
         };
     }
 
-    if (req.context.accountId && req.context.accountId != owner) {
+    if (req.context.accountId && req.context.accountId != existingCard.owner) {
       return {
         success: false,
         error: "cannot edit someone else's flashcard"

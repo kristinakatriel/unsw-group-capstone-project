@@ -105,14 +105,3 @@ label {
 .close-button:hover {
   background-color: #ccc;
 }
-
-.error-message {
-  background-color: #ff6f61; /* Light red (close to vermillion) */
-  color: #fff; /* White text for contrast */
-  padding: 10px;
-  border-radius: 4px;
-  font-weight: bold;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
