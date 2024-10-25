@@ -71,8 +71,9 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
       //   }
 
 
-      closeAddDeckModal(selectedFlashcards);
-
+      // setTimeout(() => {
+      closeAddDeckModal(selectedFlashcards), 
+        // 1000});
 
       console.log('Clearing selected flashcards after successful addition.');
       setSelectedFlashcards([]); // Clear selected flashcards after saving
