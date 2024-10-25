@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { invoke } from '@forge/bridge';
-import { Text, SectionMessage, SectionMessageAction } from '@forge/react';
+import { Alert } from '@mui/material';
 import './globalPageModule.js';
 import './deckGlobalModuleCreate.css';
 
@@ -109,7 +109,9 @@ function CreateDeckGlobal({ closeDeckModal }) {
   return (
     <div className="deck-creation">
       <h2 className="deck-title">Create New Deck</h2>
-
+      {errorMessage && 
+        <Alert severity="error">{errorMessage} </Alert>
+      }
       <div className="form-group">
         <label htmlFor="deckTitle">Deck Title</label>
         <input
@@ -155,18 +157,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
       </div>
 
       {saveSuccess && 
-        <SectionMessage appearance="success">
-          <Text>
-            New deck created successfully!
-          </Text>
-        </SectionMessage>
-      }
-      {errorMessage && 
-        <SectionMessage appearance="error"> 
-          <Text>
-            {errorMessage} 
-          </Text>
-        </SectionMessage>
+        <Alert severity="success"> New deck created successfully! </Alert>
       }
 
       <div className="button-group">

@@ -112,7 +112,7 @@ function globalPageModule() {
         setFlashcards((prevFlashcards) => prevFlashcards.filter((card) => card.id !== flashcardToDelete.id));
         setTimeout(() => {
           closeDeleteFlashcardConfirm(); // Delay closing modal
-        }, 2000); // Show message for 2 seconds before closing
+        }, 400); // Show message for 2 seconds before closing
         refreshFlashcardFrontend();  // Refresh UI after deletion
       } else {
         setErrorMessage(response.error);
@@ -455,7 +455,7 @@ function globalPageModule() {
                   <ModalBody>
                       <p>Are you sure you want to delete this flashcard? This action cannot be undone.</p>
                       {deleteSuccess && 
-                        <Alert severity="success"> {errorMessage} </Alert>
+                        <Alert severity="success"> Flashcard deleted successfully! </Alert>
                       }
                       {errorMessage && 
                         <Alert severity="error">{errorMessage} </Alert>
