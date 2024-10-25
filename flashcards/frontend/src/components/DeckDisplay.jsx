@@ -4,6 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import QuizIcon from '@mui/icons-material/Quiz';
 import StyleIcon from '@mui/icons-material/Style';
+import { Alert } from '@mui/material';
 import { invoke } from '@forge/bridge';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
@@ -55,10 +56,10 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
    const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
    const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
 
-
-
-
-
+   // Success and error alerts for adding flashcards to deck
+   const [saveSuccess, setSaveSuccess] = useState(false);
+   const [errorMessage, setErrorMessage] = useState('');
+   const [closeError, setCloseError] = useState(true);
 
     //DECK EDIT LOGIC
 
@@ -98,7 +99,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
     const closeFlashcardModal = async (newFlashcard) => {
         // Log the initiation of the modal closing process
         console.log('Closing flashcard modal. New flashcard:', newFlashcard);
-
+        
         setIsCreateFlashcardOpen(false);
 
         if (newFlashcard) {
@@ -171,7 +172,8 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
 
     const closeAddDeckModal = async (selectedFlashcards = []) => {
         console.log('closeAddDeckModal invoked. Selected flashcards:', selectedFlashcards);
-
+        setErrorMessage('');
+        setCloseError(true);
         setIsAddFlashcardModalOpen(false);
         console.log('Modal closed. isAddFlashcardModalOpen set to:', false);
 
@@ -196,6 +198,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
                     console.log('Response from addCardToDeck:', addCardResponse);
 
                     if (addCardResponse.success) {
+                        setSaveSuccess(true);
                         console.log(`Success: Flashcard ${cardId} added to deck ${deckId}`);
 
                         setUpdatedDeck((prevDeck) => {
@@ -217,6 +220,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
                             return newDeckState;
                         });
                     } else {
+                        setErrorMessage(addCardResponse.error);
                         console.error(`Failed to add flashcard ${cardId} to deck:`, addCardResponse.error);
                     }
                 } catch (error) {
@@ -408,7 +412,12 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
         </div>
         <h2>Flashcards</h2>
         <h4 className='deck-flashcard-amount'>Flashcards: {updatedDeck.cards?.length || 0}</h4>
-
+        {saveSuccess && errorMessage=='' && 
+         <Alert severity="success"> Flashcards added successfully! </Alert>
+        }
+        {errorMessage && 
+            <Alert severity="error">{errorMessage}</Alert>
+        }
         {updatedDeck.cards.length > 0 ? (
             <div className="card-wrapper">
                 <ul className="card-list">
