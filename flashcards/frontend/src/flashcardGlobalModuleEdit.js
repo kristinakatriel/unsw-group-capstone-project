@@ -122,7 +122,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
       </div>
 
       {saveSuccess && 
-        <SectionMessage appearance="success"> 
+        <SectionMessage title="Title" appearance="confirmation"> 
           <Text>
             Flashcard updated successfully! 
           </Text>
