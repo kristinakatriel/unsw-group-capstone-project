@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { invoke } from '@forge/bridge';
-import './flashcardGlobalModule.css'; // made the css file common
+import './deckGlobalModuleCreate.css'; // made the css file common
 import './globalPageModule.js';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
 import DragNDrop from './components/DragNDrop.jsx';
@@ -68,8 +68,8 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
   // };
 
   return (
-    <div className="global-flashcard-edit">
-      <h2 className="flashcard-title"><DriveFileRenameOutlineIcon class='global-flashcard-edit-icon'/>Edit Flashcard</h2>
+    <div className="global-deck-edit">
+      <h2 className="deck-title"><DriveFileRenameOutlineIcon class='global-flashcard-edit-icon'/>Edit Flashcard</h2>
 
       <div className="form-group">
         <label htmlFor="question">Question</label>
