@@ -14,6 +14,7 @@ import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
+import { Text, SectionMessage, SectionMessageAction } from '@forge/react';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import QuizMode from './components/QuizMode';
 import StudyMode from './components/StudyMode';
@@ -69,6 +70,10 @@ function globalPageModule() {
   // State for quizmode
   const [isQuizMode, setIsQuizMode] = useState(false);
 
+  // State for saving success and error messages
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+
   //************************** DELETION LOGIC *****************************/
   const confirmDeleteFlashcard = (flashcard) => {
     setFlashcardToDelete(flashcard);
@@ -83,21 +88,30 @@ function globalPageModule() {
   const closeDeleteFlashcardConfirm = () => {
     setIsDeleteFlashcardConfirmOpen(false);
     setFlashcardToDelete(null);
+    setErrorMessage('');
+    setDeleteSuccess(false);
   };
 
   const closeDeleteDeckConfirm = () => {
     setIsDeleteDeckConfirmOpen(false);
     setDeckToDelete(null);
+    setErrorMessage('');
+    setDeleteSuccess(false);
   };
 
   const deleteFlashcard = async () => {
+    setErrorMessage('');
     try {
       const response = await invoke('deleteFlashcard', { cardId: flashcardToDelete.id });
       if (response.success) {
+        setDeleteSuccess(true);
         setFlashcards((prevFlashcards) => prevFlashcards.filter((card) => card.id !== flashcardToDelete.id));
-        closeDeleteFlashcardConfirm();
+        setTimeout(() => {
+          closeDeleteFlashcardConfirm(); // Delay closing modal
+        }, 2000); // Show message for 2 seconds before closing
         refreshFlashcardFrontend();  // Refresh UI after deletion
       } else {
+        setErrorMessage(response.error);
         console.error('Error deleting flashcard:', response.error);
       }
     } catch (error) {
@@ -106,13 +120,18 @@ function globalPageModule() {
   };
 
   const deleteDeck = async () => {
+    setErrorMessage('');
     try {
       const response = await invoke('deleteDeck', { deckId: deckToDelete.id });
       if (response.success) {
+        setDeleteSuccess(true);
         setDecks((prevDecks) => prevDecks.filter((deck) => deck.id !== deckToDelete.id));
-        closeDeleteDeckConfirm();
+        setTimeout(() => {
+          closeDeleteDeckConfirm();
+        }, 2000); // Show message for 2 seconds before closing
         refreshDeckFrontend();  // Refresh UI after deletion
       } else {
+        setErrorMessage(response.error);
         console.error('Error deleting deck:', response.error);
       }
     } catch (error) {
@@ -409,6 +428,20 @@ function globalPageModule() {
                   </ModalHeader>
                   <ModalBody>
                       <p>Are you sure you want to delete this flashcard? This action cannot be undone.</p>
+                      {deleteSuccess && 
+                        <SectionMessage appearance="success">
+                          <Text>
+                            Flashcard deleted successfully!
+                          </Text>
+                        </SectionMessage>
+                      }
+                      {errorMessage && 
+                        <SectionMessage appearance="error"> 
+                          <Text>
+                            {errorMessage} 
+                          </Text>
+                        </SectionMessage>
+                      }
                   </ModalBody>
                   <ModalFooter>
                       <Button appearance="subtle" onClick={closeDeleteFlashcardConfirm}>Cancel</Button>
@@ -439,6 +472,20 @@ function globalPageModule() {
                   </ModalHeader>
                   <ModalBody>
                       <p>Are you sure you want to delete this deck? This action cannot be undone.</p>
+                      {deleteSuccess && 
+                        <SectionMessage appearance="success">
+                          <Text>
+                            Deck deleted successfully!
+                          </Text>
+                        </SectionMessage>
+                      }
+                      {errorMessage && 
+                        <SectionMessage appearance="error"> 
+                          <Text>
+                            {errorMessage} 
+                          </Text>
+                        </SectionMessage>
+                      }
                   </ModalBody>
                   <ModalFooter>
                       <Button appearance="subtle" onClick={closeDeleteDeckConfirm}>Cancel</Button>
