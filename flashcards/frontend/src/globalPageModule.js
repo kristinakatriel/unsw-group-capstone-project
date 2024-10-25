@@ -16,8 +16,9 @@ import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import QuizMode from './components/QuizMode';
+import StudyMode from './components/StudyMode';
 import EditFlashcardModal from './flashcardGlobalModuleEdit';
-
+import EditDeckModal from './deckModuleEdit';
 const gridStyles = xcss({
     width: '100%',
 });
@@ -52,6 +53,11 @@ function globalPageModule() {
   const [editingFlashcard, setEditingFlashcard] = useState(null); // Store the flashcard being edited
   const [isEditFlashcardModalOpen, setIsEditFlashcardModalOpen] = useState(false);
 
+  // State for DECK editing and confirmation
+   const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
+   const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
+
+
   // State for DECK deletion and confirmation
   const [deckToDelete, setDeckToDelete] = useState(null);
   const [isDeleteDeckConfirmOpen, setIsDeleteDeckConfirmOpen] = useState(false);
@@ -60,7 +66,10 @@ function globalPageModule() {
   const [selectedDeck, setSelectedDeck] = useState(null);
 
   // State for breadcrumbs
-  const [breadcrumbItems, setBreadcrumbItems] = useState([{ href: '#', text: 'Home' }]);
+  const [breadcrumbItems, setBreadcrumbItems] = useState([{ href: '#', text: 'FLASH (Home)' }]);
+
+  // State for study mode
+  const [isStudyMode, setIsStudyMode] = useState(false);
 
   // State for quizmode
   const [isQuizMode, setIsQuizMode] = useState(false);
@@ -196,9 +205,31 @@ function globalPageModule() {
     setIsEditFlashcardModalOpen(false);
 
     // Refresh the flashcard list by fetching flashcards
-    refreshFlashcardFrontend(); 
+    refreshFlashcardFrontend();
     refreshDeckFrontend();
   };
+
+
+
+
+
+  //DECK EDIT LOGIC
+
+  // Modal logic for editing flashcards
+  // Open the edit modal
+  const openDeckEditModal = (deck) => {
+    setEditingDeck(deck);
+    setIsEditDeckModalOpen(true);
+  };
+
+  // Close the edit modal and refresh flashcards
+  // updatedFlashcard is not really needed at the moment
+  const closeDeckEditModal = (updatedDeck) => {
+    setIsEditDeckModalOpen(false);
+    // Refresh the deck list by refetching decks
+    refreshDeckFrontend();
+  };
+
 
   //************************** INITIAL FETCH ON COMPONENT MOUNT *****************************/
   useEffect(() => {
@@ -216,28 +247,72 @@ function globalPageModule() {
   );
 
   const renderDecksList = (flashdecks) => (
-    <DeckSlider decks={flashdecks} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} />
+    <DeckSlider decks={flashdecks} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} />
   );
 
   //************************** DECK DISPLAY FUNCTIONS *****************************/
   const onDeckClick = (deck) => {
     console.log(`Deck clicked: ${deck.title}`); // Log when a deck is clicked
     setSelectedDeck(deck);
+    setIsStudyMode(false);
     setIsQuizMode(false);
-    setBreadcrumbItems([{ href: '#', text: 'Home' }, { href: '#', text: deck.title }]);
+    setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]);
     console.log('Selected Deck:', deck); // Log the currently selected deck
-    console.log('Current Breadcrumb Items:', [{ href: '#', text: 'Home' }, { href: '#', text: deck.title }]); // Log breadcrumb items
+    console.log('Current Breadcrumb Items:', [{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]); // Log breadcrumb items
   };
 
   const goBackToHome = () => {
-    console.log('Going back to Home'); // Log when going back to Home
+    console.log('Going back to FLASH (Home)'); // Log when going back to Home
     setSelectedDeck(null);
+    setIsStudyMode(false);
     setIsQuizMode(false);
-    setBreadcrumbItems([{ href: '#', text: 'Home' }]);
+    setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }]);
     refreshDeckFrontend();
     refreshFlashcardFrontend();
-    console.log('Current Breadcrumb Items:', [{ href: '#', text: 'Home' }]); // Log breadcrumb items
+    console.log('Current Breadcrumb Items:', [{ href: '#', text: 'FLASH (Home)' }]); // Log breadcrumb items
   };
+
+  const goBackToDeck = () => {
+    console.log('Going back to Deck'); // Log when going back to the deck
+    setIsStudyMode(false);
+    setIsQuizMode(false);
+    setBreadcrumbItems(prevItems => prevItems.slice(0, -1));
+    console.log('Current Breadcrumb Items:', prevItems.slice(0, -1)); // Log breadcrumb items
+  };
+
+  //************************** STUDY MODE FUNCTIONS *****************************/
+  const studyMode = () => {
+    console.log('Entering Study Mode'); // Log when entering study mode
+    setIsStudyMode(true);
+    setBreadcrumbItems(prevItems => [
+        ...prevItems,
+        { href: '#', text: 'Study Mode' }
+    ]);
+  };
+
+  if (isStudyMode) {
+    return (
+      <div>
+        <Breadcrumbs>
+          {breadcrumbItems.map((item, index) => (
+            <BreadcrumbsItem
+              key={index}
+              href={item.href}
+              text={item.text}
+              onClick={() => {
+                if (item.text === 'FLASH (Home)') {
+                  goBackToHome();
+                } else if (item.text === selectedDeck.title) {
+                  goBackToDeck();
+                }
+              }}
+            />
+          ))}
+        </Breadcrumbs>
+        <StudyMode deck={selectedDeck} onBack={goBackToDeck} />
+      </div>
+    );
+  }
 
   //************************** QUIZ MODE FUNCTIONS *****************************/
   const quizMode = () => {
@@ -247,14 +322,6 @@ function globalPageModule() {
         ...prevItems,
         { href: '#', text: 'Quiz Mode' }
     ]);
-    console.log('Current Breadcrumb Items:', [...prevItems, { href: '#', text: 'Quiz Mode' }]); // Log breadcrumb items
-  };
-
-  const goBackToDeck = () => {
-    console.log('Going back to Deck'); // Log when going back to the deck
-    setIsQuizMode(false);
-    setBreadcrumbItems(prevItems => prevItems.slice(0, -1));
-    console.log('Current Breadcrumb Items:', prevItems.slice(0, -1)); // Log breadcrumb items
   };
 
   if (isQuizMode) {
@@ -267,7 +334,7 @@ function globalPageModule() {
               href={item.href}
               text={item.text}
               onClick={() => {
-                if (item.text === 'Home') {
+                if (item.text === 'FLASH (Home)') {
                   goBackToHome();
                 } else if (item.text === selectedDeck.title) {
                   goBackToDeck();
@@ -290,22 +357,16 @@ function globalPageModule() {
               key={index}
               href={item.href}
               text={item.text}
-              onClick={item.text === 'Home' ? goBackToHome : undefined} />
+              onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined} />
           ))}
         </Breadcrumbs>
-        <DeckDisplay deck={selectedDeck} startQuizMode={quizMode} />
+        <DeckDisplay deck={selectedDeck} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome}/>
       </div>
     );
   }
 
   return (
     <div className='global-page-container'>
-
-      <Breadcrumbs>
-        {breadcrumbItems.map((item, index) => (
-          <BreadcrumbsItem key={index} href={item.href} text={item.text} onClick={item.text === 'Home' ? goBackToHome : undefined} />
-        ))}
-      </Breadcrumbs>
 
       <div className='global-page-headline'><FlashOnIcon className='global-page-flash-icon'/> FLASH</div>
       <div className='global-page-subheadline'>The Forge App that allows you to create flashcards in a flash</div>
@@ -413,17 +474,34 @@ function globalPageModule() {
               </Modal>
           )}
       </ModalTransition>
-    
-    {/* EDIT FUNCTIONALITY: Flashcard Edit Modal */}
-    {isEditFlashcardModalOpen && (
-      <ModalDialog heading="Edit Flashcard" onClose={closeFlashcardEditModal}>
-        <EditFlashcardModal
-          flashcard={editingFlashcard} // Pass the flashcard to the modal
-          closeFlashcardEditModal={closeFlashcardEditModal}
-        />
-      </ModalDialog>
-    )}
+
+      {/* FLASHCARD EDIT FUNCTIONALITY: Flashcard Edit Modal */}
+      {isEditFlashcardModalOpen && (
+        <ModalDialog heading="Edit Flashcard" onClose={closeFlashcardEditModal}>
+          <EditFlashcardModal
+            flashcard={editingFlashcard} // Pass the flashcard to the modal
+            closeFlashcardEditModal={closeFlashcardEditModal}
+          />
+        </ModalDialog>
+      )}
+
+      {/* DECK EDIT FUNCTIONALITY: DECK Edit Modal */}
+      {isEditDeckModalOpen && (
+        <ModalDialog heading="Edit Deck" onClose={closeDeckEditModal}>
+          <EditDeckModal
+            deck={editingDeck} // Pass the flashcard to the modal
+            closeDeckEditModal={closeDeckEditModal}
+          />
+        </ModalDialog>
+      )}
+
+
+
+
     </div>
+
+
+
   );
 }
 

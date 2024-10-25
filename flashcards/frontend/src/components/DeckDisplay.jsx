@@ -3,6 +3,7 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import QuizIcon from '@mui/icons-material/Quiz';
+import StyleIcon from '@mui/icons-material/Style';
 import { invoke } from '@forge/bridge';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
@@ -13,6 +14,7 @@ import CreateFlashcardGlobal from '../flashcardGlobalModuleCreate';
 import EditFlashcardGlobal from '../flashcardGlobalModuleEdit'; // for editing flashcards in deck!
 import ModalDialog from '@atlaskit/modal-dialog';
 import AddFlashcardsToDeck from '../addFlashcardsToExistingDeck';
+import EditDeckModal from '../deckModuleEdit';
 
 
 /* ===========================================
@@ -31,36 +33,7 @@ const titleContainerStyles = xcss({
     gridArea: 'title',
 });
 
-const DeckDisplay = ({ deck, startQuizMode }) => {
-
-    // //refactoring
-    // const [deckx, setDeck] = useState(null); // To hold the deck data
-    // const [loading, setLoading] = useState(true); // Loading state for the deck
-
-    // const deckId = deck.id;
-    // // Fetch the deck data when the component mounts
-
-    // const loadDecks = async () => {
-    //     try {
-    //         const response = await invoke('getDeck', { payload: { deckId } });
-    //         if (response.success) {
-    //             setDeck(response.deck);
-    //             setUpdatedDeck(response.deck); // Set the initial updatedDeck state
-    //         } else {
-    //             console.error(response.error);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error fetching deck:', error);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-
-    // useEffect(() => {
-    //    loadDecks();
-    // }, []); // Dependency array to refetch if deckId changes
-
+const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
 
 
 
@@ -77,20 +50,42 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
     const [flashcardToEdit, setFlashcardToEdit] = useState(null); // State to hold the fl
 
 
-    // =====   ===================
-    // PLACEHOLDER HANDLERS
-    // ========================
-    // Placeholder function for adding the deck to a study session
-    const handleAddToStudySession = () => {
-      console.log('Add to study session button clicked');
+
+    // State for DECK editing and confirmation
+   const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
+   const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
+
+
+
+
+
+
+    //DECK EDIT LOGIC
+
+    // Modal logic for editing flashcards
+    // Open the edit modal
+    const openDeckEditModal = (deck) => {
+        console.log('opening deck edit modal. current deck:', deck);
+
+        setEditingDeck(deck);
+        setIsEditDeckModalOpen(true);
     };
 
+    // Close the edit modal and refresh flashcards
+    // updatedFlashcard is not really needed at the moment
+    const closeDeckEditModal = (updatedDeck) => {
+        setIsEditDeckModalOpen(false);
+        // Refresh the deck list by refetching decks
+        console.log('Closing deck edit modal. New deck:', updatedDeck);
+        setUpdatedDeck(updatedDeck);
 
 
-    // Placeholder function for editing the deck
-    const openFlashcardEditModalDeck = () => {
-      console.log('Edit Deck button clicked');
+
+        console.log('updated deck set', updatedDeck);
+
+
     };
+
 
 
     // ========================
@@ -228,23 +223,35 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                     console.error('Error invoking addCardToDeck:', error);
                 }
             }
+
+
+
+
         } else {
             console.warn('No flashcards selected to add.');
         }
+
+        try {
+            // Fetch the updated deck from the resolver
+            const deckResponse = await invoke('getDeck', {
+                deckId: updatedDeck.id,  // Use the current deck ID
+            });
+
+            if (deckResponse.success) {
+                // Update the deck with the fetched deck data
+                setUpdatedDeck(deckResponse.deck);
+            } else {
+                console.error('Failed to fetch the updated deck:', deckResponse.error);
+            }
+        } catch (error) {
+            console.error('Error fetching the updated deck:', error);
+        }
+
+
         //loadDecks();
 
 
     };
-
-
-    // const handleCheckboxChange = (flashcardId) => {
-    //     if (selectedFlashcards.includes(flashcardId)) {
-    //         setSelectedFlashcards(selectedFlashcards.filter(id => id !== flashcardId));
-    //     } else {
-    //         setSelectedFlashcards([...selectedFlashcards, flashcardId]);
-    //     }
-    // };
-
 
 
 
@@ -308,12 +315,26 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
     const handleDeleteDeck = () => {
         console.log('Delete Deck button clicked');
         openDeckDeleteModal();
-      };
+    };
 
     const confirmDeckDelete = async () => {
-        console.log('Deleting deck permanently')
-        // TODO
-        closeDeckDeleteModal();
+        console.log('Deleting deck permanently', deck);
+        console.log('Deleting updated permanently', updatedDeck);
+        try {
+            const response = await invoke('deleteDeck', { deckId: deck.id });
+            if (response.success) {
+
+                closeDeckDeleteModal();
+
+            } else {
+              console.error('Error deleting deck:', response.error);
+            }
+        } catch (error) {
+            console.error('Error deleting deck:', error);
+        }
+
+        goBackToHome();
+
     };
 
     // ========================
@@ -334,7 +355,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                 const deckResponse = await invoke('getDeck', {
                     deckId: updatedDeck.id,  // Use the current deck ID
                 });
-    
+
                 if (deckResponse.success) {
                     // Update the deck with the fetched deck data
                     setUpdatedDeck(deckResponse.deck);
@@ -348,14 +369,22 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
     };
 
 
+
+
+    // ========================
+    // DECK EDIT FUNCTIONALITY
+    // ========================
+
+
+
     return (
       <div className='deck-display-container'>
         <div className='deck-title-and-buttons'>
           <div className='title-left-buttons'>
             <h1>{updatedDeck.title}</h1>
             <div className='left-buttons'>
-              <button className='deck-display-add-study-session-icon' onClick={handleAddToStudySession}>
-                <AddIcon fontSize='small' /> Add to study session
+              <button className='deck-display-add-study-session-icon' onClick={startStudyMode}>
+                <StyleIcon fontSize='small' /> Study Mode
               </button>
               <button className='deck-display-quiz-icon' onClick={startQuizMode}>
                 <QuizIcon fontSize='small' /> Quiz Mode
@@ -369,7 +398,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
             <button className='deck-display-add-flashcard-icon' onClick={handleAddFlashcard}>
               <AddIcon fontSize='small' /> Add Flashcard
             </button>
-            <button className='deck-display-edit-icon' onClick={openFlashcardEditModalDeck}>
+            <button className='deck-display-edit-icon' onClick={openDeckEditModal}>
               <EditIcon fontSize='small' /> Edit Deck
             </button>
             <button className='deck-display-delete-icon' onClick={handleDeleteDeck}>
@@ -504,6 +533,21 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
               />
             </ModalDialog>
         )}
+
+
+        {/* DECK EDIT FUNCTIONALITY: DECK Edit Modal */}
+        {isEditDeckModalOpen && (
+            <ModalDialog heading="Edit Deck" onClose={() => closeDeckEditModal(true)}>
+            <EditDeckModal
+                deck={deck} // Pass the deck to the modal
+                closeDeckEditModal={closeDeckEditModal}
+            />
+            </ModalDialog>
+        )}
+
+
+
+
 
       </div>
     );

@@ -58,8 +58,8 @@ const CardSlider = ({ cards = [], onDelete, onEdit  }) => {
               <SplideSlide key={card.id} className='card-item'>
               <div className="card-link">
                 <p className='badge blue'>Blue Tag</p>
-                <h4 className='card-question'>{card.question_text || 'No question available'}</h4>
-                <h4 className='card-answer'>{card.answer_text || 'No question available'}</h4>
+                {card.question_text && <h4 className='card-question'>{card.question_text}</h4>}
+                {card.answer_text && <h4 className='card-answer'>{card.answer_text}</h4>}
                 <h4 className='card-owner'>By {card.name || 'Unknown'}</h4>
                 <div className='card-button'>
                   <EditIcon className='card-edit-button'  onClick={() => onEdit(card)}/>

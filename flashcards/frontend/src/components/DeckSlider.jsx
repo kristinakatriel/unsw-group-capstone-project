@@ -6,7 +6,7 @@ import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
 import './DeckSlider.css';
 
-const DeckSlider = ({ decks = [], onDelete, onDeckClick }) => {
+const DeckSlider = ({ decks = [], onDelete, onDeckClick, onEdit }) => {
 
   return (
     <div className='container'>
@@ -39,7 +39,7 @@ const DeckSlider = ({ decks = [], onDelete, onDeckClick }) => {
                     <h4 className='deck-flashcard-amount'>Flashcards: {deck.cards?.length || 0}</h4>
                     <h4 className='deck-owner'>By {deck.name || 'Unknown'}</h4>
                     <div className='deck-button'>
-                      <EditIcon className='deck-edit-button' />
+                      <EditIcon className='deck-edit-button'  onClick={() => onEdit(deck)}/>
                       <DeleteIcon
                           className='deck-delete-button'
                           onClick={() => {
@@ -47,8 +47,8 @@ const DeckSlider = ({ decks = [], onDelete, onDeckClick }) => {
                               onDelete(deck);
                           }}
                       />
-                      <OpenInNewIcon 
-                        className='deck-open-button' 
+                      <OpenInNewIcon
+                        className='deck-open-button'
                         onClick={() => {
                           console.log(`Deck ${deck.id} has been clicked by user`)
                           onDeckClick(deck)

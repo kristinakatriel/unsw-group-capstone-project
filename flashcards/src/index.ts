@@ -83,6 +83,13 @@ resolver.define('updateFlashcard', async (req) => {
         };
     }
 
+    if (req.context.accountId && req.context.accountId != owner) {
+      return {
+        success: false,
+        error: "cannot edit someone else's flashcard"
+      }
+    }
+
     const updatedCard: Card = {
         ...existingCard,
         question_text: question_text || existingCard.question_text,
@@ -117,7 +124,7 @@ resolver.define('updateFlashcard', async (req) => {
         // if it does contain the card + the deck has cards (redundant btw might need to delete later)
         if (cardIndex !== undefined && cardIndex >= 0 && deck.cards) {
           // Replace the card in the deck with current card
-            deck.cards[cardIndex] = updatedCard;  
+            deck.cards[cardIndex] = updatedCard;
 
             // Save the updated deck
             await storage.set(deck.id, deck);
@@ -140,6 +147,13 @@ resolver.define('deleteFlashcard', async (req) => {
         success: false,
         error: `No card found with id: ${cardId}`,
       };
+    }
+
+    if (req.context.accountId && req.context.accountId != card.owner) {
+      return {
+        success: false,
+        error: "cannot delete someone else's flashcard"
+      }
     }
 
     await storage.delete(cardId);
@@ -312,12 +326,26 @@ resolver.define('createDeck', async (req) => {
 resolver.define('updateDeck', async (req) => {
     const { id, title, description, owner, cards } = req.payload as Deck;
 
+    // Log the incoming request payload
+
     const existingDeck = await storage.get(id) as Deck | undefined;
+
+    // Log if the deck exists or not
     if (!existingDeck) {
+
         return {
             success: false,
             error: 'Deck not found',
         };
+    }
+
+    // Check ownershi
+
+    if (req.context.accountId && req.context.accountId != existingDeck.owner) {
+      return {
+        success: false,
+        error: "only edit someone elses deck"
+      }
     }
 
     const updatedDeck: Deck = {
@@ -346,6 +374,13 @@ resolver.define('deleteDeck', async (req) => {
         success: false,
         error: `No deck found with id: ${deckId}`,
       };
+    }
+
+    if (req.context.accountId && req.context.accountId != deck.owner) {
+      return {
+        success: false,
+        error: "cannot delete someone else's deck"
+      }
     }
 
     await storage.delete(deckId);
@@ -405,6 +440,13 @@ resolver.define('addCardToDeck', async (req) => {
         };
     }
 
+    if (req.context.accountId && req.context.accountId != deck.owner) {
+      return {
+        success: false,
+        error: "cannot edit someone else's deck"
+      }
+    }
+
     deck.cards = [...(deck.cards || []), card];
 
     await storage.set(deckId, deck);
@@ -425,6 +467,13 @@ resolver.define('removeCardFromDeck', async (req) => {
             success: false,
             error: 'Item not found',
         };
+    }
+
+    if (req.context.accountId && req.context.accountId != deck.owner) {
+      return {
+        success: false,
+        error: "cannot edit someone else's deck"
+      }
     }
 
     deck.cards = deck.cards?.filter(c => c.id !== cardId) || [];
