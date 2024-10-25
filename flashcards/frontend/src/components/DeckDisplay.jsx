@@ -49,13 +49,6 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode }) => {
     const [flashcardToEdit, setFlashcardToEdit] = useState(null); // State to hold the fl
 
 
-    // =====   ===================
-    // PLACEHOLDER HANDLERS
-    // ========================
-    // Placeholder function for adding the deck to a study session
-    const handleAddToStudySession = () => {
-      console.log('Add to study session button clicked');
-    };
 
 
 
