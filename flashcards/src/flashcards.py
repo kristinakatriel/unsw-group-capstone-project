@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
-from transformers import pipeline, AutoModelWithLMHead, AutoTokenizer
+from transformers import pipeline, T5ForConditionalGeneration, T5Tokenizer
 import re
 from nltk.tokenize import sent_tokenize, word_tokenize
 import math
@@ -13,9 +13,9 @@ app = FastAPI()
 
 # Models for 
 # 1. QG
-# qg_model = "valhalla/t5-base-qg-hl"
-qg_model = AutoModelWithLMHead.from_pretrained("valhalla/t5-base-qg-hl")
-qg_tokenizer = AutoTokenizer.from_pretrained("valhalla/t5-base-qg-hl")
+qg_model = T5ForConditionalGeneration.from_pretrained("valhalla/t5-base-qg-hl")
+# qg_model = AutoModelWithLMHead.from_pretrained("valhalla/t5-base-qg-hl")
+qg_tokenizer = T5Tokenizer.from_pretrained("valhalla/t5-base-qg-hl")
 # 2. QA
 qa_model = "mrm8488/spanbert-finetuned-squadv1"
 
@@ -57,7 +57,7 @@ async def generate_qa(input: TextInput):
         result = qa_pipeline(question=question, context=input.text)
         flashcard = {"question": question, "answer": result['answer']}
         # append if answer is good
-        # if result['score'] > 0.5:
-        flashcards.append(flashcard)
+        if result['score'] > 0.2:
+            flashcards.append(flashcard)
 
     return flashcards

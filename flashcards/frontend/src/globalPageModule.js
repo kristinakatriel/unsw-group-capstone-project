@@ -153,7 +153,7 @@ function globalPageModule() {
       const timer = setTimeout(() => {
         setShowDeleteSuccessAlert(false);
       }, 2000); // Adjust the duration as needed
-  
+      setDeleteDeckFromDisplaySuccess(false);
       return () => clearTimeout(timer);
     }
   }, [deleteDeckFromDisplaySuccess]);
@@ -293,11 +293,11 @@ function globalPageModule() {
     console.log('Current Breadcrumb Items:', [{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]); // Log breadcrumb items
   };
 
-  const goBackToHome = (deleted) => {
+  const goBackToHome = (deleted = false) => {
     console.log('Going back to FLASH (Home)'); // Log when going back to Home
-    if (deleted) {
-      setDeleteDeckFromDisplaySuccess(true);
-    }
+    // if (deleted) {
+    //   setDeleteDeckFromDisplaySuccess(true);
+    // }
     setSelectedDeck(null);
     setIsStudyMode(false);
     setIsQuizMode(false);
@@ -512,7 +512,7 @@ function globalPageModule() {
                   <ModalBody>
                       <p>Are you sure you want to delete this deck? This action cannot be undone.</p>
                       {deleteSuccess && 
-                        <Alert>Deck deleted successfully!</Alert>
+                        <Alert severity="success">Deck deleted successfully!</Alert>
                       }
                       {errorMessage && 
                         <Alert severity="error"> {errorMessage} </Alert>

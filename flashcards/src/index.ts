@@ -218,7 +218,6 @@ resolver.define('getAllFlashcards', async () => {
 resolver.define('generateQA', async (req) => {
   // get text
   const { text } = req.payload;
-  console.log(text);
 
   if (text.length <= 2) {
     return {
@@ -245,7 +244,10 @@ resolver.define('generateQA', async (req) => {
     };
   }
   // this returns a json of q&a pairs, which can be displayed in the context menu
-  return data;
+  return {
+    success: true,
+    data: data
+  };
 });
 
 resolver.define('addGeneratedFlashcards', async (req) => {
