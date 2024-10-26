@@ -1,12 +1,168 @@
+/* Context Menu Container */
 .context-menu {
-    padding: 20px;
-    border: 1px solid #ccc;
-    background-color: #f9f9f9;
-    width: 300px;
-    margin: 10px;
-  }
+  overflow: auto;
+  min-height: 100%;
+  max-height: 700px;
+  padding: 20px;
+  background-color: #f4f5f7;
+  border-radius: 6px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+}
 
-  .menu-content {
-    font-size: 14px;
-    color: #333;
-  }
+/* Header */
+.context-menu h2 {
+  font-size: 18px;
+  font-weight: bold;
+  margin-bottom: 15px;
+  color: #172b4d;
+}
+
+/* Form Group */
+.form-group {
+  margin-bottom: 20px;
+}
+
+/* Text Input Area */
+.input-area {
+  width: 100%;
+  height: 80px;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  resize: none;
+  font-size: 14px;
+}
+
+.input-area:focus {
+  outline: none;
+  border-color: #0052CC;
+  box-shadow: 0 0 5px rgba(0, 82, 204, 0.3);
+}
+
+/* Button Group */
+.button-group {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+  margin-top: 10px;
+}
+
+.generate-button,
+.close-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 12px;
+  font-size: 13px;
+  color: white;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.generate-button {
+  background-color: #0052CC;
+}
+
+.close-button {
+  background-color: #7a869a;
+}
+
+.generate-button:hover {
+  background-color: #0747A6;
+}
+
+.close-button:hover {
+  background-color: #5e6c84;
+}
+
+.generate-button:disabled {
+  background-color: #b3c7e6;
+  cursor: not-allowed;
+}
+
+/* Flashcard Display Section */
+.generated-flashcards {
+  margin-top: 20px;
+  padding: 15px;
+  background-color: #ffffff;
+  border-radius: 6px;
+  border: 1px solid #ebecf0;
+}
+
+.generated-flashcards h3 {
+  font-size: 16px;
+  font-weight: bold;
+  color: #172b4d;
+  margin-bottom: 10px;
+}
+
+.flashcard {
+  padding: 10px;
+  background-color: #f9f9f9;
+  border-radius: 4px;
+  border: 1px solid #ddd;
+  margin-bottom: 10px;
+}
+
+.flashcard strong {
+  color: #172b4d;
+}
+
+.save-button {
+  padding: 5px 8px;
+  font-size: 12px;
+  color: #fff;
+  background-color: #28a745;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background-color 0.3s;
+}
+
+.save-button:hover {
+  background-color: #218838;
+}
+
+.save-button:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+}
+
+/* Success and Error Alerts */
+.alert {
+  padding: 10px;
+  margin-top: 10px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.alert-success {
+  background-color: #e8f5e9;
+  color: #388e3c;
+}
+
+.alert-error {
+  background-color: #ffebee;
+  color: #d32f2f;
+}
+
+
+.card-wrapper {
+  margin-top: 20px;
+}
+
+.card-list {
+  list-style-type: none;
+  padding: 0;
+}
+
+.card-item {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 10px;
+  margin-bottom: 10px;
+}

@@ -16,6 +16,7 @@
     "@fortawesome/react-fontawesome": "^0.2.2",
     "fastapi": "^0.0.8",
     "forge": "^2.3.0",
+    "ngrok": "^5.0.0-beta.2",
     "nltk": "^0.0.1",
     "react-icons": "^5.3.0",
     "react-select": "^5.8.1",

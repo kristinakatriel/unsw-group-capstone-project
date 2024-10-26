@@ -460,13 +460,6 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
                                 <h4 className="card-back">{flashcard.back || 'No back available'}</h4>
                                 <h4 className="card-owner">By {flashcard.name || 'Unknown'}</h4>
 
-                                {/* {flashcard.question_image && (
-                                    <img src={flashcard.question_image} alt="Question" className="question-image" />
-                                )}
-                                {flashcard.answer_image && (
-                                    <img src={flashcard.answer_image} alt="Answer" className="answer-image" />
-                                )} */}
-
                                 <div className="card-button">
                                     <EditIcon
                                         className="card-edit-button"

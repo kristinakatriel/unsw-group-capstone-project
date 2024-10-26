@@ -4,3 +4,4 @@ transformers
 torch
 nltk
 pydantic
+sentencepiece
