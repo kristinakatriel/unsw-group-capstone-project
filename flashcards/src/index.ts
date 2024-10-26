@@ -169,10 +169,6 @@ resolver.define('deleteFlashcard', async (req) => {
     const { cardId } = req.payload;
 
     const queryResult = await storage.query().limit(25).getMany();
-  
-    for (const entity of queryResult.results) {
-      await storage.delete(entity.key);
-    }
 
     const card = await storage.get(cardId);
     if (!card) {
@@ -188,8 +184,6 @@ resolver.define('deleteFlashcard', async (req) => {
     //     error: "Only owner can delete"
     //   }
     // }
-
-    console.log("MKM TEST DELETE");
 
     await storage.delete(cardId);
 
