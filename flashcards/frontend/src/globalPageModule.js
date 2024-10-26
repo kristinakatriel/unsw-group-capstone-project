@@ -152,14 +152,12 @@ function globalPageModule() {
   
       const timer = setTimeout(() => {
         setShowDeleteSuccessAlert(false);
-      }, 2000); // Adjust duration as needed
+      }, 2000); // Adjust the duration as needed
   
-      setDeleteDeckFromDisplaySuccess(false);
-      
-      // Clear timer on component unmount or re-render
       return () => clearTimeout(timer);
     }
   }, [deleteDeckFromDisplaySuccess]);
+
 
   //************************** FETCHING DATA (REUSABLE) *****************************/
   const loadFlashcards = async () => {
