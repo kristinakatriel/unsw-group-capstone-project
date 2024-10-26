@@ -14,7 +14,7 @@ import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
-import { Alert } from '@mui/material';
+import { Alert, Collapse } from '@mui/material';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import QuizMode from './components/QuizMode';
 import StudyMode from './components/StudyMode';
@@ -77,6 +77,8 @@ function globalPageModule() {
   // State for saving success and error messages
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [deleteDeckFromDisplaySuccess, setDeleteDeckFromDisplaySuccess] = useState(false);
+  const [showDeleteSuccessAlert, setShowDeleteSuccessAlert] = useState(false);
 
   //************************** DELETION LOGIC *****************************/
   const confirmDeleteFlashcard = (flashcard) => {
@@ -143,6 +145,18 @@ function globalPageModule() {
     }
 
   };
+
+  useEffect(() => {
+    if (deleteDeckFromDisplaySuccess) {
+      setShowDeleteSuccessAlert(true);
+  
+      const timer = setTimeout(() => {
+        setShowDeleteSuccessAlert(false);
+      }, 2000); // Adjust the duration as needed
+  
+      return () => clearTimeout(timer);
+    }
+  }, [deleteDeckFromDisplaySuccess]);
 
   //************************** FETCHING DATA (REUSABLE) *****************************/
   const loadFlashcards = async () => {
@@ -279,8 +293,11 @@ function globalPageModule() {
     console.log('Current Breadcrumb Items:', [{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]); // Log breadcrumb items
   };
 
-  const goBackToHome = () => {
+  const goBackToHome = (deleted) => {
     console.log('Going back to FLASH (Home)'); // Log when going back to Home
+    if (deleted) {
+      setDeleteDeckFromDisplaySuccess(true);
+    }
     setSelectedDeck(null);
     setIsStudyMode(false);
     setIsQuizMode(false);
@@ -388,7 +405,11 @@ function globalPageModule() {
 
       <div className='global-page-headline'><FlashOnIcon className='global-page-flash-icon'/> FLASH</div>
       <div className='global-page-subheadline'>The Forge App that allows you to create flashcards in a flash</div>
-
+      <Collapse in={showDeleteSuccessAlert}>
+        <Alert severity="success">
+          Deck deleted successfully!
+        </Alert>
+      </Collapse>
       <div className='global-page-decks'>Decks<button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button></div>
       {loading ? (
         <p>Loading...</p>

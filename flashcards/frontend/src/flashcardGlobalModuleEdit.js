@@ -51,13 +51,13 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
         setSaveSuccess(true); // Show success message
         setTimeout(() => {
           closeFlashcardEditModal(response.card); // Delay closing modal
-        }, 500); // Show success message for 0.5 before closing
+        }, 2000); // Show success message for 0.5 before closing
       }  else {
         console.error('Failed to update flashcard:', response.error);
         setErrorMessage(response.error);
         setTimeout(() => {
           closeFlashcardEditModal(flashcard); // Delay closing modal
-        }, 1000); // Show success message for 1 seconds before closing
+        }, 2000); // Show success message for 1 seconds before closing
         setSaveSuccess(false);
       }
     } catch (error) {

@@ -357,7 +357,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
             const response = await invoke('deleteDeck', { deckId: deck.id });
             if (response.success) {
 							closeDeckDeleteModal();
-							goBackToHome();
+							goBackToHome(true);
             } else {
               setErrorMessage(response.error);
               console.error('Error deleting deck:', response.error);

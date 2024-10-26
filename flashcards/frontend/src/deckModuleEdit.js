@@ -46,13 +46,13 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
 
         setTimeout(() => {
           closeDeckEditModal(response.deck); // Delay closing modal
-        }, 1000); // Show success message for 2 seconds before closing
+        }, 2000); // Show success message for 2 seconds before closing
       } else {
         console.error('Failed to update deck:', response.error);
         setErrorMessage(response.error);
         setTimeout(() => {
           closeDeckEditModal(deck); // Delay closing modal
-        }, 1000); // Show success message for 2 seconds before closing
+        }, 2000); // Show success message for 2 seconds before closing
       }
     } catch (error) {
       console.error('Error invoking updateDeck:', error);
