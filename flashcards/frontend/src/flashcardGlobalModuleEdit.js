@@ -3,12 +3,15 @@ import { invoke } from '@forge/bridge';
 import './deckGlobalModuleCreate.css'; // made the css file common
 import './globalPageModule.js';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
+import { Alert } from '@mui/material';
 import DragNDrop from './components/DragNDrop.jsx';
 
 function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [hint, setHint] = useState('');
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
   // const [questionImage, setQuestionImage] = useState(null);
   // const [answerImage, setAnswerImage] = useState(null);
 
@@ -41,18 +44,25 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
         // question_image: questionImage,
         answer_text: answer,
         // answer_image: answerImage,
-        hint: hint,
+        hint: hint
       });
 
       if (response && response.success) {
-        // Close the modal and pass updated card back
-        closeFlashcardEditModal(response.card);
-      } else {
+        setSaveSuccess(true); // Show success message
+        setTimeout(() => {
+          closeFlashcardEditModal(response.card); // Delay closing modal
+        }, 2000); // Show success message for 0.5 before closing
+      }  else {
         console.error('Failed to update flashcard:', response.error);
+        setErrorMessage(response.error);
+        setTimeout(() => {
+          closeFlashcardEditModal(flashcard); // Delay closing modal
+        }, 2000); // Show success message for 1 seconds before closing
+        setSaveSuccess(false);
       }
     } catch (error) {
       console.error('Error invoking updateFlashcard:', error);
-    }
+    } 
   };
 
   // const handleQuestionImageSelected = (files) => {
@@ -69,8 +79,10 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
 
   return (
     <div className="global-deck-edit">
-      <h2 className="deck-title"><DriveFileRenameOutlineIcon class='global-flashcard-edit-icon'/>Edit Flashcard</h2>
-
+      <h2 className="deck-title"><DriveFileRenameOutlineIcon className='global-flashcard-edit-icon'/>Edit Flashcard</h2>
+      {errorMessage && 
+        <Alert severity="error">{errorMessage}</Alert>
+      }
       <div className="form-group">
         <label htmlFor="question">Question</label>
         <div className="input-drag-container">
@@ -109,6 +121,10 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
           className="input-area"
         />
       </div>
+
+      {saveSuccess && 
+        <Alert severity="success">Flashcard updated successfully!</Alert>
+      }
 
       <div className="button-group">
         <button className="save-button" onClick={handleSaveGlobal}>Save</button>

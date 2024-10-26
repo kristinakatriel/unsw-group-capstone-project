@@ -21,7 +21,7 @@ resolver.define('createFlashcard', async (req) => {
   if (!question_text || !answer_text || !req.context.accountId) {
     return {
       success: false,
-      error: 'Invalid input: question, answer, owner required',
+      error: 'Invalid Input: Please enter Question and Answer.',
     };
   }
 
@@ -74,7 +74,7 @@ resolver.define('createFlashcard', async (req) => {
 
 
 resolver.define('updateFlashcard', async (req) => {
-    const { id, question_text, question_image, answer_text, answer_image, hint, tags, owner } = req.payload as Card;
+    const { id, question_text, question_image, answer_text, answer_image, hint, tags } = req.payload as Card;
 
     const existingCard = await storage.get(id) as Card | undefined;
     if (!existingCard) {
@@ -84,10 +84,10 @@ resolver.define('updateFlashcard', async (req) => {
         };
     }
 
-    if (req.context.accountId && req.context.accountId != owner) {
+    if (req.context.accountId && req.context.accountId != existingCard.owner) {
       return {
         success: false,
-        error: "cannot edit someone else's flashcard"
+        error: "Permission Denied: Only owner can edit this flashcard."
       }
     }
 
@@ -99,7 +99,7 @@ resolver.define('updateFlashcard', async (req) => {
         answer_image: answer_image || existingCard.answer_image,
         hint: hint || existingCard.hint,
         tags: tags || existingCard.tags,
-        owner: owner || existingCard.owner,
+        owner: existingCard.owner,
     };
 
     await storage.set(id, updatedCard);
@@ -153,7 +153,7 @@ resolver.define('deleteFlashcard', async (req) => {
     if (req.context.accountId && req.context.accountId != card.owner) {
       return {
         success: false,
-        error: "cannot delete someone else's flashcard"
+        error: "Permission Denied: Only owner can delete this flashcard"
       }
     }
 
@@ -337,7 +337,7 @@ resolver.define('createDeck', async (req) => {
   if (!title || !req.context.accountId) {
     return {
       success: false,
-      error: 'Invalid input: title and owner required',
+      error: 'Invalid Input: Please input the Title.',
     };
   }
 
@@ -398,7 +398,7 @@ resolver.define('updateDeck', async (req) => {
 
         return {
             success: false,
-            error: 'Deck not found',
+            error: 'Deck Not found',
         };
     }
 
@@ -407,7 +407,7 @@ resolver.define('updateDeck', async (req) => {
     if (req.context.accountId && req.context.accountId != existingDeck.owner) {
       return {
         success: false,
-        error: "only edit someone elses deck"
+        error: "Permission Denied: Only owner can edit this deck."
       }
     }
 
@@ -442,7 +442,7 @@ resolver.define('deleteDeck', async (req) => {
     if (req.context.accountId && req.context.accountId != deck.owner) {
       return {
         success: false,
-        error: "cannot delete someone else's deck"
+        error: "Permission Denied: Only owner can delete this deck."
       }
     }
 
@@ -506,7 +506,7 @@ resolver.define('addCardToDeck', async (req) => {
     if (req.context.accountId && req.context.accountId != deck.owner) {
       return {
         success: false,
-        error: "cannot edit someone else's deck"
+        error: "Permission Denied: Only owner can add the flashcard to this deck."
       }
     }
 
@@ -535,7 +535,7 @@ resolver.define('removeCardFromDeck', async (req) => {
     if (req.context.accountId && req.context.accountId != deck.owner) {
       return {
         success: false,
-        error: "cannot edit someone else's deck"
+        error: "Permission Denied: Only owner can remove this flashcard from deck."
       }
     }
 
