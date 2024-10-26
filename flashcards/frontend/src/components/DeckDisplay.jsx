@@ -4,7 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import QuizIcon from '@mui/icons-material/Quiz';
 import StyleIcon from '@mui/icons-material/Style';
-import { Alert } from '@mui/material';
+import { Alert, Collapse } from '@mui/material';
 import { invoke } from '@forge/bridge';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
@@ -42,24 +42,54 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
     // STATE MANAGEMENT
     // ========================
 
-    // State hooks to manage modal visibility, the selected flashcard for deletion, and the updated deck state
-    const [isFlashcardDeleteModalOpen, setFlashcardDeleteModalOpen] = useState(false);
-    const [isDeckDeleteModalOpen, setDeckDeleteModalOpen] = useState(false);
-    const [flashcardToDelete, setFlashcardToDelete] = useState(null);
-    const [updatedDeck, setUpdatedDeck] = useState(deck);
-    const [isFlashcardEditModalOpen, setIsEditFlashcardOpen] = useState(false); // New state for edit modal
-    const [flashcardToEdit, setFlashcardToEdit] = useState(null); // State to hold the fl
+        // State hooks to manage modal visibility, the selected flashcard for deletion, and the updated deck state
+        const [isFlashcardDeleteModalOpen, setFlashcardDeleteModalOpen] = useState(false);
+        const [isDeckDeleteModalOpen, setDeckDeleteModalOpen] = useState(false);
+        const [flashcardToDelete, setFlashcardToDelete] = useState(null);
+        const [updatedDeck, setUpdatedDeck] = useState(deck);
+        const [isFlashcardEditModalOpen, setIsEditFlashcardOpen] = useState(false); // New state for edit modal
+        const [flashcardToEdit, setFlashcardToEdit] = useState(null); // State to hold the fl
 
 
 
-    // State for DECK editing and confirmation
-   const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
-   const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
+        // State for DECK editing and confirmation
+    const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
+    const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
 
-   // Success and error alerts for adding flashcards to deck
-   const [saveSuccess, setSaveSuccess] = useState(false);
-   const [errorMessage, setErrorMessage] = useState('');
-   const [closeError, setCloseError] = useState(true);
+    // Success and error alerts for adding flashcards to deck
+    const [saveSuccess, setSaveSuccess] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
+
+    // ========================
+    // USE EFFECT FOR SUCCESS AND ERROR ALERTS
+    // ========================
+
+    useEffect(() => {
+        if (saveSuccess && errorMessage === '') {
+            setShowSuccessAlert(true);
+
+            const timer = setTimeout(() => {
+                setShowSuccessAlert(false);
+            }, 2000); // 2000 ms = 2 seconds
+
+            // Clear timeout if the component unmounts
+            return () => clearTimeout(timer);
+        }
+    }, [saveSuccess, errorMessage]);
+
+    useEffect(() => {
+        if (errorMessage) {
+            setShowErrorAlert(true);
+        
+            const errorTimer = setTimeout(() => {
+            setShowErrorAlert(false);
+            }, 2000); // Show error alert for 2 seconds
+        
+            return () => clearTimeout(errorTimer); // Clear timeout if component unmounts
+        }
+      }, [errorMessage]);
 
     //DECK EDIT LOGIC
 
@@ -173,7 +203,6 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
     const closeAddDeckModal = async (selectedFlashcards = []) => {
         console.log('closeAddDeckModal invoked. Selected flashcards:', selectedFlashcards);
         setErrorMessage('');
-        setCloseError(true);
         setIsAddFlashcardModalOpen(false);
         console.log('Modal closed. isAddFlashcardModalOpen set to:', false);
 
@@ -412,12 +441,12 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
         </div>
         <h2>Flashcards</h2>
         <h4 className='deck-flashcard-amount'>Flashcards: {updatedDeck.cards?.length || 0}</h4>
-        {saveSuccess && errorMessage=='' && 
-         <Alert severity="success"> Flashcards added successfully! </Alert>
-        }
-        {errorMessage && 
-            <Alert severity="error">{errorMessage}</Alert>
-        }
+        <Collapse in={showSuccessAlert} timeout={500}>
+            <Alert severity="success">Flashcards added successfully!</Alert>
+        </Collapse>
+        <Collapse in={showErrorAlert} timeout={500}>
+            {errorMessage && <Alert severity="error">{errorMessage}</Alert> }
+        </Collapse>
         {updatedDeck.cards.length > 0 ? (
             <div className="card-wrapper">
                 <ul className="card-list">
