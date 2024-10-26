@@ -293,11 +293,15 @@ function globalPageModule() {
     console.log('Current Breadcrumb Items:', [{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]); // Log breadcrumb items
   };
 
-  const goBackToHome = (deleted = false) => {
+  const goBackIntermediate = (deleted = false) => {
+    if (deleted) {
+      setDeleteDeckFromDisplaySuccess(true);
+    }
+    goBackToHome();
+  }
+
+  const goBackToHome = () => {
     console.log('Going back to FLASH (Home)'); // Log when going back to Home
-    // if (deleted) {
-    //   setDeleteDeckFromDisplaySuccess(true);
-    // }
     setSelectedDeck(null);
     setIsStudyMode(false);
     setIsQuizMode(false);
@@ -395,7 +399,7 @@ function globalPageModule() {
               onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined} />
           ))}
         </Breadcrumbs>
-        <DeckDisplay deck={selectedDeck} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome}/>
+        <DeckDisplay deck={selectedDeck} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
       </div>
     );
   }
