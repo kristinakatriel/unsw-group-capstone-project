@@ -14,6 +14,8 @@
 *.tmp
 .cache/
 
+venv/
+
 .env
 .env.local
 
