@@ -15,6 +15,7 @@ function ContextMenu() {
     const fetchData = async () => {
       try {
         const context = await view.getContext();
+        console.log(context);
         const selectedText = context.extension.selectedText; // Get selected text from context
         console.log("Selected Text:", selectedText); // Log the selected text for verification
         setText(selectedText); // Set the selected text to the state

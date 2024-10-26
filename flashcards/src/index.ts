@@ -218,6 +218,7 @@ resolver.define('getAllFlashcards', async () => {
 resolver.define('generateQA', async (req) => {
   // get text
   const { text } = req.payload;
+  console.log(text);
 
   if (text.length <= 2) {
     return {
