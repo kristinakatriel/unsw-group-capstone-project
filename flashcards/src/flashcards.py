@@ -1,12 +1,8 @@
 from fastapi import FastAPI
 from pydantic import BaseModel
 from transformers import pipeline, T5ForConditionalGeneration, T5Tokenizer
-import re
-from nltk.tokenize import sent_tokenize, word_tokenize
 import math
 import nltk
-import string
-# from bs4 import BeautifulSoup
 
 # App 
 app = FastAPI()
