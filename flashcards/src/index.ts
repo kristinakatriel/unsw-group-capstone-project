@@ -1,12 +1,14 @@
 import Resolver from '@forge/resolver';
 import api, { route, storage } from '@forge/api';
-import { Card, Deck, Tag } from './types';
+import { Card, Deck, Tag, User, DynamicData, 
+         QuizResult, StudyResult, QuizSession, StudySession
+ } from './types';
 import { v4 as uuidv4 } from 'uuid';
 import { basename } from 'path';
 
+
 const resolver = new Resolver();
 
-const createId = () => uuidv4();
 
 resolver.define('getModule', async (req) => {
   const { moduleKey } = req.context;
@@ -14,48 +16,78 @@ resolver.define('getModule', async (req) => {
 });
 
 
-resolver.define('createFlashcard', async (req) => {
-  const { front, back, hint } = req.payload as Omit<Card, 'id' | 'owner'>;
+const generateId = () => uuidv4();
 
-  if (!front || !back || !req.context.accountId) {
+
+const getUserName = async (accountId: string) => {
+  if (!accountId) {
+    return "unknown";
+  }
+
+  const bodyData = JSON.stringify({
+    accountIds: [accountId],
+  });
+
+  const response = await api.asApp().requestConfluence(route`/wiki/api/v2/users-bulk`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: bodyData
+  });
+
+  if (response.status === 200) {
+    const data = await response.json();
+    return data.results?.[0]?.publicName || "unknown";
+  } else {
+    return "unknown";
+  }
+};
+
+
+const initUserData = async (accountId: string) => {
+  const userDataKey = `u-${accountId}`;
+  const existingUser = await storage.get(userDataKey);
+
+  if (!existingUser) {    
+    const newUser = {
+      id: userDataKey,
+      deckIds: [],
+      cardIds: []
+    };
+    
+    await storage.set(userDataKey, newUser);
+    return newUser;
+  }
+
+  return existingUser;
+};
+
+
+resolver.define('createFlashcard', async (req) => {
+  const { front, back, hint } = req.payload as Omit<Card, 'id' | 'owner' | 'name'>;
+  const accountId = req.context.accountId;
+
+  console.log("MKM TEST CREATE");
+
+  if (!front || !back || !accountId) {
     return {
       success: false,
-      error: 'Invalid input: question, answer, owner required',
+      error: 'Invalid input: front and back required',
     };
   }
 
-  let name = "unknown"
+  initUserData(accountId);
+  const name = await getUserName(accountId);
 
-  if (req.context.accountId) {
-    let bodyData = `{
-      "accountIds": [
-        "${req.context.accountId}"
-      ]
-    }`;
-
-    const response = await api.asApp().requestConfluence(route`/wiki/api/v2/users-bulk`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: bodyData
-    });
-    if (response.status === 200) {
-      let data = await response.json();
-      name = data.results[0].publicName;
-    } else {
-      name = "unknown2"
-    };
-  }
-
-  const cardId = createId();
+  const cardId = `c-${generateId()}`;
   const card = {
+    id: cardId,
     front,
     back,
     hint,
-    owner: req.context.accountId,
-    id: cardId,
+    owner: accountId,
     name: name
   };
 
@@ -76,19 +108,25 @@ resolver.define('updateFlashcard', async (req) => {
     if (!existingCard) {
         return {
             success: false,
-            error: 'Card not found',
+            error: 'Card not found'
         };
     }
+
+    // if (req.context.accountId && req.context.accountId != owner) {
+    //   return {
+    //     success: false,
+    //     error: "Only owner can edit"
+    //   }
+    // }
 
     const updatedCard: Card = {
         ...existingCard,
         front: front || existingCard.front,
         back: back || existingCard.back,
-        hint: hint || existingCard.hint,
-        owner: owner || existingCard.owner,
+        hint: hint || existingCard.hint
     };
 
-    await storage.set(id, updatedCard);
+    // TODO ***
 
     // setting the deck with the updated flashcard
     // Update the flashcard in storage
@@ -111,7 +149,7 @@ resolver.define('updateFlashcard', async (req) => {
         // if it does contain the card + the deck has cards (redundant btw might need to delete later)
         if (cardIndex !== undefined && cardIndex >= 0 && deck.cards) {
           // Replace the card in the deck with current card
-            deck.cards[cardIndex] = updatedCard;  
+            deck.cards[cardIndex] = updatedCard;
 
             // Save the updated deck
             await storage.set(deck.id, deck);
@@ -120,7 +158,7 @@ resolver.define('updateFlashcard', async (req) => {
 
     return {
         success: true,
-        card: updatedCard,
+        card: updatedCard
     };
 });
 
@@ -128,19 +166,34 @@ resolver.define('updateFlashcard', async (req) => {
 resolver.define('deleteFlashcard', async (req) => {
     const { cardId } = req.payload;
 
+    const queryResult = await storage.query().limit(25).getMany();
+  
+    for (const entity of queryResult.results) {
+      await storage.delete(entity.key);
+    }
+
     const card = await storage.get(cardId);
     if (!card) {
       return {
         success: false,
-        error: `No card found with id: ${cardId}`,
+        error: `No card found with id: ${cardId}`
       };
     }
+
+    // if (req.context.accountId && req.context.accountId != card.owner) {
+    //   return {
+    //     success: false,
+    //     error: "Only owner can delete"
+    //   }
+    // }
+
+    console.log("MKM TEST DELETE");
 
     await storage.delete(cardId);
 
     return {
       success: true,
-      message: `Deleted card with id: ${cardId}`,
+      message: `Deleted card with id: ${cardId}`
     };
 });
 
@@ -149,17 +202,16 @@ resolver.define('getFlashcard', async ({ payload }) => {
   const { cardId } = payload;
 
   const card = await storage.get(cardId) as Card | undefined;
-
   if (!card) {
     return {
       success: false,
-      error: `No card found with id: ${cardId}`,
+      error: `No card found with id: ${cardId}`
     };
   }
 
   return {
     success: true,
-    card,
+    card
   };
 });
 
@@ -167,25 +219,19 @@ resolver.define('getFlashcard', async ({ payload }) => {
 resolver.define('getAllFlashcards', async () => {
   const allFlashcards: Card[] = [];
 
+  // TODO ***
   const result = await storage.query().limit(25).getMany();
-  // const result = await storage.query()
-  // .filter((item) => item.type === 'Card') // Adjust to your storage schema
-  // .limit(25)
-  // .getMany();
-  // Log the result from storage query
-  console.log('Storage query result:', result);
 
+  // console.log('Storage query result:', result);
 
   result.results.forEach(({ value }) => {
-    console.log('value:', value);
+    // console.log('value:', value);
     if ('back' in value) {
-
       allFlashcards.push(value as Card);
     }
   });
 
-  console.log('Fetched flashcards:', allFlashcards);
-
+  // console.log('Fetched flashcards:', allFlashcards);
 
   return {
     success: true,
@@ -193,57 +239,40 @@ resolver.define('getAllFlashcards', async () => {
   };
 });
 
+
 resolver.define('createDeck', async (req) => {
   const { title, description, cards: flashcards } = req.payload as Omit<Deck, 'id'>;
+  const accountId = req.context.accountId;
 
-  if (!title || !req.context.accountId) {
+  if (!title || !accountId) {
     return {
       success: false,
-      error: 'Invalid input: title and owner required',
+      error: 'Invalid input: title required',
     };
   }
 
-  let name = "unknown"
+  initUserData(accountId);
+  const user = await getUserName(accountId);
 
-  if (req.context.accountId) {
-    let bodyData = `{
-      "accountIds": [
-        "${req.context.accountId}"
-      ]
-    }`;
-
-    const response = await api.asApp().requestConfluence(route`/wiki/api/v2/users-bulk`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: bodyData
-    });
-    if (response.status === 200) {
-      let data = await response.json();
-      name = data.results[0].publicName;
-    } else {
-      name = "unknown0"
-    };
-  }
-
-  const deckId = createId();
-  const newDeck: Deck = {
+  const deckId = `d-${generateId()}`;
+  const deck: Deck = {
     id: deckId,
     title,
     description,
-    owner: req.context.accountId,
-    cards: flashcards || [],
-    name: name
+    owner: accountId,
+    name: user,
+    cards: flashcards || [], // todo: remove once frontend refactored
+    cardIds: [0],            // todo: implement card id references
+    size: 0
   };
 
-  await storage.set(deckId, newDeck);
+  // TODO ***
+  await storage.set(deckId, deck);
 
   return {
     success: true,
     id: deckId,
-    deck: newDeck,
+    deck: deck,
   };
 });
 
@@ -252,6 +281,7 @@ resolver.define('updateDeck', async (req) => {
     const { id, title, description, owner, cards } = req.payload as Deck;
 
     const existingDeck = await storage.get(id) as Deck | undefined;
+
     if (!existingDeck) {
         return {
             success: false,
@@ -259,11 +289,17 @@ resolver.define('updateDeck', async (req) => {
         };
     }
 
+    if (req.context.accountId && req.context.accountId != existingDeck.owner) {
+      return {
+        success: false,
+        error: "Only owner can edit"
+      }
+    }
+
     const updatedDeck: Deck = {
         ...existingDeck,
         title: title || existingDeck.title,
         description: description || existingDeck.description,
-        owner: owner || existingDeck.owner,
         cards: cards || existingDeck.cards,
     };
 
@@ -280,12 +316,20 @@ resolver.define('deleteDeck', async (req) => {
     const { deckId } = req.payload;
 
     const deck = await storage.get(deckId);
+
     if (!deck) {
       return {
         success: false,
         error: `No deck found with id: ${deckId}`,
       };
     }
+
+    // if (req.context.accountId && req.context.accountId != deck.owner) {
+    //   return {
+    //     success: false,
+    //     error: "Only owner can delete"
+    //   }
+    // }
 
     await storage.delete(deckId);
 
@@ -318,6 +362,7 @@ resolver.define('getDeck', async ({ payload }) => {
 resolver.define('getAllDecks', async () => {
     const allDecks: Deck[] = [];
 
+    // TODO ***
     const queryResult = await storage.query().limit(25).getMany();
 
     queryResult.results.forEach(({ value }) => {
@@ -344,7 +389,15 @@ resolver.define('addCardToDeck', async (req) => {
         };
     }
 
-    deck.cards = [...(deck.cards || []), card];
+    // if (req.context.accountId && req.context.accountId != deck.owner) {
+    //   return {
+    //     success: false,
+    //     error: "Only owner can edit"
+    //   }
+    // }
+
+    deck.cards = [...(deck.cards || []), card];          // todo: remove once frontend refactored
+    deck.cardIds = [...(deck.cardIds || []), cardId];
 
     await storage.set(deckId, deck);
 
@@ -366,7 +419,15 @@ resolver.define('removeCardFromDeck', async (req) => {
         };
     }
 
-    deck.cards = deck.cards?.filter(c => c.id !== cardId) || [];
+    if (req.context.accountId && req.context.accountId != deck.owner) {
+      return {
+        success: false,
+        error: "Only owner can edit"
+      }
+    }
+
+    deck.cards = deck.cards?.filter(c => c.id !== cardId) || [];  // todo: remove once frontend refactored
+    deck.cardIds = deck.cardIds?.filter(id => id !== cardId) || [];
 
     await storage.set(deckId, deck);
 
@@ -375,6 +436,13 @@ resolver.define('removeCardFromDeck', async (req) => {
         message: 'Removed card from deck',
     };
 });
+
+
+// resolver.define('startStudySession', async (req) => {});
+// resolver.define('endStudySession', async (req) => {});
+
+// resolver.define('startQuizSession', async (req) => {});
+// resolver.define('endQuizSession', async (req) => {});
 
 
 

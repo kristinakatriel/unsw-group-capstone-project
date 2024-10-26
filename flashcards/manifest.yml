@@ -1,4 +1,5 @@
 modules:
+
   confluence:contentAction:
     - key: content-action-menu-flashcards
       resource: main
@@ -6,6 +7,7 @@ modules:
         function: resolver
       viewportSize: medium
       title: FLASH - Create A Flashcard
+
   confluence:globalPage:
     - key: flashcard-global-page
       resource: main
@@ -13,23 +15,29 @@ modules:
         function: resolver
       title: FLASH - Home
       route: flashcard-global-page
+
   confluence:contextMenu:
     - key: flashcard-context-menu
       resource: main
       resolver:
         function: resolver
       title: FLASH - Create Flashcard(s) (AI Generation)
+
   function:
     - key: resolver
       handler: index.handler
+
+
+
 resources:
+
   - key: main
     path: frontend/build
-app:
-  runtime:
-    name: nodejs20.x
-  id: ari:cloud:ecosystem::app/61ace610-ef8d-4591-9283-afd839ca356c
+
+
+
 permissions:
+
   scopes:
     - read:confluence-content.summary
     - write:confluence-content
@@ -38,10 +46,25 @@ permissions:
     - read:user:confluence
     - read:content-details:confluence
     - read:user:confluence
+
   content:
     styles:
       - 'unsafe-inline'
+
   # external:
   #   fetch:
   #     backend:
   #       - marlin-excited-gibbon.ngrok-free.app
+
+
+
+app:
+
+  id: ari:cloud:ecosystem::app/61ace610-ef8d-4591-9283-afd839ca356c
+
+  runtime:
+    name: nodejs20.x
+
+  # storage:
+
+    

@@ -5,12 +5,9 @@ import './globalPageModule.js';
 import DragNDrop from './components/DragNDrop.jsx';
 
 function CreateFlashcardGlobal( { closeFlashcardModal }) {
-  const [question, setQuestion] = useState('');
-  const [answer, setAnswer] = useState('');
+  const [front, setFront] = useState('');
+  const [back, setBack] = useState('');
   const [hint, setHint] = useState('');
-  // const [questionImage, setQuestionImage] = useState(null);
-  // const [answerImage, setAnswerImage] = useState(null);
-
 
 
   const handleCloseGlobal = () => {
@@ -28,23 +25,19 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
     try {
       console.log('Function called: handleSaveGlobal');
       const response = await invoke('createFlashcard', {
-        question_text: question,
-        question_image: null,
-        answer_text: answer,
-        answer_image: null,
+        front: front,
+        back: back,
         hint: hint,
-        tags: ['no', 'yes'],
       });
 
       // getUserEmail();
       //console.log(response.owner);
       console.log('Flashcard saved?:', response);
 
-      setQuestion('');
-      setAnswer('');
+      setFront('');
+      setBack('');
       setHint('');
-      // setQuestionImage(null);
-      // setAnswerImage(null);
+
       console.log('Flashcard saved?:', response.card);
       if (response && response.success) {
           // Pass the new flashcard back to the close function
@@ -57,49 +50,34 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
     }
   };
 
-  // const handleQuestionImageSelected = (files) => {
-  //   //console.log('Function called: handleQuestionImageSelected');
-  //   if (files.length > 0) {
-  //     setQuestionImage(files[0]);
-  //   }
-  // };
-
-  // const handleAnswerImageSelected = (files) => {
-  //   //console.log('Function called: handleAnswerImageSelected');
-  //   if (files.length > 0) {
-  //     setAnswerImage(files[0]);
-  //   }
-  // };
 
   return (
     <div className="global-flashcard-creation">
       <h2 className="flashcard-title">Create New Flashcard</h2>
 
       <div className="form-group">
-        <label htmlFor="question">Question</label>
+        <label htmlFor="front">Front</label>
         <div className="input-drag-container">
           <textarea
-            id="question"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Type the question here..."
+            id="front"
+            value={front}
+            onChange={(e) => setFront(e.target.value)}
+            placeholder="Enter text for the front of the flashcard..."
             className="input-area"
           />
-          {/* <DragNDrop onFilesSelected={handleQuestionImageSelected} /> */}
         </div>
       </div>
 
       <div className="form-group">
-        <label htmlFor="answer">Answer</label>
+        <label htmlFor="back">Back</label>
         <div className="input-drag-container">
           <textarea
-            id="answer"
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            placeholder="Type the answer here..."
+            id="back"
+            value={back}
+            onChange={(e) => setBack(e.target.value)}
+            placeholder="Enter text for the back of the flashcard..."
             className="input-area"
           />
-          {/* <DragNDrop onFilesSelected={handleAnswerImageSelected} /> */}
         </div>
       </div>
 
@@ -110,17 +88,15 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
             id="hint"
             value={hint}
             onChange={(e) => setHint(e.target.value)}
-            placeholder="Type the hint here..."
+            placeholder="Enter a hint..."
             className="input-area"
           />
-          {/*<DragNDrop onFilesSelected={(files) => console.log('Files selected:', files)} />*/}
         </div>
       </div>
 
-      <div className="form-group">
+      {/* <div className="form-group">
         <label htmlFor="select">Add to... (Optional)</label>
-
-      </div>
+      </div> */}
 
       <div className="button-group">
         <button className="save-button" onClick={handleSaveGlobal}>Save</button>

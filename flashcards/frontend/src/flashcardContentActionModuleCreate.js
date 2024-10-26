@@ -4,34 +4,26 @@ import './flashcardContentActionModuleCreate.css';
 import DragNDrop from './components/DragNDrop';
 
 function flashcardContentActionModuleCreate() {
-  const [question, setQuestion] = useState('');
-  const [answer, setAnswer] = useState('');
+  const [front, setFront] = useState('');
+  const [back, setBack] = useState('');
   const [hint, setHint] = useState('');
-  const [ownerEmail, setOwnerEmail] = useState('');
-  const [questionImage, setQuestionImage] = useState(null);
-  const [answerImage, setAnswerImage] = useState(null);
 
   const handleSave = async () => {
     try {
       const response = await invoke('createFlashcard', {
-        question_text: question,
-        question_image: null,
-        answer_text: answer,
-        answer_image: null,
-        hint: 'abababb hint',
-        tags: ['no', 'yes'],
-        owner: 'e@1',
+        front: front,
+        back: back,
+        hint: 'A hint',
+        owner: '@O0',
+        name: user
       });
 
-      // getUserEmail();
       console.log(response.owner);
       console.log('Flashcard saved successfully:', response);
 
-      setQuestion('');
-      setAnswer('');
+      setFront('');
+      setBack('');
       setHint('');
-      setQuestionImage(null);
-      setAnswerImage(null);
 
     } catch (error) {
       console.error('Error invoking createFlashcard:', error);
@@ -41,19 +33,6 @@ function flashcardContentActionModuleCreate() {
   const handleClose = () => {
     console.log('LOGGGGG');
     view.close();
-
-  };
-
-  const handleQuestionImageSelected = (files) => {
-    if (files.length > 0) {
-      setQuestionImage(files[0]);
-    }
-  };
-
-  const handleAnswerImageSelected = (files) => {
-    if (files.length > 0) {
-      setAnswerImage(files[0]);
-    }
   };
 
   return (
@@ -61,30 +40,28 @@ function flashcardContentActionModuleCreate() {
       <h2 className="flashcard-title">Create New Flashcard</h2>
 
       <div className="form-group">
-        <label htmlFor="question">Question</label>
+        <label htmlFor="front">Front</label>
         <div className="input-drag-container">
           <textarea
-            id="question"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Type the question here..."
+            id="front"
+            value={front}
+            onChange={(e) => setFront(e.target.value)}
+            placeholder="Enter text for the front of the flashcard..."
             className="input-area"
           />
-          <DragNDrop onFilesSelected={handleQuestionImageSelected} />
         </div>
       </div>
 
       <div className="form-group">
-        <label htmlFor="answer">Answer</label>
+        <label htmlFor="back">Back</label>
         <div className="input-drag-container">
           <textarea
-            id="answer"
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            placeholder="Type the answer here..."
+            id="back"
+            value={back}
+            onChange={(e) => setBack(e.target.value)}
+            placeholder="Enter text for the back of the flashcard..."
             className="input-area"
           />
-          <DragNDrop onFilesSelected={handleAnswerImageSelected} />
         </div>
       </div>
 
@@ -95,17 +72,17 @@ function flashcardContentActionModuleCreate() {
             id="hint"
             value={hint}
             onChange={(e) => setHint(e.target.value)}
-            placeholder="Type the hint here..."
+            placeholder="Enter a hint here..."
             className="input-area"
           />
           <DragNDrop onFilesSelected={(files) => console.log('Files selected:', files)} />
         </div>
       </div>
 
-      <div className="form-group">
+      {/* **TODO** */}
+      {/* <div className="form-group">
         <label htmlFor="select">Add to... (Optional)</label>
-
-      </div>
+      </div> */}
 
       <div className="button-group">
         <button className="save-button" onClick={handleSave}>Save</button>

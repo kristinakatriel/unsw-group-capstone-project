@@ -136,7 +136,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
                 onChange={() => handleCheckboxChange(flashcard.id)}
               />
               <label htmlFor={`flashcard-${flashcard.id}`}>
-                {flashcard.question_text || 'No question available'}
+                {flashcard.front || 'No front available'}
               </label>
             </div>
           ))

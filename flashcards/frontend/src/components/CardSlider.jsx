@@ -12,7 +12,7 @@ const CardSlider = ({ cards = [], onDelete, onEdit  }) => {
   console.log('Cards received in CARDSLIDER:', cards);
 
   const handleDelete = async (cardId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete this flashcard?");
+    const confirmDelete = window.confirm("Are you sure you want to delete all instances of the flashcard?");
 
     if (confirmDelete) {
       try {
@@ -20,7 +20,7 @@ const CardSlider = ({ cards = [], onDelete, onEdit  }) => {
         const response = await invoke('deleteFlashcard', { cardId });
 
         if (response.success) {
-          alert('Flashcard deleted successfully!');
+          alert('Successfully deleted flashcard!');
           // Optionally refresh the flashcard list after deletion
           // You can call a function here to re-fetch flashcards if needed
         } else {
@@ -57,9 +57,10 @@ const CardSlider = ({ cards = [], onDelete, onEdit  }) => {
             {cards.map((card) => (
               <SplideSlide key={card.id} className='card-item'>
               <div className="card-link">
+                {/* **TODO** */}
                 <p className='badge blue'>Blue Tag</p>
-                <h4 className='card-question'>{card.question_text || 'No question available'}</h4>
-                <h4 className='card-answer'>{card.answer_text || 'No question available'}</h4>
+                {card.front && <h4 className='card-front'>{card.front}</h4>}
+                {card.back && <h4 className='card-back'>{card.back}</h4>}
                 <h4 className='card-owner'>By {card.name || 'Unknown'}</h4>
                 <div className='card-button'>
                   <EditIcon className='card-edit-button'  onClick={() => onEdit(card)}/>

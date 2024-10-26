@@ -54,31 +54,26 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
 
 
     try {
-      for (const cardId of selectedFlashcards) {
-        console.log(`Processing flashcard with ID: ${cardId} for deck ID: ${deck.id}`);
-        const addCardResponse = await invoke('addCardToDeck', {
-          deckId: deck.id,
-          cardId: cardId
-        });
+        for (const cardId of selectedFlashcards) {
+          console.log(`Processing flashcard with ID: ${cardId} for deck ID: ${deck.id}`);
+          const addCardResponse = await invoke('addCardToDeck', {
+            deckId: deck.id,
+            cardId: cardId
+          });
 
-        console.log('Response from addCardToDeck:', addCardResponse);
+          console.log('Response from addCardToDeck:', addCardResponse);
 
-        if (addCardResponse.success) {
-          console.log(`Success: Flashcard ${cardId} added to deck ${deck.id}`);
-        } else {
-          console.error(`Failed to add flashcard ${cardId} to deck:`, addCardResponse.error);
+          if (addCardResponse.success) {
+            console.log(`Success: Flashcard ${cardId} added to deck ${deck.id}`);
+          } else {
+            console.error(`Failed to add flashcard ${cardId} to deck:`, addCardResponse.error);
+          }
         }
-      }
-
 
       closeAddDeckModal(selectedFlashcards);
 
-
       console.log('Clearing selected flashcards after successful addition.');
       setSelectedFlashcards([]); // Clear selected flashcards after saving
-
-
-
 
       console.log('Selected flashcards cleared. Now closing the modal.');
       handleClose(); // Close the modal after saving
@@ -87,9 +82,6 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
       console.error('Error adding flashcards to deck:', error);
     }
   };
-
-
-
 
 
   const handleCheckboxChange = (flashcardId) => {
@@ -103,6 +95,7 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
       }
       console.log('Updated selected flashcards:', selectedFlashcards);
   };
+
 
   return (
     <div className="deck-addition">
@@ -120,7 +113,7 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
                 onChange={() => handleCheckboxChange(flashcard.id)}
               />
               <label htmlFor={`flashcard-${flashcard.id}`}>
-                {flashcard.question_text || 'No question available'}
+                {flashcard.front || 'No front available'}
               </label>
             </div>
           ))

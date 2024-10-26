@@ -3,6 +3,8 @@ import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import QuizIcon from '@mui/icons-material/Quiz';
+import StyleIcon from '@mui/icons-material/Style';
+import { Alert, Collapse } from '@mui/material';
 import { invoke } from '@forge/bridge';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
@@ -13,6 +15,7 @@ import CreateFlashcardGlobal from '../flashcardGlobalModuleCreate';
 import EditFlashcardGlobal from '../flashcardGlobalModuleEdit'; // for editing flashcards in deck!
 import ModalDialog from '@atlaskit/modal-dialog';
 import AddFlashcardsToDeck from '../addFlashcardsToExistingDeck';
+import EditDeckModal from '../deckModuleEdit';
 
 
 /* ===========================================
@@ -31,36 +34,7 @@ const titleContainerStyles = xcss({
     gridArea: 'title',
 });
 
-const DeckDisplay = ({ deck, startQuizMode }) => {
-
-    // //refactoring
-    // const [deckx, setDeck] = useState(null); // To hold the deck data
-    // const [loading, setLoading] = useState(true); // Loading state for the deck
-
-    // const deckId = deck.id;
-    // // Fetch the deck data when the component mounts
-
-    // const loadDecks = async () => {
-    //     try {
-    //         const response = await invoke('getDeck', { payload: { deckId } });
-    //         if (response.success) {
-    //             setDeck(response.deck);
-    //             setUpdatedDeck(response.deck); // Set the initial updatedDeck state
-    //         } else {
-    //             console.error(response.error);
-    //         }
-    //     } catch (error) {
-    //         console.error('Error fetching deck:', error);
-    //     } finally {
-    //         setLoading(false);
-    //     }
-    // };
-
-
-    // useEffect(() => {
-    //    loadDecks();
-    // }, []); // Dependency array to refetch if deckId changes
-
+const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
 
 
 
@@ -76,34 +50,88 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
     const [isFlashcardEditModalOpen, setIsEditFlashcardOpen] = useState(false); // New state for edit modal
     const [flashcardToEdit, setFlashcardToEdit] = useState(null); // State to hold the fl
 
+    // Create flashcards
+    const [flashcards, setFlashcards] = useState([]);
+    const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
 
-    // =====   ===================
-    // PLACEHOLDER HANDLERS
+    // State for DECK editing and confirmation
+    const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
+    const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
+
+    // STATE for Add flashcard
+    const [isAddFlashcardModalOpen, setIsAddFlashcardModalOpen] = useState(false);
+
+    // STATE for Success and error alerts (adding and deleting deck)
+    const [saveSuccess, setSaveSuccess] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
+
     // ========================
-    // Placeholder function for adding the deck to a study session
-    const handleAddToStudySession = () => {
-      console.log('Add to study session button clicked');
+    // USE EFFECT FOR SUCCESS AND ERROR ALERTS
+    // ========================
+
+    useEffect(() => {
+        if (saveSuccess && errorMessage === '') {
+            setShowSuccessAlert(true);
+
+            const timer = setTimeout(() => {
+                setShowSuccessAlert(false);
+            }, 2000); // 2000 ms = 2 seconds
+
+            // Clear timeout if the component unmounts
+            return () => clearTimeout(timer);
+        }
+    }, [saveSuccess, errorMessage]);
+
+    useEffect(() => {
+        if (errorMessage) {
+            setShowErrorAlert(true);
+        
+            const errorTimer = setTimeout(() => {
+            setShowErrorAlert(false);
+            }, 2000); // Show error alert for 2 seconds
+        
+            return () => clearTimeout(errorTimer); // Clear timeout if component unmounts
+        }
+      }, [errorMessage]);
+
+    //DECK EDIT LOGIC
+
+    // Modal logic for editing flashcards
+    // Open the edit modal
+    const openDeckEditModal = (deck) => {
+        console.log('opening deck edit modal. current deck:', deck);
+
+        setEditingDeck(deck);
+        setIsEditDeckModalOpen(true);
     };
 
+    // Close the edit modal and refresh flashcards
+    // updatedFlashcard is not really needed at the moment
+    const closeDeckEditModal = (updatedDeck) => {
+        setIsEditDeckModalOpen(false);
+        // Refresh the deck list by refetching decks
+        console.log('Closing deck edit modal. New deck:', updatedDeck);
+        setUpdatedDeck(updatedDeck);
 
 
-    // Placeholder function for editing the deck
-    const openFlashcardEditModalDeck = () => {
-      console.log('Edit Deck button clicked');
+
+        console.log('updated deck set', updatedDeck);
+
+
     };
+
 
 
     // ========================
     // FLASHCARD CREATE FUNCTIONALITY
     // ========================
 
-    const [flashcards, setFlashcards] = useState([]);
-    const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
-
     const closeFlashcardModal = async (newFlashcard) => {
         // Log the initiation of the modal closing process
         console.log('Closing flashcard modal. New flashcard:', newFlashcard);
-
+        
         setIsCreateFlashcardOpen(false);
 
         if (newFlashcard) {
@@ -166,9 +194,6 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
     // ========================
     // FLASHCARD ADDITION FUNCTIONALITY
     // ========================
-
-    const [isAddFlashcardModalOpen, setIsAddFlashcardModalOpen] = useState(false);
-
     const handleAddFlashcard = () => {
         setIsAddFlashcardModalOpen(true);
         console.log('Add Flashcard button clicked');
@@ -176,7 +201,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
 
     const closeAddDeckModal = async (selectedFlashcards = []) => {
         console.log('closeAddDeckModal invoked. Selected flashcards:', selectedFlashcards);
-
+        setErrorMessage('');
         setIsAddFlashcardModalOpen(false);
         console.log('Modal closed. isAddFlashcardModalOpen set to:', false);
 
@@ -201,6 +226,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                     console.log('Response from addCardToDeck:', addCardResponse);
 
                     if (addCardResponse.success) {
+                        setSaveSuccess(true);
                         console.log(`Success: Flashcard ${cardId} added to deck ${deckId}`);
 
                         setUpdatedDeck((prevDeck) => {
@@ -222,29 +248,42 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                             return newDeckState;
                         });
                     } else {
+                        setErrorMessage(addCardResponse.error);
                         console.error(`Failed to add flashcard ${cardId} to deck:`, addCardResponse.error);
                     }
                 } catch (error) {
                     console.error('Error invoking addCardToDeck:', error);
                 }
             }
+
+
+
+
         } else {
             console.warn('No flashcards selected to add.');
         }
+
+        try {
+            // Fetch the updated deck from the resolver
+            const deckResponse = await invoke('getDeck', {
+                deckId: updatedDeck.id,  // Use the current deck ID
+            });
+
+            if (deckResponse.success) {
+                // Update the deck with the fetched deck data
+                setUpdatedDeck(deckResponse.deck);
+            } else {
+                console.error('Failed to fetch the updated deck:', deckResponse.error);
+            }
+        } catch (error) {
+            console.error('Error fetching the updated deck:', error);
+        }
+
+
         //loadDecks();
 
 
     };
-
-
-    // const handleCheckboxChange = (flashcardId) => {
-    //     if (selectedFlashcards.includes(flashcardId)) {
-    //         setSelectedFlashcards(selectedFlashcards.filter(id => id !== flashcardId));
-    //     } else {
-    //         setSelectedFlashcards([...selectedFlashcards, flashcardId]);
-    //     }
-    // };
-
 
 
 
@@ -308,12 +347,27 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
     const handleDeleteDeck = () => {
         console.log('Delete Deck button clicked');
         openDeckDeleteModal();
-      };
+    };
 
     const confirmDeckDelete = async () => {
-        console.log('Deleting deck permanently')
-        // TODO
-        closeDeckDeleteModal();
+        setErrorMessage('');
+        console.log('Deleting deck permanently', deck);
+        console.log('Deleting updated permanently', updatedDeck);
+        try {
+            const response = await invoke('deleteDeck', { deckId: deck.id });
+            if (response.success) {
+							closeDeckDeleteModal();
+							goBackToHome(true);
+            } else {
+              setErrorMessage(response.error);
+              console.error('Error deleting deck:', response.error);
+							closeDeckDeleteModal();
+            }
+        } catch (error) {
+						setErrorMessage(error);
+            console.error('Error deleting deck:', error);
+						// closeDeckDeleteModal();
+        }
     };
 
     // ========================
@@ -334,7 +388,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                 const deckResponse = await invoke('getDeck', {
                     deckId: updatedDeck.id,  // Use the current deck ID
                 });
-    
+
                 if (deckResponse.success) {
                     // Update the deck with the fetched deck data
                     setUpdatedDeck(deckResponse.deck);
@@ -348,14 +402,22 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
     };
 
 
+
+
+    // ========================
+    // DECK EDIT FUNCTIONALITY
+    // ========================
+
+
+
     return (
       <div className='deck-display-container'>
         <div className='deck-title-and-buttons'>
           <div className='title-left-buttons'>
             <h1>{updatedDeck.title}</h1>
             <div className='left-buttons'>
-              <button className='deck-display-add-study-session-icon' onClick={handleAddToStudySession}>
-                <AddIcon fontSize='small' /> Add to study session
+              <button className='deck-display-add-study-session-icon' onClick={startStudyMode}>
+                <StyleIcon fontSize='small' /> Study Mode
               </button>
               <button className='deck-display-quiz-icon' onClick={startQuizMode}>
                 <QuizIcon fontSize='small' /> Quiz Mode
@@ -369,7 +431,7 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
             <button className='deck-display-add-flashcard-icon' onClick={handleAddFlashcard}>
               <AddIcon fontSize='small' /> Add Flashcard
             </button>
-            <button className='deck-display-edit-icon' onClick={openFlashcardEditModalDeck}>
+            <button className='deck-display-edit-icon' onClick={openDeckEditModal}>
               <EditIcon fontSize='small' /> Edit Deck
             </button>
             <button className='deck-display-delete-icon' onClick={handleDeleteDeck}>
@@ -379,7 +441,12 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
         </div>
         <h2>Flashcards</h2>
         <h4 className='deck-flashcard-amount'>Flashcards: {updatedDeck.cards?.length || 0}</h4>
-
+        <Collapse in={showSuccessAlert} timeout={500}>
+            <Alert severity="success">Flashcards added successfully!</Alert>
+        </Collapse>
+        <Collapse in={showErrorAlert} timeout={500}>
+            {errorMessage && <Alert severity="error">{errorMessage}</Alert> }
+        </Collapse>
         {updatedDeck.cards.length > 0 ? (
             <div className="card-wrapper">
                 <ul className="card-list">
@@ -389,16 +456,16 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
                                 {flashcard.tags && flashcard.tags.length > 0 && (
                                     <p className="badge blue">{flashcard.tags.join(', ')}</p>
                                 )}
-                                <h4 className="card-question">{flashcard.question_text || 'No question available'}</h4>
-                                <h4 className="card-answer">{flashcard.answer_text || 'No answer available'}</h4>
+                                <h4 className="card-front">{flashcard.front || 'No front available'}</h4>
+                                <h4 className="card-back">{flashcard.back || 'No back available'}</h4>
                                 <h4 className="card-owner">By {flashcard.name || 'Unknown'}</h4>
 
-                                {flashcard.question_image && (
+                                {/* {flashcard.question_image && (
                                     <img src={flashcard.question_image} alt="Question" className="question-image" />
                                 )}
                                 {flashcard.answer_image && (
                                     <img src={flashcard.answer_image} alt="Answer" className="answer-image" />
-                                )}
+                                )} */}
 
                                 <div className="card-button">
                                     <EditIcon
@@ -504,6 +571,21 @@ const DeckDisplay = ({ deck, startQuizMode }) => {
               />
             </ModalDialog>
         )}
+
+
+        {/* DECK EDIT FUNCTIONALITY: DECK Edit Modal */}
+        {isEditDeckModalOpen && (
+            <ModalDialog heading="Edit Deck" onClose={() => closeDeckEditModal(true)}>
+            <EditDeckModal
+                deck={deck} // Pass the deck to the modal
+                closeDeckEditModal={closeDeckEditModal}
+            />
+            </ModalDialog>
+        )}
+
+
+
+
 
       </div>
     );

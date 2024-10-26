@@ -1,9 +1,9 @@
-.quiz-mode-title {
+.study-mode-title {
   margin-top: 10px;
   margin-bottom: 20px;
 }
 
-.quiz-mode-bottom-buttons {
+.study-mode-bottom-buttons {
   display: flex;
   justify-content: space-between; 
   align-items: center; 
@@ -12,45 +12,36 @@
   margin-right: auto;
 }
 
-.quiz-mode-incorrect-button,
-.quiz-mode-correct-button {
+.study-mode-left-button,
+.study-mode-right-button {
   display: flex; 
   justify-content: center;
   align-items: center;
   width: 50%;
-  height: 80px;
+  height: 50px;
   cursor: pointer;
   transition: background-color 0.3s;
   margin-top: 10px;
   margin-bottom: 10px;
+  background-color: rgb(12,102,228);
+  color: white;
   border-radius: 10px;
 }
 
-.quiz-mode-incorrect-button {
-  background-color: #FF6B5E;
+.study-mode-left-button {
   margin-right: 5px;
-
 }
 
-.quiz-mode-correct-button {
-  background-color: #C8FFB3;
+.study-mode-right-button {
   margin-left: 5px;
 }
 
-.quiz-mode-incorrect-button:hover,
-.quiz-mode-correct-button:hover {
-  opacity: 0.8;
+.study-mode-left-button:hover,
+.study-mode-right-button:hover {
+  background-color: rgb(1,85,204);
 }
 
-.quiz-mode-incorrect-button:hover {
-  background-color: #FF0000;
-}
-
-.quiz-mode-correct-button:hover {
-  background-color: #00FF00;
-}
-
-.quiz-flip-card {
+.flip-card {
   background-color: transparent;
   perspective: 1000px;
   height: 300px;
@@ -61,7 +52,7 @@
   cursor: pointer;
 }
 
-.quiz-flip-card {
+.flip-card {
   background-color: transparent;
   perspective: 1000px;
   height: 300px;
@@ -71,7 +62,7 @@
   margin: 0 auto;
 }
 
-.quiz-flip-card-inner {
+.flip-card-inner {
   position: relative;
   width: 100%;
   height: 100%;
@@ -81,8 +72,8 @@
   box-sizing: border-box;
 }
 
-.quiz-flip-card-front,
-.quiz-flip-card-back {
+.flip-card-front,
+.flip-card-back {
   position: absolute;
   width: 100%;
   height: 100%;
@@ -95,51 +86,39 @@
   box-sizing: border-box; 
   overflow: hidden;
   border: 4px solid #f1f1f1;
-  flex-direction: column; 
 }
 
-.quiz-flip-card-front-hint {
+.flip-card-header {
   position: absolute;
   top: 10px;
-  right: 10px; 
+  right: 10px;
+  display: flex; 
+}
+
+.flip-card-like,
+.flip-card-edit,
+.flip-card-hint {
   cursor: pointer; 
   color: lightgrey;
   transition: color 0.3s; 
+  margin-left: 10px;
 }
 
-.quiz-flip-card-front-hint:hover {
+.flip-card-like:hover,
+.flip-card-edit:hover,
+.flip-card-hint:hover {
   color: darkgrey; 
 }
 
-.quiz-flip-card-back {
+.flip-card-back {
   transform: rotateX(180deg);
 }
 
-.quiz-flip-card.flipped .quiz-flip-card-inner {
+.flip-card.flipped .flip-card-inner {
   transform: rotateX(180deg);
 }
 
-.quiz-flip-card-front-hint-hidden {
-  position: absolute;
-  transform: translateX(-50%);
-  display: none;
-}
-
-.quiz-flip-card-front-hint:hover .quiz-flip-card-front-hint-hidden {
-  display: block; 
-}
-
-.correct-card {
-  border: 4px #00FF00;
-  background-color: #C8FFB3;
-}
-
-.incorrect-card {
-  border: 4px #FF0000;
-  background-color: #FF6B5E;
-}
-
-.quiz-mode-information {
+.study-mode-information {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -148,6 +127,6 @@
   width: 80%;
 }
 
-.quiz-mode-timer, .quiz-mode-flashcard-counter {
+.study-mode-flashcard-counter {
   margin-bottom: 10px;
 }

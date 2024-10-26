@@ -15,7 +15,7 @@ enum StudySessionCardStatus {
 
 export interface Card {
     id: string;
-    front?: string;
+    front: string;
     back: string;
     hint?: string;
     owner: string;
@@ -29,6 +29,8 @@ export interface Deck {
     owner: string;
     name?: string;
     cards?: Card[];
+    cardIds?: number[];
+    size: number;
 }
 
 export interface Tag {
@@ -37,27 +39,26 @@ export interface Tag {
     description?: string;
     owner: string;
     name?: string;
-    decks: Deck[];
-    cards: Card[];
+    deckIds: number[];
+    cardIds: number[];
+}
+
+export interface User {
+    id: string;
+    // name: string;
+    cards: number[];
+    decks: number[];
+    tags: number[];
+    data: { deckId: DynamicData };
 }
 
 //////////////////////////////////////////////////
 
-export interface SpaceData {
-    userData: { userId: UserData };
-}
-
-export interface UserData {
-    deckData: { deckId: DeckData };
-}
-
-export interface DeckData {
+export interface DynamicData {
     dynamicDeck: Deck;
-    quizSessionResults: QuizSession[];
-    studySessionResults: StudySession[];
+    quizSessions: QuizResult[];
+    studySessions: StudyResult[];
 }
-
-//////////////////////////////////////////////////
 
 export interface QuizResult {
     deckInArchive: Deck;
@@ -76,8 +77,6 @@ export interface StudyResult {
     countPositive: number;
     countNegative: number;
 }
-
-//////////////////////////////////////////////////
 
 export interface QuizSession {
     deckInSession: Deck;
