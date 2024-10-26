@@ -262,6 +262,21 @@ resolver.define('addGeneratedFlashcards', async (req) => {
     }
   }
 
+  let newDeck: Deck | null = null;
+
+  if (deckTitle) {
+    const deckId = createId(); // Generate a unique ID for the new deck
+    newDeck = {
+      id: deckId,
+      owner: req.context.accountId,
+      name: name,
+      title: deckTitle,
+      description: `Fetched from ${siteUrl} under the name ${siteName}.`,
+      cards: [] // Initialize with an empty array for flashcards
+    };
+  }
+
+  const cardIds:string[] = [];
   // Use Promise.all to ensure all flashcards are stored asynchronously
   const flashcardPromises = qAPairs.map(async (pair: GenFlashcardsPair) => {
     const { question, answer } = pair;
@@ -287,7 +302,7 @@ resolver.define('addGeneratedFlashcards', async (req) => {
       tags: [],
       owner: req.context.accountId
     };
-
+    cardIds.push(cardId);
     // Store the new flashcard in storage
     await storage.set(cardId, newFlashcard);
     return { success: true, id: cardId }; // return success and cardId
@@ -295,6 +310,19 @@ resolver.define('addGeneratedFlashcards', async (req) => {
 
   // Wait for all flashcards to be created
   const results = await Promise.all(flashcardPromises);
+
+  // If a new deck was created, retrieve flashcards by their IDs and add them to the deck
+  if (newDeck && newDeck.cards) {
+    for (const cardId of cardIds) {
+      const flashcard = await storage.get(cardId); // Retrieve the flashcard from storage
+      if (flashcard) {
+        newDeck.cards.push(flashcard); // Add the flashcard object to the new deck
+      }
+    }
+    
+    // Store the new deck in storage
+    await storage.set(newDeck.id, newDeck);
+  }
 
   return {
     success: true,
