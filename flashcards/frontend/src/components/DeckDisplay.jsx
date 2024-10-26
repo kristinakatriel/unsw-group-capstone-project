@@ -42,21 +42,26 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
     // STATE MANAGEMENT
     // ========================
 
-        // State hooks to manage modal visibility, the selected flashcard for deletion, and the updated deck state
-        const [isFlashcardDeleteModalOpen, setFlashcardDeleteModalOpen] = useState(false);
-        const [isDeckDeleteModalOpen, setDeckDeleteModalOpen] = useState(false);
-        const [flashcardToDelete, setFlashcardToDelete] = useState(null);
-        const [updatedDeck, setUpdatedDeck] = useState(deck);
-        const [isFlashcardEditModalOpen, setIsEditFlashcardOpen] = useState(false); // New state for edit modal
-        const [flashcardToEdit, setFlashcardToEdit] = useState(null); // State to hold the fl
+    // State hooks to manage modal visibility, the selected flashcard for deletion, and the updated deck state
+    const [isFlashcardDeleteModalOpen, setFlashcardDeleteModalOpen] = useState(false);
+    const [isDeckDeleteModalOpen, setDeckDeleteModalOpen] = useState(false);
+    const [flashcardToDelete, setFlashcardToDelete] = useState(null);
+    const [updatedDeck, setUpdatedDeck] = useState(deck);
+    const [isFlashcardEditModalOpen, setIsEditFlashcardOpen] = useState(false); // New state for edit modal
+    const [flashcardToEdit, setFlashcardToEdit] = useState(null); // State to hold the fl
 
+    // Create flashcards
+    const [flashcards, setFlashcards] = useState([]);
+    const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
 
-
-        // State for DECK editing and confirmation
+    // State for DECK editing and confirmation
     const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
     const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
 
-    // Success and error alerts for adding flashcards to deck
+    // STATE for Add flashcard
+    const [isAddFlashcardModalOpen, setIsAddFlashcardModalOpen] = useState(false);
+
+    // STATE for Success and error alerts (adding and deleting deck)
     const [saveSuccess, setSaveSuccess] = useState(false);
     const [errorMessage, setErrorMessage] = useState('');
     const [showSuccessAlert, setShowSuccessAlert] = useState(false);
@@ -122,9 +127,6 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
     // ========================
     // FLASHCARD CREATE FUNCTIONALITY
     // ========================
-
-    const [flashcards, setFlashcards] = useState([]);
-    const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
 
     const closeFlashcardModal = async (newFlashcard) => {
         // Log the initiation of the modal closing process
@@ -192,9 +194,6 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
     // ========================
     // FLASHCARD ADDITION FUNCTIONALITY
     // ========================
-
-    const [isAddFlashcardModalOpen, setIsAddFlashcardModalOpen] = useState(false);
-
     const handleAddFlashcard = () => {
         setIsAddFlashcardModalOpen(true);
         console.log('Add Flashcard button clicked');
@@ -351,23 +350,24 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
     };
 
     const confirmDeckDelete = async () => {
+        setErrorMessage('');
         console.log('Deleting deck permanently', deck);
         console.log('Deleting updated permanently', updatedDeck);
         try {
             const response = await invoke('deleteDeck', { deckId: deck.id });
             if (response.success) {
-
-                closeDeckDeleteModal();
-
+							closeDeckDeleteModal();
+							goBackToHome();
             } else {
+              setErrorMessage(response.error);
               console.error('Error deleting deck:', response.error);
+							closeDeckDeleteModal();
             }
         } catch (error) {
+						setErrorMessage(error);
             console.error('Error deleting deck:', error);
+						// closeDeckDeleteModal();
         }
-
-        goBackToHome();
-
     };
 
     // ========================
