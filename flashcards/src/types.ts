@@ -33,6 +33,11 @@ export interface StudySession {
     num_looked:  number; // -> number of times the study session was done 
 }
 
+export interface GenFlashcardsPair {
+    question: string,
+    answer: string
+}
+
 // NOTE: to be used later
 // export enum AICardsThreshold {
 //     minimumLength = 2

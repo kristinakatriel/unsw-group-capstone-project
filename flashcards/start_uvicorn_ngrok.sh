@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Start Uvicorn on port 8000 in the background
-uvicorn src.resolvers.main:app --host 0.0.0.0 --port 8000 &
+uvicorn src.flashcards:app --host 0.0.0.0 --port 8000 &
 UVICORN_PID=$!  # Store the PID of the Uvicorn process
 
 # Start ngrok with a reserved subdomain
@@ -21,7 +21,7 @@ cleanup() {
 # Trap the EXIT signal to ensure cleanup occurs on script exit
 trap cleanup EXIT
 
-# Optional: Wait for user input or other conditions to terminate the script
+# Wait for user input or other conditions to terminate the script
 echo "Press [CTRL+C] to stop."
 while true; do
     sleep 1  # Keep the script running

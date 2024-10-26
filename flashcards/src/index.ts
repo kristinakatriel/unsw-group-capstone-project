@@ -1,8 +1,9 @@
 import Resolver from '@forge/resolver';
 import api, { route, storage } from '@forge/api';
-import { Card, Deck, Tag } from './types';
+import { Card, Deck, GenFlashcardsPair, Tag } from './types';
 import { v4 as uuidv4 } from 'uuid';
 import { basename } from 'path';
+import { create } from 'domain';
 
 const resolver = new Resolver();
 
@@ -212,6 +213,130 @@ resolver.define('getAllFlashcards', async () => {
     cards: allFlashcards,
   };
 });
+
+// adding generating q&a through ai flashcards
+resolver.define('generateQA', async (req) => {
+  // get text
+  const { text } = req.payload;
+
+  if (text.length <= 2) {
+    return {
+      success: false,
+      error: 'Too less; Select more words to create flashcards for.'
+    }
+  }
+
+  // get the flashcards generated using the external url
+  const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_qa", {  // the url which we need to generate the flashcards
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ text }),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    return {
+      success: false,
+      error: 'Failed to generate Q&A from text',
+    };
+  }
+  // this returns a json of q&a pairs, which can be displayed in the context menu
+  return data;
+});
+
+resolver.define('addGeneratedFlashcards', async (req) => {
+  const { qAPairs, deckTitle, siteUrl, siteName } = req.payload;
+  let name = "unknown";
+
+  // Retrieve the user's name if accountId is available
+  if (req.context.accountId) {
+    const bodyData = JSON.stringify({ accountIds: [req.context.accountId] });
+    const response = await api.asApp().requestConfluence(route`/wiki/api/v2/users-bulk`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: bodyData
+    });
+
+    if (response.status === 200) {
+      const data = await response.json();
+      name = data.results[0]?.publicName || "unknown";
+    }
+  }
+
+  let newDeck: Deck | null = null;
+
+  if (deckTitle) {
+    const deckId = createId(); // Generate a unique ID for the new deck
+    newDeck = {
+      id: deckId,
+      owner: req.context.accountId,
+      name: name,
+      title: deckTitle,
+      description: `Fetched from ${siteUrl} under the name ${siteName}.`,
+      cards: [] // Initialize with an empty array for flashcards
+    };
+  }
+
+  const cardIds:string[] = [];
+  // Use Promise.all to ensure all flashcards are stored asynchronously
+  const flashcardPromises = qAPairs.map(async (pair: GenFlashcardsPair) => {
+    const { question, answer } = pair;
+
+    // Check for missing question or answer
+    if (!question || !answer) {
+      return {
+        success: false,
+        error: 'Cannot add flashcard as it has no question or answer',
+      };
+    }
+
+    // Create a new flashcard object
+    const cardId = createId();
+    const newFlashcard = {
+      id: cardId,
+      name: name,
+      question_text: question,
+      question_image: "", // Placeholder if no images are available
+      answer_text: answer,
+      answer_image: "", // Placeholder if no images are available
+      hint: "", // Optional, can be adjusted
+      tags: [],
+      owner: req.context.accountId
+    };
+    cardIds.push(cardId);
+    // Store the new flashcard in storage
+    await storage.set(cardId, newFlashcard);
+    return { success: true, id: cardId }; // return success and cardId
+  });
+
+  // Wait for all flashcards to be created
+  const results = await Promise.all(flashcardPromises);
+
+  // If a new deck was created, retrieve flashcards by their IDs and add them to the deck
+  if (newDeck && newDeck.cards) {
+    for (const cardId of cardIds) {
+      const flashcard = await storage.get(cardId); // Retrieve the flashcard from storage
+      if (flashcard) {
+        newDeck.cards.push(flashcard); // Add the flashcard object to the new deck
+      }
+    }
+    
+    // Store the new deck in storage
+    await storage.set(newDeck.id, newDeck);
+  }
+
+  return {
+    success: true,
+    createdFlashcards: results.filter(result => result.success).length
+  };
+});
+
 
 resolver.define('createDeck', async (req) => {
   const { title, description, cards: flashcards } = req.payload as Omit<Deck, 'id'>;
