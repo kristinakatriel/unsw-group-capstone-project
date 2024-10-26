@@ -219,6 +219,13 @@ resolver.define('generateQA', async (req) => {
   // get text
   const { text } = req.payload;
 
+  if (text.length <= 2) {
+    return {
+      success: false,
+      error: 'Too less; Select more words to create flashcards for.'
+    }
+  }
+
   // get the flashcards generated using the external url
   const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_qa", {  // the url which we need to generate the flashcards
     method: 'POST',

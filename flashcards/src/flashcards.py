@@ -61,8 +61,10 @@ async def generate_qa(input: TextInput):
     num_q = 0
     if len(input.text) > 1500:
         num_q = 15
+    elif len(input.text) in range(3, 10):
+        num_q = 2
     else:
-        num_q = (math.floor(len(input.text))) + 3
+        num_q = (math.floor(len(input.text)/100)) + 3
     
     # generate questions
     generated_questions = qg_pipeline(
@@ -81,7 +83,7 @@ async def generate_qa(input: TextInput):
         result = qa_pipeline(question=question, context=input.text)
         flashcard = {"question": question, "answer": result['answer']}
         # append if answer is good
-        if result['score'] > 0.5:
-            flashcards.append(flashcard)
+        # if result['score'] > 0.5:
+        flashcards.append(flashcard)
 
     return flashcards
