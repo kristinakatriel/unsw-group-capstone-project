@@ -87,7 +87,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
         setSelectedFlashcards([]);
         setTimeout(() => {
           closeDeckModal(); // Delay closing modal
-        }, 2000); // Show success message for 2 seconds before closing
+        }, 1000); // Show success message for 2 seconds before closing
       } else {
         setErrorMessage(response.error);
         console.error('Failed to create deck:', response.error);
