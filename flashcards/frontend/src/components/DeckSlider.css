@@ -82,6 +82,7 @@ FIX Option 2 (call different thingys in the .css file depending on if cards or d
 .deck-list .deck-link .deck.blue {
   color: #5372F0;
   background: #DDE4FF;
+  width: fit-content;
 }
 
 

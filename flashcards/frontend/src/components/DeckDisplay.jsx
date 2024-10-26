@@ -4,6 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import QuizIcon from '@mui/icons-material/Quiz';
 import StyleIcon from '@mui/icons-material/Style';
+import { Alert, Collapse } from '@mui/material';
 import { invoke } from '@forge/bridge';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
@@ -49,16 +50,51 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
     const [isFlashcardEditModalOpen, setIsEditFlashcardOpen] = useState(false); // New state for edit modal
     const [flashcardToEdit, setFlashcardToEdit] = useState(null); // State to hold the fl
 
-
+    // Create flashcards
+    const [flashcards, setFlashcards] = useState([]);
+    const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
 
     // State for DECK editing and confirmation
-   const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
-   const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
+    const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
+    const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
 
+    // STATE for Add flashcard
+    const [isAddFlashcardModalOpen, setIsAddFlashcardModalOpen] = useState(false);
 
+    // STATE for Success and error alerts (adding and deleting deck)
+    const [saveSuccess, setSaveSuccess] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
+    const [showSuccessAlert, setShowSuccessAlert] = useState(false);
+    const [showErrorAlert, setShowErrorAlert] = useState(false);
 
+    // ========================
+    // USE EFFECT FOR SUCCESS AND ERROR ALERTS
+    // ========================
 
+    useEffect(() => {
+        if (saveSuccess && errorMessage === '') {
+            setShowSuccessAlert(true);
 
+            const timer = setTimeout(() => {
+                setShowSuccessAlert(false);
+            }, 2000); // 2000 ms = 2 seconds
+
+            // Clear timeout if the component unmounts
+            return () => clearTimeout(timer);
+        }
+    }, [saveSuccess, errorMessage]);
+
+    useEffect(() => {
+        if (errorMessage) {
+            setShowErrorAlert(true);
+        
+            const errorTimer = setTimeout(() => {
+            setShowErrorAlert(false);
+            }, 2000); // Show error alert for 2 seconds
+        
+            return () => clearTimeout(errorTimer); // Clear timeout if component unmounts
+        }
+      }, [errorMessage]);
 
     //DECK EDIT LOGIC
 
@@ -92,13 +128,10 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
     // FLASHCARD CREATE FUNCTIONALITY
     // ========================
 
-    const [flashcards, setFlashcards] = useState([]);
-    const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
-
     const closeFlashcardModal = async (newFlashcard) => {
         // Log the initiation of the modal closing process
         console.log('Closing flashcard modal. New flashcard:', newFlashcard);
-
+        
         setIsCreateFlashcardOpen(false);
 
         if (newFlashcard) {
@@ -161,9 +194,6 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
     // ========================
     // FLASHCARD ADDITION FUNCTIONALITY
     // ========================
-
-    const [isAddFlashcardModalOpen, setIsAddFlashcardModalOpen] = useState(false);
-
     const handleAddFlashcard = () => {
         setIsAddFlashcardModalOpen(true);
         console.log('Add Flashcard button clicked');
@@ -171,7 +201,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
 
     const closeAddDeckModal = async (selectedFlashcards = []) => {
         console.log('closeAddDeckModal invoked. Selected flashcards:', selectedFlashcards);
-
+        setErrorMessage('');
         setIsAddFlashcardModalOpen(false);
         console.log('Modal closed. isAddFlashcardModalOpen set to:', false);
 
@@ -196,6 +226,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
                     console.log('Response from addCardToDeck:', addCardResponse);
 
                     if (addCardResponse.success) {
+                        setSaveSuccess(true);
                         console.log(`Success: Flashcard ${cardId} added to deck ${deckId}`);
 
                         setUpdatedDeck((prevDeck) => {
@@ -217,6 +248,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
                             return newDeckState;
                         });
                     } else {
+                        setErrorMessage(addCardResponse.error);
                         console.error(`Failed to add flashcard ${cardId} to deck:`, addCardResponse.error);
                     }
                 } catch (error) {
@@ -318,23 +350,24 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
     };
 
     const confirmDeckDelete = async () => {
+        setErrorMessage('');
         console.log('Deleting deck permanently', deck);
         console.log('Deleting updated permanently', updatedDeck);
         try {
             const response = await invoke('deleteDeck', { deckId: deck.id });
             if (response.success) {
-
-                closeDeckDeleteModal();
-
+							closeDeckDeleteModal();
+							goBackToHome(true);
             } else {
+              setErrorMessage(response.error);
               console.error('Error deleting deck:', response.error);
+							closeDeckDeleteModal();
             }
         } catch (error) {
+						setErrorMessage(error);
             console.error('Error deleting deck:', error);
+						// closeDeckDeleteModal();
         }
-
-        goBackToHome();
-
     };
 
     // ========================
@@ -408,7 +441,12 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
         </div>
         <h2>Flashcards</h2>
         <h4 className='deck-flashcard-amount'>Flashcards: {updatedDeck.cards?.length || 0}</h4>
-
+        <Collapse in={showSuccessAlert} timeout={500}>
+            <Alert severity="success">Flashcards added successfully!</Alert>
+        </Collapse>
+        <Collapse in={showErrorAlert} timeout={500}>
+            {errorMessage && <Alert severity="error">{errorMessage}</Alert> }
+        </Collapse>
         {updatedDeck.cards.length > 0 ? (
             <div className="card-wrapper">
                 <ul className="card-list">
