@@ -1,8 +1,9 @@
 import Resolver from '@forge/resolver';
 import api, { route, storage } from '@forge/api';
-import { Card, Deck, Tag } from './types';
+import { Card, Deck, GenFlashcardsPair, Tag } from './types';
 import { v4 as uuidv4 } from 'uuid';
 import { basename } from 'path';
+import { create } from 'domain';
 
 const resolver = new Resolver();
 
@@ -237,34 +238,68 @@ resolver.define('generateQA', async (req) => {
   }
   // this returns a json of q&a pairs, which can be displayed in the context menu
   return data;
-   // alternative solution: if the q&a pairs are not meant to be shown for the user to select,
-  // then it can be created as flashcards right away
-  // const generatedFlashcards = await response.json();  // Q&A pairs
+});
 
-  // // Store the created flashcards in the system
-  // const createdFlashcards = [];
-  // for (const { question, answer } of generatedFlashcards) {
-  //   const cardId = createId();
-  //   const newCard = {
-  //     id: cardId,
-  //     question_text: question,
-  //     answer_text: answer,
-  //     owner: req.context.accountId,
-  //     tags: [],  // you can extend this as needed
-  //     hint: '',
-  //     question_image: null,  // assuming no images in this case
-  //     answer_image: null,
-  //   };
+resolver.define('addGeneratedFlashcards', async (req) => {
+  const { qAPairs } = req.payload;
+  let name = "unknown";
 
-  //   // Save the new card in storage
-  //   await storage.set(cardId, newCard);
-  //   createdFlashcards.push(newCard);
-  // }
+  // Retrieve the user's name if accountId is available
+  if (req.context.accountId) {
+    const bodyData = JSON.stringify({ accountIds: [req.context.accountId] });
+    const response = await api.asApp().requestConfluence(route`/wiki/api/v2/users-bulk`, {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: bodyData
+    });
 
-  // return {
-  //   success: true,
-  //   cards: createdFlashcards,
-  // };
+    if (response.status === 200) {
+      const data = await response.json();
+      name = data.results[0]?.publicName || "unknown";
+    }
+  }
+
+  // Use Promise.all to ensure all flashcards are stored asynchronously
+  const flashcardPromises = qAPairs.map(async (pair: GenFlashcardsPair) => {
+    const { question, answer } = pair;
+
+    // Check for missing question or answer
+    if (!question || !answer) {
+      return {
+        success: false,
+        error: 'Cannot add flashcard as it has no question or answer',
+      };
+    }
+
+    // Create a new flashcard object
+    const cardId = createId();
+    const newFlashcard = {
+      id: cardId,
+      name: name,
+      question_text: question,
+      question_image: "", // Placeholder if no images are available
+      answer_text: answer,
+      answer_image: "", // Placeholder if no images are available
+      hint: "", // Optional, can be adjusted
+      tags: [],
+      owner: req.context.accountId
+    };
+
+    // Store the new flashcard in storage
+    await storage.set(cardId, newFlashcard);
+    return { success: true, id: cardId }; // return success and cardId
+  });
+
+  // Wait for all flashcards to be created
+  const results = await Promise.all(flashcardPromises);
+
+  return {
+    success: true,
+    createdFlashcards: results.filter(result => result.success).length
+  };
 });
 
 
