@@ -358,6 +358,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
             if (response.success) {
                 closeDeckDeleteModal();
                 goBackIntermediate(true);
+                goBackToHome();
             } else {
               setErrorMessage(response.error);
               console.error('Error deleting deck:', response.error);

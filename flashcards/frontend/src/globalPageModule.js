@@ -152,8 +152,11 @@ function globalPageModule() {
   
       const timer = setTimeout(() => {
         setShowDeleteSuccessAlert(false);
-      }, 2000); // Adjust the duration as needed
+      }, 2000); // Adjust duration as needed
+  
       setDeleteDeckFromDisplaySuccess(false);
+      
+      // Clear timer on component unmount or re-render
       return () => clearTimeout(timer);
     }
   }, [deleteDeckFromDisplaySuccess]);
@@ -296,8 +299,9 @@ function globalPageModule() {
   const goBackIntermediate = (deleted = false) => {
     if (deleted) {
       setDeleteDeckFromDisplaySuccess(true);
+    } else {
+      setDeleteDeckFromDisplaySuccess(false);
     }
-    goBackToHome();
   }
 
   const goBackToHome = () => {
@@ -409,7 +413,7 @@ function globalPageModule() {
 
       <div className='global-page-headline'><FlashOnIcon className='global-page-flash-icon'/> FLASH</div>
       <div className='global-page-subheadline'>The Forge App that allows you to create flashcards in a flash</div>
-      <Collapse in={showDeleteSuccessAlert}>
+      <Collapse in={showDeleteSuccessAlert} timeout={500}>
         <Alert severity="success">
           Deck deleted successfully!
         </Alert>
