@@ -1,33 +1,132 @@
 import React, { useState, useEffect } from 'react';
-import { invoke } from '@forge/bridge';
+import { invoke, view } from '@forge/bridge';
 import './ContextMenu.css';
 
 function ContextMenu() {
-  const [data, setData] = useState(null); // Data from invoke method
+  const [text, setText] = useState(''); // For input text to generate flashcards
+  const [generatedFlashcards, setGeneratedFlashcards] = useState([]);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [closeError, setCloseError] = useState(true);
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
 
+  // Fetch selected text context when the component mounts
   useEffect(() => {
-    // Fetch data for context menu
-    console.log('Fetching data for context menu...');
-    invoke('getText', { example: 'context-menu-variable' })
-      .then((response) => {
-        console.log('Data fetched for context menu:', response);
-        setData(response); // Set the fetched data
-      })
-      .catch((error) => {
-        console.error('Error fetching data for context menu:', error); // Handle error
-      });
-  }, []);
+    const fetchData = async () => {
+      try {
+        const context = await view.getContext();
+        const selectedText = context.extension.selectedText; // Get selected text from context
+        console.log("Selected Text:", selectedText); // Log the selected text for verification
+        setText(selectedText); // Set the selected text to the state
 
-  console.log('Current context menu data:', data);
+
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setErrorMessage('Failed to fetch selected text');
+      }
+    };
+
+    fetchData(); // Call the fetchData function
+  }, []); // Empty dependency array to run on mount
+
+
+  const handleGenerateFlashcards = async () => {
+    console.log("Generating Flashcards...");
+    setErrorMessage('');
+    setLoading(true);
+
+    try {
+      const response = await invoke('generateQA', { text:text });
+      console.log("Received response from 'generateQA':", response);
+
+      if (response && response.success) {
+        setGeneratedFlashcards(response.data);
+        console.log("Flashcards Generated Successfully:", response.data);
+      } else {
+        setErrorMessage(response.error);
+        console.log("Error Generating Flashcards:", response.error);
+      }
+    } catch (error) {
+      setErrorMessage('Failed to generate Q&A from text');
+      console.error("Exception in handleGenerateFlashcards:", error);
+    } finally {
+      setLoading(false);
+      console.log("Finished Flashcard Generation. Loading State:", loading);
+    }
+  };
+
+  const handleSaveFlashcard = async (flashcard) => {
+    console.log("Saving Flashcard:", flashcard);
+    setErrorMessage('');
+
+    try {
+      const response = await invoke('createFlashcard', {
+        question_text: flashcard.question,
+        question_image: null,
+        answer_text: flashcard.answer,
+        answer_image: null,
+        hint: '',  // Optional hint, could be modified to allow user input
+        tags: ['auto-generated'],
+      });
+
+      console.log("Received response from 'createFlashcard':", response);
+
+      if (response && response.success) {
+        setSaveSuccess(true);
+        console.log("Flashcard Saved Successfully");
+        setTimeout(() => setSaveSuccess(false), 2000); // Display success message briefly
+      } else {
+        setErrorMessage(response.error);
+        console.log("Error Saving Flashcard:", response.error);
+      }
+    } catch (error) {
+      setErrorMessage('Failed to save flashcard');
+      console.error("Exception in handleSaveFlashcard:", error);
+    }
+  };
+
+  const handleClose = () => {
+    console.log('Context menu closed');
+    view.close();
+  };
+
+  console.log('Current Context Menu Data:', generatedFlashcards);
 
   return (
-    <div className="context-menu">
+    <div className='context-menu'>
       <h2>Context Menu</h2>
-      <div className="menu-content">
-        <p>{data ? data : 'Loading...'}</p> {/* Conditionally render the data */}
+      <div className="button-group">
+        <button className="generate-button" onClick={handleGenerateFlashcards} disabled={loading}>
+          {loading ? 'Generating...' : 'Generate Flashcards'}
+        </button>
+        <button className="close-button" onClick={handleClose}>Close</button>
       </div>
+
+
+      <h2>Generated Flashcards</h2>
+      <h4 className='deck-flashcard-amount'>Flashcards: {generatedFlashcards.length || 0}</h4>
+      {generatedFlashcards.length > 0 ? (
+        <div className="card-wrapper">
+          <ul className="card-list">
+            {generatedFlashcards.map((flashcard, index) => (
+              <li key={index} className="card-item">
+                <div className="card-link">
+                  <h4 className="card-question">{flashcard.question || 'No question available'}</h4>
+                  <h4 className="card-answer">{flashcard.answer || 'No answer available'}</h4>
+                  <div className="card-button">
+                    <button onClick={() => handleSaveFlashcard(flashcard)}>Save Flashcard</button>
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : (
+        <p>No flashcards generated yet.</p>
+      )}
     </div>
   );
 }
+
 
 export default ContextMenu;

@@ -326,7 +326,7 @@ resolver.define('addGeneratedFlashcards', async (req) => {
         newDeck.cards.push(flashcard); // Add the flashcard object to the new deck
       }
     }
-    
+
     // Store the new deck in storage
     await storage.set(newDeck.id, newDeck);
   }

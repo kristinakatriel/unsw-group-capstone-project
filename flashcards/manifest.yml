@@ -42,7 +42,7 @@ permissions:
   content:
     styles:
       - 'unsafe-inline'
-  # external:
-  #   fetch:
-  #     backend:
-  #       - marlin-excited-gibbon.ngrok-free.app
+  external:
+    fetch:
+      backend:
+        - marlin-excited-gibbon.ngrok-free.app
