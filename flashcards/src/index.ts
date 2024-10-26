@@ -241,7 +241,7 @@ resolver.define('generateQA', async (req) => {
 });
 
 resolver.define('addGeneratedFlashcards', async (req) => {
-  const { qAPairs } = req.payload;
+  const { qAPairs, deckTitle, siteUrl, siteName } = req.payload;
   let name = "unknown";
 
   // Retrieve the user's name if accountId is available
