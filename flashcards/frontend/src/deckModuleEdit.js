@@ -3,10 +3,13 @@ import { invoke } from '@forge/bridge';
 import './flashcardGlobalModule.css';
 import './globalPageModule.js';
 import DriveFileRenameOutlineIcon from '@mui/icons-material/DriveFileRenameOutline';
+import { Alert } from '@mui/material';
 
 function EditDeckGlobal({ deck, closeDeckEditModal }) {
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
 
   // Pre-fill the form with the deck details
   useEffect(() => {
@@ -19,14 +22,14 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
   const handleCloseGlobal = () => {
     if (typeof closeDeckEditModal === 'function') {
       console.log('deck: ', deck);
-      closeDeckEditModal();
+      closeDeckEditModal(deck);
     } else {
       console.error('closeDeckEditModal is not a function:', closeDeckEditModal);
     }
   };
 
   const handleSaveGlobal = async () => {
-
+    setErrorMessage('');
     console.log('deck: ', deck);
 
 
@@ -35,15 +38,21 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
         id: deck.id,
         title: title,
         description: description,
-
       });
 
       if (response && response.success) {
+        setSaveSuccess(true);
         console.log('responce.deck: ', response.deck);
 
-        closeDeckEditModal(response.deck);
+        setTimeout(() => {
+          closeDeckEditModal(response.deck); // Delay closing modal
+        }, 2000); // Show success message for 2 seconds before closing
       } else {
         console.error('Failed to update deck:', response.error);
+        setErrorMessage(response.error);
+        setTimeout(() => {
+          closeDeckEditModal(deck); // Delay closing modal
+        }, 2000); // Show success message for 2 seconds before closing
       }
     } catch (error) {
       console.error('Error invoking updateDeck:', error);
@@ -53,7 +62,9 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
   return (
     <div className="global-deck-edit">
       <h2 className="deck-title"><DriveFileRenameOutlineIcon className="global-deck-edit-icon"/> Edit Deck</h2>
-
+      {errorMessage && 
+        <Alert severity="error">{errorMessage} </Alert>
+      }
       <div className="form-group">
         <label htmlFor="title">Deck Name</label>
         <input
@@ -76,7 +87,9 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
         />
       </div>
 
-
+      {saveSuccess && 
+        <Alert severity="success"> Deck updated successfully! </Alert>
+      }
       <div className="button-group">
         <button className="save-button" onClick={handleSaveGlobal}>Save Deck</button>
         <button className="close-button" onClick={handleCloseGlobal}>Close</button>

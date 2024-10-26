@@ -93,3 +93,13 @@ export interface StudySession {
     currentCardIndex: number;
     sessionStartTime: number;
 }
+
+export interface GenFlashcardsPair {
+    question: string,
+    answer: string
+}
+
+// NOTE: to be used later
+// export enum AICardsThreshold {
+//     minimumLength = 2
+// }

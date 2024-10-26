@@ -2,12 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { invoke, view } from '@forge/bridge';
 import './flashcardGlobalModule.css';
 import './globalPageModule.js';
+import { Alert, Collapse, IconButton } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import DragNDrop from './components/DragNDrop.jsx';
 
 function CreateFlashcardGlobal( { closeFlashcardModal }) {
   const [front, setFront] = useState('');
   const [back, setBack] = useState('');
   const [hint, setHint] = useState('');
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [closeError, setCloseError] = useState(true);
 
 
   const handleCloseGlobal = () => {
@@ -21,6 +26,8 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
 
 
   const handleSaveGlobal = async () => {
+    setErrorMessage('');
+    setCloseError(true);
     console.log('SAVE BUTTON WAS JUST PRESSED (Function called: handleSaveGlobal)');
     try {
       console.log('Function called: handleSaveGlobal');
@@ -40,9 +47,12 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
 
       console.log('Flashcard saved?:', response.card);
       if (response && response.success) {
-          // Pass the new flashcard back to the close function
-          closeFlashcardModal(response.card);
+          setSaveSuccess(true); // Show success message
+          setTimeout(() => {
+            closeFlashcardModal(response.card); // Delay closing modal
+          }, 1000); // Show success message for 2 seconds before closing
       } else {
+          setErrorMessage(response.error);
           console.error('Failed to create flashcard:', response.error);
       }
     } catch (error) {
@@ -54,7 +64,28 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
   return (
     <div className="global-flashcard-creation">
       <h2 className="flashcard-title">Create New Flashcard</h2>
-
+      { errorMessage && 
+        <Collapse in={closeError}>
+          <Alert
+            severity="error"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={() => {
+                  setCloseError(false);
+                }}
+              >
+              <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+            sx={{ mb: 2 }}
+          >
+            {errorMessage}
+          </Alert>
+        </Collapse>
+      }
       <div className="form-group">
         <label htmlFor="front">Front</label>
         <div className="input-drag-container">
@@ -97,6 +128,10 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
       {/* <div className="form-group">
         <label htmlFor="select">Add to... (Optional)</label>
       </div> */}
+
+      {saveSuccess && 
+        <Alert severity="success"> New flashcard created successfully! </Alert>
+      }
 
       <div className="button-group">
         <button className="save-button" onClick={handleSaveGlobal}>Save</button>

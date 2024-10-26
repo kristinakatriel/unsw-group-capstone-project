@@ -14,6 +14,7 @@ import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
+import { Alert, Collapse } from '@mui/material';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import QuizMode from './components/QuizMode';
 import StudyMode from './components/StudyMode';
@@ -54,9 +55,8 @@ function globalPageModule() {
   const [isEditFlashcardModalOpen, setIsEditFlashcardModalOpen] = useState(false);
 
   // State for DECK editing and confirmation
-   const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
-   const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
-
+  const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
+  const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
 
   // State for DECK deletion and confirmation
   const [deckToDelete, setDeckToDelete] = useState(null);
@@ -74,6 +74,12 @@ function globalPageModule() {
   // State for quizmode
   const [isQuizMode, setIsQuizMode] = useState(false);
 
+  // State for saving success and error messages
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [deleteDeckFromDisplaySuccess, setDeleteDeckFromDisplaySuccess] = useState(false);
+  const [showDeleteSuccessAlert, setShowDeleteSuccessAlert] = useState(false);
+
   //************************** DELETION LOGIC *****************************/
   const confirmDeleteFlashcard = (flashcard) => {
     setFlashcardToDelete(flashcard);
@@ -88,22 +94,31 @@ function globalPageModule() {
   const closeDeleteFlashcardConfirm = () => {
     setIsDeleteFlashcardConfirmOpen(false);
     setFlashcardToDelete(null);
+    setErrorMessage('');
+    setDeleteSuccess(false);
   };
 
   const closeDeleteDeckConfirm = () => {
     setIsDeleteDeckConfirmOpen(false);
     setDeckToDelete(null);
+    setErrorMessage('');
+    setDeleteSuccess(false);
   };
 
   const deleteFlashcard = async () => {
+    setErrorMessage('');
     try {
       const response = await invoke('deleteFlashcard', { cardId: flashcardToDelete.id });
       console.log("FLASHCARDTODELETE");
       if (response.success) {
+        setDeleteSuccess(true);
         setFlashcards((prevFlashcards) => prevFlashcards.filter((card) => card.id !== flashcardToDelete.id));
-        closeDeleteFlashcardConfirm();
+        setTimeout(() => {
+          closeDeleteFlashcardConfirm(); // Delay closing modal
+        }, 400); // Show message for 2 seconds before closing
         refreshFlashcardFrontend();  // Refresh UI after deletion
       } else {
+        setErrorMessage(response.error);
         console.error('Error deleting flashcard:', response.error);
       }
     } catch (error) {
@@ -112,13 +127,18 @@ function globalPageModule() {
   };
 
   const deleteDeck = async () => {
+    setErrorMessage('');
     try {
       const response = await invoke('deleteDeck', { deckId: deckToDelete.id });
       if (response.success) {
+        setDeleteSuccess(true);
         setDecks((prevDecks) => prevDecks.filter((deck) => deck.id !== deckToDelete.id));
-        closeDeleteDeckConfirm();
+        setTimeout(() => {
+          closeDeleteDeckConfirm();
+        }, 2000); // Show message for 2 seconds before closing
         refreshDeckFrontend();  // Refresh UI after deletion
       } else {
+        setErrorMessage(response.error);
         console.error('Error deleting deck:', response.error);
       }
     } catch (error) {
@@ -126,6 +146,18 @@ function globalPageModule() {
     }
 
   };
+
+  useEffect(() => {
+    if (deleteDeckFromDisplaySuccess) {
+      setShowDeleteSuccessAlert(true);
+  
+      const timer = setTimeout(() => {
+        setShowDeleteSuccessAlert(false);
+      }, 2000); // Adjust the duration as needed
+  
+      return () => clearTimeout(timer);
+    }
+  }, [deleteDeckFromDisplaySuccess]);
 
   //************************** FETCHING DATA (REUSABLE) *****************************/
   const loadFlashcards = async () => {
@@ -211,9 +243,6 @@ function globalPageModule() {
   };
 
 
-
-
-
   //DECK EDIT LOGIC
 
   // Modal logic for editing flashcards
@@ -262,8 +291,11 @@ function globalPageModule() {
     console.log('Current Breadcrumb Items:', [{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]); // Log breadcrumb items
   };
 
-  const goBackToHome = () => {
+  const goBackToHome = (deleted) => {
     console.log('Going back to FLASH (Home)'); // Log when going back to Home
+    if (deleted) {
+      setDeleteDeckFromDisplaySuccess(true);
+    }
     setSelectedDeck(null);
     setIsStudyMode(false);
     setIsQuizMode(false);
@@ -371,7 +403,11 @@ function globalPageModule() {
 
       <div className='global-page-headline'><FlashOnIcon className='global-page-flash-icon'/> FLASH</div>
       <div className='global-page-subheadline'>The Forge App that allows you to create flashcards in a flash</div>
-
+      <Collapse in={showDeleteSuccessAlert}>
+        <Alert severity="success">
+          Deck deleted successfully!
+        </Alert>
+      </Collapse>
       <div className='global-page-decks'>Decks<button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button></div>
       {loading ? (
         <p>Loading...</p>
@@ -437,6 +473,12 @@ function globalPageModule() {
                   </ModalHeader>
                   <ModalBody>
                       <p>Are you sure you want to delete all instances of the flashcard? This action cannot be undone.</p>
+                      {deleteSuccess && 
+                        <Alert severity="success"> Flashcard deleted successfully! </Alert>
+                      }
+                      {errorMessage && 
+                        <Alert severity="error">{errorMessage} </Alert>
+                      }
                   </ModalBody>
                   <ModalFooter>
                       <Button appearance="subtle" onClick={closeDeleteFlashcardConfirm}>Cancel</Button>
@@ -467,6 +509,12 @@ function globalPageModule() {
                   </ModalHeader>
                   <ModalBody>
                       <p>Are you sure you want to delete all instances of the deck? This action cannot be undone.</p>
+                      {deleteSuccess && 
+                        <Alert>Deck deleted successfully!</Alert>
+                      }
+                      {errorMessage && 
+                        <Alert severity="error"> {errorMessage} </Alert>
+                      }
                   </ModalBody>
                   <ModalFooter>
                       <Button appearance="subtle" onClick={closeDeleteDeckConfirm}>Cancel</Button>
