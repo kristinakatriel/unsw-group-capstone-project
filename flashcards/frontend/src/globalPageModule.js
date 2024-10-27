@@ -159,6 +159,7 @@ function globalPageModule() {
     }
   }, [deleteDeckFromDisplaySuccess]);
 
+
   //************************** FETCHING DATA (REUSABLE) *****************************/
   const loadFlashcards = async () => {
 
@@ -291,11 +292,16 @@ function globalPageModule() {
     console.log('Current Breadcrumb Items:', [{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]); // Log breadcrumb items
   };
 
-  const goBackToHome = (deleted) => {
-    console.log('Going back to FLASH (Home)'); // Log when going back to Home
+  const goBackIntermediate = (deleted = false) => {
     if (deleted) {
       setDeleteDeckFromDisplaySuccess(true);
+    } else {
+      setDeleteDeckFromDisplaySuccess(false);
     }
+  }
+
+  const goBackToHome = () => {
+    console.log('Going back to FLASH (Home)'); // Log when going back to Home
     setSelectedDeck(null);
     setIsStudyMode(false);
     setIsQuizMode(false);
@@ -393,7 +399,7 @@ function globalPageModule() {
               onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined} />
           ))}
         </Breadcrumbs>
-        <DeckDisplay deck={selectedDeck} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome}/>
+        <DeckDisplay deck={selectedDeck} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
       </div>
     );
   }
@@ -403,7 +409,7 @@ function globalPageModule() {
 
       <div className='global-page-headline'><FlashOnIcon className='global-page-flash-icon'/> FLASH</div>
       <div className='global-page-subheadline'>The Forge App that allows you to create flashcards in a flash</div>
-      <Collapse in={showDeleteSuccessAlert}>
+      <Collapse in={showDeleteSuccessAlert} timeout={500}>
         <Alert severity="success">
           Deck deleted successfully!
         </Alert>
@@ -510,7 +516,7 @@ function globalPageModule() {
                   <ModalBody>
                       <p>Are you sure you want to delete all instances of the deck? This action cannot be undone.</p>
                       {deleteSuccess && 
-                        <Alert>Deck deleted successfully!</Alert>
+                        <Alert severity="success">Deck deleted successfully!</Alert>
                       }
                       {errorMessage && 
                         <Alert severity="error"> {errorMessage} </Alert>

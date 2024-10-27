@@ -20,9 +20,7 @@ function flashcardContentActionModuleCreate() {
       const response = await invoke('createFlashcard', {
         front: front,
         back: back,
-        hint: 'A hint',
-        owner: '@O0',
-        name: user
+        hint: 'A hint'
       });
 
       console.log('Flashcard saved successfully:', response);

@@ -34,7 +34,7 @@ const titleContainerStyles = xcss({
     gridArea: 'title',
 });
 
-const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
+const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBackIntermediate}) => {
 
 
 
@@ -356,8 +356,9 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome}) => {
         try {
             const response = await invoke('deleteDeck', { deckId: deck.id });
             if (response.success) {
-							closeDeckDeleteModal();
-							goBackToHome(true);
+                closeDeckDeleteModal();
+                goBackIntermediate(true);
+                goBackToHome();
             } else {
               setErrorMessage(response.error);
               console.error('Error deleting deck:', response.error);
