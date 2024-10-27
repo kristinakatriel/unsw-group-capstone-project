@@ -54,21 +54,21 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
 
 
     try {
-        for (const cardId of selectedFlashcards) {
-          console.log(`Processing flashcard with ID: ${cardId} for deck ID: ${deck.id}`);
-          const addCardResponse = await invoke('addCardToDeck', {
-            deckId: deck.id,
-            cardId: cardId
-          });
+    //     for (const cardId of selectedFlashcards) {
+    //       console.log(`Processing flashcard with ID: ${cardId} for deck ID: ${deck.id}`);
+    //       const addCardResponse = await invoke('addCardToDeck', {
+    //         deckId: deck.id,
+    //         cardId: cardId
+    //       });
 
-          console.log('Response from addCardToDeck:', addCardResponse);
+    //       console.log('Response from addCardToDeck:', addCardResponse);
 
-          if (addCardResponse.success) {
-            console.log(`Success: Flashcard ${cardId} added to deck ${deck.id}`);
-          } else {
-            console.error(`Failed to add flashcard ${cardId} to deck:`, addCardResponse.error);
-          }
-        }
+    //       if (addCardResponse.success) {
+    //         console.log(`Success: Flashcard ${cardId} added to deck ${deck.id}`);
+    //       } else {
+    //         console.error(`Failed to add flashcard ${cardId} to deck:`, addCardResponse.error);
+    //       }
+    //     }
 
       // setTimeout(() => {
       closeAddDeckModal(selectedFlashcards), 

@@ -85,3 +85,8 @@ label {
 .close-button:hover {
   background-color: #ccc;
 }
+
+input[type="checkbox"] {
+  margin-right: 10px; /* Space between checkbox and label */
+}
+

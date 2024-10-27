@@ -13,7 +13,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [closeError, setCloseError] = useState(true);
-
+  const [locked, setLocked] = useState(false);
 
   const handleCloseGlobal = () => {
     console.log('CLOSE BUTTON WAS JUST PRESSED (Function called: handleCloseGlobal)');
@@ -35,6 +35,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
         front: front,
         back: back,
         hint: hint,
+        locked: locked
       });
 
       // getUserEmail();
@@ -44,6 +45,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
       setFront('');
       setBack('');
       setHint('');
+      setLocked(!locked);
 
       console.log('Flashcard saved?:', response.card);
       if (response && response.success) {
@@ -123,6 +125,17 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
             className="input-area"
           />
         </div>
+      </div>
+
+      <div className="form-group">
+        <label>
+          <input 
+            type="checkbox" 
+            checked={locked} 
+            onChange={(e) => setLocked(e.target.checked)} 
+          />
+          Check the box if you want no one else to edit and/or delete the card
+        </label>
       </div>
 
       {/* <div className="form-group">
