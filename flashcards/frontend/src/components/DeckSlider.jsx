@@ -33,6 +33,7 @@ const DeckSlider = ({ decks = [], onDelete, onDeckClick, onEdit }) => {
                 <SplideSlide key={deck.id} className='deck-item'>
                   <div className="deck-link">
                     <div className="deck-content"></div>
+                    {/* ** TODO ** */}
                     <p className='badge blue'>Blue Tag</p>
                     <h4 className='deck-name'>{deck.title || 'Unnamed Deck'}</h4>
                     <h4 className='deck-description'>{deck.description || 'No description available'}</h4>

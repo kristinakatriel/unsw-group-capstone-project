@@ -3,5 +3,5 @@ uvicorn
 transformers
 torch
 nltk
-sentencepiece
 pydantic
+sentencepiece

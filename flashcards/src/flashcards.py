@@ -57,3 +57,4 @@ async def generate_qa(input: TextInput):
             flashcards.append(flashcard)
 
     return flashcards
+    

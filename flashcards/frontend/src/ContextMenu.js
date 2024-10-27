@@ -62,12 +62,9 @@ function ContextMenu() {
 
     try {
       const response = await invoke('createFlashcard', {
-        question_text: flashcard.question,
-        question_image: null,
-        answer_text: flashcard.answer,
-        answer_image: null,
+        front: flashcard.question,
+        back: flashcard.answer,
         hint: '',  // Optional hint, could be modified to allow user input
-        tags: ['auto-generated'],
       });
 
       console.log("Received response from 'createFlashcard':", response);
@@ -112,8 +109,8 @@ function ContextMenu() {
             {generatedFlashcards.map((flashcard, index) => (
               <li key={index} className="card-item">
                 <div className="card-link">
-                  <h4 className="card-question">{flashcard.question || 'No question available'}</h4>
-                  <h4 className="card-answer">{flashcard.answer || 'No answer available'}</h4>
+                  <h4 className="card-front">{flashcard.question || 'No front available'}</h4>
+                  <h4 className="card-back">{flashcard.answer || 'No back available'}</h4>
                   <div className="card-button">
                     <button onClick={() => handleSaveFlashcard(flashcard)}>Save Flashcard</button>
                   </div>

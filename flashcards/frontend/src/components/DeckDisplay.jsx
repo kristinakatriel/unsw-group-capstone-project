@@ -457,16 +457,9 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
                                 {flashcard.tags && flashcard.tags.length > 0 && (
                                     <p className="badge blue">{flashcard.tags.join(', ')}</p>
                                 )}
-                                <h4 className="card-question">{flashcard.question_text || 'No question available'}</h4>
-                                <h4 className="card-answer">{flashcard.answer_text || 'No answer available'}</h4>
+                                <h4 className="card-front">{flashcard.front || 'No front available'}</h4>
+                                <h4 className="card-back">{flashcard.back || 'No back available'}</h4>
                                 <h4 className="card-owner">By {flashcard.name || 'Unknown'}</h4>
-
-                                {flashcard.question_image && (
-                                    <img src={flashcard.question_image} alt="Question" className="question-image" />
-                                )}
-                                {flashcard.answer_image && (
-                                    <img src={flashcard.answer_image} alt="Answer" className="answer-image" />
-                                )}
 
                                 <div className="card-button">
                                     <EditIcon
