@@ -10,12 +10,14 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
   const [description, setDescription] = useState('');
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [locked, setLocked] = useState(false);
 
   // Pre-fill the form with the deck details
   useEffect(() => {
     if (deck) {
       setTitle(deck.title || '');
       setDescription(deck.description || '');
+      setLocked(deck.locked || '');
     }
   }, [deck]);
 
@@ -38,6 +40,7 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
         id: deck.id,
         title: title,
         description: description,
+        locked: locked
       });
 
       if (response && response.success) {
@@ -85,6 +88,17 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
           placeholder="Edit deck description here..."
           className="input-area"
         />
+      </div>
+
+      <div className="form-group">
+        <label>
+          <input 
+            type="checkbox" 
+            checked={locked} 
+            onChange={(e) => setLocked(e.target.checked)} 
+          />
+          Check the box if you want no one else to edit and/or delete the deck
+        </label>
       </div>
 
       {saveSuccess && 

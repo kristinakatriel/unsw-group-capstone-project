@@ -12,6 +12,7 @@ function flashcardContentActionModuleCreate() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [closeError, setCloseError] = useState(true);
+  const [locked, setLocked] = useState(false);
 
   const handleSave = async () => {
     setErrorMessage('');
@@ -20,7 +21,8 @@ function flashcardContentActionModuleCreate() {
       const response = await invoke('createFlashcard', {
         front: front,
         back: back,
-        hint: 'A hint'
+        hint: 'A hint',
+        locked: locked
       });
 
       console.log('Flashcard saved successfully:', response);
@@ -28,6 +30,7 @@ function flashcardContentActionModuleCreate() {
       setFront('');
       setBack('');
       setHint('');
+      setLocked(false);
       
       if (response && response.success) {
         setSaveSuccess(true); // Show success message
@@ -112,6 +115,17 @@ function flashcardContentActionModuleCreate() {
           />
           {/* <DragNDrop onFilesSelected={(files) => console.log('Files selected:', files)} /> */}
         </div>
+      </div>
+
+      <div className="form-group">
+        <label>
+          <input 
+            type="checkbox" 
+            checked={locked} 
+            onChange={(e) => setLocked(e.target.checked)} 
+          />
+          Check the box if you want no one else to edit and/or delete the card
+        </label>
       </div>
 
       {/* **TODO** */}

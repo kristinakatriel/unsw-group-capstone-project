@@ -20,6 +20,7 @@ export interface Card {
     hint?: string;
     owner: string;
     name?: string;
+    locked: boolean;
 }
 
 export interface Deck {
@@ -31,6 +32,7 @@ export interface Deck {
     cards?: Card[];
     cardIds?: number[];
     size: number;
+    locked: boolean
 }
 
 export interface Tag {

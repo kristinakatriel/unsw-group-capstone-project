@@ -13,6 +13,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [closeError, setCloseError] = useState(true);
+  const [locked, setLocked] = useState(false);
 
   const handleCloseGlobal = () => {
     console.log('Function called: handleCloseGlobal');
@@ -59,6 +60,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
         title: deckTitle,
         description: description,
         flashcards: [],
+        locked: locked
       });
 
       if (response.success) {
@@ -85,6 +87,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
         setDeckTitle('');
         setDescription('');
         setSelectedFlashcards([]);
+        setLocked(!locked);
         setTimeout(() => {
           closeDeckModal(); // Delay closing modal
         }, 1000); // Show success message for 2 seconds before closing
@@ -156,6 +159,17 @@ function CreateDeckGlobal({ closeDeckModal }) {
           placeholder="Type a description for the deck..."
           className="input-area"
         />
+      </div>
+
+      <div className="form-group">
+        <label>
+          <input 
+            type="checkbox" 
+            checked={locked} 
+            onChange={(e) => setLocked(e.target.checked)} 
+          />
+          Check the box if you want no one else to edit and/or delete the deck
+        </label>
       </div>
 
       <div className="form-group">

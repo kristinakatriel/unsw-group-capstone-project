@@ -67,7 +67,7 @@ const initUserData = async (accountId: string) => {
 
 
 resolver.define('createFlashcard', async (req) => {
-  const { front, back, hint } = req.payload;
+  const { front, back, hint, locked } = req.payload;
   const accountId = req.context.accountId;
 
   console.log(front);
@@ -90,7 +90,8 @@ resolver.define('createFlashcard', async (req) => {
     back,
     hint,
     owner: accountId,
-    name: name
+    name: name,
+    locked,
   };
 
   await storage.set(cardId, card);
@@ -104,7 +105,7 @@ resolver.define('createFlashcard', async (req) => {
 
 
 resolver.define('updateFlashcard', async (req) => {
-    const { id, front, back, hint, owner } = req.payload as Card;
+    const { id, front, back, hint, owner, locked } = req.payload as Card;
 
     const existingCard = await storage.get(id) as Card | undefined;
     if (!existingCard) {
@@ -114,18 +115,19 @@ resolver.define('updateFlashcard', async (req) => {
         };
     }
 
-    // if (req.context.accountId && req.context.accountId != owner) {
-    //   return {
-    //     success: false,
-    //     error: "Only owner can edit"
-    //   }
-    // }
+    if (req.context.accountId && req.context.accountId != existingCard.owner && existingCard.locked) {
+      return {
+        success: false,
+        error: "Only owner can edit"
+      }
+    }
 
     const updatedCard: Card = {
         ...existingCard,
         front: front || existingCard.front,
         back: back || existingCard.back,
-        hint: hint || existingCard.hint
+        hint: hint || existingCard.hint,
+        locked: locked || existingCard.locked
     };
 
     // TODO ***
@@ -178,12 +180,12 @@ resolver.define('deleteFlashcard', async (req) => {
       };
     }
 
-    // if (req.context.accountId && req.context.accountId != card.owner) {
-    //   return {
-    //     success: false,
-    //     error: "Only owner can delete"
-    //   }
-    // }
+    if (req.context.accountId && req.context.accountId != card.owner && card.locked) {
+      return {
+        success: false,
+        error: "Only owner can delete"
+      }
+    }
 
     await storage.delete(cardId);
 
@@ -237,7 +239,7 @@ resolver.define('getAllFlashcards', async () => {
 
 
 resolver.define('createDeck', async (req) => {
-  const { title, description, cards: flashcards } = req.payload as Omit<Deck, 'id'>;
+  const { title, description, cards: flashcards, locked} = req.payload as Omit<Deck, 'id'>;
   const accountId = req.context.accountId;
 
   if (!title || !accountId) {
@@ -259,7 +261,8 @@ resolver.define('createDeck', async (req) => {
     name: user,
     cards: flashcards || [], // todo: remove once frontend refactored
     cardIds: [0],            // todo: implement card id references
-    size: 0
+    size: 0,
+    locked
   };
 
   // TODO ***
@@ -285,7 +288,7 @@ resolver.define('updateDeck', async (req) => {
         };
     }
 
-    if (req.context.accountId && req.context.accountId != existingDeck.owner) {
+    if (req.context.accountId && req.context.accountId != existingDeck.owner && existingDeck.locked) {
       return {
         success: false,
         error: "Only owner can edit"
@@ -320,12 +323,12 @@ resolver.define('deleteDeck', async (req) => {
       };
     }
 
-    // if (req.context.accountId && req.context.accountId != deck.owner) {
-    //   return {
-    //     success: false,
-    //     error: "Only owner can delete"
-    //   }
-    // }
+    if (req.context.accountId && req.context.accountId != deck.owner && deck.locked) {
+      return {
+        success: false,
+        error: "Only owner can delete"
+      }
+    }
 
     await storage.delete(deckId);
 
@@ -385,12 +388,12 @@ resolver.define('addCardToDeck', async (req) => {
         };
     }
 
-    // if (req.context.accountId && req.context.accountId != deck.owner) {
-    //   return {
-    //     success: false,
-    //     error: "Only owner can edit"
-    //   }
-    // }
+    if (req.context.accountId && req.context.accountId != deck.owner && deck.locked) {
+      return {
+        success: false,
+        error: "Only owner can edit"
+      }
+    }
 
     deck.cards = [...(deck.cards || []), card];          // todo: remove once frontend refactored
     deck.cardIds = [...(deck.cardIds || []), cardId];
@@ -415,7 +418,7 @@ resolver.define('removeCardFromDeck', async (req) => {
         };
     }
 
-    if (req.context.accountId && req.context.accountId != deck.owner) {
+    if (req.context.accountId && req.context.accountId != deck.owner && deck.locked) {
       return {
         success: false,
         error: "Only owner can edit"
@@ -492,7 +495,8 @@ resolver.define('addGeneratedFlashcards', async (req) => {
       title: deckTitle,
       description: `Fetched from ${siteUrl} under the name ${siteName}.`,
       cards:[],
-      size: 0
+      size: 0,
+      locked: false
   };
 
   const cardIds: string[] = [];

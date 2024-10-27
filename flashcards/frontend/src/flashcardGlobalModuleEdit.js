@@ -12,6 +12,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
   const [hint, setHint] = useState('');
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
+  const [locked, setLocked] = useState(false);
 
   // Pre-fill the form with the current flashcard details
   useEffect(() => {
@@ -19,6 +20,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
       setFront(flashcard.front || '');
       setBack(flashcard.back || '');
       setHint(flashcard.hint || '');
+      setLocked(flashcard.locked || '');
     }
   }, [flashcard]);
 
@@ -38,7 +40,8 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
         id: flashcard.id,
         front: front,
         back: back,
-        hint: hint
+        hint: hint,
+        locked: locked
       });
 
       if (response && response.success) {
@@ -101,6 +104,17 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
           placeholder="Edit/Add hint here..."
           className="input-area"
         />
+      </div>
+
+      <div className="form-group">
+        <label>
+          <input 
+            type="checkbox" 
+            checked={locked} 
+            onChange={(e) => setLocked(e.target.checked)} 
+          />
+          Check the box if you want no one else to edit and/or delete the deck
+        </label>
       </div>
 
       {saveSuccess && 
