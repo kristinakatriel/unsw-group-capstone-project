@@ -87,7 +87,7 @@ const StudyMode = ({ deck }) => {
               </div>
             </div>
 
-            <h1>{currentCard.question_text}</h1>
+            <h1>{currentCard.front}</h1>
           </div>
           <div className='flip-card-back'>
             <div className='flip-card-header'>
@@ -101,7 +101,7 @@ const StudyMode = ({ deck }) => {
                   <LightbulbIcon />
                 </div>
               </div>
-            <h1>{currentCard.answer_text}</h1>
+            <h1>{currentCard.back}</h1>
           </div>
         </div>
       </div>

@@ -48,8 +48,8 @@ const QuizMode = ({ deck }) => {
     }, 1000);
   };
 
-  const handleWrong = () => {
-    setCardStatus('wrong');
+  const handleIncorrect = () => {
+    setCardStatus('incorrect');
     setTimeout(() => {
       goToNextCard();
       setCardStatus(null); 
@@ -89,7 +89,7 @@ const QuizMode = ({ deck }) => {
             </h4>
           </div>
           <div
-            className={`quiz-flip-card ${isFlipped ? 'flipped' : ''} ${cardStatus === 'correct' ? 'correct-card' : cardStatus === 'wrong' ? 'wrong-card' : ''}`}
+            className={`quiz-flip-card ${isFlipped ? 'flipped' : ''} ${cardStatus === 'correct' ? 'correct-card' : cardStatus === 'incorrect' ? 'incorrect-card' : ''}`}
             onClick={toggleFlip}
             id="flipCard"
           >
@@ -97,18 +97,18 @@ const QuizMode = ({ deck }) => {
               <div className='quiz-flip-card-front'>
                 <div className='quiz-flip-card-front-hint' onClick={handleHintClick}>
                   <LightbulbIcon />
-                  <div className='quiz-flip-card-front-hint-hidden'>Click to open Hint!</div>
+                  <div className='quiz-flip-card-front-hint-hidden'>Click to open hint!</div>
                 </div>
-                <h1>{currentCard.question_text}</h1>
+                <h1>{currentCard.front}</h1>
               </div>
               <div className='quiz-flip-card-back'>
-                <h1>{currentCard.answer_text}</h1>
+                <h1>{currentCard.back}</h1>
               </div>
             </div>
           </div>
 
           <div className='quiz-mode-bottom-buttons'>
-            <div className='quiz-mode-wrong-button' onClick={handleWrong}>
+            <div className='quiz-mode-incorrect-button' onClick={handleincorrect}>
               <CrossIcon />
             </div>
             <div className='quiz-mode-correct-button' onClick={handleCorrect}>

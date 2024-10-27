@@ -2,6 +2,7 @@
 
 /node_modules/
 
+/package
 /package-lock.json
 /yarn.lock
 
@@ -12,6 +13,8 @@
 
 *.tmp
 .cache/
+
+venv/
 
 .env
 .env.local

@@ -7,22 +7,18 @@ import { Alert } from '@mui/material';
 import DragNDrop from './components/DragNDrop.jsx';
 
 function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
-  const [question, setQuestion] = useState('');
-  const [answer, setAnswer] = useState('');
+  const [front, setFront] = useState('');
+  const [back, setBack] = useState('');
   const [hint, setHint] = useState('');
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  // const [questionImage, setQuestionImage] = useState(null);
-  // const [answerImage, setAnswerImage] = useState(null);
 
   // Pre-fill the form with the current flashcard details
   useEffect(() => {
     if (flashcard) {
-      setQuestion(flashcard.question_text || '');
-      setAnswer(flashcard.answer_text || '');
+      setFront(flashcard.front || '');
+      setBack(flashcard.back || '');
       setHint(flashcard.hint || '');
-      // setQuestionImage(flashcard.question_image || null);
-      // setAnswerImage(flashcard.answer_image || null);
     }
   }, [flashcard]);
 
@@ -40,10 +36,8 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
       console.log(flashcard.id);
       const response = await invoke('updateFlashcard', {
         id: flashcard.id,
-        question_text: question,
-        // question_image: questionImage,
-        answer_text: answer,
-        // answer_image: answerImage,
+        front: front,
+        back: back,
         hint: hint
       });
 
@@ -65,17 +59,6 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
     } 
   };
 
-  // const handleQuestionImageSelected = (files) => {
-  //   if (files.length > 0) {
-  //     setQuestionImage(files[0]);
-  //   }
-  // };
-
-  // const handleAnswerImageSelected = (files) => {
-  //   if (files.length > 0) {
-  //     setAnswerImage(files[0]);
-  //   }
-  // };
 
   return (
     <div className="global-deck-edit">
@@ -84,30 +67,28 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
         <Alert severity="error">{errorMessage}</Alert>
       }
       <div className="form-group">
-        <label htmlFor="question">Question</label>
+        <label htmlFor="front">Front</label>
         <div className="input-drag-container">
           <textarea
-            id="question"
-            value={question}
-            onChange={(e) => setQuestion(e.target.value)}
-            placeholder="Edit the question here..."
+            id="front"
+            value={front}
+            onChange={(e) => setFront(e.target.value)}
+            placeholder="Edit the front of the flashcard..."
             className="input-area"
           />
-          {/* <DragNDrop onFilesSelected={handleQuestionImageSelected} /> */}
         </div>
       </div>
 
       <div className="form-group">
-        <label htmlFor="answer">Answer</label>
+        <label htmlFor="back">Back</label>
         <div className="input-drag-container">
           <textarea
-            id="answer"
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            placeholder="Edit the answer here..."
+            id="back"
+            value={back}
+            onChange={(e) => setBack(e.target.value)}
+            placeholder="Edit the back of the flashcard..."
             className="input-area"
           />
-          {/* <DragNDrop onFilesSelected={handleAnswerImageSelected} /> */}
         </div>
       </div>
 

@@ -109,6 +109,7 @@ function globalPageModule() {
     setErrorMessage('');
     try {
       const response = await invoke('deleteFlashcard', { cardId: flashcardToDelete.id });
+      console.log("FLASHCARDTODELETE");
       if (response.success) {
         setDeleteSuccess(true);
         setFlashcards((prevFlashcards) => prevFlashcards.filter((card) => card.id !== flashcardToDelete.id));
@@ -240,9 +241,6 @@ function globalPageModule() {
     refreshFlashcardFrontend();
     refreshDeckFrontend();
   };
-
-
-
 
 
   //DECK EDIT LOGIC
@@ -474,7 +472,7 @@ function globalPageModule() {
                       </Grid>
                   </ModalHeader>
                   <ModalBody>
-                      <p>Are you sure you want to delete this flashcard? This action cannot be undone.</p>
+                      <p>Are you sure you want to delete all instances of the flashcard? This action cannot be undone.</p>
                       {deleteSuccess && 
                         <Alert severity="success"> Flashcard deleted successfully! </Alert>
                       }
@@ -510,7 +508,7 @@ function globalPageModule() {
                       </Grid>
                   </ModalHeader>
                   <ModalBody>
-                      <p>Are you sure you want to delete this deck? This action cannot be undone.</p>
+                      <p>Are you sure you want to delete all instances of the deck? This action cannot be undone.</p>
                       {deleteSuccess && 
                         <Alert>Deck deleted successfully!</Alert>
                       }
@@ -546,13 +544,7 @@ function globalPageModule() {
         </ModalDialog>
       )}
 
-
-
-
     </div>
-
-
-
   );
 }
 

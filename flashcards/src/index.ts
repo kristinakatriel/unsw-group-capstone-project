@@ -1,13 +1,15 @@
 import Resolver from '@forge/resolver';
 import api, { route, storage } from '@forge/api';
-import { Card, Deck, GenFlashcardsPair, Tag } from './types';
+import { Card, Deck, Tag, User, GenFlashcardsPair, DynamicData, 
+         QuizResult, StudyResult, QuizSession, StudySession
+ } from './types';
 import { v4 as uuidv4 } from 'uuid';
 import { basename } from 'path';
 import { create } from 'domain';
 
+
 const resolver = new Resolver();
 
-const createId = () => uuidv4();
 
 resolver.define('getModule', async (req) => {
   const { moduleKey } = req.context;
@@ -15,51 +17,79 @@ resolver.define('getModule', async (req) => {
 });
 
 
-resolver.define('createFlashcard', async (req) => {
-  const { question_text, question_image, answer_text, answer_image, hint, tags } = req.payload as Omit<Card, 'id' | 'owner'>;
+const generateId = () => uuidv4();
 
-  if (!question_text || !answer_text || !req.context.accountId) {
+
+const getUserName = async (accountId: string) => {
+  if (!accountId) {
+    return "unknown";
+  }
+
+  const bodyData = JSON.stringify({
+    accountIds: [accountId],
+  });
+
+  const response = await api.asApp().requestConfluence(route`/wiki/api/v2/users-bulk`, {
+    method: 'POST',
+    headers: {
+      'Accept': 'application/json',
+      'Content-Type': 'application/json'
+    },
+    body: bodyData
+  });
+
+  if (response.status === 200) {
+    const data = await response.json();
+    return data.results?.[0]?.publicName || "unknown";
+  } else {
+    return "unknown";
+  }
+};
+
+
+const initUserData = async (accountId: string) => {
+  const userDataKey = `u-${accountId}`;
+  const existingUser = await storage.get(userDataKey);
+
+  if (!existingUser) {    
+    const newUser = {
+      id: userDataKey,
+      deckIds: [],
+      cardIds: []
+    };
+    
+    await storage.set(userDataKey, newUser);
+    return newUser;
+  }
+
+  return existingUser;
+};
+
+
+resolver.define('createFlashcard', async (req) => {
+  const { front, back, hint } = req.payload;
+  const accountId = req.context.accountId;
+
+  console.log(front);
+  console.log(back);
+
+  if (!front || !back) {
     return {
       success: false,
-      error: 'Invalid Input: Please enter Question and Answer.',
+      error: 'Invalid input: front and back required',
     };
   }
 
-  let name = "unknown"
+  initUserData(accountId);
+  const name = await getUserName(accountId);
 
-  if (req.context.accountId) {
-    let bodyData = `{
-      "accountIds": [
-        "${req.context.accountId}"
-      ]
-    }`;
-
-    const response = await api.asApp().requestConfluence(route`/wiki/api/v2/users-bulk`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: bodyData
-    });
-    if (response.status === 200) {
-      let data = await response.json();
-      name = data.results[0].publicName;
-    } else {
-      name = "unknown2"
-    };
-  }
-
-  const cardId = createId();
+  const cardId = `c-${generateId()}`;
   const card = {
-    question_text,
-    question_image,
-    answer_text,
-    answer_image,
-    hint,
-    tags,
-    owner: req.context.accountId,
     id: cardId,
+    front,
+    back,
+    hint,
+    owner: accountId,
     name: name
   };
 
@@ -74,35 +104,31 @@ resolver.define('createFlashcard', async (req) => {
 
 
 resolver.define('updateFlashcard', async (req) => {
-    const { id, question_text, question_image, answer_text, answer_image, hint, tags } = req.payload as Card;
+    const { id, front, back, hint, owner } = req.payload as Card;
 
     const existingCard = await storage.get(id) as Card | undefined;
     if (!existingCard) {
         return {
             success: false,
-            error: 'Card not found',
+            error: 'Card not found'
         };
     }
 
-    if (req.context.accountId && req.context.accountId != existingCard.owner) {
-      return {
-        success: false,
-        error: "Permission Denied: Only owner can edit this flashcard."
-      }
-    }
+    // if (req.context.accountId && req.context.accountId != owner) {
+    //   return {
+    //     success: false,
+    //     error: "Only owner can edit"
+    //   }
+    // }
 
     const updatedCard: Card = {
         ...existingCard,
-        question_text: question_text || existingCard.question_text,
-        question_image: question_image || existingCard.question_image,
-        answer_text: answer_text || existingCard.answer_text,
-        answer_image: answer_image || existingCard.answer_image,
-        hint: hint || existingCard.hint,
-        tags: tags || existingCard.tags,
-        owner: existingCard.owner,
+        front: front || existingCard.front,
+        back: back || existingCard.back,
+        hint: hint || existingCard.hint
     };
 
-    await storage.set(id, updatedCard);
+    // TODO ***
 
     // setting the deck with the updated flashcard
     // Update the flashcard in storage
@@ -134,7 +160,7 @@ resolver.define('updateFlashcard', async (req) => {
 
     return {
         success: true,
-        card: updatedCard,
+        card: updatedCard
     };
 });
 
@@ -142,26 +168,28 @@ resolver.define('updateFlashcard', async (req) => {
 resolver.define('deleteFlashcard', async (req) => {
     const { cardId } = req.payload;
 
+    const queryResult = await storage.query().limit(25).getMany();
+
     const card = await storage.get(cardId);
     if (!card) {
       return {
         success: false,
-        error: `No card found with id: ${cardId}`,
+        error: `No card found with id: ${cardId}`
       };
     }
 
-    if (req.context.accountId && req.context.accountId != card.owner) {
-      return {
-        success: false,
-        error: "Permission Denied: Only owner can delete this flashcard"
-      }
-    }
+    // if (req.context.accountId && req.context.accountId != card.owner) {
+    //   return {
+    //     success: false,
+    //     error: "Only owner can delete"
+    //   }
+    // }
 
     await storage.delete(cardId);
 
     return {
       success: true,
-      message: `Deleted card with id: ${cardId}`,
+      message: `Deleted card with id: ${cardId}`
     };
 });
 
@@ -170,17 +198,16 @@ resolver.define('getFlashcard', async ({ payload }) => {
   const { cardId } = payload;
 
   const card = await storage.get(cardId) as Card | undefined;
-
   if (!card) {
     return {
       success: false,
-      error: `No card found with id: ${cardId}`,
+      error: `No card found with id: ${cardId}`
     };
   }
 
   return {
     success: true,
-    card,
+    card
   };
 });
 
@@ -188,25 +215,19 @@ resolver.define('getFlashcard', async ({ payload }) => {
 resolver.define('getAllFlashcards', async () => {
   const allFlashcards: Card[] = [];
 
+  // TODO ***
   const result = await storage.query().limit(25).getMany();
-  // const result = await storage.query()
-  // .filter((item) => item.type === 'Card') // Adjust to your storage schema
-  // .limit(25)
-  // .getMany();
-  // Log the result from storage query
-  console.log('Storage query result:', result);
 
+  // console.log('Storage query result:', result);
 
   result.results.forEach(({ value }) => {
-    console.log('value:', value);
-    if ('answer_text' in value) {
-
+    // console.log('value:', value);
+    if ('back' in value) {
       allFlashcards.push(value as Card);
     }
   });
 
-  console.log('Fetched flashcards:', allFlashcards);
-
+  // console.log('Fetched flashcards:', allFlashcards);
 
   return {
     success: true,
@@ -214,181 +235,40 @@ resolver.define('getAllFlashcards', async () => {
   };
 });
 
-// adding generating q&a through ai flashcards
-resolver.define('generateQA', async (req) => {
-  // get text
-  const { text } = req.payload;
-
-  if (text.length <= 2) {
-    return {
-      success: false,
-      error: 'Too less; Select more words to create flashcards for.'
-    }
-  }
-
-  // get the flashcards generated using the external url
-  const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_qa", {  // the url which we need to generate the flashcards
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ text }),
-  });
-
-  const data = await response.json();
-  if (!response.ok) {
-    return {
-      success: false,
-      error: 'Failed to generate Q&A from text',
-    };
-  }
-  // this returns a json of q&a pairs, which can be displayed in the context menu
-  return data;
-});
-
-resolver.define('addGeneratedFlashcards', async (req) => {
-  const { qAPairs, deckTitle, siteUrl, siteName } = req.payload;
-  let name = "unknown";
-
-  // Retrieve the user's name if accountId is available
-  if (req.context.accountId) {
-    const bodyData = JSON.stringify({ accountIds: [req.context.accountId] });
-    const response = await api.asApp().requestConfluence(route`/wiki/api/v2/users-bulk`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: bodyData
-    });
-
-    if (response.status === 200) {
-      const data = await response.json();
-      name = data.results[0]?.publicName || "unknown";
-    }
-  }
-
-  let newDeck: Deck | null = null;
-
-  if (deckTitle) {
-    const deckId = createId(); // Generate a unique ID for the new deck
-    newDeck = {
-      id: deckId,
-      owner: req.context.accountId,
-      name: name,
-      title: deckTitle,
-      description: `Fetched from ${siteUrl} under the name ${siteName}.`,
-      cards: [] // Initialize with an empty array for flashcards
-    };
-  }
-
-  const cardIds:string[] = [];
-  // Use Promise.all to ensure all flashcards are stored asynchronously
-  const flashcardPromises = qAPairs.map(async (pair: GenFlashcardsPair) => {
-    const { question, answer } = pair;
-
-    // Check for missing question or answer
-    if (!question || !answer) {
-      return {
-        success: false,
-        error: 'Cannot add flashcard as it has no question or answer',
-      };
-    }
-
-    // Create a new flashcard object
-    const cardId = createId();
-    const newFlashcard = {
-      id: cardId,
-      name: name,
-      question_text: question,
-      question_image: "", // Placeholder if no images are available
-      answer_text: answer,
-      answer_image: "", // Placeholder if no images are available
-      hint: "", // Optional, can be adjusted
-      tags: [],
-      owner: req.context.accountId
-    };
-    cardIds.push(cardId);
-    // Store the new flashcard in storage
-    await storage.set(cardId, newFlashcard);
-    return { success: true, id: cardId }; // return success and cardId
-  });
-
-  // Wait for all flashcards to be created
-  const results = await Promise.all(flashcardPromises);
-
-  // If a new deck was created, retrieve flashcards by their IDs and add them to the deck
-  if (newDeck && newDeck.cards) {
-    for (const cardId of cardIds) {
-      const flashcard = await storage.get(cardId); // Retrieve the flashcard from storage
-      if (flashcard) {
-        newDeck.cards.push(flashcard); // Add the flashcard object to the new deck
-      }
-    }
-    
-    // Store the new deck in storage
-    await storage.set(newDeck.id, newDeck);
-  }
-
-  return {
-    success: true,
-    createdFlashcards: results.filter(result => result.success).length
-  };
-});
-
 
 resolver.define('createDeck', async (req) => {
   const { title, description, cards: flashcards } = req.payload as Omit<Deck, 'id'>;
+  const accountId = req.context.accountId;
 
-  if (!title || !req.context.accountId) {
+  if (!title || !accountId) {
     return {
       success: false,
-      error: 'Invalid Input: Please input the Title.',
+      error: 'Invalid input: title required',
     };
   }
 
-  let name = "unknown"
+  initUserData(accountId);
+  const user = await getUserName(accountId);
 
-  if (req.context.accountId) {
-    let bodyData = `{
-      "accountIds": [
-        "${req.context.accountId}"
-      ]
-    }`;
-
-    const response = await api.asApp().requestConfluence(route`/wiki/api/v2/users-bulk`, {
-      method: 'POST',
-      headers: {
-        'Accept': 'application/json',
-        'Content-Type': 'application/json'
-      },
-      body: bodyData
-    });
-    if (response.status === 200) {
-      let data = await response.json();
-      name = data.results[0].publicName;
-    } else {
-      name = "unknown2"
-    };
-  }
-
-  const deckId = createId();
-  const newDeck: Deck = {
+  const deckId = `d-${generateId()}`;
+  const deck: Deck = {
     id: deckId,
     title,
     description,
-    owner: req.context.accountId,
-    cards: flashcards || [],
-    name: name
+    owner: accountId,
+    name: user,
+    cards: flashcards || [], // todo: remove once frontend refactored
+    cardIds: [0],            // todo: implement card id references
+    size: 0
   };
 
-  await storage.set(deckId, newDeck);
+  // TODO ***
+  await storage.set(deckId, deck);
 
   return {
     success: true,
     id: deckId,
-    deck: newDeck,
+    deck: deck,
   };
 });
 
@@ -396,25 +276,19 @@ resolver.define('createDeck', async (req) => {
 resolver.define('updateDeck', async (req) => {
     const { id, title, description, owner, cards } = req.payload as Deck;
 
-    // Log the incoming request payload
-
     const existingDeck = await storage.get(id) as Deck | undefined;
 
-    // Log if the deck exists or not
     if (!existingDeck) {
-
         return {
             success: false,
             error: 'Deck Not found',
         };
     }
 
-    // Check ownershi
-
     if (req.context.accountId && req.context.accountId != existingDeck.owner) {
       return {
         success: false,
-        error: "Permission Denied: Only owner can edit this deck."
+        error: "Only owner can edit"
       }
     }
 
@@ -422,7 +296,6 @@ resolver.define('updateDeck', async (req) => {
         ...existingDeck,
         title: title || existingDeck.title,
         description: description || existingDeck.description,
-        owner: owner || existingDeck.owner,
         cards: cards || existingDeck.cards,
     };
 
@@ -439,6 +312,7 @@ resolver.define('deleteDeck', async (req) => {
     const { deckId } = req.payload;
 
     const deck = await storage.get(deckId);
+
     if (!deck) {
       return {
         success: false,
@@ -446,12 +320,12 @@ resolver.define('deleteDeck', async (req) => {
       };
     }
 
-    if (req.context.accountId && req.context.accountId != deck.owner) {
-      return {
-        success: false,
-        error: "Permission Denied: Only owner can delete this deck."
-      }
-    }
+    // if (req.context.accountId && req.context.accountId != deck.owner) {
+    //   return {
+    //     success: false,
+    //     error: "Only owner can delete"
+    //   }
+    // }
 
     await storage.delete(deckId);
 
@@ -484,6 +358,7 @@ resolver.define('getDeck', async ({ payload }) => {
 resolver.define('getAllDecks', async () => {
     const allDecks: Deck[] = [];
 
+    // TODO ***
     const queryResult = await storage.query().limit(25).getMany();
 
     queryResult.results.forEach(({ value }) => {
@@ -510,14 +385,15 @@ resolver.define('addCardToDeck', async (req) => {
         };
     }
 
-    if (req.context.accountId && req.context.accountId != deck.owner) {
-      return {
-        success: false,
-        error: "Permission Denied: Only owner can add the flashcard to this deck."
-      }
-    }
+    // if (req.context.accountId && req.context.accountId != deck.owner) {
+    //   return {
+    //     success: false,
+    //     error: "Only owner can edit"
+    //   }
+    // }
 
-    deck.cards = [...(deck.cards || []), card];
+    deck.cards = [...(deck.cards || []), card];          // todo: remove once frontend refactored
+    deck.cardIds = [...(deck.cardIds || []), cardId];
 
     await storage.set(deckId, deck);
 
@@ -542,11 +418,12 @@ resolver.define('removeCardFromDeck', async (req) => {
     if (req.context.accountId && req.context.accountId != deck.owner) {
       return {
         success: false,
-        error: "Permission Denied: Only owner can remove this flashcard from deck."
+        error: "Only owner can edit"
       }
     }
 
-    deck.cards = deck.cards?.filter(c => c.id !== cardId) || [];
+    deck.cards = deck.cards?.filter(c => c.id !== cardId) || [];  // todo: remove once frontend refactored
+    deck.cardIds = deck.cardIds?.filter(id => id !== cardId) || [];
 
     await storage.set(deckId, deck);
 
@@ -555,6 +432,129 @@ resolver.define('removeCardFromDeck', async (req) => {
         message: 'Removed card from deck',
     };
 });
+
+
+///////////////////////////////////////////////////////////////////////////////////
+
+
+// adding generating q&a through ai flashcards
+resolver.define('generateQA', async (req) => {
+  // get text
+  const { text } = req.payload;
+
+  if (text.length <= 2) {
+    return {
+      success: false,
+      error: 'Too few words; select more text to generate flashcards.'
+    }
+  }
+
+  // get the flashcards generated using the external url
+  const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_qa", {  // the url which we need to generate the flashcards
+    method: 'POST',
+    headers: {
+      Accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ text }),
+  });
+
+  const data = await response.json();
+  if (!response.ok) {
+    return {
+      success: false,
+      error: 'Failed to generate Q&A from text',
+    };
+  }
+  // this returns a json of q&a pairs, which can be displayed in the context menu
+  return {
+    success: true,
+    data: data
+  };
+});
+
+
+resolver.define('addGeneratedFlashcards', async (req) => {
+  const { qAPairs, deckTitle, siteUrl, siteName } = req.payload;
+  const accountId = req.context.accountId;
+
+  if (!deckTitle || deckTitle.trim() === "") {
+    return { success: false, error: 'Deck title is required.' };
+  }
+
+  initUserData(accountId);
+  const user = await getUserName(accountId);
+
+  let newDeck: Deck | null = {
+      id: `d-${generateId()}`,
+      owner: accountId,
+      name: user,
+      title: deckTitle,
+      description: `Fetched from ${siteUrl} under the name ${siteName}.`,
+      cards:[],
+      size: 0
+  };
+
+  const cardIds: string[] = [];
+   // Use Promise.all to ensure all flashcards are stored asynchronously
+   const flashcardPromises = qAPairs.map(async (pair: GenFlashcardsPair) => {
+    const { question, answer } = pair;
+    // Check for missing question or answer
+    if (!question || !answer) {
+      return {
+        success: false,
+        error: 'Cannot add flashcard as question or answer are missing',
+      };
+    }
+    // Create a new flashcard object
+    const cardId = `c-${generateId()}`;
+    const newCard = {
+      id: cardId,
+      front: question,
+      back: answer,
+      hint: "",
+      owner: accountId,
+      name: user
+    };
+    cardIds.push(cardId);
+    // Store the new flashcard in storage
+    await storage.set(cardId, newCard);
+    return { success: true, id: cardId }; // return success and cardId
+  });
+
+  // Wait for all flashcards to be created
+  const results = await Promise.all(flashcardPromises);
+
+  // If a new deck was created, retrieve flashcards by their IDs and add them to the deck
+  if (newDeck && newDeck.cards) {
+    for (const cardId of cardIds) {
+      const flashcard = await storage.get(cardId); // Retrieve the flashcard from storage
+      if (flashcard) {
+        newDeck.cards.push(flashcard); // Add the flashcard object to the new deck
+      }
+    }
+    
+    // Store the new deck in storage
+    await storage.set(newDeck.id, newDeck);
+  }
+
+  return {
+    success: true,
+    createdFlashcards: results.filter(result => result.success).length
+  };
+});
+
+
+///////////////////////////////////////////////////////////////////////////////////
+
+
+// COMING SOON
+
+// resolver.define('startStudySession', async (req) => {});
+// resolver.define('endStudySession', async (req) => {});
+
+// resolver.define('startQuizSession', async (req) => {});
+// resolver.define('endQuizSession', async (req) => {});
 
 
 
