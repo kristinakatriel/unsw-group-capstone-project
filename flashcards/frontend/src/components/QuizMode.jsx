@@ -108,7 +108,7 @@ const QuizMode = ({ deck }) => {
           </div>
 
           <div className='quiz-mode-bottom-buttons'>
-            <div className='quiz-mode-incorrect-button' onClick={handleincorrect}>
+            <div className='quiz-mode-incorrect-button' onClick={handleIncorrect}>
               <CrossIcon />
             </div>
             <div className='quiz-mode-correct-button' onClick={handleCorrect}>
