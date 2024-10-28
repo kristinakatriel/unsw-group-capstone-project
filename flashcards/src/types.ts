@@ -29,7 +29,7 @@ export interface Deck {
     description?: string;
     owner: string;
     name?: string;
-    cards?: Card[];
+    cards: Card[];
     cardIds?: number[];
     size: number;
     locked: boolean

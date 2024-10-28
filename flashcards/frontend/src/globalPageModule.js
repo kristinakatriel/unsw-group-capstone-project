@@ -112,7 +112,8 @@ function globalPageModule() {
       console.log("FLASHCARDTODELETE");
       if (response.success) {
         setDeleteSuccess(true);
-        setFlashcards((prevFlashcards) => prevFlashcards.filter((card) => card.id !== flashcardToDelete.id));
+        // setFlashcards((prevFlashcards) => prevFlashcards.filter((card) => card.id !== flashcardToDelete.id));
+        loadFlashcards();
         setTimeout(() => {
           closeDeleteFlashcardConfirm(); // Delay closing modal
         }, 400); // Show message for 2 seconds before closing
@@ -132,7 +133,8 @@ function globalPageModule() {
       const response = await invoke('deleteDeck', { deckId: deckToDelete.id });
       if (response.success) {
         setDeleteSuccess(true);
-        setDecks((prevDecks) => prevDecks.filter((deck) => deck.id !== deckToDelete.id));
+        // setDecks((prevDecks) => prevDecks.filter((deck) => deck.id !== deckToDelete.id));
+        loadDecks();
         setTimeout(() => {
           closeDeleteDeckConfirm();
         }, 2000); // Show message for 2 seconds before closing
@@ -181,6 +183,7 @@ function globalPageModule() {
   const loadDecks = async () => {
     try {
       const response = await invoke('getAllDecks', {});
+      console.log(response);
       if (response.success) {
         setDecks(response.decks);
       }
