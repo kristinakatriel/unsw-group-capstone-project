@@ -356,6 +356,7 @@ function globalPageModule() {
   //************************** QUIZ MODE FUNCTIONS *****************************/
   const quizMode = () => {
     console.log('Entering Quiz Mode'); // Log when entering quiz mode
+    // loadDecks();
     setIsQuizMode(true);
     setBreadcrumbItems(prevItems => [
         ...prevItems,
