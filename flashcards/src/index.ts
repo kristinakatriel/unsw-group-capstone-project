@@ -154,14 +154,10 @@ resolver.define('updateFlashcard', async (req) => {
         locked: locked || existingCard.locked
     };
 
-    // TODO ***
-
-    // setting the deck with the updated flashcard
     // Update the flashcard in storage
     await storage.set(id, updatedCard);
-
     // Update any decks containing this card
-    const decksResult = await storage.query().limit(50).getMany();
+    const decksResult = await storage.query().where('key', startsWith('d-')).getMany();
     if (!decksResult) {
       return {
         success: true,
@@ -193,8 +189,6 @@ resolver.define('updateFlashcard', async (req) => {
 
 resolver.define('deleteFlashcard', async (req) => {
     const { cardId } = req.payload;
-
-    const queryResult = await storage.query().limit(50).getMany();
 
     const card = await storage.get(cardId);
     if (!card) {
@@ -241,19 +235,11 @@ resolver.define('getFlashcard', async ({ payload }) => {
 resolver.define('getAllFlashcards', async () => {
   const allFlashcards: Card[] = [];
 
-  // TODO ***
-  const result = await storage.query().limit(50).getMany();
+  const query = await storage.query().where('key', startsWith('c-')).limit(50).getMany();
 
-  // console.log('Storage query result:', result);
-
-  result.results.forEach(({ value }) => {
-    // console.log('value:', value);
-    if ('back' in value) {
+  query.results.forEach(({ value }) => {
       allFlashcards.push(value as Card);
-    }
   });
-
-  // console.log('Fetched flashcards:', allFlashcards);
 
   return {
     success: true,
@@ -384,9 +370,9 @@ resolver.define('getDeck', async ({ payload }) => {
 resolver.define('getAllDecks', async () => {
     const allDecks: Deck[] = [];
 
-    const queryResult = await storage.query().limit(50).getMany();
+    const query = await storage.query().where('key', startsWith('d-')).limit(50).getMany();
 
-    queryResult.results.forEach(({ value }) => {
+    query.results.forEach(({ value }) => {
       allDecks.push(value as Deck);
     });
 
