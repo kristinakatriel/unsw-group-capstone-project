@@ -396,6 +396,13 @@ resolver.define('addCardToDeck', async (req) => {
         };
     }
 
+    if (deck.cardIds && deck.cardIds.includes(cardId)) {
+          return {
+              success: false,
+              error: 'Item already included',
+          };
+      }
+
     if (req.context.accountId && req.context.accountId != deck.owner && deck.locked) {
       return {
         success: false,
