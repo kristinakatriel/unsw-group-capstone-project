@@ -1,5 +1,5 @@
 import Resolver from '@forge/resolver';
-import api, { route, storage } from '@forge/api';
+import api, { QueryApi, route, startsWith, storage } from '@forge/api';
 import { Card, Deck, Tag, User, GenFlashcardsPair, DynamicData, 
          QuizResult, StudyResult, QuizSession, StudySession
  } from './types';
@@ -15,6 +15,30 @@ resolver.define('getModule', async (req) => {
   const { moduleKey } = req.context;
   return { moduleKey };
 });
+
+
+const clearStorage = async (cursor: string = ''): Promise<void> => {
+  const cursorRecursion = async (cursor: string | undefined): Promise<void> => {
+    const query = storage.query().limit(10);
+    if (cursor) {
+      query.cursor(cursor);
+    }
+
+    const items = await query.getMany();
+    for (const item of items.results) {
+      await storage.delete(item.key);
+      console.log("Deleted key:", item.key);
+    }
+
+    if (items.nextCursor) {
+      await cursorRecursion(items.nextCursor);
+    } else {
+      console.log("Data clear!");
+    }
+  };
+
+  await cursorRecursion(cursor);
+};
 
 
 const generateId = () => uuidv4();
@@ -137,7 +161,7 @@ resolver.define('updateFlashcard', async (req) => {
     await storage.set(id, updatedCard);
 
     // Update any decks containing this card
-    const decksResult = await storage.query().limit(25).getMany();
+    const decksResult = await storage.query().limit(50).getMany();
     if (!decksResult) {
       return {
         success: true,
@@ -170,7 +194,7 @@ resolver.define('updateFlashcard', async (req) => {
 resolver.define('deleteFlashcard', async (req) => {
     const { cardId } = req.payload;
 
-    const queryResult = await storage.query().limit(25).getMany();
+    const queryResult = await storage.query().limit(50).getMany();
 
     const card = await storage.get(cardId);
     if (!card) {
@@ -218,7 +242,7 @@ resolver.define('getAllFlashcards', async () => {
   const allFlashcards: Card[] = [];
 
   // TODO ***
-  const result = await storage.query().limit(25).getMany();
+  const result = await storage.query().limit(50).getMany();
 
   // console.log('Storage query result:', result);
 
@@ -265,7 +289,6 @@ resolver.define('createDeck', async (req) => {
     locked
   };
 
-  // TODO ***
   await storage.set(deckId, deck);
 
   return {
@@ -361,8 +384,7 @@ resolver.define('getDeck', async ({ payload }) => {
 resolver.define('getAllDecks', async () => {
     const allDecks: Deck[] = [];
 
-    // TODO ***
-    const queryResult = await storage.query().limit(25).getMany();
+    const queryResult = await storage.query().limit(50).getMany();
 
     queryResult.results.forEach(({ value }) => {
       allDecks.push(value as Deck);

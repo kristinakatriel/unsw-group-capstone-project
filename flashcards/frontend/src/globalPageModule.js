@@ -132,7 +132,8 @@ function globalPageModule() {
       const response = await invoke('deleteDeck', { deckId: deckToDelete.id });
       if (response.success) {
         setDeleteSuccess(true);
-        setDecks((prevDecks) => prevDecks.filter((deck) => deck.id !== deckToDelete.id));
+        // setDecks((prevDecks) => prevDecks.filter((deck) => deck.id !== deckToDelete.id));
+        loadDecks();
         setTimeout(() => {
           closeDeleteDeckConfirm();
         }, 2000); // Show message for 2 seconds before closing
