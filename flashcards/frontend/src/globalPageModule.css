@@ -1,6 +1,7 @@
 .global-page-container {
   overflow: auto;
   min-height: 100%;
+  height: 911px;
 }
 
 .global-page-headline {

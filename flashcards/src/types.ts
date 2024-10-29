@@ -64,7 +64,7 @@ export interface DynamicData {
 
 export interface QuizResult {
     deckInArchive: Deck;
-    statusPerCard: QuizSessionCardStatus[];     
+    statusPerCard: QuizSessionCardStatus[];
     countCards: number;
     countIncomplete: number;
     countCorrect: number;
@@ -75,7 +75,7 @@ export interface QuizResult {
 
 export interface StudyResult {
     deckInArchive: Deck;
-    statusPerCard: StudySessionCardStatus[];     
+    statusPerCard: StudySessionCardStatus[];
     countPositive: number;
     countNegative: number;
 }

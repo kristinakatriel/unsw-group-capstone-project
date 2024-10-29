@@ -10,6 +10,8 @@ function ContextMenu() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
 
+
+
   // Fetch selected text context when the component mounts
   useEffect(() => {
     const fetchData = async () => {

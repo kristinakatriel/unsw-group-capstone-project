@@ -21,6 +21,7 @@ modules:
       resource: main
       resolver:
         function: resolver
+      viewportSize: large
       title: FLASH - Create Flashcard(s) (AI Generation)
 
   function:
@@ -67,4 +68,3 @@ app:
 
   # storage:
 
-    

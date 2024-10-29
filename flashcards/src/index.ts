@@ -1,6 +1,6 @@
 import Resolver from '@forge/resolver';
 import api, { QueryApi, route, startsWith, storage } from '@forge/api';
-import { Card, Deck, Tag, User, GenFlashcardsPair, DynamicData, 
+import { Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
          QuizResult, StudyResult, QuizSession, StudySession
  } from './types';
 import { v4 as uuidv4 } from 'uuid';
@@ -75,13 +75,13 @@ const initUserData = async (accountId: string) => {
   const userDataKey = `u-${accountId}`;
   const existingUser = await storage.get(userDataKey);
 
-  if (!existingUser) {    
+  if (!existingUser) {
     const newUser = {
       id: userDataKey,
       deckIds: [],
       cardIds: []
     };
-    
+
     await storage.set(userDataKey, newUser);
     return newUser;
   }
@@ -459,7 +459,7 @@ resolver.define('removeCardFromDeck', async (req) => {
 resolver.define('generateQA', async (req) => {
   // get text
   const { text } = req.payload;
-
+  console.log("testing tunnel");
   if (text.length <= 2) {
     return {
       success: false,
@@ -467,6 +467,7 @@ resolver.define('generateQA', async (req) => {
     }
   }
 
+  console.log("calling url thing");
   // get the flashcards generated using the external url
   const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_qa", {  // the url which we need to generate the flashcards
     method: 'POST',
@@ -476,6 +477,8 @@ resolver.define('generateQA', async (req) => {
     },
     body: JSON.stringify({ text }),
   });
+
+  console.log("printing responce", response);
 
   const data = await response.json();
   if (!response.ok) {
@@ -552,7 +555,7 @@ resolver.define('addGeneratedFlashcards', async (req) => {
         newDeck.cards.push(flashcard); // Add the flashcard object to the new deck
       }
     }
-    
+
     // Store the new deck in storage
     await storage.set(newDeck.id, newDeck);
   }
