@@ -1,11 +1,11 @@
 import Resolver from '@forge/resolver';
 import api, { QueryApi, route, startsWith, storage } from '@forge/api';
 import { Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
-         QuizResult, StudyResult, QuizSession, StudySession
- } from './types';
+         QuizResult, StudyResult, QuizSession, StudySession, QuizSessionCardStatus} from './types';
 import { v4 as uuidv4 } from 'uuid';
 import { basename } from 'path';
 import { create } from 'domain';
+import { Session } from 'inspector/promises';
 
 
 const resolver = new Resolver();
@@ -572,8 +572,122 @@ resolver.define('addGeneratedFlashcards', async (req) => {
 
 // COMING SOON
 
-// resolver.define('startStudySession', async (req) => {});
-// resolver.define('endStudySession', async (req) => {});
+resolver.define('startStudySession', async (req) => {
+  const { deckId } = req.payload;
+
+  const quizDeck = await storage.get(deckId) as Deck | undefined;
+
+    if (!quizDeck) {
+        return {
+            success: false,
+            error: 'Deck Not found',
+        };
+    } 
+
+    // create an array of status
+    const totalCards = quizDeck.cards?.length
+
+    // check if length = 0
+    if (totalCards == 0) {
+      return {
+        success: false, 
+        error: 'cannot enter quiz mode if deck has no cards'
+      }
+    }
+    const statusPerCardArray: QuizSessionCardStatus[] = Array(totalCards).fill(QuizSessionCardStatus.Incomplete);
+
+    // creating a new session
+    const sessionId = `q-${generateId()}`;
+    const newSession: QuizSession = {
+      deckInSession: quizDeck,
+      totalCardCount: totalCards,
+      currentCardIndex: 0,
+      sessionStartTime: Date.now(),
+      statusPerCard: statusPerCardArray
+    }
+
+    await storage.set(sessionId, newSession);
+
+    // let us return the first card and the session
+    return {
+      success: true,
+      firstCardId: quizDeck.cards?.[0].id,
+      session: newSession,
+      firstIndex: 0
+    }
+});
+
+
+resolver.define('updateCardStatus', async (req) => {
+  const { currentIndex, incorrect, correct, skip, hint, sessionId } = req.payload;
+  
+  const session = await storage.get(sessionId);
+    if (!session) {
+      return {
+        success: false,
+        error: `No session found with id: ${sessionId}`
+      };
+    }
+
+  // check if current index is less than total length
+  if (currentIndex >= session.totalCardCount) {
+    return {
+      success: false,
+      error: 'out of index'
+    }
+  }
+
+  if (skip) {
+    session.statusPerCard[currentIndex] = QuizSessionCardStatus.Skip
+  } else if (hint) {
+    session.statusPerCard[currentIndex] = QuizSessionCardStatus.Hint
+  } else if (correct) {
+    session.statusPerCard[currentIndex] = QuizSessionCardStatus.Correct
+  } else if (incorrect) {
+    session.statusPerCard[currentIndex] = QuizSessionCardStatus.Incorrect
+  }
+
+  // now let us return the next card
+  // check if quiz has finished
+  const newIndex = currentIndex + 1;
+  if (newIndex == session.totalCardCount) {
+    return {
+      success: true,
+      message: 'quiz is finished'
+    }
+  } else {
+    // quiz hasnt finished so we return the next card
+    return {
+      success: true,
+      nextIndex: newIndex,
+      nextCardId: session.deckInSession.cards?.[newIndex].id
+    }
+  }
+}); 
+
+resolver.define('endStudySession', async (req) => {
+  const { sessionId } = req.payload;
+
+  const session = await storage.get(sessionId);
+    if (!session) {
+      return {
+        success: false,
+        error: `No session found with id: ${sessionId}`
+      };
+    }
+
+  // create a new quiz result object
+  const newQuizResult: QuizResult = {
+    deckInArchive: session.deckInSession,
+    statusPerCard: session.statusPerCard,
+    countCards: session.totalCardCount,
+    countIncomplete: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Incomplete).length,
+    countIncorrect: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Incorrect).length,
+    countCorrect: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Correct).length,
+    countHints: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Hint).length,
+    countSkip: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Skip).length,
+  }
+});
 
 // resolver.define('startQuizSession', async (req) => {});
 // resolver.define('endQuizSession', async (req) => {});
