@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { invoke, view } from '@forge/bridge';
+import { Alert, Collapse, IconButton } from '@mui/material';
 import './ContextMenu.css';
 
 function ContextMenu() {
@@ -9,6 +10,7 @@ function ContextMenu() {
   const [closeError, setCloseError] = useState(true);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+
 
 
 
@@ -56,6 +58,7 @@ function ContextMenu() {
       setLoading(false);
       console.log("Finished Flashcard Generation. Loading State:", loading);
     }
+
   };
 
   const handleSaveFlashcard = async (flashcard) => {
@@ -74,7 +77,9 @@ function ContextMenu() {
       if (response && response.success) {
         setSaveSuccess(true);
         console.log("Flashcard Saved Successfully");
+        setGeneratedFlashcards(generatedFlashcards.filter(fc => fc !== flashcard));
         setTimeout(() => setSaveSuccess(false), 2000); // Display success message briefly
+
       } else {
         setErrorMessage(response.error);
         console.log("Error Saving Flashcard:", response.error);
@@ -83,6 +88,7 @@ function ContextMenu() {
       setErrorMessage('Failed to save flashcard');
       console.error("Exception in handleSaveFlashcard:", error);
     }
+
   };
 
   const handleClose = () => {
@@ -94,7 +100,8 @@ function ContextMenu() {
 
   return (
     <div className='context-menu'>
-      <h2>Context Menu</h2>
+
+      <h2>FLASH - Custom AI Flashcard Generator!</h2>
       <div className="button-group">
         <button className="generate-button" onClick={handleGenerateFlashcards} disabled={loading}>
           {loading ? 'Generating...' : 'Generate Flashcards'}
@@ -113,9 +120,13 @@ function ContextMenu() {
                 <div className="card-link">
                   <h4 className="card-front">{flashcard.question || 'No front available'}</h4>
                   <h4 className="card-back">{flashcard.answer || 'No back available'}</h4>
+
                   <div className="card-button">
                     <button onClick={() => handleSaveFlashcard(flashcard)}>Save Flashcard</button>
                   </div>
+                  {saveSuccess &&
+                    <Alert severity="success"> New flashcard created successfully! </Alert>
+                  }
                 </div>
               </li>
             ))}
@@ -125,6 +136,7 @@ function ContextMenu() {
         <p>No flashcards generated yet.</p>
       )}
     </div>
+
   );
 }
 

@@ -152,11 +152,11 @@ function globalPageModule() {
   useEffect(() => {
     if (deleteDeckFromDisplaySuccess) {
       setShowDeleteSuccessAlert(true);
-  
+
       const timer = setTimeout(() => {
         setShowDeleteSuccessAlert(false);
       }, 2000); // Adjust the duration as needed
-  
+
       return () => clearTimeout(timer);
     }
   }, [deleteDeckFromDisplaySuccess]);
@@ -324,6 +324,7 @@ function globalPageModule() {
 
   //************************** STUDY MODE FUNCTIONS *****************************/
   const studyMode = () => {
+    loadDecks();
     console.log('Entering Study Mode'); // Log when entering study mode
     setIsStudyMode(true);
     setBreadcrumbItems(prevItems => [
@@ -358,8 +359,10 @@ function globalPageModule() {
 
   //************************** QUIZ MODE FUNCTIONS *****************************/
   const quizMode = () => {
+    loadDecks();
     console.log('Entering Quiz Mode'); // Log when entering quiz mode
     setIsQuizMode(true);
+
     setBreadcrumbItems(prevItems => [
         ...prevItems,
         { href: '#', text: 'Quiz Mode' }
@@ -367,6 +370,7 @@ function globalPageModule() {
   };
 
   if (isQuizMode) {
+    //loadDecks();
     return (
       <div>
         <Breadcrumbs>
@@ -382,6 +386,7 @@ function globalPageModule() {
                   goBackToDeck();
                 }
               }}
+              // className="breadcrumb-item"
             />
           ))}
         </Breadcrumbs>
@@ -391,15 +396,19 @@ function globalPageModule() {
   }
 
   if (selectedDeck) {
+    //loadDecks();
     return (
-      <div>
+      <div >
         <Breadcrumbs>
           {breadcrumbItems.map((item, index) => (
             <BreadcrumbsItem
               key={index}
               href={item.href}
               text={item.text}
-              onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined} />
+              onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined}
+              // className="breadcrumb-item"
+              />
+
           ))}
         </Breadcrumbs>
         <DeckDisplay deck={selectedDeck} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
@@ -482,10 +491,10 @@ function globalPageModule() {
                   </ModalHeader>
                   <ModalBody>
                       <p>Are you sure you want to delete all instances of the flashcard? This action cannot be undone.</p>
-                      {deleteSuccess && 
+                      {deleteSuccess &&
                         <Alert severity="success"> Flashcard deleted successfully! </Alert>
                       }
-                      {errorMessage && 
+                      {errorMessage &&
                         <Alert severity="error">{errorMessage} </Alert>
                       }
                   </ModalBody>
@@ -518,10 +527,10 @@ function globalPageModule() {
                   </ModalHeader>
                   <ModalBody>
                       <p>Are you sure you want to delete all instances of the deck? This action cannot be undone.</p>
-                      {deleteSuccess && 
+                      {deleteSuccess &&
                         <Alert severity="success">Deck deleted successfully!</Alert>
                       }
-                      {errorMessage && 
+                      {errorMessage &&
                         <Alert severity="error"> {errorMessage} </Alert>
                       }
                   </ModalBody>
