@@ -62,3 +62,8 @@
 .global-page-create-flashcard-button:hover {
   background-color: rgb(1,85,204);
 }
+
+.breadcrumb-item {
+  font-weight: bold;
+  font-size: 18px; /* Adjust as needed */
+}
