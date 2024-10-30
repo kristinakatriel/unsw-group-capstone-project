@@ -53,7 +53,7 @@ const QuizMode = ({ deck }) => {
       const response = await invoke('updateCardStatusQuiz', {
         sessionId,
         currentIndex: currentCardIndex,
-        [status]: true,
+        status: status,
       });
 
       if (response.success) {
@@ -75,6 +75,7 @@ const QuizMode = ({ deck }) => {
 
   const handleCorrect = () => {
     setCardStatus('correct');
+    updateCardStatus('correct');
     setTimeout(() => {
       goToNextCard();
       setCardStatus(null); 
@@ -83,6 +84,26 @@ const QuizMode = ({ deck }) => {
 
   const handleIncorrect = () => {
     setCardStatus('incorrect');
+    updateCardStatus('incorrect');
+    setTimeout(() => {
+      goToNextCard();
+      setCardStatus(null); 
+    }, 1000);
+  };
+
+  const handleSkip = () => {
+    setCardStatus('skip');
+    updateCardStatus('skip');
+    setTimeout(() => {
+      goToNextCard();
+      setCardStatus(null); 
+    }, 1000);
+  };
+
+  const handleHint = () => {
+    setCardStatus('hint');
+    updateCardStatus('hint');
+    openHintModal();
     setTimeout(() => {
       goToNextCard();
       setCardStatus(null); 
@@ -105,11 +126,6 @@ const QuizMode = ({ deck }) => {
 
   const toggleFlip = () => {
     setIsFlipped((prevFlipped) => !prevFlipped);
-  };
-
-  const handleHintClick = (event) => {
-    event.stopPropagation();
-    openHintModal();
   };
 
   const formatTime = (seconds) => {

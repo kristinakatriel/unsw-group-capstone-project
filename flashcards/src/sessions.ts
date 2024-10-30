@@ -56,7 +56,7 @@ export const startQuizSession = async (req: ResolverRequest) => {
   
   
   export const updateCardStatusQuiz = async (req: ResolverRequest) => {
-    const { currentIndex, incorrect, correct, skip, hint, sessionId } = req.payload;
+    const { currentIndex, status, sessionId } = req.payload;
     
     const session = await storage.get(sessionId);
       if (!session) {
@@ -74,13 +74,13 @@ export const startQuizSession = async (req: ResolverRequest) => {
       }
     }
   
-    if (skip) {
+    if (status == 'skip') {
       session.statusPerCard[currentIndex] = QuizSessionCardStatus.Skip
-    } else if (hint) {
+    } else if (status == 'hint') {
       session.statusPerCard[currentIndex] = QuizSessionCardStatus.Hint
-    } else if (correct) {
+    } else if (status == 'correct') {
       session.statusPerCard[currentIndex] = QuizSessionCardStatus.Correct
-    } else if (incorrect) {
+    } else if (status == 'incorrect') {
       session.statusPerCard[currentIndex] = QuizSessionCardStatus.Incorrect
     }
   
