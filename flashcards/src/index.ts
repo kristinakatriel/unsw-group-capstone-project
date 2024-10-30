@@ -6,6 +6,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { basename } from 'path';
 import { create } from 'domain';
 import { Session } from 'inspector/promises';
+import { userInfo } from 'os';
 
 
 const resolver = new Resolver();
@@ -575,8 +576,10 @@ resolver.define('addGeneratedFlashcards', async (req) => {
 
 resolver.define('startQuizSession', async (req) => {
   const { deckId } = req.payload;
+  const accountId = req.context.accountId;
+  const user = await storage.get(`u-${accountId}`);
 
-  const quizDeck = await storage.get(deckId) as Deck | undefined;
+  const quizDeck = user.data[deckId].dynamicDeck;
 
     if (!quizDeck) {
         return {
@@ -704,14 +707,18 @@ resolver.define('endQuizSession', async (req) => {
       user.data[deckId] = newDynamicDeck
     }
     // now let us add the session to the list 
-    user.data.deckId.quizSessions.push(newQuizResult);
+    user.data[deckId].quizSessions.push(newQuizResult);
+
+    await storage.delete(sessionId);
   }
 });
 
 resolver.define('startStudySession', async (req) => {
   const { deckId } = req.payload;
+  const accountId = req.context.accountId;
+  const user = await storage.get(`u-${accountId}`);
 
-  const studyDeck = await storage.get(deckId) as Deck | undefined;
+  const studyDeck = user.data[deckId].dynamicDeck;
 
     if (!studyDeck) {
         return {
@@ -795,7 +802,7 @@ resolver.define('updateCardStatusStudy', async (req) => {
 });
 
 resolver.define('endStudySession', async (req) => {
-  const { sessionId } = req.payload;
+  const { sessionId } = req.payload
 
   const session = await storage.get(sessionId);
     if (!session) {
@@ -817,17 +824,23 @@ resolver.define('endStudySession', async (req) => {
   if (accountId) {
     const user = await storage.get(`u-${accountId}`);
     const deckId = session.deckInSession.id;
+    const reorderedDeck = session.deck
     // check if dynamic dict does not exist 
     if (!(deckId in user.data)) {
       const newDynamicDeck: DynamicData = {
-        dynamicDeck: session.deck,
+        dynamicDeck: reorderedDeck,
         quizSessions: [],
         studySessions: []
       }
       user.data[deckId] = newDynamicDeck
+    } else {
+      user.data.deckId.dynamicDeck = reorderedDeck
     }
     // now let us add the session to the list 
-    user.data.deckId.quizSessions.push(newStudyResult);
+    user.data.deckId.studySessions.push(newStudyResult);
+
+    // now let us delete session id
+    await storage.delete(sessionId);
   }
 });
 
