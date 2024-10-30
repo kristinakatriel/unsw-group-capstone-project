@@ -79,7 +79,8 @@ const initUserData = async (accountId: string) => {
     const newUser = {
       id: userDataKey,
       deckIds: [],
-      cardIds: []
+      cardIds: [],
+      data: {}
     };
 
     await storage.set(userDataKey, newUser);
@@ -688,6 +689,23 @@ resolver.define('endQuizSession', async (req) => {
     countHints: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Hint).length,
     countSkip: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Skip).length,
   }
+
+  const accountId = req.context.accountId;
+  if (accountId) {
+    const user = await storage.get(`u-${accountId}`);
+    const deckId = session.deckInSession.id;
+    // check if dynamic dict does not exist 
+    if (!(deckId in user.data)) {
+      const newDynamicDeck: DynamicData = {
+        dynamicDeck: session.deck,
+        quizSessions: [],
+        studySessions: []
+      }
+      user.data[deckId] = newDynamicDeck
+    }
+    // now let us add the session to the list 
+    user.data.deckId.quizSessions.push(newQuizResult);
+  }
 });
 
 resolver.define('startStudySession', async (req) => {
@@ -776,7 +794,7 @@ resolver.define('updateCardStatusStudy', async (req) => {
 
 });
 
-resolver.define('endQuizSession', async (req) => {
+resolver.define('endStudySession', async (req) => {
   const { sessionId } = req.payload;
 
   const session = await storage.get(sessionId);
@@ -793,6 +811,23 @@ resolver.define('endQuizSession', async (req) => {
     statusPerCard: session.statusPerCard,
     countNegative: session.statusPerCard.filter((status: StudySessionCardStatus) => status === StudySessionCardStatus.Negative).length,
     countPositive: session.statusPerCard.filter((status: StudySessionCardStatus) => status === StudySessionCardStatus.Positive).length
+  }
+
+  const accountId = req.context.accountId;
+  if (accountId) {
+    const user = await storage.get(`u-${accountId}`);
+    const deckId = session.deckInSession.id;
+    // check if dynamic dict does not exist 
+    if (!(deckId in user.data)) {
+      const newDynamicDeck: DynamicData = {
+        dynamicDeck: session.deck,
+        quizSessions: [],
+        studySessions: []
+      }
+      user.data[deckId] = newDynamicDeck
+    }
+    // now let us add the session to the list 
+    user.data.deckId.quizSessions.push(newStudyResult);
   }
 });
 
