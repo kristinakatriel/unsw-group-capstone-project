@@ -84,7 +84,7 @@ export const deleteTag = async (req: ResolverRequest) => {
     for (const relTagId of tag.tagIds) {
         const relTag = await storage.get(relTagId);
         if (relTag) {
-            relTag.tagIds = relTag.tagIds.filter((id: String) => id !== tagId);
+            relTag.tagIds = relTag.tagIds.filter((id: string) => id !== tagId);
             await storage.set(relTagId, relTag);
         }
     }
@@ -92,7 +92,7 @@ export const deleteTag = async (req: ResolverRequest) => {
     for (const userId of tag.userIds) {
         const user = await storage.get(userId);
         if (user) {
-            user.tagIds = user.tagIds.filter((id: String) => id !== tagId);
+            user.tagIds = user.tagIds.filter((id: string) => id !== tagId);
             await storage.set(userId, user);
         }
     }
@@ -221,7 +221,7 @@ export const removeTagFromCard = async (req: ResolverRequest) => {
         };
     }
 
-    tag.cardIds = tag.cardIds?.filter((id: String) => id !== cardId) || [];
+    tag.cardIds = tag.cardIds?.filter((id: string) => id !== cardId) || [];
 
     await storage.set(tagId, tag);
 
@@ -245,7 +245,7 @@ export const removeTagFromDeck = async (req: ResolverRequest) => {
         };
     }
 
-    tag.deckIds = tag.deckIds?.filter((id: String) => id !== deckId) || [];
+    tag.deckIds = tag.deckIds?.filter((id: string) => id !== deckId) || [];
 
     await storage.set(deckId, deck);
 
