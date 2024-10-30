@@ -7,8 +7,6 @@ import {
 } from './types';
 import { generateId, clearStorage, getUserName, initUserData } from './helpers'
 
-
-
 export const startQuizSession = async (req: ResolverRequest) => {
     const { deckId } = req.payload;
     const accountId = req.context.accountId;
