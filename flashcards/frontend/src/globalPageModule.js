@@ -323,8 +323,28 @@ function globalPageModule() {
   };
 
   //************************** STUDY MODE FUNCTIONS *****************************/
-  const studyMode = () => {
-    loadDecks();
+  const studyMode = async () => {
+    //loadDecks();
+
+    console.log("selected deck going into quiz mode", selectedDeck);
+    const id = selectedDeck.id;
+    console.log("id", id);
+
+    try {
+      const response = await invoke('getDeck', { deckId: id });
+
+      if (response.success) {
+        console.log("Deck retrieved successfully:", response.deck);
+        setSelectedDeck(response.deck)
+      } else {
+        console.error("Error retrieving deck:", response.error);
+        return null;
+      }
+    } catch (error) {
+      console.error("Exception in fetchDeck:", error);
+      return null;
+    }
+    console.log("selected deck", selectedDeck);
     console.log('Entering Study Mode'); // Log when entering study mode
     setIsStudyMode(true);
     setBreadcrumbItems(prevItems => [
@@ -358,8 +378,26 @@ function globalPageModule() {
   }
 
   //************************** QUIZ MODE FUNCTIONS *****************************/
-  const quizMode = () => {
-    loadDecks();
+  const quizMode = async () => {
+    console.log("selected deck going into quiz mode", selectedDeck);
+    const id = selectedDeck.id;
+    console.log("id", id);
+
+    try {
+      const response = await invoke('getDeck', { deckId: id });
+
+      if (response.success) {
+        console.log("Deck retrieved successfully:", response.deck);
+        setSelectedDeck(response.deck)
+      } else {
+        console.error("Error retrieving deck:", response.error);
+        return null;
+      }
+    } catch (error) {
+      console.error("Exception in fetchDeck:", error);
+      return null;
+    }
+    console.log("selected deck", selectedDeck);
     console.log('Entering Quiz Mode'); // Log when entering quiz mode
     setIsQuizMode(true);
 

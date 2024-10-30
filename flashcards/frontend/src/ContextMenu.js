@@ -10,6 +10,7 @@ function ContextMenu() {
   const [closeError, setCloseError] = useState(true);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [savedFlashcardIndex, setSavedFlashcardIndex] = useState(null); // Track saved flashcard index
 
 
 
@@ -61,7 +62,7 @@ function ContextMenu() {
 
   };
 
-  const handleSaveFlashcard = async (flashcard) => {
+  const handleSaveFlashcard = async (flashcard, index) => {
     console.log("Saving Flashcard:", flashcard);
     setErrorMessage('');
 
@@ -77,8 +78,15 @@ function ContextMenu() {
       if (response && response.success) {
         setSaveSuccess(true);
         console.log("Flashcard Saved Successfully");
-        setGeneratedFlashcards(generatedFlashcards.filter(fc => fc !== flashcard));
-        setTimeout(() => setSaveSuccess(false), 2000); // Display success message briefly
+        setSavedFlashcardIndex(index); // Set the index of the flashcard being saved
+        setTimeout(() => setSaveSuccess(false), 1000); // Display success message briefly
+        // Delay updating `generatedFlashcards` by 1 second
+        setTimeout(() => {
+          setGeneratedFlashcards(generatedFlashcards.filter(fc => fc !== flashcard));
+          setSavedFlashcardIndex(null); // Reset the saved flashcard index
+        }, 1000); // Delay of 1 second (1000 ms)
+
+
 
       } else {
         setErrorMessage(response.error);
@@ -122,11 +130,11 @@ function ContextMenu() {
                   <h4 className="card-back">{flashcard.answer || 'No back available'}</h4>
 
                   <div className="card-button">
-                    <button onClick={() => handleSaveFlashcard(flashcard)}>Save Flashcard</button>
+                    <button onClick={() => handleSaveFlashcard(flashcard, index)}>Save Flashcard</button>
                   </div>
-                  {saveSuccess &&
-                    <Alert severity="success"> New flashcard created successfully! </Alert>
-                  }
+                  {saveSuccess && savedFlashcardIndex === index && (
+                    <Alert severity="success">New flashcard created successfully!</Alert>
+                  )}
                 </div>
               </li>
             ))}
