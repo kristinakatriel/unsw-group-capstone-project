@@ -1,7 +1,7 @@
 import Resolver from '@forge/resolver';
 import api, { QueryApi, route, startsWith, storage } from '@forge/api';
 import { Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
-         QuizResult, StudyResult, QuizSession, StudySession, QuizSessionCardStatus} from './types';
+         QuizResult, StudyResult, QuizSession, StudySession, QuizSessionCardStatus, StudySessionCardStatus} from './types';
 import { v4 as uuidv4 } from 'uuid';
 import { basename } from 'path';
 import { create } from 'domain';
@@ -572,7 +572,7 @@ resolver.define('addGeneratedFlashcards', async (req) => {
 
 // COMING SOON
 
-resolver.define('startStudySession', async (req) => {
+resolver.define('startQuizSession', async (req) => {
   const { deckId } = req.payload;
 
   const quizDeck = await storage.get(deckId) as Deck | undefined;
@@ -618,7 +618,7 @@ resolver.define('startStudySession', async (req) => {
 });
 
 
-resolver.define('updateCardStatus', async (req) => {
+resolver.define('updateCardStatusQuiz', async (req) => {
   const { currentIndex, incorrect, correct, skip, hint, sessionId } = req.payload;
   
   const session = await storage.get(sessionId);
@@ -657,6 +657,7 @@ resolver.define('updateCardStatus', async (req) => {
     }
   } else {
     // quiz hasnt finished so we return the next card
+    session.currentCardIndex = newIndex;
     return {
       success: true,
       nextIndex: newIndex,
@@ -665,7 +666,7 @@ resolver.define('updateCardStatus', async (req) => {
   }
 }); 
 
-resolver.define('endStudySession', async (req) => {
+resolver.define('endQuizSession', async (req) => {
   const { sessionId } = req.payload;
 
   const session = await storage.get(sessionId);
@@ -689,8 +690,111 @@ resolver.define('endStudySession', async (req) => {
   }
 });
 
-// resolver.define('startQuizSession', async (req) => {});
-// resolver.define('endQuizSession', async (req) => {});
+resolver.define('startStudySession', async (req) => {
+  const { deckId } = req.payload;
+
+  const studyDeck = await storage.get(deckId) as Deck | undefined;
+
+    if (!studyDeck) {
+        return {
+            success: false,
+            error: 'Deck Not found',
+        };
+    }
+  
+    const totalCards = studyDeck.cards?.length
+
+    // check if length = 0
+    if (totalCards == 0) {
+      return {
+        success: false, 
+        error: 'cannot enter quiz mode if deck has no cards'
+      }
+    }
+
+    const statusPerCardArray: StudySessionCardStatus[] = Array(totalCards).fill(QuizSessionCardStatus.Incomplete);
+
+    const sessionId = `ss-${generateId()}`;
+    const newStudySession: StudySession = {
+      deckInSession: studyDeck,
+      statusPerCard: statusPerCardArray,
+      totalCardCount: totalCards,
+      currentCardIndex: 0,
+      sessionStartTime: Date.now()
+    }
+    await storage.set(sessionId, newStudySession);
+
+    return {
+      success: true,
+      firstCardId: studyDeck.cards?.[0].id,
+      session: newStudySession,
+      firstIndex: 0
+    }
+});
+
+resolver.define('updateCardStatusStudy', async (req) => {
+  const { currentIndex, positive, negative, sessionId } = req.payload;
+
+  const session = await storage.get(sessionId);
+    if (!session) {
+      return {
+        success: false,
+        error: `No session found with id: ${sessionId}`
+      };
+    }
+
+  // check if current index is less than total length
+  if (currentIndex >= session.totalCardCount) {
+    return {
+      success: false,
+      error: 'out of index'
+    }
+  }
+
+  if (positive) {
+    session.statusPerCard[currentIndex] = StudySessionCardStatus.Positive
+  }
+  if (negative) {
+    session.statusPerCard[currentIndex] = StudySessionCardStatus.Negative
+  }
+
+  const newIndex = currentIndex + 1
+  if (newIndex == session.totalCardCount) {
+    return {
+      success: true,
+      message: 'study session is finished'
+    }
+  } else {
+    // study session hasnt finished so we return the next card
+    session.currentCardIndex = newIndex;
+    return {
+      success: true,
+      nextIndex: newIndex,
+      nextCardId: session.deckInSession.cards?.[newIndex].id
+    }
+  }
+
+});
+
+resolver.define('endQuizSession', async (req) => {
+  const { sessionId } = req.payload;
+
+  const session = await storage.get(sessionId);
+    if (!session) {
+      return {
+        success: false,
+        error: `No session found with id: ${sessionId}`
+      };
+    }
+  
+  // create a new study result 
+  const newStudyResult: StudyResult = {
+    deckInArchive: session.deckInSession,
+    statusPerCard: session.statusPerCard,
+    countNegative: session.statusPerCard.filter((status: StudySessionCardStatus) => status === StudySessionCardStatus.Negative).length,
+    countPositive: session.statusPerCard.filter((status: StudySessionCardStatus) => status === StudySessionCardStatus.Positive).length
+  }
+});
 
 
 

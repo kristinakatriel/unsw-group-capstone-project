@@ -8,7 +8,8 @@ export enum QuizSessionCardStatus {
 
 export enum StudySessionCardStatus {
     Positive,
-    Negative
+    Negative,
+    Incomplete
 }
 
 //////////////////////////////////////////////////
