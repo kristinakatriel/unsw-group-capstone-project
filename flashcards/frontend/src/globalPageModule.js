@@ -473,23 +473,20 @@ function globalPageModule() {
         renderDecksList(flashdecks)
       )}
 
-      <div className='global-page-recents'>
-        Suggested
-      </div>
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : flashcards.length === 0 ? (
-        <p>Nothing recently accessed. Create some flashcards!.</p>
-      ) : (
-        renderFlashcardsList(flashcards)
-      )}
-
       <div className='global-page-flashcards'>Flashcards<button className='global-page-create-flashcard-button' onClick={createFlashcardGlobal}>+ Create Flashcard</button></div>
       {loading ? (
         <p>Loading...</p>
       ) : flashcards.length === 0 ? (
         <p>No flashcards created. Create a flashcard to display here.</p>
+      ) : (
+        renderFlashcardsList(flashcards)
+      )}
+
+      <div className='global-page-recents'>Suggested</div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : flashcards.length === 0 ? (
+        <p>Nothing recently accessed. Create some flashcards!.</p>
       ) : (
         renderFlashcardsList(flashcards)
       )}
