@@ -45,7 +45,6 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
       setFront('');
       setBack('');
       setHint('');
-      setLocked(!locked);
 
       console.log('Flashcard saved?:', response.card);
       if (response && response.success) {
