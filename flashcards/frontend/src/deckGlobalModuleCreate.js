@@ -87,7 +87,6 @@ function CreateDeckGlobal({ closeDeckModal }) {
         setDeckTitle('');
         setDescription('');
         setSelectedFlashcards([]);
-        setLocked(!locked);
         setTimeout(() => {
           closeDeckModal(); // Delay closing modal
         }, 1000); // Show success message for 2 seconds before closing
