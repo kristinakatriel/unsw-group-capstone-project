@@ -74,6 +74,8 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
     useEffect(() => {
         if (saveSuccess && errorMessage === '') {
             setShowSuccessAlert(true);
+            console.log('save message shown, here is the current deck? ', deck);
+            console.log('save message shown, here is the updated deck', updatedDeck);
 
             const timer = setTimeout(() => {
                 setShowSuccessAlert(false);
@@ -87,11 +89,11 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
     useEffect(() => {
         if (errorMessage) {
             setShowErrorAlert(true);
-        
+
             const errorTimer = setTimeout(() => {
             setShowErrorAlert(false);
             }, 2000); // Show error alert for 2 seconds
-        
+
             return () => clearTimeout(errorTimer); // Clear timeout if component unmounts
         }
       }, [errorMessage]);
@@ -131,7 +133,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
     const closeFlashcardModal = async (newFlashcard) => {
         // Log the initiation of the modal closing process
         console.log('Closing flashcard modal. New flashcard:', newFlashcard);
-        
+
         setIsCreateFlashcardOpen(false);
 
         if (newFlashcard) {
@@ -150,6 +152,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
 
                 // Log the response from the invoke call
                 console.log('Response from addCardToDeck:', addCardResponse);
+               //console.log('Previous deck state before update:', prevDeck);
 
                 if (addCardResponse.success) {
                     // Update the deck state to include the new flashcard
@@ -164,9 +167,12 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
                             ...prevDeck,
                             cards: updatedCards,
                         };
+
+
                     });
 
                     console.log(`Flashcard ${cardId} added to deck ${deckId}`);
+                    console.log("updated deck is", updatedDeck);
                 } else {
                     console.error(`Failed to add flashcard ${cardId} to deck:`, addCardResponse.error);
                 }
@@ -177,6 +183,26 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
             console.warn('No new flashcard was provided.');
         }
 
+        try {
+            // Fetch the updated deck from the resolver
+            const deckResponse = await invoke('getDeck', {
+                deckId: updatedDeck.id,  // Use the current deck ID
+            });
+
+            if (deckResponse.success) {
+                // Update the deck with the fetched deck data
+                setUpdatedDeck(deckResponse.deck);
+            } else {
+                console.error('Failed to fetch the updated deck:', deckResponse.error);
+            }
+        } catch (error) {
+            console.error('Error fetching the updated deck:', error);
+        }
+
+
+
+        console.log("deck after a flashcard has been addded", updatedDeck);
+        //setUpdatedDeck();
         //loadDecks();
     };
 
@@ -553,7 +579,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
         {isAddFlashcardModalOpen && (
             <ModalDialog heading="Add Flashcards To Deck" onClose={() => closeAddDeckModal(true)}>
 
-                <AddFlashcardsToDeck deck={deck} closeAddDeckModal = {closeAddDeckModal}/>
+                <AddFlashcardsToDeck deck={updatedDeck} closeAddDeckModal = {closeAddDeckModal}/>
             </ModalDialog>
         )}
         {/* Flashcard Edit Modal */}

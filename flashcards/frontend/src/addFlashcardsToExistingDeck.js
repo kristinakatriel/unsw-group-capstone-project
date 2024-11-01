@@ -4,8 +4,8 @@ import './globalPageModule.js';
 import './deckGlobalModuleCreate.css';
 
 function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
-  // Log the deck prop to see its contents
-  //console.log('Deck prop received:', deck);
+
+  console.log("deck passed in", deck);
   const [selectedFlashcards, setSelectedFlashcards] = useState([]);
   const [flashcards, setFlashcards] = useState([]);
 
@@ -26,9 +26,13 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
       try {
         console.log('Fetching flashcards...');
         const response = await invoke('getAllFlashcards', {});
+        console.log("responce cards", response.cards);
         if (response.success) {
           // Filter out flashcards already in the deck
           const flashcardsNotInDeck = response.cards.filter((flashcard) => !deck.cards.some(deckFlashcard => deckFlashcard.id === flashcard.id));
+
+          console.log("flashcardsNotInDeck", flashcardsNotInDeck);
+
           //console.log('Flashcards fetched successfully:', response.cards);
           setFlashcards(flashcardsNotInDeck);
         } else {
@@ -54,25 +58,8 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
 
 
     try {
-    //     for (const cardId of selectedFlashcards) {
-    //       console.log(`Processing flashcard with ID: ${cardId} for deck ID: ${deck.id}`);
-    //       const addCardResponse = await invoke('addCardToDeck', {
-    //         deckId: deck.id,
-    //         cardId: cardId
-    //       });
 
-    //       console.log('Response from addCardToDeck:', addCardResponse);
-
-    //       if (addCardResponse.success) {
-    //         console.log(`Success: Flashcard ${cardId} added to deck ${deck.id}`);
-    //       } else {
-    //         console.error(`Failed to add flashcard ${cardId} to deck:`, addCardResponse.error);
-    //       }
-    //     }
-
-      // setTimeout(() => {
-      closeAddDeckModal(selectedFlashcards), 
-        // 1000});
+      closeAddDeckModal(selectedFlashcards),
 
       console.log('Clearing selected flashcards after successful addition.');
       setSelectedFlashcards([]); // Clear selected flashcards after saving

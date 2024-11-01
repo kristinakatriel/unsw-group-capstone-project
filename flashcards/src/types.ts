@@ -1,3 +1,12 @@
+
+import Resolver from '@forge/resolver';
+
+
+export type ResolverFunction = Parameters<Resolver['define']>[1];
+export type ResolverRequest = Parameters<ResolverFunction>[0];
+
+//////////////////////////////////////////////////
+
 enum QuizSessionCardStatus {
     Incomplete,
     Correct,
@@ -29,8 +38,8 @@ export interface Deck {
     description?: string;
     owner: string;
     name?: string;
-    cards?: Card[];
-    cardIds?: number[];
+    cards: Card[];
+    cardIds?: string[];
     size: number;
     locked: boolean
 }
@@ -41,8 +50,8 @@ export interface Tag {
     description?: string;
     owner: string;
     name?: string;
-    deckIds: number[];
-    cardIds: number[];
+    deckIds: string[];
+    cardIds: string[];
 }
 
 export interface User {
@@ -63,8 +72,9 @@ export interface DynamicData {
 }
 
 export interface QuizResult {
+    sessionId: string;
     deckInArchive: Deck;
-    statusPerCard: QuizSessionCardStatus[];     
+    statusPerCard: QuizSessionCardStatus[];
     countCards: number;
     countIncomplete: number;
     countCorrect: number;
@@ -74,10 +84,18 @@ export interface QuizResult {
 }
 
 export interface StudyResult {
+    sessionId: string;
     deckInArchive: Deck;
-    statusPerCard: StudySessionCardStatus[];     
+    statusPerCard: StudySessionCardStatus[];
     countPositive: number;
     countNegative: number;
+}
+
+//////////////////////////////////////////////////
+
+export interface SpaceSessions {
+    quizSessions: string[];
+    studySessions: string[];
 }
 
 export interface QuizSession {
@@ -96,12 +114,9 @@ export interface StudySession {
     sessionStartTime: number;
 }
 
+//////////////////////////////////////////////////
+
 export interface GenFlashcardsPair {
     question: string,
     answer: string
 }
-
-// NOTE: to be used later
-// export enum AICardsThreshold {
-//     minimumLength = 2
-// }

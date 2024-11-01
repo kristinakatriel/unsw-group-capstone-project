@@ -174,6 +174,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
 
       <div className="form-group">
         <label>Select Flashcards</label>
+        <div className='flashcards-select-scroll'>
         {flashcards.length > 0 ? (
           flashcards.map((flashcard) => (
             <div key={flashcard.id}>
@@ -191,6 +192,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
         ) : (
           <p>No flashcards available to select.</p>
         )}
+        </div>
       </div>
       {saveSuccess && 
         <Alert severity="success"> New deck created successfully! </Alert>

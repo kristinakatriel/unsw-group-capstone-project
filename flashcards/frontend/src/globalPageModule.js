@@ -112,7 +112,8 @@ function globalPageModule() {
       console.log("FLASHCARDTODELETE");
       if (response.success) {
         setDeleteSuccess(true);
-        setFlashcards((prevFlashcards) => prevFlashcards.filter((card) => card.id !== flashcardToDelete.id));
+        // setFlashcards((prevFlashcards) => prevFlashcards.filter((card) => card.id !== flashcardToDelete.id));
+        loadFlashcards();
         setTimeout(() => {
           closeDeleteFlashcardConfirm(); // Delay closing modal
         }, 400); // Show message for 2 seconds before closing
@@ -132,7 +133,8 @@ function globalPageModule() {
       const response = await invoke('deleteDeck', { deckId: deckToDelete.id });
       if (response.success) {
         setDeleteSuccess(true);
-        setDecks((prevDecks) => prevDecks.filter((deck) => deck.id !== deckToDelete.id));
+        // setDecks((prevDecks) => prevDecks.filter((deck) => deck.id !== deckToDelete.id));
+        loadDecks();
         setTimeout(() => {
           closeDeleteDeckConfirm();
         }, 2000); // Show message for 2 seconds before closing
@@ -150,11 +152,11 @@ function globalPageModule() {
   useEffect(() => {
     if (deleteDeckFromDisplaySuccess) {
       setShowDeleteSuccessAlert(true);
-  
+
       const timer = setTimeout(() => {
         setShowDeleteSuccessAlert(false);
       }, 2000); // Adjust the duration as needed
-  
+
       return () => clearTimeout(timer);
     }
   }, [deleteDeckFromDisplaySuccess]);
@@ -181,6 +183,7 @@ function globalPageModule() {
   const loadDecks = async () => {
     try {
       const response = await invoke('getAllDecks', {});
+      console.log(response);
       if (response.success) {
         setDecks(response.decks);
       }
@@ -320,7 +323,28 @@ function globalPageModule() {
   };
 
   //************************** STUDY MODE FUNCTIONS *****************************/
-  const studyMode = () => {
+  const studyMode = async () => {
+    //loadDecks();
+
+    console.log("selected deck going into quiz mode", selectedDeck);
+    const id = selectedDeck.id;
+    console.log("id", id);
+
+    try {
+      const response = await invoke('getDeck', { deckId: id });
+
+      if (response.success) {
+        console.log("Deck retrieved successfully:", response.deck);
+        setSelectedDeck(response.deck)
+      } else {
+        console.error("Error retrieving deck:", response.error);
+        return null;
+      }
+    } catch (error) {
+      console.error("Exception in fetchDeck:", error);
+      return null;
+    }
+    console.log("selected deck", selectedDeck);
     console.log('Entering Study Mode'); // Log when entering study mode
     setIsStudyMode(true);
     setBreadcrumbItems(prevItems => [
@@ -354,10 +378,30 @@ function globalPageModule() {
   }
 
   //************************** QUIZ MODE FUNCTIONS *****************************/
-  const quizMode = () => {
+  const quizMode = async () => {
+    console.log("selected deck going into quiz mode", selectedDeck);
+    const id = selectedDeck.id;
+    console.log("id", id);
+
+    try {
+      const response = await invoke('getDeck', { deckId: id });
+
+      if (response.success) {
+        console.log("Deck retrieved successfully:", response.deck);
+        setSelectedDeck(response.deck)
+      } else {
+        console.error("Error retrieving deck:", response.error);
+        return null;
+      }
+    } catch (error) {
+      console.error("Exception in fetchDeck:", error);
+      return null;
+    }
+    console.log("selected deck", selectedDeck);
     console.log('Entering Quiz Mode'); // Log when entering quiz mode
     // loadDecks();
     setIsQuizMode(true);
+
     setBreadcrumbItems(prevItems => [
         ...prevItems,
         { href: '#', text: 'Quiz Mode' }
@@ -365,6 +409,7 @@ function globalPageModule() {
   };
 
   if (isQuizMode) {
+    //loadDecks();
     return (
       <div>
         <Breadcrumbs>
@@ -380,6 +425,7 @@ function globalPageModule() {
                   goBackToDeck();
                 }
               }}
+              // className="breadcrumb-item"
             />
           ))}
         </Breadcrumbs>
@@ -389,15 +435,19 @@ function globalPageModule() {
   }
 
   if (selectedDeck) {
+    //loadDecks();
     return (
-      <div>
+      <div >
         <Breadcrumbs>
           {breadcrumbItems.map((item, index) => (
             <BreadcrumbsItem
               key={index}
               href={item.href}
               text={item.text}
-              onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined} />
+              onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined}
+              // className="breadcrumb-item"
+              />
+
           ))}
         </Breadcrumbs>
         <DeckDisplay deck={selectedDeck} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
@@ -424,23 +474,20 @@ function globalPageModule() {
         renderDecksList(flashdecks)
       )}
 
-      <div className='global-page-recents'>
-        Suggested
-      </div>
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : flashcards.length === 0 ? (
-        <p>Nothing recently accessed. Create some flashcards!.</p>
-      ) : (
-        renderFlashcardsList(flashcards)
-      )}
-
       <div className='global-page-flashcards'>Flashcards<button className='global-page-create-flashcard-button' onClick={createFlashcardGlobal}>+ Create Flashcard</button></div>
       {loading ? (
         <p>Loading...</p>
       ) : flashcards.length === 0 ? (
         <p>No flashcards created. Create a flashcard to display here.</p>
+      ) : (
+        renderFlashcardsList(flashcards)
+      )}
+
+      <div className='global-page-recents'>Suggested</div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : flashcards.length === 0 ? (
+        <p>Nothing recently accessed. Create some flashcards!.</p>
       ) : (
         renderFlashcardsList(flashcards)
       )}
@@ -480,10 +527,10 @@ function globalPageModule() {
                   </ModalHeader>
                   <ModalBody>
                       <p>Are you sure you want to delete all instances of the flashcard? This action cannot be undone.</p>
-                      {deleteSuccess && 
+                      {deleteSuccess &&
                         <Alert severity="success"> Flashcard deleted successfully! </Alert>
                       }
-                      {errorMessage && 
+                      {errorMessage &&
                         <Alert severity="error">{errorMessage} </Alert>
                       }
                   </ModalBody>
@@ -516,10 +563,10 @@ function globalPageModule() {
                   </ModalHeader>
                   <ModalBody>
                       <p>Are you sure you want to delete all instances of the deck? This action cannot be undone.</p>
-                      {deleteSuccess && 
+                      {deleteSuccess &&
                         <Alert severity="success">Deck deleted successfully!</Alert>
                       }
-                      {errorMessage && 
+                      {errorMessage &&
                         <Alert severity="error"> {errorMessage} </Alert>
                       }
                   </ModalBody>

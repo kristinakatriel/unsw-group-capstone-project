@@ -21,6 +21,8 @@ modules:
       resource: main
       resolver:
         function: resolver
+      #keep viewport size as large until we can figure out how to make the modal bigger
+      viewportSize: large
       title: FLASH - Create Flashcard(s) (AI Generation)
 
   function:
@@ -67,4 +69,3 @@ app:
 
   # storage:
 
-    
