@@ -26,7 +26,6 @@ const titleContainerStyles = xcss({
   gridArea: 'title',
 });
 
-
 function CreateFlashcardGlobal( { closeFlashcardModal }) {
   const [front, setFront] = useState('');
   const [back, setBack] = useState('');

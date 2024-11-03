@@ -498,7 +498,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
               <Modal onClose={closeFlashcardDeleteModal}>
                   <ModalHeader>
                       <Grid gap="space.200" templateAreas={['title close']} xcss={gridStyles}>
-                          <Flex xcss={closeContainerStyles} justifyContent="end">
+                          <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
                               <IconButton
                                   appearance="subtle"
                                   icon={CrossIcon}
@@ -506,7 +506,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
                                   onClick={closeFlashcardDeleteModal}
                               />
                           </Flex>
-                          <Flex xcss={titleContainerStyles} justifyContent="start">
+                          <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
                               <ModalTitle appearance="danger">Are you sure you want to delete this flashcard?</ModalTitle>
                           </Flex>
                       </Grid>
@@ -528,7 +528,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
               <Modal onClose={closeDeckDeleteModal}>
                   <ModalHeader>
                       <Grid gap="space.200" templateAreas={['title close']} xcss={gridStyles}>
-                          <Flex xcss={closeContainerStyles} justifyContent="end">
+                          <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
                               <IconButton
                                   appearance="subtle"
                                   icon={CrossIcon}
@@ -536,7 +536,7 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
                                   onClick={closeDeckDeleteModal}
                               />
                           </Flex>
-                          <Flex xcss={titleContainerStyles} justifyContent="start">
+                          <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
                               <ModalTitle appearance="danger">Are you sure you want to delete this deck?</ModalTitle>
                           </Flex>
                       </Grid>
