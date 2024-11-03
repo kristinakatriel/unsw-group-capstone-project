@@ -113,7 +113,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
             checked={locked} 
             onChange={(e) => setLocked(e.target.checked)} 
           />
-          Check the box if you want no one else to edit and/or delete the deck
+          Check the box if you want no one else to edit and/or delete the card
         </label>
       </div>
 

@@ -15,6 +15,7 @@ import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Alert, Collapse } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import QuizMode from './components/QuizMode';
 import StudyMode from './components/StudyMode';
@@ -79,6 +80,9 @@ function globalPageModule() {
   const [errorMessage, setErrorMessage] = useState('');
   const [deleteDeckFromDisplaySuccess, setDeleteDeckFromDisplaySuccess] = useState(false);
   const [showDeleteSuccessAlert, setShowDeleteSuccessAlert] = useState(false);
+
+  // State for search
+  const [globalPageSearchTerm, setGlobalPageSearchTerm] = useState('');
 
   //************************** DELETION LOGIC *****************************/
   const confirmDeleteFlashcard = (flashcard) => {
@@ -275,13 +279,40 @@ function globalPageModule() {
     //refreshDeckFrontend();  // Load decks when the component mounts ****************************************************************************************************8
   }, []);
 
+  //************************** SEARCH FUNCTIONS *****************************/
+  // Handle search input change
+  const searchGlobalPage = (event) => {
+    setGlobalPageSearchTerm(event.target.value);
+    console.log('Searching:', globalPageSearchTerm);
+  };
+
+  const filteredFlashcards = flashcards.filter((card) => {
+    const searchTerm = globalPageSearchTerm.toLowerCase();
+    return (
+      card.front.toLowerCase().includes(searchTerm) ||
+      card.back.toLowerCase().includes(searchTerm) ||
+      (card.name && card.name.toLowerCase().includes(searchTerm))
+      // Add tags once implemented
+    );
+  });
+  
+  const filteredDecks = flashdecks.filter((deck) => {
+    const searchTerm = globalPageSearchTerm.toLowerCase();
+    return (
+      deck.title.toLowerCase().includes(searchTerm) ||
+      (deck.description && deck.description.toLowerCase().includes(searchTerm)) ||
+      (deck.name && deck.name.toLowerCase().includes(searchTerm))
+      // Add tags once implemented
+    );
+  });
+
   //************************** RENDER FUNCTIONS *****************************/
-  const renderFlashcardsList = (flashcards) => (
-    <CardSlider cards={flashcards} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
+  const renderFlashcardsList = (filteredFlashcards) => (
+    <CardSlider cards={filteredFlashcards} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
   );
 
-  const renderDecksList = (flashdecks) => (
-    <DeckSlider decks={flashdecks} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} />
+  const renderDecksList = (filteredDecks) => (
+    <DeckSlider decks={filteredDecks} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} />
   );
 
   //************************** DECK DISPLAY FUNCTIONS *****************************/
@@ -454,12 +485,30 @@ function globalPageModule() {
       </div>
     );
   }
-
+  
   return (
     <div className='global-page-container'>
-
-      <div className='global-page-headline'><FlashOnIcon className='global-page-flash-icon'/> FLASH</div>
-      <div className='global-page-subheadline'>The Forge App that allows you to create flashcards in a flash</div>
+      <div className="global-page-header">
+        <div className="global-page-headlines">
+          <div className="global-page-headline">
+            <FlashOnIcon className="global-page-flash-icon" /> FLASH
+          </div>
+          <div className="global-page-subheadline">
+            The Forge App that allows you to create flashcards in a flash
+          </div>
+        </div>
+        <div className="global-page-search">
+          <div className="global-page-search-box">
+            <SearchIcon className="global-page-search-icon" />
+            <input
+              type="text"
+              id="search-input"
+              onKeyUp={searchGlobalPage}
+              placeholder="Search..."
+            />
+          </div>
+        </div>
+      </div>
       <Collapse in={showDeleteSuccessAlert} timeout={500}>
         <Alert severity="success">
           Deck deleted successfully!
@@ -471,7 +520,7 @@ function globalPageModule() {
       ) : flashdecks.length === 0 ? (
         <p>No decks created. Create a deck to display here.</p>
       ) : (
-        renderDecksList(flashdecks)
+        renderDecksList(filteredDecks)
       )}
 
       <div className='global-page-flashcards'>Flashcards<button className='global-page-create-flashcard-button' onClick={createFlashcardGlobal}>+ Create Flashcard</button></div>
@@ -480,7 +529,7 @@ function globalPageModule() {
       ) : flashcards.length === 0 ? (
         <p>No flashcards created. Create a flashcard to display here.</p>
       ) : (
-        renderFlashcardsList(flashcards)
+        renderFlashcardsList(filteredFlashcards)
       )}
 
       <div className='global-page-recents'>Suggested</div>
@@ -489,7 +538,7 @@ function globalPageModule() {
       ) : flashcards.length === 0 ? (
         <p>Nothing recently accessed. Create some flashcards!.</p>
       ) : (
-        renderFlashcardsList(flashcards)
+        renderFlashcardsList(filteredFlashcards)
       )}
 
       {/* Flashcard Modal */}
