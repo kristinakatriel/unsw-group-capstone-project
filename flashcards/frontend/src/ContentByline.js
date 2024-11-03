@@ -11,8 +11,9 @@ function ContentByline() {
       try {
         const smth = await view.getContext();
         console.log(smth.extension.content.id);
+        const pageId = smth.extension.content.id
         try {
-          const result = invoke('getAllContent', {pageId: smth.extension.content.id});
+          const result = invoke('getAllContent', { pageId });
           console.log(result);
         } catch (error) {
           console.error('could not get to backend', error);
