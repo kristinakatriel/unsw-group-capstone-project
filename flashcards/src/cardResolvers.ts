@@ -5,16 +5,13 @@ import {
   QuizResult, StudyResult, QuizSession, StudySession
 } from './types';
 import { generateId, clearStorage, getUserName, initUserData } from './helpers'
-
+import { fetchCardsById, fetchDecksById, fetchTagsById, fetchUsersById } from './helpers'
 import { ResolverRequest } from './types'
 
 
 export const createFlashcard = async (req: ResolverRequest) => {
   const { front, back, hint, locked } = req.payload;
   const accountId = req.context.accountId;
-
-  console.log(front);
-  console.log(back);
 
   if (!front || !back) {
     return {
@@ -29,11 +26,11 @@ export const createFlashcard = async (req: ResolverRequest) => {
   const cardId = `c-${generateId()}`;
   const card = {
     id: cardId,
+    owner: accountId,
+    name: name,
     front,
     back,
     hint,
-    owner: accountId,
-    name: name,
     locked,
   };
 
@@ -117,6 +114,24 @@ export const deleteFlashcard = async (req: ResolverRequest) => {
       success: false,
       error: "Only owner can delete"
     }
+  }
+
+  const decks = await fetchDecksById(card.deckIds || []);
+  for (const deck of decks) {
+    deck.cardIds = deck.cardIds.filter(id => id !== cardId);
+    await storage.set(deck.id, deck);
+  }
+
+  const tags = await fetchTagsById(card.tagIds || []);
+  for (const tag of tags) {
+    tag.cardIds = tag.cardIds.filter(id => id !== cardId);
+    await storage.set(tag.id, tag);
+  }
+
+  const user = await storage.get(card.owner);
+  if (user) {
+    user.cardIds = user.cardIds.filter((id: string) => id !== cardId);
+    await storage.set(user.id, user);
   }
 
   await storage.delete(cardId);

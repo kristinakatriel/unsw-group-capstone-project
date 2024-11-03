@@ -4,7 +4,8 @@ import {
     Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
     QuizResult, StudyResult, QuizSession, StudySession
 } from './types';
-import { generateId, clearStorage, getUserName, initUserData } from './helpers'
+import { generateId, clearStorage, queryStorage, getUserName, initUserData } from './helpers'
+import { fetchCardsById, fetchDecksById, fetchTagsById, fetchUsersById } from './helpers'
 import { ResolverRequest } from './types'
 
 
@@ -31,7 +32,7 @@ export const createDeck = async (req: ResolverRequest) => {
         name: user,
         cards: flashcards || [], // todo: remove once frontend refactored
         cardIds: [],             // todo: implement card id references
-        size: 0,
+        size: 0,                 // todo: implement or remove
         locked
     };
 
@@ -97,6 +98,18 @@ export const deleteDeck = async (req: ResolverRequest) => {
             success: false,
             error: "Only owner can delete"
         }
+    }
+
+    const tags = await fetchTagsById(deck.tagIds || []);
+    for (const tag of tags) {
+        tag.deckIds = tag.deckIds.filter(id => id !== deckId);
+        await storage.set(tag.id, tag);
+    }
+
+    const user = await storage.get(deck.owner);
+    if (user) {
+        user.deckIds = user.deckIds.filter((id: string) => id !== deckId);
+        await storage.set(user.id, user);
     }
 
     await storage.delete(deckId);
@@ -172,6 +185,7 @@ export const addCardToDeck = async (req: ResolverRequest) => {
 
     deck.cards = [...(deck.cards || []), card];          // todo: remove once frontend refactored
     deck.cardIds = [...(deck.cardIds || []), cardId];
+    card.deckIds = [...(card.deckIds || []), deckId];
 
     await storage.set(deckId, deck);
 
@@ -186,7 +200,9 @@ export const removeCardFromDeck = async (req: ResolverRequest) => {
     const { deckId, cardId } = req.payload;
 
     const deck = await storage.get(deckId) as Deck | undefined;
-    if (!deck) {
+    const card = await storage.get(cardId) as Card | undefined;
+
+    if (!deck || !card) {
         return {
             success: false,
             error: 'Item not found',
@@ -202,7 +218,8 @@ export const removeCardFromDeck = async (req: ResolverRequest) => {
 
     deck.cards = deck.cards?.filter(c => c.id !== cardId) || [];  // todo: remove once frontend refactored
     deck.cardIds = deck.cardIds?.filter(id => id !== cardId) || [];
-
+    card.deckIds = card.deckIds?.filter(id => id !== deckId) || [];
+    
     await storage.set(deckId, deck);
 
     return {

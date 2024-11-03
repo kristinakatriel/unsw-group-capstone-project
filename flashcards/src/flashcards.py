@@ -47,8 +47,8 @@ async def generate_qa(input: TextInput):
     )
     
     corrector = pipeline(
-              'text2text-generation',
-              'pszemraj/flan-t5-large-grammar-synthesis',
+            'text2text-generation',
+            'pszemraj/flan-t5-large-grammar-synthesis',
     )
     
     # generated_questions = [corrector(question['generated_text']) for question in generated_questions]
