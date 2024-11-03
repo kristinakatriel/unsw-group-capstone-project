@@ -1,14 +1,32 @@
 import React, { useState, useEffect } from 'react';
 import { invoke } from '@forge/bridge';
-import './globalPageModule.js';
+import Button, { IconButton } from '@atlaskit/button/new';
+import { Field } from '@atlaskit/form';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import { Flex, Grid, xcss } from '@atlaskit/primitives';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
 import './deckGlobalModuleCreate.css';
 
-function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
+const gridStyles = xcss({
+  width: '100%',
+});
 
+const closeContainerStyles = xcss({
+  gridArea: 'close',
+});
+
+const titleContainerStyles = xcss({
+  gridArea: 'title',
+});
+
+function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
   console.log("deck passed in", deck);
+  const [errorMessage, setErrorMessage] = useState('');
   const [selectedFlashcards, setSelectedFlashcards] = useState([]);
   const [flashcards, setFlashcards] = useState([]);
-
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const handleClose = () => {
     console.log('Function called: handleClose');
     if (typeof closeAddDeckModal === 'function') {
@@ -16,8 +34,6 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
     } else {
       console.error('closeFlashcardModal is not a function:', closeAddDeckModal);
     }
-
-
   };
 
   // Fetch flashcards when the component mounts
@@ -51,27 +67,26 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
     console.log('Selected Flashcards:', selectedFlashcards);
     console.log('Current Deck:', deck);
 
+    setErrorMessage('');
+
     if (selectedFlashcards.length === 0) {
-        console.error('No flashcards selected.');
-        return; // Prevents further execution if no flashcards are selected
+      setErrorMessage('No flashcards are selected');
+      return;
     }
 
-
     try {
-
-      closeAddDeckModal(selectedFlashcards),
-
       console.log('Clearing selected flashcards after successful addition.');
       setSelectedFlashcards([]); // Clear selected flashcards after saving
-
       console.log('Selected flashcards cleared. Now closing the modal.');
-      handleClose(); // Close the modal after saving
-
+      setSaveSuccess(true)
+      setTimeout(() => {
+        closeAddDeckModal(selectedFlashcards),
+        handleClose(); 
+      }, 1000); 
     } catch (error) {
       console.error('Error adding flashcards to deck:', error);
     }
   };
-
 
   const handleCheckboxChange = (flashcardId) => {
       console.log('Checkbox change detected for flashcard:', flashcardId);
@@ -85,37 +100,72 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
       console.log('Updated selected flashcards:', selectedFlashcards);
   };
 
-
   return (
-    <div className="deck-addition">
-      <h2 className="deck-title">Add Flashcards to Deck: {deck.title}</h2>
-
-      <div className="form-group">
-        <label>Select Flashcards</label>
-        {flashcards.length > 0 ? (
-          flashcards.map((flashcard) => (
-            <div key={flashcard.id}>
-              <input
-                type="checkbox"
-                id={`flashcard-${flashcard.id}`}
-                checked={selectedFlashcards.includes(flashcard.id)}
-                onChange={() => handleCheckboxChange(flashcard.id)}
+    <ModalTransition>
+      <Modal onClose={closeAddDeckModal}>
+        <ModalHeader>
+          <Grid templateAreas={['title close']} xcss={gridStyles}>
+            <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
+              <IconButton
+                appearance="subtle"
+                icon={CrossIcon}
+                label="Close Modal"
+                onClick={closeAddDeckModal}
               />
-              <label htmlFor={`flashcard-${flashcard.id}`}>
-                {flashcard.front || 'No front available'}
-              </label>
-            </div>
-          ))
-        ) : (
-          <p>No flashcards available to select.</p>
-        )}
-      </div>
+            </Flex>
+            <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
+              <ModalTitle>Add Flashcard/s</ModalTitle>
+            </Flex>
+          </Grid>
+        </ModalHeader>
 
-      <div className="button-group">
-        <button className="save-button" onClick={handleSave}>Add Flashcards</button>
-        <button className="close-button" onClick={handleClose}>Close</button>
-      </div>
-    </div>
+        <ModalBody>
+          {errorMessage && 
+            <Collapse in={closeError}>
+              <Alert
+                severity="error"
+                onClose={() => setCloseError(false)}
+              >
+                {errorMessage}
+              </Alert>
+            </Collapse>
+          }
+
+          {/************************************* ADD FLASHCARDS FIELD ***************************************/}
+          <Field id="add-flashcards" name="add-flashcards" label="Add existing flashcards to deck">
+            {() => (
+              <div className='flashcards-select-scroll'>
+                {flashcards.length > 0 ? (
+                  flashcards.map((flashcard) => (
+                    <div key={flashcard.id} className="flashcards-select-scroll-item">
+                      <input
+                        type="checkbox"
+                        id={`flashcard-${flashcard.id}`}
+                        checked={selectedFlashcards.includes(flashcard.id)}
+                        onChange={() => handleCheckboxChange(flashcard.id)}
+                      />
+                      <label htmlFor={`flashcard-${flashcard.id}`}>
+                        {flashcard.front || 'No front available'}
+                      </label>
+                    </div>
+                  ))
+                ) : (
+                  <p>No flashcards available to select.</p>
+                )}
+              </div>
+            )}
+          </Field>
+
+          {saveSuccess && <Alert severity="success"> Flashcard/s added to deck successfully! </Alert>}
+
+        </ModalBody>
+
+        <ModalFooter>
+          <Button appearance="subtle" onClick={handleClose}>Cancel</Button>
+          <Button appearance="primary" onClick={handleSave}>Add Flashcard/s</Button>
+        </ModalFooter>
+      </Modal>
+    </ModalTransition>
   );
 }
 

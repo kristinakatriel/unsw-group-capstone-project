@@ -142,7 +142,7 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
             )}
           </Field>
 
-          {saveSuccess && <Alert severity="success"> Flashcard edited successfully! </Alert>}
+          {saveSuccess && <Alert severity="success"> Deck edited successfully! </Alert>}
 
         </ModalBody>
 
