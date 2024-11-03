@@ -15,6 +15,7 @@ import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Alert, Collapse } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import QuizMode from './components/QuizMode';
 import StudyMode from './components/StudyMode';
@@ -79,6 +80,9 @@ function globalPageModule() {
   const [errorMessage, setErrorMessage] = useState('');
   const [deleteDeckFromDisplaySuccess, setDeleteDeckFromDisplaySuccess] = useState(false);
   const [showDeleteSuccessAlert, setShowDeleteSuccessAlert] = useState(false);
+
+  // State for search
+  const [globalPageSearchTerm, setGlobalPageSearchTerm] = useState('');
 
   //************************** DELETION LOGIC *****************************/
   const confirmDeleteFlashcard = (flashcard) => {
@@ -152,11 +156,11 @@ function globalPageModule() {
   useEffect(() => {
     if (deleteDeckFromDisplaySuccess) {
       setShowDeleteSuccessAlert(true);
-  
+
       const timer = setTimeout(() => {
         setShowDeleteSuccessAlert(false);
       }, 2000); // Adjust the duration as needed
-  
+
       return () => clearTimeout(timer);
     }
   }, [deleteDeckFromDisplaySuccess]);
@@ -275,13 +279,40 @@ function globalPageModule() {
     //refreshDeckFrontend();  // Load decks when the component mounts ****************************************************************************************************8
   }, []);
 
+  //************************** SEARCH FUNCTIONS *****************************/
+  // Handle search input change
+  const searchGlobalPage = (event) => {
+    setGlobalPageSearchTerm(event.target.value);
+    console.log('Searching:', globalPageSearchTerm);
+  };
+
+  const filteredFlashcards = flashcards.filter((card) => {
+    const searchTerm = globalPageSearchTerm.toLowerCase();
+    return (
+      card.front.toLowerCase().includes(searchTerm) ||
+      card.back.toLowerCase().includes(searchTerm) ||
+      (card.name && card.name.toLowerCase().includes(searchTerm))
+      // Add tags once implemented
+    );
+  });
+  
+  const filteredDecks = flashdecks.filter((deck) => {
+    const searchTerm = globalPageSearchTerm.toLowerCase();
+    return (
+      deck.title.toLowerCase().includes(searchTerm) ||
+      (deck.description && deck.description.toLowerCase().includes(searchTerm)) ||
+      (deck.name && deck.name.toLowerCase().includes(searchTerm))
+      // Add tags once implemented
+    );
+  });
+
   //************************** RENDER FUNCTIONS *****************************/
-  const renderFlashcardsList = (flashcards) => (
-    <CardSlider cards={flashcards} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
+  const renderFlashcardsList = (filteredFlashcards) => (
+    <CardSlider cards={filteredFlashcards} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
   );
 
-  const renderDecksList = (flashdecks) => (
-    <DeckSlider decks={flashdecks} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} />
+  const renderDecksList = (filteredDecks) => (
+    <DeckSlider decks={filteredDecks} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} />
   );
 
   //************************** DECK DISPLAY FUNCTIONS *****************************/
@@ -323,7 +354,28 @@ function globalPageModule() {
   };
 
   //************************** STUDY MODE FUNCTIONS *****************************/
-  const studyMode = () => {
+  const studyMode = async () => {
+    //loadDecks();
+
+    console.log("selected deck going into quiz mode", selectedDeck);
+    const id = selectedDeck.id;
+    console.log("id", id);
+
+    try {
+      const response = await invoke('getDeck', { deckId: id });
+
+      if (response.success) {
+        console.log("Deck retrieved successfully:", response.deck);
+        setSelectedDeck(response.deck)
+      } else {
+        console.error("Error retrieving deck:", response.error);
+        return null;
+      }
+    } catch (error) {
+      console.error("Exception in fetchDeck:", error);
+      return null;
+    }
+    console.log("selected deck", selectedDeck);
     console.log('Entering Study Mode'); // Log when entering study mode
     setIsStudyMode(true);
     setBreadcrumbItems(prevItems => [
@@ -357,9 +409,29 @@ function globalPageModule() {
   }
 
   //************************** QUIZ MODE FUNCTIONS *****************************/
-  const quizMode = () => {
+  const quizMode = async () => {
+    console.log("selected deck going into quiz mode", selectedDeck);
+    const id = selectedDeck.id;
+    console.log("id", id);
+
+    try {
+      const response = await invoke('getDeck', { deckId: id });
+
+      if (response.success) {
+        console.log("Deck retrieved successfully:", response.deck);
+        setSelectedDeck(response.deck)
+      } else {
+        console.error("Error retrieving deck:", response.error);
+        return null;
+      }
+    } catch (error) {
+      console.error("Exception in fetchDeck:", error);
+      return null;
+    }
+    console.log("selected deck", selectedDeck);
     console.log('Entering Quiz Mode'); // Log when entering quiz mode
     setIsQuizMode(true);
+
     setBreadcrumbItems(prevItems => [
         ...prevItems,
         { href: '#', text: 'Quiz Mode' }
@@ -367,6 +439,7 @@ function globalPageModule() {
   };
 
   if (isQuizMode) {
+    //loadDecks();
     return (
       <div>
         <Breadcrumbs>
@@ -382,6 +455,7 @@ function globalPageModule() {
                   goBackToDeck();
                 }
               }}
+              // className="breadcrumb-item"
             />
           ))}
         </Breadcrumbs>
@@ -391,27 +465,49 @@ function globalPageModule() {
   }
 
   if (selectedDeck) {
+    //loadDecks();
     return (
-      <div>
+      <div >
         <Breadcrumbs>
           {breadcrumbItems.map((item, index) => (
             <BreadcrumbsItem
               key={index}
               href={item.href}
               text={item.text}
-              onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined} />
+              onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined}
+              // className="breadcrumb-item"
+              />
+
           ))}
         </Breadcrumbs>
         <DeckDisplay deck={selectedDeck} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
       </div>
     );
   }
-
+  
   return (
     <div className='global-page-container'>
-
-      <div className='global-page-headline'><FlashOnIcon className='global-page-flash-icon'/> FLASH</div>
-      <div className='global-page-subheadline'>The Forge App that allows you to create flashcards in a flash</div>
+      <div className="global-page-header">
+        <div className="global-page-headlines">
+          <div className="global-page-headline">
+            <FlashOnIcon className="global-page-flash-icon" /> FLASH
+          </div>
+          <div className="global-page-subheadline">
+            The Forge App that allows you to create flashcards in a flash
+          </div>
+        </div>
+        <div className="global-page-search">
+          <div className="global-page-search-box">
+            <SearchIcon className="global-page-search-icon" />
+            <input
+              type="text"
+              id="search-input"
+              onKeyUp={searchGlobalPage}
+              placeholder="Search..."
+            />
+          </div>
+        </div>
+      </div>
       <Collapse in={showDeleteSuccessAlert} timeout={500}>
         <Alert severity="success">
           Deck deleted successfully!
@@ -423,19 +519,7 @@ function globalPageModule() {
       ) : flashdecks.length === 0 ? (
         <p>No decks created. Create a deck to display here.</p>
       ) : (
-        renderDecksList(flashdecks)
-      )}
-
-      <div className='global-page-recents'>
-        Suggested
-      </div>
-
-      {loading ? (
-        <p>Loading...</p>
-      ) : flashcards.length === 0 ? (
-        <p>Nothing recently accessed. Create some flashcards!.</p>
-      ) : (
-        renderFlashcardsList(flashcards)
+        renderDecksList(filteredDecks)
       )}
 
       <div className='global-page-flashcards'>Flashcards<button className='global-page-create-flashcard-button' onClick={createFlashcardGlobal}>+ Create Flashcard</button></div>
@@ -444,7 +528,16 @@ function globalPageModule() {
       ) : flashcards.length === 0 ? (
         <p>No flashcards created. Create a flashcard to display here.</p>
       ) : (
-        renderFlashcardsList(flashcards)
+        renderFlashcardsList(filteredFlashcards)
+      )}
+
+      <div className='global-page-recents'>Suggested</div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : flashcards.length === 0 ? (
+        <p>Nothing recently accessed. Create some flashcards!.</p>
+      ) : (
+        renderFlashcardsList(filteredFlashcards)
       )}
 
       {/* Flashcard Modal */}
@@ -482,10 +575,10 @@ function globalPageModule() {
                   </ModalHeader>
                   <ModalBody>
                       <p>Are you sure you want to delete all instances of the flashcard? This action cannot be undone.</p>
-                      {deleteSuccess && 
+                      {deleteSuccess &&
                         <Alert severity="success"> Flashcard deleted successfully! </Alert>
                       }
-                      {errorMessage && 
+                      {errorMessage &&
                         <Alert severity="error">{errorMessage} </Alert>
                       }
                   </ModalBody>
@@ -518,10 +611,10 @@ function globalPageModule() {
                   </ModalHeader>
                   <ModalBody>
                       <p>Are you sure you want to delete all instances of the deck? This action cannot be undone.</p>
-                      {deleteSuccess && 
+                      {deleteSuccess &&
                         <Alert severity="success">Deck deleted successfully!</Alert>
                       }
-                      {errorMessage && 
+                      {errorMessage &&
                         <Alert severity="error"> {errorMessage} </Alert>
                       }
                   </ModalBody>

@@ -5,204 +5,210 @@
 }
 
 .deck-creation {
-    background-color: white;
-    font-family: 'Arial', sans-serif;
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 30px;
-  }
+  background-color: white;
+  font-family: 'Arial', sans-serif;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 30px;
+}
 
-  .global-deck-edit {
-    background-color: white;
-    font-family: 'Arial', sans-serif;
-    max-width: 400px;
-    margin: 0 auto;
-    padding: 30px;
-    position: relative;
-    width: 100vw;
-  }
+.global-deck-edit {
+  background-color: white;
+  font-family: 'Arial', sans-serif;
+  max-width: 400px;
+  margin: 0 auto;
+  padding: 30px;
+  position: relative;
+  width: 100vw;
+}
 
-  .deck-title {
-    margin-bottom: 10px;
-  }
+.deck-title {
+  margin-bottom: 10px;
+}
 
-  .global-deck-edit-icon {
-    color: #5372F0;
-    margin-right: 10px;
-    width: 40px !important;
-    height: 40px !important;
-  }
+.global-deck-edit-icon {
+  color: #5372F0;
+  margin-right: 10px;
+  width: 40px !important;
+  height: 40px !important;
+}
 
-  h2 {
-    font-size: 24px;
-    font-weight: bold;
-    margin: 20px 0;
-  }
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 20px 0;
+}
 
-  .deck-title {
-    margin-bottom: 10px;
-  }
+.deck-title {
+  margin-bottom: 10px;
+}
 
-  label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
-  }
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
 
-  .input-field,
-  .input-area {
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 8px;
-  }
+.input-field,
+.input-area {
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+}
 
-  .input-field {
-    height: 40px; /* Height for the text input */
-  }
+.input-field {
+  height: 40px; /* Height for the text input */
+}
 
-  .input-area {
-    height: 95px; /* Height for the text area */
-    resize: none; /* Disable resizing */
-  }
+.input-area {
+  height: 95px; /* Height for the text area */
+  resize: none; /* Disable resizing */
+}
 
-  .button-group {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 20px;
-  }
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
 
-  .save-button {
-    background-color: #0052CC; /* Primary Button Color */
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 14px;
-    text-transform: uppercase;
-    margin-right: 10px;
-  }
+.save-button {
+  background-color: #0052CC; /* Primary Button Color */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+  margin-right: 10px;
+}
 
-  .save-button:hover {
-    background-color: #0747A6; /* Darker shade for hover effect */
-  }
+.save-button:hover {
+  background-color: #0747A6; /* Darker shade for hover effect */
+}
 
-  .close-button {
-    background-color: #f0f0f0; /* Secondary Button Color */
-    color: #333;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 14px;
-    text-transform: uppercase;
-  }
+.close-button {
+  background-color: #f0f0f0; /* Secondary Button Color */
+  color: #333;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+}
 
-  .close-button:hover {
-    background-color: #ccc; /* Darker shade for hover effect */
-  }
+.close-button:hover {
+  background-color: #ccc; /* Darker shade for hover effect */
+}
 
-  .form-group {
-    margin-bottom: 20px;
-  }
+.form-group {
+  margin-bottom: 20px;
+}
 
-  input[type="checkbox"] {
-    margin-right: 10px; /* Space between checkbox and label */
-  }
+.flashcards-select-scroll {
+  max-height: 300px;
+  overflow-y: scroll;
+  flex-direction: column; 
+}
 
-  .global-deck-container {
-  overflow: auto;
-  min-height: 100%;
-  height: 911px;
+input[type="checkbox"] {
+  margin-right: 10px; /* Space between checkbox and label */
+}
+
+.global-deck-container {
+overflow: auto;
+min-height: 100%;
+height: 911px;
 }
 
 .deck-creation {
-    background-color: white;
-    font-family: 'Arial', sans-serif;
-    max-width: 500px;
-    margin: 0 auto;
-    padding: 30px;
-  }
+  background-color: white;
+  font-family: 'Arial', sans-serif;
+  max-width: 500px;
+  margin: 0 auto;
+  padding: 30px;
+}
 
-  h2 {
-    font-size: 24px;
-    font-weight: bold;
-    margin: 20px 0;
-  }
+h2 {
+  font-size: 24px;
+  font-weight: bold;
+  margin: 20px 0;
+}
 
-  .deck-title {
-    margin-bottom: 10px;
-  }
+.deck-title {
+  margin-bottom: 10px;
+}
 
-  label {
-    font-weight: bold;
-    display: block;
-    margin-bottom: 5px;
-  }
+label {
+  font-weight: bold;
+  display: block;
+  margin-bottom: 5px;
+}
 
-  .input-field,
-  .input-area {
-    box-sizing: border-box;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    padding: 8px;
-  }
+.input-field,
+.input-area {
+  box-sizing: border-box;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  padding: 8px;
+}
 
-  .input-field {
-    height: 40px; /* Height for the text input */
-  }
+.input-field {
+  height: 40px; /* Height for the text input */
+}
 
-  .input-area {
-    height: 95px; /* Height for the text area */
-    resize: none; /* Disable resizing */
-  }
+.input-area {
+  height: 95px; /* Height for the text area */
+  resize: none; /* Disable resizing */
+}
 
-  .button-group {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 20px;
-  }
+.button-group {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
 
-  .save-button {
-    background-color: #0052CC; /* Primary Button Color */
-    color: white;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 14px;
-    text-transform: uppercase;
-    margin-right: 10px;
-  }
+.save-button {
+  background-color: #0052CC; /* Primary Button Color */
+  color: white;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+  margin-right: 10px;
+}
 
-  .save-button:hover {
-    background-color: #0747A6; /* Darker shade for hover effect */
-  }
+.save-button:hover {
+  background-color: #0747A6; /* Darker shade for hover effect */
+}
 
-  .close-button {
-    background-color: #f0f0f0; /* Secondary Button Color */
-    color: #333;
-    padding: 10px 15px;
-    border: none;
-    border-radius: 3px;
-    cursor: pointer;
-    font-weight: bold;
-    font-size: 14px;
-    text-transform: uppercase;
-  }
+.close-button {
+  background-color: #f0f0f0; /* Secondary Button Color */
+  color: #333;
+  padding: 10px 15px;
+  border: none;
+  border-radius: 3px;
+  cursor: pointer;
+  font-weight: bold;
+  font-size: 14px;
+  text-transform: uppercase;
+}
 
-  .close-button:hover {
-    background-color: #ccc; /* Darker shade for hover effect */
-  }
+.close-button:hover {
+  background-color: #ccc; /* Darker shade for hover effect */
+}
 
-  .form-group {
-    margin-bottom: 20px;
-  }
+.form-group {
+  margin-bottom: 20px;
+}
 
-  input[type="checkbox"] {
-    margin-right: 10px; /* Space between checkbox and label */
-  }
+input[type="checkbox"] {
+  margin-right: 10px; /* Space between checkbox and label */
+}
