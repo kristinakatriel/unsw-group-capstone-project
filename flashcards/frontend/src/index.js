@@ -5,6 +5,7 @@ import GlobalPageModule from './globalPageModule';
 import '@atlaskit/css-reset';
 import { invoke } from '@forge/bridge';
 import ContextMenu from './ContextMenu';
+import ContentByline from './ContentByline';
 
 const MainComponent = () => {
   const [moduleKey, setModuleKey] = useState(null);
@@ -36,6 +37,9 @@ const MainComponent = () => {
     return <GlobalPageModule />;
   } else if (moduleKey === 'flashcard-context-menu') {
     return <ContextMenu />; 
+  // }
+  } else if (moduleKey === 'flashcard-content-byline') {
+    return <ContentByline />
   }
   return <div>Loading...</div>;
 };

@@ -9,9 +9,11 @@ app = FastAPI()
 
 # Models for 
 # 1. QG
-qg_model = T5ForConditionalGeneration.from_pretrained("valhalla/t5-base-qg-hl")
-# qg_model = AutoModelWithLMHead.from_pretrained("valhalla/t5-base-qg-hl")
-qg_tokenizer = T5Tokenizer.from_pretrained("valhalla/t5-base-qg-hl")
+# qg_model = T5ForConditionalGeneration.from_pretrained("valhalla/t5-base-qg-hl")
+# # qg_model = AutoModelWithLMHead.from_pretrained("valhalla/t5-base-qg-hl")
+# qg_tokenizer = T5Tokenizer.from_pretrained("valhalla/t5-base-qg-hl")
+qg_model = T5ForConditionalGeneration.from_pretrained("ZhangCheng/T5-Base-Fine-Tuned-for-Question-Generation")
+qg_tokenizer = T5Tokenizer.from_pretrained("ZhangCheng/T5-Base-Fine-Tuned-for-Question-Generation")
 # 2. QA
 qa_model = "mrm8488/spanbert-finetuned-squadv1"
 
@@ -47,18 +49,18 @@ async def generate_qa(input: TextInput):
     )
     
     corrector = pipeline(
-            'text2text-generation',
-            'pszemraj/flan-t5-large-grammar-synthesis',
+        'text2text-generation',
+        'pszemraj/flan-t5-large-grammar-synthesis',
     )
     
-    # generated_questions = [corrector(question['generated_text']) for question in generated_questions]
+    generated_questions = [corrector(question['generated_text']) for question in generated_questions]
 
     # generate answers
     flashcards = []
     for question_data in generated_questions:
         question = question_data['generated_text']
         result = qa_pipeline(question=question, context=input.text)
-        flashcard = {"question": corrector(question), "answer": corrector(result['answer'])}
+        flashcard = {"question": question, "answer": corrector(result['answer'])}
         # append if answer is good
         if result['score'] > 0.2:
             flashcards.append(flashcard)

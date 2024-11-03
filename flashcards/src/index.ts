@@ -35,6 +35,28 @@ resolver.define('getModule', async (req) => {
   return { moduleKey };
 });
 
+resolver.define('helloWorld', async (req) => {
+  // const { text } = req.context;
+  // console.log(text);
+  return "hi";
+});
+
+resolver.define('getAllContent', async (req) => {
+  const { pageId } = req.context;
+  const response = await api.asUser().requestConfluence(route`/wiki/api/v2/pages/${pageId}`, {
+    headers: {
+      'Accept': 'application/json'
+    }
+  });
+  if (response.status == 200) {
+    const data = await response.json();
+    console.log(data.body);
+    return data.body;
+  }
+  // console.log(text);
+  return response.status;
+});
+
 resolver.define('createFlashcard', createFlashcard);
 resolver.define('updateFlashcard', updateFlashcard);
 resolver.define('deleteFlashcard', deleteFlashcard);

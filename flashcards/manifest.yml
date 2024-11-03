@@ -24,6 +24,15 @@ modules:
       #keep viewport size as large until we can figure out how to make the modal bigger
       viewportSize: large
       title: FLASH - Create Flashcard(s) (AI Generation)
+  
+  confluence:contentBylineItem:
+    - key: flashcard-content-byline
+      resource: main
+      resolver:
+        function: resolver
+      #keep viewport size as large until we can figure out how to make the modal bigger
+      # viewportSize: large
+      title: FLASH - Create Flashcard(s) with whole page (AI Generation)
 
   function:
     - key: resolver
@@ -48,6 +57,7 @@ permissions:
     - read:user:confluence
     - read:content-details:confluence
     - read:user:confluence
+    - read:page:confluence
 
   content:
     styles:
