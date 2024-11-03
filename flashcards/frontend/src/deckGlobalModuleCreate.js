@@ -157,12 +157,14 @@ function CreateDeckGlobal({ closeDeckModal }) {
             </Collapse>
           }
 
+          {/************************************* DECK TITLE FIELD ***************************************/}
           <Field id="deckTitle" name="deckTitle" label="Deck Title">
             {({ fieldProps }) => (
               <Textfield {...fieldProps} value={deckTitle} onChange={(e) => setDeckTitle(e.target.value)} placeholder="Type the deck title here..." />
             )}
           </Field>
           
+          {/************************************* DECK DESCRIPTION FIELD ***************************************/}
           <Field id="description" name="description" label={
             <div onClick={() => setShowDescription(!showDescription)} className="label-clickable">
               <span>Description (Optional)</span>
@@ -184,7 +186,8 @@ function CreateDeckGlobal({ closeDeckModal }) {
               </>
             )}
           </Field>
-          
+
+          {/************************************* ADD FLASHCARDS FIELD ***************************************/}
           <Field id="add-flashcards" name="add-flashcards" label={
             <div onClick={() => setShowFlashcards(!showFlashcards)} className="label-clickable">
               <span>Add Flashcards (Optional)</span>
@@ -219,7 +222,8 @@ function CreateDeckGlobal({ closeDeckModal }) {
               </div>
             )}
           </Field>
-
+          
+          {/************************************* LOCK/UNLOCKED FIELD ***************************************/}
           <Field>
             {() => (
               <span onClick={() => setLocked(!locked)} style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}>
