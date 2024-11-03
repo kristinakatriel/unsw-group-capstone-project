@@ -34,7 +34,7 @@
 .global-page-search {
   display: flex;
   justify-content: flex-end;
-  padding-right: 20px;
+  padding-right: 10px; /* Reduced padding */
 }
 
 .global-page-search-box {
@@ -42,37 +42,38 @@
   display: flex;
   align-items: center;
   border: 1px solid #c0c0c0;
-  border-radius: 8px;
-  padding: 5px 10px;
-  width: 250px;
+  border-radius: 6px; 
+  padding: 3px 8px; 
+  width: 200px; 
   background-color: white;
 }
 
 .global-page-search-box:focus-within {
-  border-color: rgb(12, 102, 228); 
+  border-color: rgb(12, 102, 228);
 }
 
 .global-page-search-icon {
   position: absolute;
-  left: 10px;
+  left: 6px; 
   color: lightgray;
-  font-size: 20px;
+  font-size: 16px; 
 }
 
 #search-input {
   width: 100%;
-  padding: 8px;
-  font-size: 16px;
+  padding: 4px;
+  font-size: 14px; 
   color: grey;
   border: none;
-  outline: none; 
+  outline: none;
   box-sizing: border-box;
-  border-radius: 8px; 
-  margin-left: 25px;
+  border-radius: 6px;
+  margin-left: 20px; 
 }
 
 #search-input::placeholder {
   color: lightgray;
+  font-size: 14px;
 }
 
 .modal {
