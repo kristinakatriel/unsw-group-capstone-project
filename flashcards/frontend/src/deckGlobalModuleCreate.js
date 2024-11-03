@@ -1,9 +1,30 @@
 import React, { useState, useEffect } from 'react';
 import { invoke } from '@forge/bridge';
-import { Alert, Collapse, IconButton } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import './globalPageModule.js';
+import Button, { IconButton } from '@atlaskit/button/new';
+import { Field } from '@atlaskit/form';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import { Flex, Grid, xcss } from '@atlaskit/primitives';
+import Textfield from '@atlaskit/textfield';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
+import UnlockIcon from '@atlaskit/icon/glyph/unlock';
+import LockIcon from '@atlaskit/icon/glyph/lock';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import './deckGlobalModuleCreate.css';
+
+const gridStyles = xcss({
+  width: '100%',
+});
+
+const closeContainerStyles = xcss({
+  gridArea: 'close',
+});
+
+const titleContainerStyles = xcss({
+  gridArea: 'title',
+});
 
 function CreateDeckGlobal({ closeDeckModal }) {
   const [deckTitle, setDeckTitle] = useState('');
@@ -14,24 +35,22 @@ function CreateDeckGlobal({ closeDeckModal }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [closeError, setCloseError] = useState(true);
   const [locked, setLocked] = useState(false);
+  const [showDescription, setShowDescription] = useState(false); 
+  const [showFlashcards, setShowFlashcards] = useState(false);
 
   const handleCloseGlobal = () => {
-    console.log('Function called: handleCloseGlobal');
     if (typeof closeDeckModal === 'function') {
-      closeDeckModal(); // Call the function passed as a prop
+      closeDeckModal(); 
     } else {
       console.error('closeDeckModal is not a function:', closeDeckModal);
     }
   };
 
-  // Fetch flashcards when the component mounts
   useEffect(() => {
     const fetchFlashcards = async () => {
       try {
-        console.log('Fetching flashcards...');
         const response = await invoke('getAllFlashcards', {});
         if (response.success) {
-          console.log('Flashcards fetched successfully:', response.cards);
           setFlashcards(response.cards);
         } else {
           console.error('Error getting flashcards:', response.error);
@@ -47,13 +66,16 @@ function CreateDeckGlobal({ closeDeckModal }) {
   const handleSave = async () => {
     setErrorMessage('');
     setCloseError(true);
-    console.log('Saving deck...');
-    console.log('Selected Flashcards:', selectedFlashcards);
 
-    // if (!deckTitle.trim()) { // unnecessary as backend deals with this
-    //   console.error('Deck title cannot be empty.');
-    //   return; // Prevents further execution
-    // }
+    if (deckTitle.length > 30) {
+      setErrorMessage('Deck title must be 30 characters or fewer.');
+      return;
+    }
+
+    if (description.length > 50) {
+      setErrorMessage('Deck description must be 50 characters or fewer.');
+      return;
+    }
 
     try {
       const response = await invoke('createDeck', {
@@ -64,14 +86,11 @@ function CreateDeckGlobal({ closeDeckModal }) {
       });
 
       if (response.success) {
-        setSaveSuccess(true); // Show success message
+        setSaveSuccess(true);
         console.log('Deck created successfully:', response.deck);
-
         const deckId = response.id;
 
-        // Adding each selected flashcard to the deck
         for (const cardId of selectedFlashcards) {
-          console.log(`Invoking addCardToDeck for cardId: ${cardId} and deckId: ${deckId}`);
           const addCardResponse = await invoke('addCardToDeck', {
             deckId: deckId,
             cardId: cardId
@@ -88,8 +107,8 @@ function CreateDeckGlobal({ closeDeckModal }) {
         setDescription('');
         setSelectedFlashcards([]);
         setTimeout(() => {
-          closeDeckModal(); // Delay closing modal
-        }, 1000); // Show success message for 2 seconds before closing
+          closeDeckModal(); 
+        }, 1000); 
       } else {
         setErrorMessage(response.error);
         console.error('Failed to create deck:', response.error);
@@ -100,107 +119,132 @@ function CreateDeckGlobal({ closeDeckModal }) {
   };
 
   const handleCheckboxChange = (flashcardId) => {
-    console.log('Checkbox change detected for flashcard:', flashcardId);
     if (selectedFlashcards.includes(flashcardId)) {
-      console.log('Flashcard removed from selected list:', flashcardId);
       setSelectedFlashcards(selectedFlashcards.filter((id) => id !== flashcardId));
     } else {
-      console.log('Flashcard added to selected list:', flashcardId);
       setSelectedFlashcards([...selectedFlashcards, flashcardId]);
     }
-    console.log('Updated selected flashcards:', selectedFlashcards);
   };
 
   return (
-    <div className="deck-creation">
-      <h2 className="deck-title">Create New Deck</h2>
-      { errorMessage && 
-        <Collapse in={closeError}>
-          <Alert
-            severity="error"
-            action={
+    <ModalTransition>
+      <Modal onClose={closeDeckModal}>
+        <ModalHeader>
+          <Grid templateAreas={['title close']} xcss={gridStyles}>
+            <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
               <IconButton
-                aria-label="close"
-                color="inherit"
-                size="small"
-                onClick={() => {
-                  setCloseError(false);
-                }}
-              >
-              <CloseIcon fontSize="inherit" />
-              </IconButton>
-            }
-            sx={{ mb: 2 }}
-          >
-            {errorMessage}
-          </Alert>
-        </Collapse>
-      }
-
-      <div className="form-group">
-        <label htmlFor="deckTitle">Deck Title</label>
-        <input
-          type="text"
-          id="deckTitle"
-          value={deckTitle}
-          onChange={(e) => setDeckTitle(e.target.value)}
-          placeholder="Type the deck title here..."
-          className="input-field"
-        />
-      </div>
-
-      <div className="form-group">
-        <label htmlFor="description"> Description (Optional) </label>
-        <textarea
-          id="description"
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          placeholder="Type a description for the deck..."
-          className="input-area"
-        />
-      </div>
-
-      <div className="form-group">
-        <label>
-          <input 
-            type="checkbox" 
-            checked={locked} 
-            onChange={(e) => setLocked(e.target.checked)} 
-          />
-          Check the box if you want no one else to edit and/or delete the deck
-        </label>
-      </div>
-
-      <div className="form-group">
-        <label>Select Flashcards</label>
-        <div className='flashcards-select-scroll'>
-        {flashcards.length > 0 ? (
-          flashcards.map((flashcard) => (
-            <div key={flashcard.id}>
-              <input
-                type="checkbox"
-                id={`flashcard-${flashcard.id}`}
-                checked={selectedFlashcards.includes(flashcard.id)}
-                onChange={() => handleCheckboxChange(flashcard.id)}
+                appearance="subtle"
+                icon={CrossIcon}
+                label="Close Modal"
+                onClick={closeDeckModal}
               />
-              <label htmlFor={`flashcard-${flashcard.id}`}>
-                {flashcard.front || 'No front available'}
-              </label>
+            </Flex>
+            <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
+              <ModalTitle>Create New Deck</ModalTitle>
+            </Flex>
+          </Grid>
+        </ModalHeader>
+
+        <ModalBody>
+          {errorMessage && 
+            <Collapse in={closeError}>
+              <Alert
+                severity="error"
+                onClose={() => setCloseError(false)}
+              >
+                {errorMessage}
+              </Alert>
+            </Collapse>
+          }
+
+          <Field id="deckTitle" name="deckTitle" label="Deck Title">
+            {({ fieldProps }) => (
+              <Textfield {...fieldProps} value={deckTitle} onChange={(e) => setDeckTitle(e.target.value)} placeholder="Type the deck title here..." />
+            )}
+          </Field>
+          
+          <Field id="description" name="description" label={
+            <div onClick={() => setShowDescription(!showDescription)} className="label-clickable">
+              <span>Description (Optional)</span>
+              <span className="toggle-icon">
+                {showDescription ? <ExpandLessIcon fontSize="small"/> : <ExpandMoreIcon fontSize="small" />}
+              </span>
             </div>
-          ))
-        ) : (
-          <p>No flashcards available to select.</p>
-        )}
-        </div>
-      </div>
-      {saveSuccess && 
-        <Alert severity="success"> New deck created successfully! </Alert>
-      }
-      <div className="button-group">
-        <button className="save-button" onClick={handleSave}>Save</button>
-        <button className="close-button" onClick={handleCloseGlobal}>Close</button>
-      </div>
-    </div>
+          }>
+            {({ fieldProps }) => (
+              <>
+                {showDescription && (
+                  <Textfield
+                    {...fieldProps}
+                    value={description}
+                    onChange={(e) => setDescription(e.target.value)}
+                    placeholder="Type a description for the deck..."
+                  />
+                )}
+              </>
+            )}
+          </Field>
+          
+          <Field id="add-flashcards" name="add-flashcards" label={
+            <div onClick={() => setShowFlashcards(!showFlashcards)} className="label-clickable">
+              <span>Add Flashcards (Optional)</span>
+              <span className="toggle-icon">
+                {showFlashcards ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+              </span>
+            </div>
+          }>
+            {() => (
+              <div>
+                {showFlashcards && (
+                  <div className='flashcards-select-scroll'>
+                    {flashcards.length > 0 ? (
+                      flashcards.map((flashcard) => (
+                        <div key={flashcard.id} className="flashcards-select-scroll-item">
+                          <input
+                            type="checkbox"
+                            id={`flashcard-${flashcard.id}`}
+                            checked={selectedFlashcards.includes(flashcard.id)}
+                            onChange={() => handleCheckboxChange(flashcard.id)}
+                          />
+                          <label htmlFor={`flashcard-${flashcard.id}`}>
+                            {flashcard.front || 'No front available'}
+                          </label>
+                        </div>
+                      ))
+                    ) : (
+                      <p>No flashcards available to select.</p>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </Field>
+
+          <Field>
+            {() => (
+              <span onClick={() => setLocked(!locked)} style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}>
+                {locked ? 'This deck will be locked, only the owner can edit and delete' : 'This deck will be unlocked, others can edit and delete'}
+                <span> 
+                  {locked ? (
+                    <LockIcon label="Locked" />
+                  ) : (
+                    <UnlockIcon label="Unlocked" />
+                  )}
+                </span>
+              </span>
+            )}
+          </Field>
+
+          {saveSuccess && <Alert severity="success"> New deck created successfully! </Alert>}
+
+        </ModalBody>
+
+        <ModalFooter>
+          <Button appearance="subtle" onClick={handleCloseGlobal}>Cancel</Button>
+          <Button appearance="primary" onClick={handleSave}>Create Deck</Button>
+        </ModalFooter>
+      </Modal>
+    </ModalTransition>
   );
 }
 

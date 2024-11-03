@@ -490,7 +490,7 @@ function globalPageModule() {
       <div className="global-page-header">
         <div className="global-page-headlines">
           <div className="global-page-headline">
-            <FlashOnIcon className="global-page-flash-icon" /> FLASH
+            <FlashOnIcon className="global-page-flash-icon" /> FLASH - KRISTINA TESTING
           </div>
           <div className="global-page-subheadline">
             The Forge App that allows you to create flashcards in a flash
