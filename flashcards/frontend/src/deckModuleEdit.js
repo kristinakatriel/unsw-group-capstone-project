@@ -83,7 +83,7 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
 
   return (
     <ModalTransition>
-      <Modal onClose={closeDeckEditModal}>
+      <Modal onClose={handleCloseGlobal}>
         <ModalHeader>
           <Grid templateAreas={['title close']} xcss={gridStyles}>
             <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
@@ -91,7 +91,7 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
                 appearance="subtle"
                 icon={CrossIcon}
                 label="Close Modal"
-                onClick={closeDeckEditModal}
+                onClick={handleCloseGlobal}
               />
             </Flex>
             <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
