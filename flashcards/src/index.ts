@@ -16,6 +16,13 @@ import {
   addCardToDeck, removeCardFromDeck
 } from './deckResolvers'
 import {
+  createTag, updateTag, deleteTag, getTag, getAllTags,
+  addTagToCard, addTagToDeck, removeTagFromCard, removeTagFromDeck
+} from './tagResolvers';
+import {
+  fetchUserCards, fetchUserDecks, fetchUserTags
+} from './userResolvers';
+import {
   generateQA, addGeneratedFlashcards
 } from './aiResolvers'
 
@@ -34,7 +41,6 @@ resolver.define('deleteFlashcard', deleteFlashcard);
 resolver.define('getFlashcard', getFlashcard);
 resolver.define('getAllFlashcards', getAllFlashcards);
 
-
 resolver.define('createDeck', createDeck);
 resolver.define('updateDeck', updateDeck);
 resolver.define('deleteDeck', deleteDeck);
@@ -42,6 +48,20 @@ resolver.define('getDeck', getDeck);
 resolver.define('getAllDecks', getAllDecks);
 resolver.define('addCardToDeck', addCardToDeck);
 resolver.define('removeCardFromDeck', removeCardFromDeck);
+
+resolver.define('createTag', createTag);
+resolver.define('updateTag', updateTag);
+resolver.define('deleteTag', deleteTag);
+resolver.define('getTag', getTag);
+resolver.define('getAllTags', getAllTags);
+resolver.define('addTagToCard', addTagToCard);
+resolver.define('addTagToDeck', addTagToDeck);
+resolver.define('removeTagFromCard', removeTagFromCard);
+resolver.define('removeTagFromDeck', removeTagFromDeck);
+
+resolver.define('fetchUserCards', fetchUserCards);
+resolver.define('fetchUserDecks', fetchUserDecks);
+resolver.define('fetchUserTags', fetchUserTags);
 
 resolver.define('generateQA', generateQA);
 resolver.define('addGeneratedFlashcards', addGeneratedFlashcards);
