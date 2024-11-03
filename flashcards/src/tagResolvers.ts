@@ -10,7 +10,7 @@ import { ResolverRequest } from './types'
 
 
 export const createTag = async (req: ResolverRequest) => {
-    const { title, cardIds, deckIds, tagIds } = req.payload;
+    const { title, colour, cardIds, deckIds, tagIds } = req.payload;
     const accountId = req.context.accountId;
 
     if (!title) {
@@ -26,6 +26,7 @@ export const createTag = async (req: ResolverRequest) => {
     const tag: Tag = {
         id: tagId,
         title: title,
+        colour: colour,
         cardIds: cardIds || [],
         deckIds: deckIds || [],
         tagIds: tagIds || [],
@@ -44,7 +45,7 @@ export const createTag = async (req: ResolverRequest) => {
 
 
 export const updateTag = async (req: ResolverRequest) => {
-    const { id, title } = req.payload;
+    const { id, title, colour } = req.payload;
 
     const existingTag = await storage.get(id);
 
@@ -57,7 +58,8 @@ export const updateTag = async (req: ResolverRequest) => {
 
     const updatedTag = {
         ...existingTag,
-        title: title || existingTag.title
+        title: title || existingTag.title,
+        colour: colour || existingTag.colour
     };
 
     await storage.set(id, updatedTag);

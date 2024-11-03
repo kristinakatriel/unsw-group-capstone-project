@@ -48,6 +48,7 @@ export interface Tag {
     id: string;
     title: string;
     owner: string;
+    colour: string;
     name?: string;          // TODO: REMOVE AND RETURN MANUALLY
     cardIds: string[];
     deckIds: string[];
