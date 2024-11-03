@@ -45,13 +45,20 @@ async def generate_qa(input: TextInput):
         top_k=30,
         top_p=0.95,
     )
+    
+    corrector = pipeline(
+              'text2text-generation',
+              'pszemraj/flan-t5-large-grammar-synthesis',
+    )
+    
+    # generated_questions = [corrector(question['generated_text']) for question in generated_questions]
 
     # generate answers
     flashcards = []
     for question_data in generated_questions:
         question = question_data['generated_text']
         result = qa_pipeline(question=question, context=input.text)
-        flashcard = {"question": question, "answer": result['answer']}
+        flashcard = {"question": corrector(question), "answer": corrector(result['answer'])}
         # append if answer is good
         if result['score'] > 0.2:
             flashcards.append(flashcard)
