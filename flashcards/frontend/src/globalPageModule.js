@@ -21,6 +21,8 @@ import QuizMode from './components/QuizMode';
 import StudyMode from './components/StudyMode';
 import EditFlashcardModal from './flashcardGlobalModuleEdit';
 import EditDeckModal from './deckModuleEdit';
+import CreateTagGlobal from './tagGlobalModuleCreate';
+
 const gridStyles = xcss({
     width: '100%',
 });
@@ -41,11 +43,13 @@ function globalPageModule() {
 
   const [flashcards, setFlashcards] = useState([]);
   const [flashdecks, setDecks] = useState([]);
+  const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Modal states for flashcards and decks
   const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
   const [isDeckModalOpen, setIsDeckModalOpen] = useState(false);
+  const [isTagModalOpen, setIsTagModalOpen] = useState(false);
 
   // State for FLASHCARD deletion and confirmation
   const [flashcardToDelete, setFlashcardToDelete] = useState(null);
@@ -198,6 +202,20 @@ function globalPageModule() {
     }
   };
 
+  const loadTags = async () => {
+    try {
+      const response = await invoke('getAllTags', {});
+      console.log(response);
+      if (response.success) {
+        setTags(response.tags);
+      }
+    } catch (error) {
+      console.error('Error fetching tags:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   //************************** REFRESH LOGIC *****************************/ *************************************************************************************
   const refreshFlashcardFrontend = () => {
     //setLoading(true);
@@ -209,6 +227,11 @@ function globalPageModule() {
     loadDecks();  // This function will reload decks and refresh the UI
   };
 
+  const refreshTagFrontend = () => {
+    //setLoading(true);
+    loadTags();  // This function will reload decks and refresh the UI
+  };
+
   //************************** MODAL HANDLERS *****************************/
   const createFlashcardGlobal = () => {
     setIsCreateFlashcardOpen(true); // Open modal to create flashcard
@@ -216,6 +239,10 @@ function globalPageModule() {
 
   const createDeck = () => {
     setIsDeckModalOpen(true); // Open modal to create deck
+  };
+
+  const createTag = () => {
+    setIsTagModalOpen(true); // Open modal to create deck
   };
 
   const closeFlashcardModal = (shouldRefresh = false) => {
@@ -230,6 +257,13 @@ function globalPageModule() {
     setIsDeckModalOpen(false);
     //loadDecks();
     refreshDeckFrontend();  // Refresh after closing modal if new deck was created ****************************************************************************************************
+
+  };
+
+  const closeTagModal = (shouldRefresh = false) => {
+    setIsTagModalOpen(false);
+    //loadDecks();
+    refreshTagFrontend();  // Refresh after closing modal if new tag was created ****************************************************************************************************
 
   };
 
@@ -306,6 +340,13 @@ function globalPageModule() {
     );
   });
 
+  const filteredTags = tags.filter((tag) => {
+    const searchTerm = globalPageSearchTerm.toLowerCase();
+    return (
+      tag.title.toLowerCase().includes(searchTerm)
+    );
+  });
+
   //************************** RENDER FUNCTIONS *****************************/
   const renderFlashcardsList = (filteredFlashcards) => (
     <CardSlider cards={filteredFlashcards} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
@@ -315,6 +356,22 @@ function globalPageModule() {
     <DeckSlider decks={filteredDecks} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} />
   );
 
+  const renderTagsList = (filteredTags) => (
+    <div className="badge-container">
+      {filteredTags.map((tag, index) => (
+        <p key={index} className={`badge ${tag.colour}`}>
+          {tag.name || "Tag"} {/* Display the tag's name or a default label */}
+        </p>
+      ))}
+      <p className="badge blue">Blue Tag</p>
+      <p className="badge red">Red Tag</p>
+      <p className="badge orange">Orange Tag</p>
+      <p className="badge green">Green Tag</p>
+      <p className="badge yellow">Yellow Tag</p>
+      <p className="badge purple">Purple Tag</p>  
+    </div>
+  );
+  
   //************************** DECK DISPLAY FUNCTIONS *****************************/
   const onDeckClick = (deck) => {
     console.log(`Deck clicked: ${deck.title}`); // Log when a deck is clicked
@@ -490,7 +547,7 @@ function globalPageModule() {
       <div className="global-page-header">
         <div className="global-page-headlines">
           <div className="global-page-headline">
-            <FlashOnIcon className="global-page-flash-icon" /> FLASH
+            <FlashOnIcon className="global-page-flash-icon" /> FLASH - KRISTINA DEPLOYING
           </div>
           <div className="global-page-subheadline">
             The Forge App that allows you to create flashcards in a flash
@@ -513,6 +570,17 @@ function globalPageModule() {
           Deck deleted successfully!
         </Alert>
       </Collapse>
+
+      <div className='global-page-tags'>Tags<button className='global-page-create-tag-button' onClick={createTag}>+ Create Tag</button></div>
+      {loading ? (
+        <p>Loading...</p>
+      ) : flashdecks.length === 0 ? (
+        <p>No tags created. Create a tag to display here.</p>
+      ) : (
+
+        renderTagsList(filteredTags)
+      )}
+
       <div className='global-page-decks'>Decks<button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button></div>
       {loading ? (
         <p>Loading...</p>
@@ -554,13 +622,20 @@ function globalPageModule() {
         </ModalDialog>
       )}
 
+      {/* Tag Modal */}
+      {isTagModalOpen && (
+        <ModalDialog heading="Create Tag" onClose={() => closeTagModal(true)}>
+          <CreateTagGlobal closeTagModal = {closeTagModal}/>
+        </ModalDialog>
+      )}
+
       {/* Flashcard Delete Confirmation Modal */}
       <ModalTransition>
           {isDeleteFlashcardConfirmOpen && (
               <Modal onClose={closeDeleteFlashcardConfirm}>
                   <ModalHeader>
                       <Grid gap="space.200" templateAreas={['title close']} xcss={gridStyles}>
-                          <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
+                          <Flex xcss={closeContainerStyles} justifyContent="end">
                               <IconButton
                                   appearance="subtle"
                                   icon={CrossIcon}
@@ -568,7 +643,7 @@ function globalPageModule() {
                                   onClick={closeDeleteFlashcardConfirm}
                               />
                           </Flex>
-                          <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
+                          <Flex xcss={titleContainerStyles} justifyContent="start">
                               <ModalTitle appearance="danger">Delete Flashcard?</ModalTitle>
                           </Flex>
                       </Grid>
@@ -596,7 +671,7 @@ function globalPageModule() {
               <Modal onClose={closeDeleteDeckConfirm}>
                   <ModalHeader>
                       <Grid gap="space.200" templateAreas={['title close']} xcss={gridStyles}>
-                          <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
+                          <Flex xcss={closeContainerStyles} justifyContent="end">
                               <IconButton
                                   appearance="subtle"
                                   icon={CrossIcon}
@@ -604,7 +679,7 @@ function globalPageModule() {
                                   onClick={closeDeleteDeckConfirm}
                               />
                           </Flex>
-                          <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
+                          <Flex xcss={titleContainerStyles} justifyContent="start">
                               <ModalTitle appearance="danger">Delete Deck?</ModalTitle>
                           </Flex>
                       </Grid>
