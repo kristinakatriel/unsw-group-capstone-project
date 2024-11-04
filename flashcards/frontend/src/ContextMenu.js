@@ -2,7 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { invoke, view } from '@forge/bridge';
 import { Alert } from '@mui/material';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
+import Button, { IconButton } from '@atlaskit/button/new';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
+import UnlockIcon from '@atlaskit/icon/glyph/unlock';
+import LockIcon from '@atlaskit/icon/glyph/lock';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import { Field } from '@atlaskit/form';
+import Textfield from '@atlaskit/textfield';
 import './ContextMenu.css';
 
 const gridStyles = xcss({
@@ -22,6 +29,11 @@ function ContextMenu() {
   const [loading, setLoading] = useState(false);
   const [savedFlashcardIndex, setSavedFlashcardIndex] = useState(null); // Track saved flashcard index
   const [isTextFetched, setIsTextFetched] = useState(false);
+  const [front, setFront] = useState([]);
+  const [back, setBack] = useState([]);
+  const [hint, setHint] = useState('');
+  const [showHint, setShowHint] = useState(false); 
+  const [locked, setLocked] = useState(false);
 
   {/************************************* FIRST CALL WHEN MODULE IS LOADED ***************************************/}
   {/************************************* FETCHING SELECTED TEXT ***************************************/}
@@ -62,6 +74,8 @@ function ContextMenu() {
 
       if (response && response.success) {
         setGeneratedFlashcards(response.data);
+        setFront(response.data.map(fc => fc.question || ''));
+        setBack(response.data.map(fc => fc.answer || ''));
         console.log("Flashcards Generated Successfully:", response.data);
       } else {
         setErrorMessage(response.error);
@@ -83,9 +97,10 @@ function ContextMenu() {
 
     try {
       const response = await invoke('createFlashcard', {
-        front: flashcard.question,
-        back: flashcard.answer,
-        hint: '',  // Optional hint, could be modified to allow user input
+        front: front[index],
+        back: back[index],
+        hint: hint,
+        locked: locked
       });
 
       console.log("Received response from 'createFlashcard':", response);
@@ -97,12 +112,13 @@ function ContextMenu() {
         setTimeout(() => setSaveSuccess(false), 1000); // Display success message briefly
         // Delay updating `generatedFlashcards` by 1 second
         setTimeout(() => {
+          setFront(front.filter((_, i) => i !== index));
+          setBack(back.filter((_, i) => i !== index));
+          setHint('');
+          setLocked(false); 
           setGeneratedFlashcards(generatedFlashcards.filter(fc => fc !== flashcard));
-          setSavedFlashcardIndex(null); // Reset the saved flashcard index
+          setSavedFlashcardIndex(null);  
         }, 1000); // Delay of 1 second (1000 ms)
-
-
-
       } else {
         setErrorMessage(response.error);
         console.log("Error Saving Flashcard:", response.error);
@@ -136,13 +152,82 @@ function ContextMenu() {
               {generatedFlashcards.map((flashcard, index) => (
                 <li key={index}>
                   <div className="card-link">
-                    <h4 className="card-front">{flashcard.question || 'No front available'}</h4>
-                    <h4 className="card-back">{flashcard.answer || 'No back available'}</h4>
+                    {/************************************* FLASHCARD FRONT FIELD ***************************************/}
+                    <Field id={`flashcard-front-${index}`} name={`flashcard-front-${index}`} label="Flashcard Front">
+                      {({ fieldProps }) => (
+                        <Textfield
+                          className="textfield"
+                          {...fieldProps}
+                          value={front[index] || ''} 
+                          onChange={(e) => {
+                              const newFront = [...front];
+                              newFront[index] = e.target.value;
+                              setFront(newFront);
+                          }}
+                          placeholder="Type the front of the flashcard here..."
+                        />
+                      )}
+                    </Field>
 
-                    <div className="card-button">
-                      <button onClick={() => handleSaveFlashcard(flashcard, index)}>Save Flashcard</button>
+                    {/************************************* FLASHCARD BACK FIELD ***************************************/}
+                    <Field id={`flashcard-back-${index}`} name={`flashcard-back-${index}`} label="Flashcard Back">
+                      {({ fieldProps }) => (
+                        <Textfield
+                          className="textfield"
+                          {...fieldProps}
+                          value={back[index] || ''}
+                          onChange={(e) => {
+                              const newBack = [...back];
+                              newBack[index] = e.target.value;
+                              setBack(newBack);
+                          }}
+                          placeholder="Type the back of the flashcard here..."
+                        />
+                      )}
+                    </Field>
+
+                    {/************************************* HINT FIELD ***************************************/}
+                    <Field id="flashcard-hint" name="flashcard-hint" label={
+                      <div onClick={() => setShowHint(!showHint)} className="label-clickable">
+                        <span>Hint (Optional)</span>
+                        <span className="toggle-icon">
+                          {showHint ? <ExpandLessIcon fontSize="small"/> : <ExpandMoreIcon fontSize="small" />}
+                        </span>
+                      </div>
+                    }>
+                      {({ fieldProps }) => (
+                        <>
+                          {showHint && (
+                            <Textfield
+                              {...fieldProps}
+                              value={hint}
+                              onChange={(e) => setHint(e.target.value)}
+                              placeholder="Type a hint for the flashcard..."
+                            />
+                          )}
+                        </>
+                      )}
+                    </Field>
+
+                    {/************************************* LOCK/UNLOCKED FIELD ***************************************/}
+                    <Field>
+                      {() => (
+                        <span onClick={() => setLocked(!locked)} style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}>
+                          {locked ? 'This flashcard will be locked' : 'This flashcard will be unlocked'}
+                          <span> 
+                            {locked ? (
+                              <LockIcon label="Locked" />
+                            ) : (
+                              <UnlockIcon label="Unlocked" />
+                            )}
+                          </span>
+                        </span>
+                      )}
+                    </Field>
+
+                    <div className="context-menu-button-group">
+                      <Button appearance="primary" onClick={() => handleSaveFlashcard(flashcard, index)}>Save Flashcard</Button>
                     </div>
-
                   </div>
                 </li>
               ))}

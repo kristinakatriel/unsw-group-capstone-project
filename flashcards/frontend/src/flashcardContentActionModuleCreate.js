@@ -43,7 +43,7 @@ function flashcardContentActionModuleCreate() {
       const response = await invoke('createFlashcard', {
         front: front,
         back: back,
-        hint: 'A hint',
+        hint: hint,
         locked: locked
       });
 

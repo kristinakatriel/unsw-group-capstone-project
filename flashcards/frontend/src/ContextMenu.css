@@ -161,3 +161,9 @@
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
   margin: 8px 10px;
 }
+
+.context-menu-button-group {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 10px;
+}
