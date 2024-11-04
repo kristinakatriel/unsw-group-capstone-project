@@ -1,6 +1,20 @@
-.global-page-container {
-  overflow: auto;
-  min-height: 100%;
+.global-page-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.global-page-headlines {
+  display: flex;
+  flex-direction: column;
+}
+
+.global-page-flash-icon {
+  color: rgb(12, 102, 228);
+  margin-right: 10px;
+  width: 40px !important;
+  height: 40px !important;
 }
 
 .global-page-headline {
@@ -8,7 +22,58 @@
   color: black;
   display: flex;
   align-items: center;
-  margin-bottom: 10px;
+  margin-bottom: 5px;
+}
+
+.global-page-subheadline {
+  font-size: 16px;
+  color: darkgray;
+  font-style: italic;
+}
+
+.global-page-search {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 10px; /* Reduced padding */
+}
+
+.global-page-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid #c0c0c0;
+  border-radius: 6px; 
+  padding: 3px 8px; 
+  width: 200px; 
+  background-color: white;
+}
+
+.global-page-search-box:focus-within {
+  border-color: rgb(12, 102, 228);
+}
+
+.global-page-search-icon {
+  position: absolute;
+  left: 6px; 
+  color: lightgray;
+  font-size: 16px; 
+}
+
+#search-input {
+  width: 100%;
+  padding: 4px;
+  font-size: 14px; 
+  color: grey;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+  border-radius: 6px;
+  margin-left: 20px; 
+}
+
+#search-input::placeholder {
+  color: lightgray;
+  font-size: 14px;
 }
 
 .modal {
@@ -19,20 +84,6 @@
   width: 90%; /* Use most of the width */
   max-width: 600px; /* Cap the max width */
   z-index: 1000; /* Keep it on top of other elements */
-}
-
-.global-page-flash-icon {
-  color: rgb(12,102,228);
-  margin-right: 10px;
-  width: 40px !important;
-  height: 40px !important;
-}
-
-.global-page-subheadline {
-  font-size: 16px;
-  color: darkgray;
-  margin-bottom: 10px;
-  font-style: italic;
 }
 
 .global-page-recents,

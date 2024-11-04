@@ -1,7 +1,6 @@
 
 import Resolver from '@forge/resolver';
 
-
 export type ResolverFunction = Parameters<Resolver['define']>[1];
 export type ResolverRequest = Parameters<ResolverFunction>[0];
 
@@ -25,11 +24,12 @@ export enum StudySessionCardStatus {
 
 export interface Card {
     id: string;
+    owner: string;
+    name?: string;          // TODO: REMOVE AND RETURN MANUALLY
     front: string;
     back: string;
-    hint?: string;
-    owner: string;
-    name?: string;
+    hint?: string;          // TODO: NOT OPTIONAL
+    deckIds: string[];      // TODO: REPLACE WITH K-V STORAGE
     locked: boolean;
 }
 
@@ -38,9 +38,9 @@ export interface Deck {
     title: string;
     description?: string;
     owner: string;
-    name?: string;
-    cards: Card[];
-    cardIds?: string[];
+    name?: string;          // TODO: REMOVE AND RETURN MANUALLY
+    cards: Card[];          // TODO: REMOVE AND RETURN MANUALLY
+    cardIds: string[];     // TODO: NOT OPTIONAL
     size: number;
     locked: boolean
 }
@@ -48,19 +48,21 @@ export interface Deck {
 export interface Tag {
     id: string;
     title: string;
-    description?: string;
     owner: string;
-    name?: string;
-    deckIds: string[];
+    colour: string;
+    name?: string;          // TODO: REMOVE AND RETURN MANUALLY
     cardIds: string[];
+    deckIds: string[];
+    tagIds: string[];
+    // userIds: string[];
 }
 
 export interface User {
     id: string;
-    // name: string;
-    cards: number[];
-    decks: number[];
-    tags: number[];
+    name: string;
+    cardIds: string[];
+    deckIds: string[];
+    tagIds: string[];
     data: { deckId: DynamicData };
 }
 

@@ -66,6 +66,7 @@ export const addGeneratedFlashcards = async (req: ResolverRequest) => {
         title: deckTitle,
         description: `Fetched from ${siteUrl} under the name ${siteName}.`,
         cards: [],
+        cardIds: [],
         size: 0,
         locked: false
     };

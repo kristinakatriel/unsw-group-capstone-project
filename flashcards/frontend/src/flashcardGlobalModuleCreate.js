@@ -1,10 +1,30 @@
 import React, { useState, useEffect } from 'react';
-import { invoke, view } from '@forge/bridge';
-import './flashcardGlobalModule.css';
-import './globalPageModule.js';
-import { Alert, Collapse, IconButton } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import DragNDrop from './components/DragNDrop.jsx';
+import { invoke } from '@forge/bridge';
+import Button, { IconButton } from '@atlaskit/button/new';
+import { Field } from '@atlaskit/form';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
+import { Flex, Grid, xcss } from '@atlaskit/primitives';
+import Textfield from '@atlaskit/textfield';
+import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
+import UnlockIcon from '@atlaskit/icon/glyph/unlock';
+import LockIcon from '@atlaskit/icon/glyph/lock';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import './deckGlobalModuleCreate.css';
+
+const gridStyles = xcss({
+  width: '100%',
+});
+
+const closeContainerStyles = xcss({
+  gridArea: 'close',
+});
+
+const titleContainerStyles = xcss({
+  gridArea: 'title',
+});
 
 function CreateFlashcardGlobal( { closeFlashcardModal }) {
   const [front, setFront] = useState('');
@@ -14,6 +34,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [closeError, setCloseError] = useState(true);
   const [locked, setLocked] = useState(false);
+  const [showHint, setShowHint] = useState(false); 
 
   const handleCloseGlobal = () => {
     console.log('CLOSE BUTTON WAS JUST PRESSED (Function called: handleCloseGlobal)');
@@ -24,11 +45,22 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
     }
   };
 
-
   const handleSaveGlobal = async () => {
     setErrorMessage('');
     setCloseError(true);
     console.log('SAVE BUTTON WAS JUST PRESSED (Function called: handleSaveGlobal)');
+
+    // UNCOMMENT THESE OUT ONCE FINALISED LIMIT
+    if (front.length > 100) {
+      setErrorMessage('Front of flashcard must be 100 characters or fewer.');
+      return;
+    }
+
+    if (back.length > 100) {
+      setErrorMessage('Back of flashcard must be 100 characters or fewer.');
+      return;
+    }
+
     try {
       console.log('Function called: handleSaveGlobal');
       const response = await invoke('createFlashcard', {
@@ -63,93 +95,99 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
 
 
   return (
-    <div className="global-flashcard-creation">
-      <h2 className="flashcard-title">Create New Flashcard</h2>
-      { errorMessage && 
-        <Collapse in={closeError}>
-          <Alert
-            severity="error"
-            action={
+    <ModalTransition>
+      <Modal onClose={closeFlashcardModal}>
+        <ModalHeader>
+          <Grid templateAreas={['title close']} xcss={gridStyles}>
+            <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
               <IconButton
-                aria-label="close"
-                color="inherit"
-                size="small"
-                onClick={() => {
-                  setCloseError(false);
-                }}
+                appearance="subtle"
+                icon={CrossIcon}
+                label="Close Modal"
+                onClick={closeFlashcardModal}
+              />
+            </Flex>
+            <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
+              <ModalTitle>Create New Flashcard</ModalTitle>
+            </Flex>
+          </Grid>
+        </ModalHeader>
+
+        <ModalBody>
+          {errorMessage && 
+            <Collapse in={closeError}>
+              <Alert
+                severity="error"
+                onClose={() => setCloseError(false)}
               >
-              <CloseIcon fontSize="inherit" />
-              </IconButton>
-            }
-            sx={{ mb: 2 }}
-          >
-            {errorMessage}
-          </Alert>
-        </Collapse>
-      }
-      <div className="form-group">
-        <label htmlFor="front">Front</label>
-        <div className="input-drag-container">
-          <textarea
-            id="front"
-            value={front}
-            onChange={(e) => setFront(e.target.value)}
-            placeholder="Enter text for the front of the flashcard..."
-            className="input-area"
-          />
-        </div>
-      </div>
+                {errorMessage}
+              </Alert>
+            </Collapse>
+          }
 
-      <div className="form-group">
-        <label htmlFor="back">Back</label>
-        <div className="input-drag-container">
-          <textarea
-            id="back"
-            value={back}
-            onChange={(e) => setBack(e.target.value)}
-            placeholder="Enter text for the back of the flashcard..."
-            className="input-area"
-          />
-        </div>
-      </div>
+          {/************************************* FLASHCARD FRONT FIELD ***************************************/}
+          <Field id="flashcard-front" name="flashcard-front" label="Flashcard Front">
+            {({ fieldProps }) => (
+              <Textfield {...fieldProps} value={front} onChange={(e) => setFront(e.target.value)} placeholder="Type the front of the flashcard here..." />
+            )}
+          </Field>
 
-      <div className="form-group">
-        <label htmlFor="hint">Hint (Optional)</label>
-        <div className="input-drag-container">
-          <textarea
-            id="hint"
-            value={hint}
-            onChange={(e) => setHint(e.target.value)}
-            placeholder="Enter a hint..."
-            className="input-area"
-          />
-        </div>
-      </div>
+          {/************************************* FLASHCARD BACK FIELD ***************************************/}
+          <Field id="flashcard-back" name="flashcard-back" label="Flashcard Back">
+            {({ fieldProps }) => (
+              <Textfield {...fieldProps} value={back} onChange={(e) => setBack(e.target.value)} placeholder="Type the back of the flashcard here..." />
+            )}
+          </Field>
 
-      <div className="form-group">
-        <label>
-          <input 
-            type="checkbox" 
-            checked={locked} 
-            onChange={(e) => setLocked(e.target.checked)} 
-          />
-          Check the box if you want no one else to edit and/or delete the card
-        </label>
-      </div>
+          {/************************************* HINT FIELD ***************************************/}
+          <Field id="flashcard-hint" name="flashcard-hint" label={
+            <div onClick={() => setShowHint(!showHint)} className="label-clickable">
+              <span>Hint (Optional)</span>
+              <span className="toggle-icon">
+                {showHint ? <ExpandLessIcon fontSize="small"/> : <ExpandMoreIcon fontSize="small" />}
+              </span>
+            </div>
+          }>
+            {({ fieldProps }) => (
+              <>
+                {showHint && (
+                  <Textfield
+                    {...fieldProps}
+                    value={hint}
+                    onChange={(e) => setHint(e.target.value)}
+                    placeholder="Type a hint for the flashcard..."
+                  />
+                )}
+              </>
+            )}
+          </Field>
 
-      {/* <div className="form-group">
-        <label htmlFor="select">Add to... (Optional)</label>
-      </div> */}
+          {/************************************* LOCK/UNLOCKED FIELD ***************************************/}
+          <Field>
+            {() => (
+              <span onClick={() => setLocked(!locked)} style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}>
+                {locked ? 'This flashcard will be locked, only the owner can edit and delete' : 'This flashcard will be unlocked, others can edit and delete'}
+                <span> 
+                  {locked ? (
+                    <LockIcon label="Locked" />
+                  ) : (
+                    <UnlockIcon label="Unlocked" />
+                  )}
+                </span>
+              </span>
+            )}
+          </Field>
 
-      {saveSuccess && 
-        <Alert severity="success"> New flashcard created successfully! </Alert>
-      }
+          {saveSuccess && <Alert severity="success"> New flashcard created successfully! </Alert>}
 
-      <div className="button-group">
-        <button className="save-button" onClick={handleSaveGlobal}>Save</button>
-        <button className="close-button" onClick={handleCloseGlobal}>Close</button>
-      </div>
-    </div>
+        </ModalBody>
+
+        <ModalFooter>
+          <Button appearance="subtle" onClick={handleCloseGlobal}>Cancel</Button>
+          <Button appearance="primary" onClick={handleSaveGlobal}>Create Flashcard</Button>
+        </ModalFooter>
+      </Modal>
+    </ModalTransition>
   );
 }
 
