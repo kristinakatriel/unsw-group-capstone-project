@@ -10,6 +10,7 @@ import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import FlashOnIcon from '@mui/icons-material/FlashOn';
 import Textfield from '@atlaskit/textfield';
 import './deckGlobalModuleCreate.css';
 
@@ -83,7 +84,10 @@ function flashcardContentActionModuleCreate() {
             onClick={handleClose}
           />
         </Flex>
-        <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center"><h2>Create New Flashcard</h2></Flex>
+        <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
+          <FlashOnIcon className="content-action-flash-icon" />
+          <h2>FLASH - Create New Flashcard</h2>
+        </Flex>
       </Grid>
       {errorMessage && 
         <Collapse in={closeError}>

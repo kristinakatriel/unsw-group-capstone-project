@@ -1,7 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { invoke, view } from '@forge/bridge';
-import { Alert, Collapse, IconButton } from '@mui/material';
+import { Alert } from '@mui/material';
+import { Flex, Grid, xcss } from '@atlaskit/primitives';
+import FlashOnIcon from '@mui/icons-material/FlashOn';
 import './ContextMenu.css';
+
+const gridStyles = xcss({
+  width: '100%',
+});
+
+const titleContainerStyles = xcss({
+  gridArea: 'title',
+});
 
 function ContextMenu() {
   const [text, setText] = useState(''); // For input text to generate flashcards
@@ -11,11 +21,10 @@ function ContextMenu() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [savedFlashcardIndex, setSavedFlashcardIndex] = useState(null); // Track saved flashcard index
+  const [isTextFetched, setIsTextFetched] = useState(false);
 
-
-
-
-  // Fetch selected text context when the component mounts
+  {/************************************* FIRST CALL WHEN MODULE IS LOADED ***************************************/}
+  {/************************************* FETCHING SELECTED TEXT ***************************************/}
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -24,8 +33,7 @@ function ContextMenu() {
         const selectedText = context.extension.selectedText; // Get selected text from context
         console.log("Selected Text:", selectedText); // Log the selected text for verification
         setText(selectedText); // Set the selected text to the state
-
-
+        setIsTextFetched(true)
       } catch (error) {
         console.error("Error fetching data:", error);
         setErrorMessage('Failed to fetch selected text');
@@ -35,6 +43,13 @@ function ContextMenu() {
     fetchData(); // Call the fetchData function
   }, []); // Empty dependency array to run on mount
 
+  {/********************** SECOND CALL WHEN MODULE IS LOADED, AND SELECTED TEXT HAS BEEN FETCHED *******************/}
+  {/************************************* GENERATING THE AI FLASHCARDS ***************************************/}
+  useEffect(() => {
+    if (isTextFetched) {
+      handleGenerateFlashcards();
+    }
+  }, [isTextFetched]); // Dependency on isTextFetched
 
   const handleGenerateFlashcards = async () => {
     console.log("Generating Flashcards...");
@@ -99,49 +114,47 @@ function ContextMenu() {
 
   };
 
-  const handleClose = () => {
-    console.log('Context menu closed');
-    view.close();
-  };
-
   console.log('Current Context Menu Data:', generatedFlashcards);
 
   return (
     <div className='context-menu'>
+      <Grid templateAreas={['title close']} xcss={gridStyles}>
+        <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
+          <FlashOnIcon className="context-menu-flash-icon" />
+          <h2>FLASH - AI Flashcard Generator!</h2>
+        </Flex>
+      </Grid>
 
-      <h2>FLASH - Custom AI Flashcard Generator!</h2>
-      <div className="button-group">
-        <button className="generate-button" onClick={handleGenerateFlashcards} disabled={loading}>
-          {loading ? 'Generating...' : 'Generate Flashcards'}
-        </button>
-        <button className="close-button" onClick={handleClose}>Close</button>
-      </div>
-
-
-      <h2>Generated Flashcards</h2>
-      <h4 className='deck-flashcard-amount'>Flashcards: {generatedFlashcards.length || 0}</h4>
       {generatedFlashcards.length > 0 ? (
-        <div className="card-wrapper">
-          <ul className="card-list">
-            {generatedFlashcards.map((flashcard, index) => (
-              <li key={index} className="card-item">
-                <div className="card-link">
-                  <h4 className="card-front">{flashcard.question || 'No front available'}</h4>
-                  <h4 className="card-back">{flashcard.answer || 'No back available'}</h4>
+        <>
+          <h4 className='deck-flashcard-amount'>Flashcards Generated with AI: {generatedFlashcards.length || 0}</h4>
+          {saveSuccess && (
+            <Alert severity="success">New flashcard created successfully!</Alert>
+          )}
+          <div className="card-wrapper">
+            <ul className="card-list">
+              {generatedFlashcards.map((flashcard, index) => (
+                <li key={index}>
+                  <div className="card-link">
+                    <h4 className="card-front">{flashcard.question || 'No front available'}</h4>
+                    <h4 className="card-back">{flashcard.answer || 'No back available'}</h4>
 
-                  <div className="card-button">
-                    <button onClick={() => handleSaveFlashcard(flashcard, index)}>Save Flashcard</button>
+                    <div className="card-button">
+                      <button onClick={() => handleSaveFlashcard(flashcard, index)}>Save Flashcard</button>
+                    </div>
+
                   </div>
-                  {saveSuccess && savedFlashcardIndex === index && (
-                    <Alert severity="success">New flashcard created successfully!</Alert>
-                  )}
-                </div>
-              </li>
-            ))}
-          </ul>
-        </div>
+                </li>
+              ))}
+            </ul>
+          </div>
+        </>
+
       ) : (
-        <p>No flashcards generated yet.</p>
+        <>
+          <h4 className='deck-flashcard-amount'>Flashcards Generated with AI: Loading...</h4>
+          <p>Generating Flashcards...</p>
+        </>
       )}
     </div>
 
