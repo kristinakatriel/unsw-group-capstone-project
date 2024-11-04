@@ -2,9 +2,11 @@ import React, { useState, useEffect } from 'react';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import CheckIcon from '@atlaskit/icon/glyph/check';
 import LightbulbIcon from '@atlaskit/icon/glyph/lightbulb';
+import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import './QuizMode.css';
+import { invoke } from '@forge/bridge'
 
 const QuizMode = ({ deck }) => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -13,11 +15,34 @@ const QuizMode = ({ deck }) => {
   const [cardStatus, setCardStatus] = useState(null);
   const [elapsedTime, setElapsedTime] = useState(0); 
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
+  const [sessionId, setSessionId] = useState(null);
+  const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
+  const [hintCount, setHintCount] = useState(0);
+  const [incorrectAnswersCount, setIncorrectAnswersCount] = useState(0);
+  const [skipCount, setSkipCount] = useState(0);
 
   const flashcards = deck.cards;
   const totalCards = flashcards.length;
 
   useEffect(() => {
+    const startQuizSession = async () => {
+      try {
+        const response = await invoke('startQuizSession', { deckId: deck.id });
+        if (response.success) {
+          console.log(response.sessionId);
+          console.log(response.session);
+          setSessionId(response.sessionId);
+          setCurrentCardIndex(response.firstIndex);
+        } else {
+          console.log(response.user)
+          console.error(response.error);
+        }
+      } catch (error) {
+        console.error('response is invalid');
+      }
+    };
+    startQuizSession();
+
     if (!isQuizCompleted) {
       const timer = setInterval(() => {
         setElapsedTime((prevTime) => prevTime + 1);
@@ -30,28 +55,43 @@ const QuizMode = ({ deck }) => {
   const openHintModal = () => setIsHintModalOpen(true);
   const closeHintModal = () => setIsHintModalOpen(false);
 
-  const goToNextCard = () => {
-    if (currentCardIndex < totalCards - 1) {
-      setCurrentCardIndex((prevIndex) => prevIndex + 1);
-    } else {
-      setIsQuizCompleted(true); 
+  const goToNextCard = async (status) => {
+    try {
+      const response = await invoke('updateCardStatusQuiz', {
+        currentIndex: currentCardIndex,
+        status,
+        sessionId,
+      });
+      if (response.success) {
+        if (response.message === 'quiz is finished') {
+          setIsQuizCompleted(true);
+        } else {
+          setCurrentCardIndex(response.nextIndex);
+          setIsFlipped(false);
+          setCardStatus(null);
+        }
+      } else {
+        console.error(response.error);
+      }
+    } catch (error) {
+      console.error('response is invalid');
     }
-    setIsFlipped(false);
-    setCardStatus(null);
   };
 
   const handleCorrect = () => {
     setCardStatus('correct');
+    setCorrectAnswersCount(prevCount => prevCount + 1)
     setTimeout(() => {
-      goToNextCard();
+      goToNextCard('correct');
       setCardStatus(null); 
     }, 1000);
   };
 
   const handleIncorrect = () => {
     setCardStatus('incorrect');
+    setIncorrectAnswersCount(prevCount => prevCount + 1)
     setTimeout(() => {
-      goToNextCard();
+      goToNextCard('incorrect');
       setCardStatus(null); 
     }, 1000);
   };
@@ -62,7 +102,18 @@ const QuizMode = ({ deck }) => {
 
   const handleHintClick = (event) => {
     event.stopPropagation();
+    setHintCount(prevCount => prevCount + 1)
     openHintModal();
+    goToNextCard('hint');
+  };
+
+  const handleSkip = () => {
+    setCardStatus('skip');
+    setSkipCount(prevCount => prevCount + 1)
+    setTimeout(() => {
+      goToNextCard('skip');
+      setCardStatus(null); 
+    }, 1000);
   };
 
   const formatTime = (seconds) => {
@@ -111,6 +162,10 @@ const QuizMode = ({ deck }) => {
             <div className='quiz-mode-incorrect-button' onClick={handleIncorrect}>
               <CrossIcon />
             </div>
+            <div className='skip' onClick={handleSkip}>
+              <ArrowRightIcon />
+              <div className='skip message'>Click to skip!</div>
+            </div>
             <div className='quiz-mode-correct-button' onClick={handleCorrect}>
               <CheckIcon />
             </div>
@@ -120,6 +175,10 @@ const QuizMode = ({ deck }) => {
         <div className='quiz-completed'>
           <h1>Quiz completed!</h1>
           <p>Completed in {formatTime(elapsedTime)}</p>
+          <p>Number correct: {correctAnswersCount}</p>
+          <p>Number skipped: {skipCount}</p>
+          <p>Number of incorrect: {incorrectAnswersCount}</p>
+          <p>Number that require skipped: {hintCount}</p>
         </div>
       )}
 
