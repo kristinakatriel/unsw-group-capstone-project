@@ -361,7 +361,11 @@ function globalPageModule() {
   const renderTagsList = (filteredTags) => (
     <div className="global-page-badge-container">
       {filteredTags.map((tag, index) => (
-        <p key={index} className={`badge ${tag.colour}`} onClick={() => console.log(`${tag.title} has been clicked!`)} >
+        <p 
+          key={index} 
+          className={`badge ${tag.colour}`} 
+          onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
+        >
           {tag.title || "Tag"}
         </p>
       ))}
