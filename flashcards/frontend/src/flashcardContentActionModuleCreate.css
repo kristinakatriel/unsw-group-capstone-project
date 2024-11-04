@@ -8,10 +8,12 @@
   width: 100vw;
 }
 
-h2 {
-  font-size: 24px;
-  font-weight: bold;
-  margin: 20px 0;
+.flashcard-creation h2 {
+  margin-left: 5px;
+}
+
+.content-action-flash-icon {
+  color: rgb(12, 102, 228);
 }
 
 .flashcard-title {

@@ -325,9 +325,9 @@ function globalPageModule() {
   const filteredFlashcards = flashcards.filter((card) => {
     const searchTerm = globalPageSearchTerm.toLowerCase();
     return (
-      card.front.toLowerCase().includes(searchTerm) ||
-      card.back.toLowerCase().includes(searchTerm) ||
-      (card.name && card.name.toLowerCase().includes(searchTerm))
+      (typeof card.front === 'string' && card.front.toLowerCase().includes(searchTerm)) ||
+      (typeof card.back === 'string' && card.back.toLowerCase().includes(searchTerm)) ||
+      (card.name && typeof card.name === 'string' && card.name.toLowerCase().includes(searchTerm))
       // Add tags once implemented
     );
   });
@@ -335,17 +335,17 @@ function globalPageModule() {
   const filteredDecks = flashdecks.filter((deck) => {
     const searchTerm = globalPageSearchTerm.toLowerCase();
     return (
-      deck.title.toLowerCase().includes(searchTerm) ||
-      (deck.description && deck.description.toLowerCase().includes(searchTerm)) ||
-      (deck.name && deck.name.toLowerCase().includes(searchTerm))
+      (typeof deck.title === 'string' && deck.title.toLowerCase().includes(searchTerm)) ||
+      (deck.description && typeof deck.description === 'string' && deck.description.toLowerCase().includes(searchTerm)) ||
+      (deck.name && typeof deck.name === 'string' && deck.name.toLowerCase().includes(searchTerm))
       // Add tags once implemented
     );
   });
-
+  
   const filteredTags = tags.filter((tag) => {
     const searchTerm = globalPageSearchTerm.toLowerCase();
     return (
-      tag.title.toLowerCase().includes(searchTerm)
+      (typeof tag.title === 'string' && tag.title.toLowerCase().includes(searchTerm))
     );
   });
 
