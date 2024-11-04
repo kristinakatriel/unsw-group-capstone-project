@@ -26,17 +26,19 @@ const QuizMode = ({ deck }) => {
 
   useEffect(() => {
     const startQuizSession = async () => {
-      const response = await invoke('startQuizSession', { deckId: deck.id });
-      if (!response) {
-        console.log('response is invalid');
-      } else {
+      try {
+        const response = await invoke('startQuizSession', { deckId: deck.id });
         if (response.success) {
-          setSessionId(response.session.sessionId);
+          console.log(response.sessionId);
+          console.log(response.session);
+          setSessionId(response.sessionId);
           setCurrentCardIndex(response.firstIndex);
         } else {
           console.log(response.user)
           console.error(response.error);
         }
+      } catch (error) {
+        console.error('response is invalid');
       }
     };
     startQuizSession();
@@ -54,16 +56,12 @@ const QuizMode = ({ deck }) => {
   const closeHintModal = () => setIsHintModalOpen(false);
 
   const goToNextCard = async (status) => {
-    const response = await invoke('updateCardStatusQuiz', {
-      currentIndex: currentCardIndex,
-      status,
-      sessionId,
-    });
-    console.log("hello", response.currentIndex) 
-    if (!response) {
-      console.log('invalid response')
-    } else {
-      console.log(response)
+    try {
+      const response = await invoke('updateCardStatusQuiz', {
+        currentIndex: currentCardIndex,
+        status,
+        sessionId,
+      });
       if (response.success) {
         if (response.message === 'quiz is finished') {
           setIsQuizCompleted(true);
@@ -75,6 +73,8 @@ const QuizMode = ({ deck }) => {
       } else {
         console.error(response.error);
       }
+    } catch (error) {
+      console.error('response is invalid');
     }
   };
 

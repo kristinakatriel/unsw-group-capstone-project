@@ -70,7 +70,8 @@ export const startQuizSession = async (req: ResolverRequest) => {
       return {
         success: true,
         session: newSession,
-        firstIndex: 0
+        firstIndex: 0,
+        sessionId: sessionId
       }
   };
   
@@ -121,7 +122,8 @@ export const startQuizSession = async (req: ResolverRequest) => {
       return {
         success: true,
         nextIndex: newIndex,
-        nextCardId: session.deckInSession.cards?.[newIndex].id
+        nextCardId: session.deckInSession.cards?.[newIndex].id,
+        sessionId: sessionId
       }
     }
   }; 
