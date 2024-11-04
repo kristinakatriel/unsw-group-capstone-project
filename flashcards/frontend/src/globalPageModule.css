@@ -34,17 +34,17 @@
 .global-page-search {
   display: flex;
   justify-content: flex-end;
-  padding-right: 10px; /* Reduced padding */
+  padding-right: 10px;
 }
 
 .global-page-search-box {
   position: relative;
   display: flex;
   align-items: center;
-  border: 1px solid #c0c0c0;
+  border: 1px solid darkgray;
   border-radius: 6px; 
   padding: 3px 8px; 
-  width: 200px; 
+  width: 200px;
   background-color: white;
 }
 
@@ -54,25 +54,25 @@
 
 .global-page-search-icon {
   position: absolute;
-  left: 6px; 
-  color: lightgray;
-  font-size: 16px; 
+  left: 6px;
+  color: darkgray;
+  font-size: 16px;
 }
 
 #search-input {
   width: 100%;
   padding: 4px;
   font-size: 14px; 
-  color: grey;
+  color: darkgray;
   border: none;
   outline: none;
   box-sizing: border-box;
   border-radius: 6px;
-  margin-left: 20px; 
+  margin-left: 20px;
 }
 
 #search-input::placeholder {
-  color: lightgray;
+  color: grey;
   font-size: 14px;
 }
 
@@ -96,6 +96,14 @@
   align-items: center;
 }
 
+.global-page-tags {
+  font-size: 18px;
+  color: black;
+  display: flex;
+  align-items: center;
+}
+
+.global-page-create-tag-button,
 .global-page-create-flashcard-button,
 .global-page-create-deck-button {
   background-color: rgb(12,102,228);
@@ -109,11 +117,69 @@
   margin-left: 10px;
 }
 
-.global-page-create-flashcard-button:hover {
+.global-page-create-tag-button:hover,
+.global-page-create-flashcard-button:hover,
+.global-page-create-deck-button:hover {
   background-color: rgb(1,85,204);
 }
 
 .breadcrumb-item {
   font-weight: bold;
-  font-size: 18px; /* Adjust as needed */
+  font-size: 18px; 
+}
+
+.global-page-badge-container {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap; 
+}
+
+.global-page-badge-container .badge {
+  color: #5372F0;
+  padding: 6px 12px;
+  margin: 12px 0 14px;
+  background: #DDE4FF;
+  width: fit-content; 
+  border-radius: 40px; 
+  cursor: pointer; 
+  transition: background 0.3s, box-shadow 0.3s; 
+}
+
+.global-page-badge-container .badge:hover {
+  cursor: pointer;
+  box-shadow: inset 0 0 0 2px currentColor;
+}
+
+.global-page-badge-container .badge:first-child {
+  margin-top: 12px; 
+}
+
+.global-page-badge-container .badge.blue {
+  color: #5372F0; 
+  background: #DDE4FF; 
+}
+
+.global-page-badge-container .badge.red {
+  color: #B22485; 
+  background: #F7DFF5; 
+}
+
+.global-page-badge-container .badge.orange {
+  color: #B25A2B;
+  background: #FFE3D2; 
+}
+
+.global-page-badge-container .badge.green {
+  color: #205C20; 
+  background: #D6F8D6; 
+}
+
+.global-page-badge-container .badge.yellow {
+  color: #856404;
+  background: #fff3cd;
+}
+
+.global-page-badge-container .badge.purple {
+  color: #6B4BA3;
+  background: #E9DDFF;
 }

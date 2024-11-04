@@ -1,20 +1,24 @@
+.decks-select-scroll,
 .flashcards-select-scroll {
   max-height: 300px;
   overflow-y: scroll;
   flex-direction: column; 
 }
 
+.decks-select-scroll-item,
 .flashcards-select-scroll-item {
   display: flex;
   align-items: center;
 }
 
+.decks-select-scroll-item input,
 .flashcards-select-scroll-item input {
   margin-right: 8px; 
 }
 
+.decks-select-scroll-item label,
 .flashcards-select-scroll-item label {
-  margin-bottom: 5px;
+  margin: 5px;
 }
 
 .label-clickable {
