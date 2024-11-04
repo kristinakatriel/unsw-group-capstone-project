@@ -27,6 +27,11 @@ import {
   getAllContentQA
 } from './aiResolvers'
 
+import {
+  startQuizSession, updateCardStatusQuiz, endQuizSession,
+  startStudySession, updateCardStatusStudy, endStudySession
+} from './sessions'
+
 ///////////////////////////////////////////////////////////////////////////////////
 
 const resolver = new Resolver();
@@ -67,6 +72,14 @@ resolver.define('fetchUserTags', fetchUserTags);
 resolver.define('getAllContentQA', getAllContentQA);
 resolver.define('generateQA', generateQA);
 resolver.define('addGeneratedFlashcards', addGeneratedFlashcards);
+
+resolver.define('startQuizSession', startQuizSession);
+resolver.define('endQuizSession', endQuizSession);
+resolver.define('updateCardStatusQuiz',updateCardStatusQuiz);
+
+resolver.define('startStudySession', startStudySession);
+resolver.define('endStudySession', endStudySession);
+resolver.define('updateCardStatusStudy',updateCardStatusStudy);
 
 ///////////////////////////////////////////////////////////////////////////////////
 

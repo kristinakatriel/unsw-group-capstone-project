@@ -36,7 +36,7 @@ const DeckSlider = ({ decks = [], onDelete, onDeckClick, onEdit }) => {
                     {/* ** TODO ** */}
                     <p className='badge blue'>Blue Tag</p>
                     <h4 className='deck-name'>{deck.title || 'Unnamed Deck'}</h4>
-                    <h4 className='deck-description'>{deck.description || 'No description available'}</h4>
+                    <h4 className='deck-description'>{deck.description}</h4>
                     <h4 className='deck-flashcard-amount'>Flashcards: {deck.cards?.length || 0}</h4>
                     <h4 className='deck-owner'>By {deck.name || 'Unknown'}</h4>
                     <div className='deck-button'>

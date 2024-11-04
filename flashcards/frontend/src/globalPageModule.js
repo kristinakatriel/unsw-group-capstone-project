@@ -561,7 +561,7 @@ function globalPageModule() {
               <Modal onClose={closeDeleteFlashcardConfirm}>
                   <ModalHeader>
                       <Grid gap="space.200" templateAreas={['title close']} xcss={gridStyles}>
-                          <Flex xcss={closeContainerStyles} justifyContent="end">
+                          <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
                               <IconButton
                                   appearance="subtle"
                                   icon={CrossIcon}
@@ -569,7 +569,7 @@ function globalPageModule() {
                                   onClick={closeDeleteFlashcardConfirm}
                               />
                           </Flex>
-                          <Flex xcss={titleContainerStyles} justifyContent="start">
+                          <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
                               <ModalTitle appearance="danger">Delete Flashcard?</ModalTitle>
                           </Flex>
                       </Grid>
@@ -597,7 +597,7 @@ function globalPageModule() {
               <Modal onClose={closeDeleteDeckConfirm}>
                   <ModalHeader>
                       <Grid gap="space.200" templateAreas={['title close']} xcss={gridStyles}>
-                          <Flex xcss={closeContainerStyles} justifyContent="end">
+                          <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
                               <IconButton
                                   appearance="subtle"
                                   icon={CrossIcon}
@@ -605,7 +605,7 @@ function globalPageModule() {
                                   onClick={closeDeleteDeckConfirm}
                               />
                           </Flex>
-                          <Flex xcss={titleContainerStyles} justifyContent="start">
+                          <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
                               <ModalTitle appearance="danger">Delete Deck?</ModalTitle>
                           </Flex>
                       </Grid>
