@@ -10,16 +10,25 @@ import { generateId, clearStorage, getUserName, initUserData } from './helpers'
 export const startQuizSession = async (req: ResolverRequest) => {
     const { deckId } = req.payload;
     const accountId = req.context.accountId;
-    const user = await storage.get(`u-${accountId}`);
-  
+    const user = await initUserData(accountId);
+
+    if (!(deckId in user.data)) {
+      const newDynamicDataObj: DynamicData = {
+        dynamicDeck: await storage.get(deckId),
+        quizSessions: [],
+        studySessions: []
+      }
+      user.data[deckId] = newDynamicDataObj;
+    }
+    
     const quizDeck = user.data[deckId].dynamicDeck;
-  
-      if (!quizDeck) {
-          return {
-              success: false,
-              error: 'Deck Not found',
-          };
-      } 
+    
+    if (!quizDeck) {
+      return {
+        success: false,
+        error: 'Deck not found. Please make sure the deck exists for the user.',
+      };
+    } 
   
       // create an array of status
       const totalCards = quizDeck.cards?.length
@@ -48,7 +57,6 @@ export const startQuizSession = async (req: ResolverRequest) => {
       // let us return the first card and the session
       return {
         success: true,
-        firstCardId: quizDeck.cards?.[0].id,
         session: newSession,
         firstIndex: 0
       }
@@ -86,13 +94,16 @@ export const startQuizSession = async (req: ResolverRequest) => {
   
     // now let us return the next card
     // check if quiz has finished
-    const newIndex = currentIndex + 1;
+    let newIndex = currentIndex + 1;
     if (newIndex == session.totalCardCount) {
       return {
         success: true,
         message: 'quiz is finished'
       }
     } else {
+      if (status == 'hint') {
+        newIndex = newIndex - 1;
+      }
       // quiz hasnt finished so we return the next card
       session.currentCardIndex = newIndex;
       return {
@@ -150,7 +161,16 @@ export const startQuizSession = async (req: ResolverRequest) => {
   export const startStudySession = async (req: ResolverRequest) => {
     const { deckId } = req.payload;
     const accountId = req.context.accountId;
-    const user = await storage.get(`u-${accountId}`);
+    const user = await initUserData(accountId);
+
+    if (!(deckId in user.data)) {
+      const newDynamicDataObj: DynamicData = {
+        dynamicDeck: await storage.get(deckId),
+        quizSessions: [],
+        studySessions: []
+      }
+      user.data[deckId] = newDynamicDataObj;
+    }
   
     const studyDeck = user.data[deckId].dynamicDeck;
   
