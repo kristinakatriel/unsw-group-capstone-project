@@ -7,10 +7,22 @@ import {
 } from './types';
 import { generateId, clearStorage, getUserName, initUserData } from './helpers'
 
+
 export const startQuizSession = async (req: ResolverRequest) => {
     const { deckId } = req.payload;
     const accountId = req.context.accountId;
     const user = await initUserData(accountId);
+
+    if (!user) {
+      return {
+        success: false,
+        error: 'user doesnt exist'
+      }
+    }
+
+    if (!user.data) {
+      user.data = {}
+    }
 
     if (!(deckId in user.data)) {
       const newDynamicDataObj: DynamicData = {

@@ -34,6 +34,7 @@ const QuizMode = ({ deck }) => {
           setSessionId(response.session.sessionId);
           setCurrentCardIndex(response.firstIndex);
         } else {
+          console.log(response.user)
           console.error(response.error);
         }
       }
