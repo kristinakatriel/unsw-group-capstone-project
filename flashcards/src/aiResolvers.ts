@@ -39,11 +39,28 @@ export const getAllContentQA = async (req: ResolverRequest) => {
         const paragraphs = extractParagraphs(doc.content);
         const allText = paragraphs.join(' ');
 
-        return allText; // Return concatenated text
+        const qaRequest = {
+            payload: {
+                text: allText,
+                // Include other necessary properties if required
+            },
+            context: {} // no context in this case ?
+        };
+        // Invoke AI flashcards
+        const qaResult = await generateQA(qaRequest);
+        if (qaResult.success == true) {
+            return {
+                success: true,
+                data: qaResult.data
+            }; // Return the result from generateQA
+        }
     }
 
     // console.log(text);
-    return response.status;
+    return {
+        success: false,
+        error: response.statusText
+    };
 };
 
 // AI GENERATION
