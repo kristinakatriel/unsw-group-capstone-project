@@ -359,18 +359,12 @@ function globalPageModule() {
   );
 
   const renderTagsList = (filteredTags) => (
-    <div className="badge-container">
+    <div className="global-page-badge-container">
       {filteredTags.map((tag, index) => (
-        <p key={index} className={`badge ${tag.colour}`}>
-          {tag.title || "Tag"} {/* Display the tag's name or a default label */}
+        <p key={index} className={`badge ${tag.colour}`} onClick={() => console.log(`${tag.title} has been clicked!`)} >
+          {tag.title || "Tag"}
         </p>
       ))}
-      <p className="badge blue">COMP3900</p>
-      <p className="badge red">Camping</p>
-      <p className="badge orange">Work</p>
-      <p className="badge green">University</p>
-      <p className="badge yellow">Hobbies</p>
-      <p className="badge purple">Dogs</p>  
     </div>
   );
   

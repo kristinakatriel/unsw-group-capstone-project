@@ -127,3 +127,59 @@
   font-weight: bold;
   font-size: 18px; 
 }
+
+.global-page-badge-container {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap; 
+}
+
+.global-page-badge-container .badge {
+  color: #5372F0;
+  padding: 6px 12px;
+  margin: 12px 0 14px;
+  background: #DDE4FF;
+  width: fit-content; 
+  border-radius: 40px; 
+  cursor: pointer; 
+  transition: background 0.3s, box-shadow 0.3s; 
+}
+
+.global-page-badge-container .badge:hover {
+  cursor: pointer;
+  box-shadow: inset 0 0 0 2px currentColor;
+}
+
+.global-page-badge-container .badge:first-child {
+  margin-top: 12px; 
+}
+
+.global-page-badge-container .badge.blue {
+  color: #5372F0; 
+  background: #DDE4FF; 
+}
+
+.global-page-badge-container .badge.red {
+  color: #B22485; 
+  background: #F7DFF5; 
+}
+
+.global-page-badge-container .badge.orange {
+  color: #B25A2B;
+  background: #FFE3D2; 
+}
+
+.global-page-badge-container .badge.green {
+  color: #205C20; 
+  background: #D6F8D6; 
+}
+
+.global-page-badge-container .badge.yellow {
+  color: #856404;
+  background: #fff3cd;
+}
+
+.global-page-badge-container .badge.purple {
+  color: #6B4BA3;
+  background: #E9DDFF;
+}

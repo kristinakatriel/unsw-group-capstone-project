@@ -17,6 +17,14 @@
   border-radius: 40px;
 }
 
+.badge:hover {
+  cursor: pointer;
+}
+
+.badge-container .badge:first-child {
+  margin-top: 12px;
+}
+
 .badge.blue {
   color: #5372F0;
   background: #DDE4FF;
