@@ -144,7 +144,7 @@
 
 .context-menu .card-wrapper {
   overflow-y: scroll;
-  max-height: 200px;
+  max-height: 234px;
 }
 
 .context-menu .card-list {
@@ -154,16 +154,22 @@
 .context-menu .card-link {
   display: block;
   background: #fff;
-  padding: 12px;
+  padding: 7px;
   border-radius: 10px;
   text-decoration: none;
-  border: 2px solid transparent;
-  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
-  margin: 8px 10px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.4);
+  margin: 5px;
+}
+
+.context-menu .css-wwet8f {
+  margin-block-start: 0;
+}
+
+.context-menu .css-17nf42q {
+  padding: 0 !important;
 }
 
 .context-menu-button-group {
   display: flex;
   justify-content: flex-end;
-  margin-top: 10px;
 }

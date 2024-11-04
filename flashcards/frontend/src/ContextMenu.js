@@ -143,7 +143,7 @@ function ContextMenu() {
 
       {generatedFlashcards.length > 0 ? (
         <>
-          <h4 className='deck-flashcard-amount'>Flashcards Generated with AI: {generatedFlashcards.length || 0}</h4>
+          {/* <h4 className='deck-flashcard-amount'>Flashcards Generated with AI: {generatedFlashcards.length || 0}</h4> */}
           {saveSuccess && (
             <Alert severity="success">New flashcard created successfully!</Alert>
           )}
