@@ -18,7 +18,7 @@
 
 .decks-select-scroll-item label,
 .flashcards-select-scroll-item label {
-  margin-bottom: 5px;
+  margin: 5px;
 }
 
 .label-clickable {
