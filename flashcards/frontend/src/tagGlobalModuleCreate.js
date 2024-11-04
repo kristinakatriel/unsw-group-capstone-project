@@ -10,9 +10,7 @@ import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
 import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import './deckGlobalModuleCreate.css';
+import './tagGlobalModuleCreate.css';
 
 const gridStyles = xcss({
   width: '100%',
@@ -32,7 +30,7 @@ function CreateTagGlobal({ closeTagModal }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [closeError, setCloseError] = useState(true);
   const [locked, setLocked] = useState(false);
-  const [selectedColor, setSelectedColor] = useState("blue");
+  const [selectedColour, setSelectedColour] = useState("blue");
 
   const handleClose = () => {
     if (typeof closeTagModal === 'function') {
@@ -54,6 +52,7 @@ function CreateTagGlobal({ closeTagModal }) {
     try {
       const response = await invoke('createTag', {
         title: tagTitle,
+        colour: selectedColour || 'blue', 
         locked: locked
       });
 
@@ -111,17 +110,17 @@ function CreateTagGlobal({ closeTagModal }) {
             )}
           </Field>
 
-          {/************************************* TAG COLOR SELECTION ***************************************/}
-          <Field id="tagColour" name="tagColour" label="Tag Colour">
+          {/************************************* TAG COLOUR SELECTION ***************************************/}
+          <Field id="tagColour" name="tagColour" label={`Tag Colour: ${selectedColour.charAt(0).toUpperCase() + selectedColour.slice(1)}`}>
             {() => (
-              <div className="color-selection">
-                {["blue", "red", "orange", "green", "yellow", "purple"].map((color) => (
+              <div className="badge-container">
+                {["blue", "red", "orange", "green", "yellow", "purple"].map((colour) => (
                   <div
-                    key={color}
-                    className={`badge ${color} ${selectedColor === color ? "selected" : ""}`}
-                    onClick={() => setSelectedColor(color)}
+                    key={colour}
+                    className={`badge ${colour} ${selectedColour === colour ? "selected" : ""}`}
+                    onClick={() => setSelectedColour(colour)}
                   >
-                    {color.charAt(0).toUpperCase() + color.slice(1)}
+                    {colour.charAt(0).toUpperCase() + colour.slice(1)}
                   </div>
                 ))}
               </div>

@@ -22,6 +22,7 @@ import StudyMode from './components/StudyMode';
 import EditFlashcardModal from './flashcardGlobalModuleEdit';
 import EditDeckModal from './deckModuleEdit';
 import CreateTagGlobal from './tagGlobalModuleCreate';
+import './tagGlobalModuleCreate.css';
 
 const gridStyles = xcss({
     width: '100%',
@@ -308,6 +309,7 @@ function globalPageModule() {
 
     loadFlashcards();
     loadDecks();
+    loadTags();
 
     //refreshFlashcardFrontend();  // Load flashcards when the component mounts****************************************************************************************************
     //refreshDeckFrontend();  // Load decks when the component mounts ****************************************************************************************************8
@@ -360,15 +362,15 @@ function globalPageModule() {
     <div className="badge-container">
       {filteredTags.map((tag, index) => (
         <p key={index} className={`badge ${tag.colour}`}>
-          {tag.name || "Tag"} {/* Display the tag's name or a default label */}
+          {tag.title || "Tag"} {/* Display the tag's name or a default label */}
         </p>
       ))}
-      <p className="badge blue">Blue Tag</p>
-      <p className="badge red">Red Tag</p>
-      <p className="badge orange">Orange Tag</p>
-      <p className="badge green">Green Tag</p>
-      <p className="badge yellow">Yellow Tag</p>
-      <p className="badge purple">Purple Tag</p>  
+      <p className="badge blue">COMP3900</p>
+      <p className="badge red">Camping</p>
+      <p className="badge orange">Work</p>
+      <p className="badge green">University</p>
+      <p className="badge yellow">Hobbies</p>
+      <p className="badge purple">Dogs</p>  
     </div>
   );
   
