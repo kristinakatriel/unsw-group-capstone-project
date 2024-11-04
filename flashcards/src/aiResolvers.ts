@@ -20,6 +20,8 @@ export const getAllContentQA = async (req: ResolverRequest) => {
         }
     });
     
+    console.log(response.status);
+
     if (response.status == 200) {
         const data = await response.json();
         const doc = JSON.parse(data.body.atlas_doc_format.value);
@@ -38,22 +40,10 @@ export const getAllContentQA = async (req: ResolverRequest) => {
         // Get all paragraph texts
         const paragraphs = extractParagraphs(doc.content);
         const allText = paragraphs.join(' ');
-
-        const qaRequest = {
-            payload: {
-                text: allText,
-                // Include other necessary properties if required
-            },
-            context: {} // no context in this case ?
+        return {
+            success: true,
+            data: JSON.stringify(allText),
         };
-        // Invoke AI flashcards
-        const qaResult = await generateQA(qaRequest);
-        if (qaResult.success == true) {
-            return {
-                success: true,
-                data: qaResult.data
-            }; // Return the result from generateQA
-        }
     }
 
     // console.log(text);
