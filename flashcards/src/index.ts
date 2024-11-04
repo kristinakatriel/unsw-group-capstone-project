@@ -23,7 +23,8 @@ import {
   fetchUserCards, fetchUserDecks, fetchUserTags
 } from './userResolvers';
 import {
-  generateQA, addGeneratedFlashcards
+  generateQA, addGeneratedFlashcards,
+  getAllContentQA
 } from './aiResolvers'
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -33,28 +34,6 @@ const resolver = new Resolver();
 resolver.define('getModule', async (req) => {
   const { moduleKey } = req.context;
   return { moduleKey };
-});
-
-resolver.define('helloWorld', async (req) => {
-  // const { text } = req.context;
-  // console.log(text);
-  return "hi";
-});
-
-resolver.define('getAllContent', async (req) => {
-  const { pageId } = req.context;
-  const response = await api.asUser().requestConfluence(route`/wiki/api/v2/pages/${pageId}`, {
-    headers: {
-      'Accept': 'application/json'
-    }
-  });
-  if (response.status == 200) {
-    const data = await response.json();
-    console.log(data.body);
-    return data.body;
-  }
-  // console.log(text);
-  return response.status;
 });
 
 resolver.define('createFlashcard', createFlashcard);
@@ -85,6 +64,7 @@ resolver.define('fetchUserCards', fetchUserCards);
 resolver.define('fetchUserDecks', fetchUserDecks);
 resolver.define('fetchUserTags', fetchUserTags);
 
+resolver.define('getAllContentQA', getAllContentQA);
 resolver.define('generateQA', generateQA);
 resolver.define('addGeneratedFlashcards', addGeneratedFlashcards);
 

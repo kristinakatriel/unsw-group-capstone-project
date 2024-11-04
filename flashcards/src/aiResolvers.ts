@@ -2,11 +2,51 @@ import Resolver from '@forge/resolver';
 import api, { QueryApi, route, startsWith, storage } from '@forge/api';
 import {
     Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
-    QuizResult, StudyResult, QuizSession, StudySession
+    QuizResult, StudyResult, QuizSession, StudySession,
+    ParagraphType
 } from './types';
 import { generateId, clearStorage, getUserName, initUserData } from './helpers';
 import { ResolverRequest } from './types'
 
+export const getAllContentQA = async (req: ResolverRequest) => {
+    const { pageId } = req.payload;
+    console.log(req.payload);
+    // view: HTML but diff
+    // storage: shit
+    // atlas_doc_format: best bet
+    const response = await api.asApp().requestConfluence(route`/wiki/api/v2/pages/${pageId}?body-format=atlas_doc_format`, {
+        headers: {
+        'Accept': 'application/json'
+        }
+    });
+    
+    if (response.status == 200) {
+        const data = await response.json();
+        const doc = JSON.parse(data.body.atlas_doc_format.value);
+        // Function to recursively extract paragraph texts
+        const extractParagraphs = (content: any[]): string[] => {
+            return content.flatMap(item => {
+            if (item.type === 'paragraph' && item.content) {
+                return item.content.map((paragraph: ParagraphType) => paragraph.text);
+            } else if (item.content) {
+                return extractParagraphs(item.content);
+            }
+            return [];
+            });
+        };
+
+        // Get all paragraph texts
+        const paragraphs = extractParagraphs(doc.content);
+        const allText = paragraphs.join(' ');
+
+        return allText; // Return concatenated text
+    }
+
+    // console.log(text);
+    return response.status;
+};
+
+// AI GENERATION
 
 // adding generating q&a through ai flashcards
 export const generateQA = async (req: ResolverRequest) => {

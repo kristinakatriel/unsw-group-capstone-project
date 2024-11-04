@@ -122,3 +122,7 @@ export interface GenFlashcardsPair {
     question: string,
     answer: string
 }
+
+export interface ParagraphType {
+    text: string
+}
