@@ -6,7 +6,7 @@ export type ResolverRequest = Parameters<ResolverFunction>[0];
 
 //////////////////////////////////////////////////
 
-enum QuizSessionCardStatus {
+export enum QuizSessionCardStatus {
     Incomplete,
     Correct,
     Incorrect,
@@ -14,9 +14,10 @@ enum QuizSessionCardStatus {
     Hint
 }
 
-enum StudySessionCardStatus {
+export enum StudySessionCardStatus {
     Positive,
-    Negative
+    Negative,
+    Incomplete
 }
 
 //////////////////////////////////////////////////

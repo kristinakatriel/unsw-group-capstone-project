@@ -101,7 +101,9 @@ export const initUserData = async (accountId: string) => {
             id: userDataKey,
             name: getUserName,
             deckIds: [],
-            cardIds: []
+            cardIds: [],
+            tagIds: [],
+            data: {}
         };
 
         await storage.set(userDataKey, newUser);
