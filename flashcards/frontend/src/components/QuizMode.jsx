@@ -18,24 +18,6 @@ const QuizMode = ({ deck }) => {
   const totalCards = flashcards.length;
 
   useEffect(() => {
-    const startQuiz = async () => {
-      try {
-        const response = await invoke('startQuizSession', { deckId: deck.id });
-        if (response.success) {
-          setSessionId(response.session.sessionId);
-          setFlashcards(response.session.deckInSession.cards);
-          setCurrentCardIndex(response.firstIndex);
-        } else {
-          console.error("Error starting quiz:", response.error);
-        }
-      } catch (error) {
-        console.error("Failed to start quiz session:", error);
-      }
-    };
-    startQuiz();
-  }, [deck.id]);
-
-  useEffect(() => {
     if (!isQuizCompleted) {
       const timer = setInterval(() => {
         setElapsedTime((prevTime) => prevTime + 1);
@@ -48,34 +30,18 @@ const QuizMode = ({ deck }) => {
   const openHintModal = () => setIsHintModalOpen(true);
   const closeHintModal = () => setIsHintModalOpen(false);
 
-  const updateCardStatus = async (status) => {
-    try {
-      const response = await invoke('updateCardStatusQuiz', {
-        sessionId,
-        currentIndex: currentCardIndex,
-        status: status,
-      });
-
-      if (response.success) {
-        if (response.message === 'quiz is finished') {
-          handleEndQuiz();
-          setIsQuizCompleted(true);
-        } else {
-          setCurrentCardIndex(response.nextIndex);
-          setIsFlipped(false);
-          setCardStatus(null);
-        }
-      } else {
-        console.error("Error updating card status:", response.error);
-      }
-    } catch (error) {
-      console.error("Failed to update card status:", error);
+  const goToNextCard = () => {
+    if (currentCardIndex < totalCards - 1) {
+      setCurrentCardIndex((prevIndex) => prevIndex + 1);
+    } else {
+      setIsQuizCompleted(true); 
     }
+    setIsFlipped(false);
+    setCardStatus(null);
   };
 
   const handleCorrect = () => {
     setCardStatus('correct');
-    updateCardStatus('correct');
     setTimeout(() => {
       goToNextCard();
       setCardStatus(null); 
@@ -84,48 +50,19 @@ const QuizMode = ({ deck }) => {
 
   const handleIncorrect = () => {
     setCardStatus('incorrect');
-    updateCardStatus('incorrect');
     setTimeout(() => {
       goToNextCard();
       setCardStatus(null); 
     }, 1000);
   };
-
-  const handleSkip = () => {
-    setCardStatus('skip');
-    updateCardStatus('skip');
-    setTimeout(() => {
-      goToNextCard();
-      setCardStatus(null); 
-    }, 1000);
-  };
-
-  const handleHint = () => {
-    setCardStatus('hint');
-    updateCardStatus('hint');
-    openHintModal();
-    setTimeout(() => {
-      goToNextCard();
-      setCardStatus(null); 
-    }, 1000);
-  };
-
-  const handleEndQuiz = async () => {
-    try {
-      const response = await invoke('endQuizSession', { sessionId });
-      if (response.success) {
-        console.log("Quiz session ended and results saved:", response);
-      } else {
-        console.error("Error ending quiz session:", response.error);
-      }
-    } catch (error) {
-      console.error("Failed to end quiz session:", error);
-    }
-  };
-
 
   const toggleFlip = () => {
     setIsFlipped((prevFlipped) => !prevFlipped);
+  };
+
+  const handleHintClick = (event) => {
+    event.stopPropagation();
+    openHintModal();
   };
 
   const formatTime = (seconds) => {
