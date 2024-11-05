@@ -54,8 +54,35 @@ export const getAllContentQA = async (req: ResolverRequest) => {
     };
 };
 
-// AI GENERATION
+// get generated deck info: For content byline
+export const getGeneratedDeckInfo = async (req: ResolverRequest) => {
+    const { text, pageId } = req.payload;
+    const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_deck_info", {  // the url which we need to generate the deck info
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text }),
+    });
 
+    const data = await response.json();
+    if (!response.ok) {
+        return {
+            success: false,
+            error: 'No deck title or deck desc :(',
+        };
+    }
+
+    // also add the page url to the description in the end
+    return {
+        success: true,
+        data: data
+    };
+}
+
+
+// AI GENERATION
 // adding generating q&a through ai flashcards
 export const generateQA = async (req: ResolverRequest) => {
     // get text

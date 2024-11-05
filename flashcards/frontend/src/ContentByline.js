@@ -4,6 +4,7 @@ import { invoke, view } from '@forge/bridge';
 function ContentByline() {
   const [allText, setAllText] = useState(null);
   const [deckTitle, setDeckTitle] = useState(null);
+  const [genInfo, setGenInfo] = useState(null);
   const [qAPairs, setQAPairs] = useState(null);
 
   const chunkText = (text, chunkSize) => {
@@ -39,6 +40,11 @@ function ContentByline() {
           // Setting all the text as what u get
           setAllText(result.data);
           setDeckTitle(result.title);
+          const resDeck = await invoke('getGeneratedDeckInfo', { 
+            text: result.data,
+            pageId: pageId 
+          });
+          setGenInfo(resDeck.data);
           // Split the text into chunks of 1500 characters (or adjust based on token limit)
           const chunks = chunkText(result.data, 1500);
 
@@ -71,6 +77,7 @@ function ContentByline() {
   return (
     <div>
       <div>{deckTitle ? deckTitle : 'Wherever we go, please wait ...\n'}</div>
+      <div>{genInfo ? genInfo : 'Deck info ... yay\n'}</div>
       <div>{qAPairs ? qAPairs : 'Generating flashcards now...\n'}</div>
     </div>
   );
