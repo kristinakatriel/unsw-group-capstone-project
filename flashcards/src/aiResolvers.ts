@@ -54,43 +54,71 @@ export const getAllContentQA = async (req: ResolverRequest) => {
 };
 
 // AI GENERATION
-
-// adding generating q&a through ai flashcards
 export const generateQA = async (req: ResolverRequest) => {
-    // get text
     const { text } = req.payload;
-    console.log("testing tunnel");
+
+    // Ensure text is long enough to generate questions
     if (text.length <= 2) {
         return {
             success: false,
             error: 'Too few words; select more text to generate flashcards.'
+        };
+    }
+
+    // Function to split the text into chunks of ~512 tokens
+    const chunkText = (inputText: string, maxLength = 512) => {
+        const sentences = inputText.split(/(?<=\.\s|\n)/);  // Split by sentence or newline
+        let chunks = [];
+        let currentChunk = '';
+
+        sentences.forEach(sentence => {
+            if ((currentChunk + sentence).length <= maxLength) {
+                currentChunk += sentence;
+            } else {
+                chunks.push(currentChunk);
+                currentChunk = sentence;
+            }
+        });
+        if (currentChunk) chunks.push(currentChunk); // Add the last chunk
+
+        return chunks;
+    };
+
+    const textChunks = chunkText(text);
+    let allFlashcards: GenFlashcardsPair[] = [];
+
+    for (const chunk of textChunks) {
+        try {
+            const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_qa", {
+                method: 'POST',
+                headers: {
+                    Accept: 'application/json',
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ text: chunk }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                allFlashcards = [...allFlashcards, ...data];
+            } else {
+                return {
+                    success: false,
+                    error: 'Failed to generate Q&A from text chunk',
+                };
+            }
+        } catch (error) {
+            console.error('Error calling Q&A generation API:', error);
+            return {
+                success: false,
+                error: 'Error in fetching flashcards',
+            };
         }
     }
 
-    console.log("calling url thing");
-    // get the flashcards generated using the external url
-    const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_qa", {  // the url which we need to generate the flashcards
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text }),
-    });
-
-    console.log("printing responce", response);
-
-    const data = await response.json();
-    if (!response.ok) {
-        return {
-            success: false,
-            error: 'Failed to generate Q&A from text',
-        };
-    }
-    // this returns a json of q&a pairs, which can be displayed in the context menu
     return {
         success: true,
-        data: data
+        data: allFlashcards,
     };
 };
 
