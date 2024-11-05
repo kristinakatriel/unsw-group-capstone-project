@@ -14,7 +14,7 @@ export const getAllContentQA = async (req: ResolverRequest) => {
     // view: HTML but diff
     // storage: shit
     // atlas_doc_format: best bet
-    const response = await api.asApp().requestConfluence(route`/wiki/api/v2/pages/${pageId}?body-format=atlas_doc_format`, {
+    const response = await api.asUser().requestConfluence(route`/wiki/api/v2/pages/${pageId}?body-format=atlas_doc_format`, {
         headers: {
         'Accept': 'application/json'
         }

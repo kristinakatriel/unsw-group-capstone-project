@@ -9,11 +9,11 @@ app = FastAPI()
 
 # Models for 
 # 1. QG
-qg_model = T5ForConditionalGeneration.from_pretrained("valhalla/t5-base-qg-hl")
+# qg_model = T5ForConditionalGeneration.from_pretrained("valhalla/t5-base-qg-hl")
 # # qg_model = AutoModelWithLMHead.from_pretrained("valhalla/t5-base-qg-hl")
-qg_tokenizer = T5Tokenizer.from_pretrained("valhalla/t5-base-qg-hl")
-# qg_model = T5ForConditionalGeneration.from_pretrained("ZhangCheng/T5-Base-Fine-Tuned-for-Question-Generation")
-# qg_tokenizer = T5Tokenizer.from_pretrained("ZhangCheng/T5-Base-Fine-Tuned-for-Question-Generation")
+# qg_tokenizer = T5Tokenizer.from_pretrained("valhalla/t5-base-qg-hl")
+qg_model = T5ForConditionalGeneration.from_pretrained("ZhangCheng/T5-Base-Fine-Tuned-for-Question-Generation")
+qg_tokenizer = T5Tokenizer.from_pretrained("ZhangCheng/T5-Base-Fine-Tuned-for-Question-Generation")
 # 2. QA
 qa_model = "mrm8488/spanbert-finetuned-squadv1"
 # 3. Generating titles/description
