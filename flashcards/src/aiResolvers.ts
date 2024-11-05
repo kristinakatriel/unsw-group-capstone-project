@@ -45,21 +45,6 @@ export const getAllContentQA = async (req: ResolverRequest) => {
             data: JSON.stringify(allText),
             title: data.title
         }
-        // const qaRequest = {
-        //     payload: {
-        //         text: allText,
-        //         // Include other necessary properties if required
-        //     },
-        //     context: {} // no context in this case ?
-        // };
-        // // Invoke AI flashcards
-        // const qaResult = await generateQA(qaRequest);
-        // if (qaResult.success == true) {
-        //     return {
-        //         success: true,
-        //         data: qaResult.data
-        //     }; // Return the result from generateQA
-        // }
     }
 
     // console.log(text);
