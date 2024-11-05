@@ -18,9 +18,8 @@ qg_tokenizer = T5Tokenizer.from_pretrained("ZhangCheng/T5-Base-Fine-Tuned-for-Qu
 qa_model = "mrm8488/spanbert-finetuned-squadv1"
 # 3. Generating titles/description
 device = "cpu"
-
-model = T5ForConditionalGeneration.from_pretrained("Michau/t5-base-en-generate-headline")
-tokenizer = T5Tokenizer.from_pretrained("Michau/t5-base-en-generate-headline")
+title_model = T5ForConditionalGeneration.from_pretrained("Michau/t5-base-en-generate-headline")
+title_tokenizer = T5Tokenizer.from_pretrained("Michau/t5-base-en-generate-headline")
 
 # Pipelines
 qg_pipeline = pipeline("text2text-generation", model=qg_model, tokenizer=qg_tokenizer)
@@ -81,7 +80,7 @@ async def generate_deck_info(input: TextInput):
 
     max_len = 256
 
-    encoding = tokenizer.encode_plus(text, return_tensors = "pt")
+    encoding = title_tokenizer.encode_plus(text, return_tensors = "pt")
     input_ids = encoding["input_ids"].to(device)
     attention_masks = encoding["attention_mask"].to(device)
 
@@ -93,7 +92,7 @@ async def generate_deck_info(input: TextInput):
         early_stopping = True,
     )
 
-    result = tokenizer.decode(beam_outputs[0])
+    result = title_tokenizer.decode(beam_outputs[0])
     print(result)
 
     # return {"title": result, "description": description}
