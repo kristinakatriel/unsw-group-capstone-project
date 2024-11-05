@@ -69,6 +69,7 @@ resolver.define('fetchUserCards', fetchUserCards);
 resolver.define('fetchUserDecks', fetchUserDecks);
 resolver.define('fetchUserTags', fetchUserTags);
 
+// NOTE: change the name
 resolver.define('getAllContentQA', getAllContentQA);
 resolver.define('generateQA', generateQA);
 resolver.define('addGeneratedFlashcards', addGeneratedFlashcards);

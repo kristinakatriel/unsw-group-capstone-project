@@ -3,6 +3,7 @@ import { invoke, view } from '@forge/bridge';
 
 function ContentByline() {
   const [allText, setAllText] = useState(null);
+  const [deckTitle, setDeckTitle] = useState(null);
   const [qAPairs, setQAPairs] = useState(null);
 
   const chunkText = (text, chunkSize) => {
@@ -35,21 +36,26 @@ function ContentByline() {
         const pageId = smth.extension.content.id;
         try {
           const result = await invoke('getAllContentQA', { pageId });
-          // console.log(result.data);
-          setAllText(result.data); // Assuming result.data is a JSON string
-          // Split the text into chunks of 500 characters (or adjust based on token limit)
-          const chunks = chunkText(result.data, 500);
+          // Setting all the text as what u get
+          setAllText(result.data);
+          setDeckTitle(result.title);
+          // Split the text into chunks of 1500 characters (or adjust based on token limit)
+          const chunks = chunkText(result.data, 1500);
 
           // Generate Q&A for each chunk and accumulate results
           const allQAPairs = [];
           for (const chunk of chunks) {
+            try {
               const response = await invoke('generateQA', { text: chunk });
               if (response && response.success) {
                   console.log(response.data);
                   allQAPairs.push(...response.data);
               }
+            } catch (error) {
+              console.error('Too long :(');
+            }
           }
-          setQAPairs(allQAPairs);
+          setQAPairs(JSON.stringify(allQAPairs));
         } catch (error) {
           console.error('Could not reach backend:', error);
         }
@@ -64,7 +70,7 @@ function ContentByline() {
 
   return (
     <div>
-      <div>{allText ? allText : 'Wherever we go, please wait ...\n'}</div>
+      <div>{deckTitle ? deckTitle : 'Wherever we go, please wait ...\n'}</div>
       <div>{qAPairs ? qAPairs : 'Generating flashcards now...\n'}</div>
     </div>
   );
