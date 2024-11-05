@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { invoke, view } from '@forge/bridge';
+import FlashOnIcon from '@mui/icons-material/FlashOn';
+// import { Flex, Grid, xcss } from '@atlaskit/primitives';
+import './ContentByline.css';
 
 function ContentByline() {
   const [allText, setAllText] = useState(null);
@@ -76,6 +79,7 @@ function ContentByline() {
 
   return (
     <div>
+      <h2><FlashOnIcon className="context-menu-flash-icon" /> FLASH - AI Flashcard Generator!</h2>
       <div>{deckTitle ? deckTitle : 'Wherever we go, please wait ...\n'}</div>
       {/* <div>{genInfo ? genInfo : 'Deck info ... yay\n'}</div> */}
       <div>{qAPairs ? qAPairs : 'Generating flashcards now...\n'}</div>
