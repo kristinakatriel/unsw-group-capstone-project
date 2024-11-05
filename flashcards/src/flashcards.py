@@ -17,8 +17,10 @@ qg_tokenizer = T5Tokenizer.from_pretrained("ZhangCheng/T5-Base-Fine-Tuned-for-Qu
 # 2. QA
 qa_model = "mrm8488/spanbert-finetuned-squadv1"
 # 3. Generating titles/description
-title_generator = pipeline("text-generation", model="gpt2") 
-description_generator = pipeline("text-generation", model="gpt2")
+device = "cpu"
+
+model = T5ForConditionalGeneration.from_pretrained("Michau/t5-base-en-generate-headline")
+tokenizer = T5Tokenizer.from_pretrained("Michau/t5-base-en-generate-headline")
 
 # Pipelines
 qg_pipeline = pipeline("text2text-generation", model=qg_model, tokenizer=qg_tokenizer)
@@ -73,14 +75,29 @@ async def generate_qa(input: TextInput):
 @app.post("/generate_deck_info")
 async def generate_deck_info(input: TextInput):
     # Generate deck title
-    title_prompt = f"Generate a catchy deck title based on the following text: {input.text}"
-    title = title_generator(title_prompt, max_new_tokens=10, num_return_sequences=1)[0]['generated_text']
-    
-    # Generate deck description
-    description_prompt = f"Generate a brief description for a deck based on the following text: {input.text}"
-    description = description_generator(description_prompt, max_new_tokens=50, num_return_sequences=1)[0]['generated_text']
+    model = model.to(device)
 
-    return {"title": title, "description": description}
+    text =  "headline: " + input.text
+
+    max_len = 256
+
+    encoding = tokenizer.encode_plus(text, return_tensors = "pt")
+    input_ids = encoding["input_ids"].to(device)
+    attention_masks = encoding["attention_mask"].to(device)
+
+    beam_outputs = model.generate(
+        input_ids = input_ids,
+        attention_mask = attention_masks,
+        max_length = max_len,
+        num_beams = 3,
+        early_stopping = True,
+    )
+
+    result = tokenizer.decode(beam_outputs[0])
+    print(result)
+
+    # return {"title": result, "description": description}
+    return {"title": result}
 
 # also to add later
 # @app.post("/generate_suggested_tags")

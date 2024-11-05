@@ -43,11 +43,11 @@ function ContentByline() {
           // Setting all the text as what u get
           setAllText(result.data);
           setDeckTitle(result.title);
-          // const resDeck = await invoke('getGeneratedDeckInfo', { 
-          //   text: result.data,
-          //   pageId: pageId 
-          // });
-          // setGenInfo(resDeck.data);
+          const resDeck = await invoke('getGeneratedDeckInfo', { 
+            text: result.data,
+            pageId: pageId 
+          });
+          setGenInfo(resDeck.data);
           // Split the text into chunks of 1500 characters (or adjust based on token limit)
           const chunks = chunkText(result.data, 1500);
 
@@ -81,7 +81,7 @@ function ContentByline() {
     <div>
       <h2><FlashOnIcon className="context-menu-flash-icon" /> FLASH - AI Flashcard Generator!</h2>
       <div>{deckTitle ? deckTitle : 'Wherever we go, please wait ...\n'}</div>
-      {/* <div>{genInfo ? genInfo : 'Deck info ... yay\n'}</div> */}
+      <div>{genInfo ? genInfo : 'Deck info ... yay\n'}</div>
       <div>{qAPairs ? qAPairs : 'Generating flashcards now...\n'}</div>
     </div>
   );
