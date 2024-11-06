@@ -8,7 +8,7 @@ import {
 import { generateId, clearStorage, getUserName, initUserData } from './helpers';
 import { ResolverRequest } from './types'
 
-export const getAllContentQA = async (req: ResolverRequest) => {
+export const getAllContent = async (req: ResolverRequest) => {
     const { pageId, siteUrl } = req.payload;
     const { accountId } = req.context;
 

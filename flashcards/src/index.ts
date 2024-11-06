@@ -24,7 +24,7 @@ import {
 } from './userResolvers';
 import {
   generateQA, addGeneratedFlashcards,
-  getAllContentQA,
+  getAllContent,
   getGeneratedDeckTitle,
   generateSuggestedTags
 } from './aiResolvers'
@@ -73,7 +73,7 @@ resolver.define('fetchUserTags', fetchUserTags);
 
 // NOTE: change the name
 resolver.define('getGeneratedDeckTitle', getGeneratedDeckTitle);
-resolver.define('getAllContentQA', getAllContentQA);
+resolver.define('getAllContent', getAllContent);
 resolver.define('generateQA', generateQA);
 resolver.define('addGeneratedFlashcards', addGeneratedFlashcards);
 resolver.define('generateSuggestedTags', generateSuggestedTags);

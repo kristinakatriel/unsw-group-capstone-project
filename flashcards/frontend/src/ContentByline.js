@@ -36,7 +36,7 @@ function ContentByline() {
         const pageId = context.extension.content.id;
         const siteUrl = context.siteUrl;
         
-        const result = await invoke('getAllContentQA', { pageId, siteUrl });
+        const result = await invoke('getAllContent', { pageId, siteUrl });
         setAllText(result.data);
         setDeckTitle(result.title);
         setDeckInfo(`Fetched from ${result.url}`);
