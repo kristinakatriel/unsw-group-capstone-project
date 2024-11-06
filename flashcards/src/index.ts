@@ -25,7 +25,8 @@ import {
 import {
   generateQA, addGeneratedFlashcards,
   getAllContentQA,
-  getGeneratedDeckTitle
+  getGeneratedDeckTitle,
+  generateSuggestedTags
 } from './aiResolvers'
 
 import {
@@ -75,6 +76,7 @@ resolver.define('getGeneratedDeckTitle', getGeneratedDeckTitle);
 resolver.define('getAllContentQA', getAllContentQA);
 resolver.define('generateQA', generateQA);
 resolver.define('addGeneratedFlashcards', addGeneratedFlashcards);
+resolver.define('generateSuggestedTags', generateSuggestedTags);
 
 resolver.define('startQuizSession', startQuizSession);
 resolver.define('endQuizSession', endQuizSession);

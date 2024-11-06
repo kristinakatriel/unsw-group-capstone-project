@@ -80,7 +80,7 @@ export const getGeneratedDeckTitle = async (req: ResolverRequest) => {
     if (!response.ok) {
         return {
             success: false,
-            error: 'No deck title or deck desc :(',
+            error: 'No deck title generated',
         };
     }
 
@@ -90,33 +90,6 @@ export const getGeneratedDeckTitle = async (req: ResolverRequest) => {
         title: data.title
     };
 }
-
-// export const getGeneratedDeckDescription = async (req: ResolverRequest) => {
-//     const { text, pageUrl } = req.payload;
-//     const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_deck_description", {  // the url which we need to generate the deck desc
-//         method: 'POST',
-//         headers: {
-//             Accept: 'application/json',
-//             'Content-Type': 'application/json',
-//         },
-//         body: JSON.stringify({ text }),
-//     });
-
-//     const data = await response.json();
-//     if (!response.ok) {
-//         return {
-//             success: false,
-//             error: 'No deck title or deck desc :(',
-//         };
-//     }
-
-//     // also add the page url to the description in the end
-//     return {
-//         success: true,
-//         description: data.description
-//     };
-// }
-
 
 // AI GENERATION
 // adding generating q&a through ai flashcards
@@ -220,5 +193,31 @@ export const addGeneratedFlashcards = async (req: ResolverRequest) => {
         success: true,
         createdDeck: deck,
         createdFlashcardsCount: results.filter(result => result.success).length,
+    };
+};
+
+export const generateSuggestedTags = async (req: ResolverRequest) => {
+    const { text } = req.payload;
+    const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_suggested_tags", {  // the url which we need to generate the deck title
+        method: 'POST',
+        headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ text }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) {
+        return {
+            success: false,
+            error: 'No Tags generated',
+        };
+    }
+
+    // also add the page url to the description in the end
+    return {
+        success: true,
+        title: data.title
     };
 };

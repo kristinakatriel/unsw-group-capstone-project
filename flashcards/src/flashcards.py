@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from pydantic import BaseModel
 from transformers import pipeline, T5ForConditionalGeneration, T5Tokenizer
 import math
+from keybert import KeyBERT
 import nltk
 
 # Initialize FastAPI app
@@ -25,6 +26,9 @@ title_model = T5ForConditionalGeneration.from_pretrained("Michau/t5-base-en-gene
 title_tokenizer = T5Tokenizer.from_pretrained("Michau/t5-base-en-generate-headline")
 title_pipeline = pipeline("text2text-generation", model=title_model, tokenizer=title_tokenizer)
 
+# Suggested Tags
+kw_model = KeyBERT()
+    
 # Input Model for Request
 class TextInput(BaseModel):
     text: str
@@ -75,4 +79,11 @@ async def generate_deck_title(input: TextInput):
     return {"title": title}
 
 # Placeholder for additional routes, e.g., suggested tags
-# @app.post("/generate_suggested_tags")
+@app.post("/generate_suggested_tags")
+async def generate_suggested_tags(input: TextInput):
+    # Extract keywords
+    keywords = kw_model.extract_keywords(input.text, keyphrase_ngram_range=(1, 2), stop_words='english', top_n=5)
+
+    # Display keywords as tags
+    tags = [kw[0] for kw in keywords]
+    return tags
