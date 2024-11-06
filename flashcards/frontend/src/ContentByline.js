@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { invoke, view } from '@forge/bridge';
 import FlashOnIcon from '@mui/icons-material/FlashOn';
-// import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import './ContentByline.css';
 
 function ContentByline() {
   const [allText, setAllText] = useState(null);
   const [deckTitle, setDeckTitle] = useState(null);
   const [genInfo, setGenInfo] = useState(null);
-  const [qAPairs, setQAPairs] = useState(null);
+  const [qAPairs, setQAPairs] = useState([]);
 
   const chunkText = (text, chunkSize) => {
     const words = text.split(' ');
@@ -22,67 +21,70 @@ function ContentByline() {
             currentChunk = [];
         }
     }
-    // Add any remaining words to the last chunk
     if (currentChunk.length > 0) {
         chunks.push(currentChunk.join(' '));
     }
-
     return chunks;
   };
 
-
   useEffect(() => {
-    // Define an async function to call `getContext` and set `allText`
     const fetchContext = async () => {
+      let pageId;
       try {
-        const smth = await view.getContext();
-        console.log(smth.extension.content.id);
-        const pageId = smth.extension.content.id;
-        try {
-          const result = await invoke('getAllContentQA', { pageId });
-          // Setting all the text as what u get
-          setAllText(result.data);
-          setDeckTitle(result.title);
-          const resDeck = await invoke('getGeneratedDeckInfo', { 
-            text: result.data,
-            pageId: pageId 
-          });
-          setGenInfo(resDeck.data);
-          // Split the text into chunks of 1500 characters (or adjust based on token limit)
-          const chunks = chunkText(result.data, 1500);
-
-          // Generate Q&A for each chunk and accumulate results
-          const allQAPairs = [];
-          for (const chunk of chunks) {
-            try {
-              const response = await invoke('generateQA', { text: chunk });
-              if (response && response.success) {
-                  console.log(response.data);
-                  allQAPairs.push(...response.data);
-              }
-            } catch (error) {
-              console.error('Too long :(');
-            }
-          }
-          setQAPairs(JSON.stringify(allQAPairs));
-        } catch (error) {
-          console.error('Could not reach backend:', error);
-        }
+        const context = await view.getContext();
+        pageId = context.extension.content.id;
+        console.log("Page ID:", pageId);
       } catch (error) {
         console.error('Error getting context:', error);
+        return;
+      }
+
+      try {
+        const result = await invoke('getAllContentQA', { pageId });
+        setAllText(result.data);
+        setDeckTitle(result.title);
+        console.log(result.links);
+
+        try {
+          const resDeck = await invoke('getGeneratedDeckTitle', { text: result.data });
+          console.log("Deck Title Generation Success:", resDeck.success);
+          setGenInfo(resDeck.title);
+        } catch (error) {
+          console.log("Deck title too long to process.");
+        }
+
+        const chunks = chunkText(result.data, 1000);
+        const allQAPairs = [];
+
+        for (const chunk of chunks) {
+          try {
+            const response = await invoke('generateQA', { text: chunk });
+            if (response && response.success) {
+                allQAPairs.push(...response.data);
+            }
+          } catch (error) {
+            console.error('Chunk processing error:', error);
+          }
+        }
+        setQAPairs(allQAPairs);
+      } catch (error) {
+        console.error('Backend invocation error:', error);
       }
     };
 
-    // Call the function to execute on mount
     fetchContext();
-  }, []); // Correctly close useEffect dependencies
+  }, []);
 
   return (
     <div>
       <h2><FlashOnIcon className="context-menu-flash-icon" /> FLASH - AI Flashcard Generator!</h2>
-      <div>{deckTitle ? deckTitle : 'Wherever we go, please wait ...\n'}</div>
-      <div>{genInfo ? genInfo : 'Deck info ... yay\n'}</div>
-      <div>{qAPairs ? qAPairs : 'Generating flashcards now...\n'}</div>
+      <div>{deckTitle || 'Loading deck title...'}</div>
+      <div>{genInfo || 'Loading deck information...'}</div>
+      <div>
+        {qAPairs.length > 0
+          ? qAPairs.map((qa, index) => <div key={index}> {index}: {qa.question} - {qa.answer}</div>)
+          : 'Generating flashcards...'}
+      </div>
     </div>
   );
 }

@@ -14,7 +14,7 @@ export const getAllContentQA = async (req: ResolverRequest) => {
     // view: HTML but diff
     // storage: shit
     // atlas_doc_format: best bet
-    const response = await api.asUser().requestConfluence(route`/wiki/api/v2/pages/${pageId}?body-format=atlas_doc_format`, {
+    const response = await api.asUser().requestConfluence(route`/wiki/api/v2/pages/${pageId}?body-format=atlas_doc_format&include_labels=true`, {
         headers: {
         'Accept': 'application/json'
         }
@@ -25,6 +25,7 @@ export const getAllContentQA = async (req: ResolverRequest) => {
     if (response.status == 200) {
         const data = await response.json();
         const doc = JSON.parse(data.body.atlas_doc_format.value);
+        const links = data._links;
         // Function to recursively extract paragraph texts
         const extractParagraphs = (content: any[]): string[] => {
             return content.flatMap(item => {
@@ -43,7 +44,8 @@ export const getAllContentQA = async (req: ResolverRequest) => {
         return {
             success: true,
             data: JSON.stringify(allText),
-            title: data.title
+            title: data.title,
+            url: JSON.stringify(data._links)
         }
     }
 
@@ -55,9 +57,9 @@ export const getAllContentQA = async (req: ResolverRequest) => {
 };
 
 // get generated deck info: For content byline
-export const getGeneratedDeckInfo = async (req: ResolverRequest) => {
-    const { text, pageId } = req.payload;
-    const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_deck_info", {  // the url which we need to generate the deck info
+export const getGeneratedDeckTitle = async (req: ResolverRequest) => {
+    const { text } = req.payload;
+    const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_deck_title", {  // the url which we need to generate the deck title
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -77,9 +79,35 @@ export const getGeneratedDeckInfo = async (req: ResolverRequest) => {
     // also add the page url to the description in the end
     return {
         success: true,
-        data: data
+        title: data.title
     };
 }
+
+// export const getGeneratedDeckDescription = async (req: ResolverRequest) => {
+//     const { text, pageUrl } = req.payload;
+//     const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_deck_description", {  // the url which we need to generate the deck desc
+//         method: 'POST',
+//         headers: {
+//             Accept: 'application/json',
+//             'Content-Type': 'application/json',
+//         },
+//         body: JSON.stringify({ text }),
+//     });
+
+//     const data = await response.json();
+//     if (!response.ok) {
+//         return {
+//             success: false,
+//             error: 'No deck title or deck desc :(',
+//         };
+//     }
+
+//     // also add the page url to the description in the end
+//     return {
+//         success: true,
+//         description: data.description
+//     };
+// }
 
 
 // AI GENERATION
