@@ -113,7 +113,7 @@ function ContentByline() {
   return (
     <div>
       <h2><FlashOnIcon className="context-menu-flash-icon" /> FLASH - AI Flashcard Generator!</h2>
-      <div>{deckTitle || 'Do u want to use this Confluence Page\'s title as the Deck Title or use an AI generated title (REWORD)'}</div>
+      <h4> Do u want to use this Confluence Page\'s title as the Deck Title or use an AI generated title? If You want a Better title, click on the button below (REWORD; also add a thing for locked) </h4>
       <div>{deckTitle || 'Click to generate deck title.'}</div>
       <button onClick={generateDeckTitle} disabled={deckGenerated}>
         Generate Deck Title
