@@ -7,11 +7,10 @@ export type ResolverRequest = Parameters<ResolverFunction>[0];
 //////////////////////////////////////////////////
 
 export enum QuizSessionCardStatus {
-    Incomplete,
-    Correct,
-    Incorrect,
-    Skip,
-    Hint
+    Incomplete = 0,
+    Correct = 1,
+    Incorrect = 2,
+    Skip = 3,
 }
 
 export enum StudySessionCardStatus {
@@ -107,6 +106,7 @@ export interface QuizSession {
     totalCardCount: number;
     currentCardIndex: number;
     sessionStartTime: number;
+    hintArray: boolean[]
 }
 
 export interface StudySession {

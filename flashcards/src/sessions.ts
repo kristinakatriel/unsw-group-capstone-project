@@ -53,7 +53,8 @@ export const startQuizSession = async (req: ResolverRequest) => {
         }
       }
       const statusPerCardArray: QuizSessionCardStatus[] = Array(totalCards).fill(QuizSessionCardStatus.Incomplete);
-  
+      const initialHintArray: boolean[] = Array(totalCards).fill(false);
+
       // creating a new session
       const sessionId = `q-${generateId()}`;
       const newSession: QuizSession = {
@@ -61,7 +62,8 @@ export const startQuizSession = async (req: ResolverRequest) => {
         totalCardCount: totalCards,
         currentCardIndex: 0,
         sessionStartTime: Date.now(),
-        statusPerCard: statusPerCardArray
+        statusPerCard: statusPerCardArray,
+        hintArray: initialHintArray
       }
   
       await storage.set(sessionId, newSession);
@@ -96,13 +98,13 @@ export const startQuizSession = async (req: ResolverRequest) => {
     }
   
     if (status == 'skip') {
-      session.statusPerCard[currentIndex] = QuizSessionCardStatus.Skip
+      session.statusPerCard[currentIndex] = QuizSessionCardStatus.Skip;
     } else if (status == 'hint') {
-      session.statusPerCard[currentIndex] = QuizSessionCardStatus.Hint
+      session.hintArray[currentIndex] = true;
     } else if (status == 'correct') {
-      session.statusPerCard[currentIndex] = QuizSessionCardStatus.Correct
+      session.statusPerCard[currentIndex] = QuizSessionCardStatus.Correct;
     } else if (status == 'incorrect') {
-      session.statusPerCard[currentIndex] = QuizSessionCardStatus.Incorrect
+      session.statusPerCard[currentIndex] = QuizSessionCardStatus.Incorrect;
     }
   
     // now let us return the next card
@@ -148,7 +150,7 @@ export const startQuizSession = async (req: ResolverRequest) => {
       countIncomplete: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Incomplete).length,
       countIncorrect: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Incorrect).length,
       countCorrect: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Correct).length,
-      countHints: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Hint).length,
+      countHints: session.statusPerCard.filter((element: boolean) => element === true).length,
       countSkip: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Skip).length,
     }
   
@@ -159,7 +161,7 @@ export const startQuizSession = async (req: ResolverRequest) => {
       // check if dynamic dict does not exist 
       if (!(deckId in user.data)) {
         const newDynamicDeck: DynamicData = {
-          dynamicDeck: session.deck,
+          dynamicDeck: session.deckInSession,
           quizSessions: [],
           studySessions: []
         }
@@ -167,7 +169,27 @@ export const startQuizSession = async (req: ResolverRequest) => {
       }
       // now let us add the session to the list 
       user.data[deckId].quizSessions.push(newQuizResult);
+
+      // let us store a new reordered deck
+      const sortedDeck = session.deck.slice().sort((a: Card, b: Card) => {
+        const hintA = session.hintArray[session.deckInSession.indexOf(a)];
+        const hintB = session.hintArray[session.deckInSession.indexOf(b)];
+        if (hintA !== hintB) {
+          return hintB - hintA;
+        }
+      
+        const statusA = session.statusPerCard[session.deckInSession.indexOf(a)] as QuizSessionCardStatus;
+        const statusB = session.statusPerCard[session.deckInSession.indexOf(b)] as QuizSessionCardStatus;
+        if (statusA != statusB) {
+          return statusB - statusA;
+        }
+
+        return session.deckInSession.indexOf(a) - session.deckInSession.indexOf(b)
+      });
   
+      // change the deck to retrieve the sorted deck when the user starts a new session
+      user.data[deckId].dynamicDeck = sortedDeck;
+
       await storage.delete(sessionId);
     }
   };
