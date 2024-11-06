@@ -487,6 +487,7 @@ function globalPageModule() {
     }
     console.log("selected deck", selectedDeck);
     console.log('Entering Quiz Mode'); // Log when entering quiz mode
+    // loadDecks();
     setIsQuizMode(true);
 
     setBreadcrumbItems(prevItems => [
