@@ -30,20 +30,21 @@ function ContentByline() {
   useEffect(() => {
     const fetchContext = async () => {
       let pageId;
+      let siteUrl;
       try {
         const context = await view.getContext();
         pageId = context.extension.content.id;
-        console.log("Page ID:", pageId);
+        siteUrl = context.siteUrl;
       } catch (error) {
         console.error('Error getting context:', error);
         return;
       }
 
       try {
-        const result = await invoke('getAllContentQA', { pageId });
+        const result = await invoke('getAllContentQA', { pageId: pageId, siteUrl: siteUrl });
         setAllText(result.data);
         setDeckTitle(result.title);
-        console.log(result.links);
+        console.log(result.url);
 
         try {
           const resDeck = await invoke('getGeneratedDeckTitle', { text: result.data });

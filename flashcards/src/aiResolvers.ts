@@ -9,12 +9,21 @@ import { generateId, clearStorage, getUserName, initUserData } from './helpers';
 import { ResolverRequest } from './types'
 
 export const getAllContentQA = async (req: ResolverRequest) => {
-    const { pageId } = req.payload;
+    const { pageId, siteUrl } = req.payload;
+    const { accountId } = req.context;
+
+    if (!accountId) {
+        return {
+            success: false,
+            message: 'No user',
+        };
+    }
+
     console.log(req.payload);
     // view: HTML but diff
     // storage: shit
     // atlas_doc_format: best bet
-    const response = await api.asUser().requestConfluence(route`/wiki/api/v2/pages/${pageId}?body-format=atlas_doc_format&include_labels=true`, {
+    const response = await api.asUser().requestConfluence(route`/wiki/api/v2/pages/${pageId}?body-format=atlas_doc_format`, {
         headers: {
         'Accept': 'application/json'
         }
@@ -25,7 +34,6 @@ export const getAllContentQA = async (req: ResolverRequest) => {
     if (response.status == 200) {
         const data = await response.json();
         const doc = JSON.parse(data.body.atlas_doc_format.value);
-        const links = data._links;
         // Function to recursively extract paragraph texts
         const extractParagraphs = (content: any[]): string[] => {
             return content.flatMap(item => {
@@ -45,7 +53,7 @@ export const getAllContentQA = async (req: ResolverRequest) => {
             success: true,
             data: JSON.stringify(allText),
             title: data.title,
-            url: JSON.stringify(data._links)
+            url: `${siteUrl}/wiki/spaces/~${accountId}/pages/${pageId}`
         }
     }
 
