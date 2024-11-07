@@ -20,6 +20,7 @@ const QuizMode = ({ deck }) => {
   const [hintCount, setHintCount] = useState(0);
   const [incorrectAnswersCount, setIncorrectAnswersCount] = useState(0);
   const [skipCount, setSkipCount] = useState(0);
+  const [endStatus, setEndStatus] = useState(0);
 
   const flashcards = deck.cards;
   const totalCards = flashcards.length;
@@ -52,6 +53,18 @@ const QuizMode = ({ deck }) => {
     }
   }, [isQuizCompleted]);
 
+  // useEffect(() => {
+  //   const endQuizSession = async () => {
+  //     try {
+  //       await invoke('endQuizSession', { sessionId });
+  //       console.log('Quiz session ended and data saved');
+  //     } catch (error) {
+  //       console.error('Failed to end session:', error);
+  //     }
+  //     setEndStatus(prevCount => prevCount + 1);
+  //   };
+  // }, [isQuizCompleted, sessionId]);
+
   const openHintModal = () => setIsHintModalOpen(true);
   const closeHintModal = () => setIsHintModalOpen(false);
 
@@ -65,6 +78,17 @@ const QuizMode = ({ deck }) => {
       if (response.success) {
         if (response.message === 'quiz is finished') {
           setIsQuizCompleted(true);
+          try {
+            const endExecution = await invoke('endQuizSession', { sessionId });
+            if (!endExecution.success) {
+              console.error(endExecution.error);
+            } else {
+              console.log("Quiz session successfully ended and stored.");
+              setEndStatus(1);
+            }
+          } catch (error) {
+            console.error('response is invalid');
+          }
         } else {
           setCurrentCardIndex(response.nextIndex);
           setIsFlipped(false);
@@ -173,12 +197,13 @@ const QuizMode = ({ deck }) => {
         </>
       ) : (
         <div className='quiz-completed'>
-          <h1>Quiz completed!</h1>
+          <h1>Quiz completed!!!</h1>
           <p>Completed in {formatTime(elapsedTime)}</p>
           <p>Number correct: {correctAnswersCount}</p>
           <p>Number skipped: {skipCount}</p>
           <p>Number of incorrect: {incorrectAnswersCount}</p>
-          <p>Number that require skipped: {hintCount}</p>
+          <p>Number that require hint: {hintCount}</p>
+          <p>End Quiz Session Status: {endStatus}</p>
         </div>
       )}
 
