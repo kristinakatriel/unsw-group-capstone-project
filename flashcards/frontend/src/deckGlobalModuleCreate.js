@@ -243,6 +243,8 @@ function CreateDeckGlobal({ closeDeckModal }) {
 
         </ModalBody>
 
+        {/* Creating tag here: optional; suggest based on flashcards in the deck or nah ??? */}
+
         <ModalFooter>
           <Button appearance="subtle" onClick={handleCloseGlobal}>Cancel</Button>
           <Button appearance="primary" onClick={handleSave}>Create Deck</Button>

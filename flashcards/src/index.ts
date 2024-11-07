@@ -23,7 +23,10 @@ import {
   fetchUserCards, fetchUserDecks, fetchUserTags
 } from './userResolvers';
 import {
-  generateQA, addGeneratedFlashcards
+  generateQA, addGeneratedFlashcards,
+  getAllContent,
+  getGeneratedDeckTitle,
+  generateSuggestedTags
 } from './aiResolvers'
 
 import {
@@ -68,8 +71,12 @@ resolver.define('fetchUserCards', fetchUserCards);
 resolver.define('fetchUserDecks', fetchUserDecks);
 resolver.define('fetchUserTags', fetchUserTags);
 
+// NOTE: change the name
+resolver.define('getGeneratedDeckTitle', getGeneratedDeckTitle);
+resolver.define('getAllContent', getAllContent);
 resolver.define('generateQA', generateQA);
 resolver.define('addGeneratedFlashcards', addGeneratedFlashcards);
+resolver.define('generateSuggestedTags', generateSuggestedTags);
 
 resolver.define('startQuizSession', startQuizSession);
 resolver.define('endQuizSession', endQuizSession);

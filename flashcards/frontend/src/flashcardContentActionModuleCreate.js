@@ -152,6 +152,8 @@ function flashcardContentActionModuleCreate() {
         )}
       </Field>
 
+      {/* Creating tag here: optional; suggest based on flashcard content ??? */}
+
       {saveSuccess && <Alert severity="success"> New flashcard created successfully! </Alert>}
 
       <div className="content-action-button-group">
