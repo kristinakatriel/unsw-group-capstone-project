@@ -5,8 +5,8 @@ import { Field } from '@atlaskit/form';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import Alert from '@mui/material/Alert';
-import Collapse from '@mui/material/Collapse';
+import { Alert, Collapse } from '@mui/material';
+import CloseIcon from '@mui/icons-material/Close';
 import './deckGlobalModuleCreate.css';
 
 const gridStyles = xcss({
@@ -27,6 +27,8 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
   const [selectedFlashcards, setSelectedFlashcards] = useState([]);
   const [flashcards, setFlashcards] = useState([]);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [closeError, setCloseError] = useState(false);
+
   const handleClose = () => {
     console.log('Function called: handleClose');
     if (typeof closeAddDeckModal === 'function') {
@@ -120,16 +122,28 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
         </ModalHeader>
 
         <ModalBody>
-          {errorMessage && 
-            <Collapse in={closeError}>
-              <Alert
-                severity="error"
-                onClose={() => setCloseError(false)}
-              >
-                {errorMessage}
-              </Alert>
-            </Collapse>
-          }
+          { errorMessage && 
+          <Collapse in={closeError}>
+            <Alert
+              severity="error"
+              action={
+                <IconButton
+                  aria-label="close"
+                  color="inherit"
+                  size="small"
+                  onClick={() => {
+                    setCloseError(false);
+                  }}
+                >
+                <CloseIcon fontSize="inherit" />
+                </IconButton>
+              }
+              sx={{ mb: 2 }}
+            >
+              {errorMessage}
+            </Alert>
+          </Collapse>
+        }
 
           {/************************************* ADD FLASHCARDS FIELD ***************************************/}
           <Field id="add-flashcards" name="add-flashcards" label="Add existing flashcards to deck">
