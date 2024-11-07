@@ -27,6 +27,8 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
   const [selectedFlashcards, setSelectedFlashcards] = useState([]);
   const [flashcards, setFlashcards] = useState([]);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [closeError, setCloseError] = useState(false);
+  
   const handleClose = () => {
     console.log('Function called: handleClose');
     if (typeof closeAddDeckModal === 'function') {

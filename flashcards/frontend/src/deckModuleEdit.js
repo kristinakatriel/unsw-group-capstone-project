@@ -30,6 +30,7 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [locked, setLocked] = useState(false);
+  const [closeError, setCloseError] = useState(false);
 
   // Pre-fill the form with the deck details
   useEffect(() => {

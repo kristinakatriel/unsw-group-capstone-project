@@ -215,9 +215,9 @@ export const generateSuggestedTags = async (req: ResolverRequest) => {
         };
     }
 
-    // also add the page url to the description in the end
+    // Giving tags in the end
     return {
         success: true,
-        title: data.title
+        tags: data.tags
     };
 };
