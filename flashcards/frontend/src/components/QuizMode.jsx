@@ -16,13 +16,12 @@ const QuizMode = ({ deck }) => {
   const [elapsedTime, setElapsedTime] = useState(0); 
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [sessionId, setSessionId] = useState(null);
-  const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
   const [hintCount, setHintCount] = useState(0);
-  const [incorrectAnswersCount, setIncorrectAnswersCount] = useState(0);
+  const [incorrectCount, setIncorrectCount] = useState(0);
   const [skipCount, setSkipCount] = useState(0);
   const [endStatus, setEndStatus] = useState(0);
-
-  const flashcards = deck.cards;
+  const [flashcards, setFlashcards] = useState(deck.cards);
   const totalCards = flashcards.length;
 
   useEffect(() => {
@@ -30,6 +29,8 @@ const QuizMode = ({ deck }) => {
       try {
         const response = await invoke('startQuizSession', { deckId: deck.id });
         if (response.success) {
+          setFlashcards(response.cards);
+          console.log("flashcards is " + flashcards)
           console.log(response.sessionId);
           console.log(response.session);
           setSessionId(response.sessionId);
@@ -77,7 +78,7 @@ const QuizMode = ({ deck }) => {
         status,
         sessionId,
       });
-      console.log(response);
+      console.log(status);
       if (response.success) {
         if (response.message === 'quiz is finished') {
           setIsQuizCompleted(true);
@@ -88,9 +89,15 @@ const QuizMode = ({ deck }) => {
               console.error(endExecution.error);
             } else {
               console.log("attempt num is: " + endExecution.num_attempt);
-              console.log("sorted deck is" + endExecution.card2);
-              console.log("sort category is: " + endExecution.result);
+              console.log("cards list is " + endExecution.cards);
+              console.log("session is: " + endExecution.session);
               console.log("Quiz session successfully ended and stored.");
+              setHintCount(endExecution.hintCount);
+              setSkipCount(endExecution.skipCount);
+              setCorrectCount(endExecution.correctCount);
+              setIncorrectCount(endExecution.incorrectCount);
+              console.log(incorrectCount);
+              console.log("correct: " + correctCount);
               setEndStatus(1);
             }
           } catch (error) {
@@ -105,13 +112,12 @@ const QuizMode = ({ deck }) => {
         console.error(response.error);
       }
     } catch (error) {
-      console.error('response is invalid');
+      console.error('response is invalid', error);
     }
   };
 
   const handleCorrect = () => {
     setCardStatus('correct');
-    setCorrectAnswersCount(prevCount => prevCount + 1)
     setTimeout(() => {
       goToNextCard('correct');
       setCardStatus(null); 
@@ -120,7 +126,6 @@ const QuizMode = ({ deck }) => {
 
   const handleIncorrect = () => {
     setCardStatus('incorrect');
-    setIncorrectAnswersCount(prevCount => prevCount + 1)
     setTimeout(() => {
       goToNextCard('incorrect');
       setCardStatus(null); 
@@ -133,14 +138,12 @@ const QuizMode = ({ deck }) => {
 
   const handleHintClick = (event) => {
     event.stopPropagation();
-    setHintCount(prevCount => prevCount + 1)
     openHintModal();
     goToNextCard('hint');
   };
 
   const handleSkip = () => {
     setCardStatus('skip');
-    setSkipCount(prevCount => prevCount + 1)
     setTimeout(() => {
       goToNextCard('skip');
       setCardStatus(null); 
@@ -206,11 +209,10 @@ const QuizMode = ({ deck }) => {
         <div className='quiz-completed'>
           <h1>Quiz completed!!!</h1>
           <p>Completed in {formatTime(elapsedTime)}</p>
-          <p>Number correct: {correctAnswersCount}</p>
+          <p>Number correct: {correctCount}</p>
           <p>Number skipped: {skipCount}</p>
-          <p>Number of incorrect: {incorrectAnswersCount}</p>
+          <p>Number of incorrect: {incorrectCount}</p>
           <p>Number that require hint: {hintCount}</p>
-          <p>End Quiz Session Status: {endStatus}</p>
         </div>
       )}
 
