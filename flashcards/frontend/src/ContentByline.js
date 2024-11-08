@@ -7,6 +7,7 @@ import RedoIcon from '@mui/icons-material/Redo';
 import { Field } from '@atlaskit/form';
 import Textfield from '@atlaskit/textfield';
 import { Flex, xcss } from '@atlaskit/primitives';
+import Alert from '@mui/material/Alert';
 import './ContentByline.css';
 
 const titleContainerStyles = xcss({
@@ -24,6 +25,7 @@ function ContentByline() {
   const [deckGenerating, setDeckGenerating] = useState(false);
   const [flashcardsGenerated, setFlashcardsGenerated] = useState(false);
   const [flashcardsGenerating, setFlashcardsGenerating] = useState(false);
+  const [saveSuccess, setSaveSuccess] = useState(false);
   const [deckGen, setDeckGen] = useState(null);
 
   const chunkText = (text, chunkSize) => {
@@ -105,36 +107,49 @@ function ContentByline() {
       // Update the state
       setFlashcardsGenerating(false);
       setFlashcardsGenerated(true);
-
-        // Create the deck
-        // try {
-        //     const deckResponse = await invoke('createDeck', {
-        //         title: deckTitle,
-        //         description: deckInfo,
-        //         flashcards: [],
-        //         locked: true // by default for now
-        //     });
-
-        //     if (deckResponse && deckResponse.success) {
-        //         const createdDeck = deckResponse.id;
-
-        //         // Step 2: Add generated flashcards to the created deck
-        //         const addResult = await invoke('addGeneratedFlashcards', {
-        //           deckId: createdDeck,
-        //           qAPairs: allQAPairs
-        //         });
-        //         if (addResult.success) {
-        //             console.log("Flashcards added to deck successfully:", addResult.createdDeck);
-        //         } else {
-        //             console.error("Error adding flashcards to deck:", addResult.error);
-        //         }
-        //     } else {
-        //         console.error("Error creating deck:", deckResponse.error);
-        //     }
-        // } catch (error) {
-        //     console.error("Error in deck creation or flashcard addition:", error);
-        // }
     }
+  };
+
+  async function createAndPopulateDeck(deckTitle, deckInfo, allQAPairs) {
+    try {
+      // Create the deck
+      const deckResponse = await invoke('createDeck', {
+        title: deckTitle,
+        description: deckInfo,
+        flashcards: [],
+        locked: true // by default for now
+      });
+
+      if (deckResponse && deckResponse.success) {
+        const createdDeck = deckResponse.id;
+
+        // Add generated flashcards to the created deck
+        const addResult = await invoke('addGeneratedFlashcards', {
+          deckId: createdDeck,
+          qAPairs: allQAPairs
+        });
+
+        if (addResult.success) {
+          setSaveSuccess(true);
+          console.log("Flashcards added to deck successfully:", addResult.createdDeck);
+        } else {
+          console.error("Error adding flashcards to deck:", addResult.error);
+        }
+      } else {
+        console.error("Error creating deck:", deckResponse.error);
+      }
+    } catch (error) {
+      console.error("Error in deck creation or flashcard addition:", error);
+    }
+  }
+
+  const handleSave = async () => {
+    if (!deckTitle || !deckInfo || !qAPairs) {
+      console.warn("Please fill in all required fields before saving.");
+      return;
+    }
+
+    await createAndPopulateDeck(deckTitle, deckInfo, qAPairs);
   };
 
   const undoChanges = () => {
@@ -156,39 +171,59 @@ function ContentByline() {
         <h2>FLASH - AI Deck Generator!</h2>
       </Flex>
 
-      {/************************************* DECK TITLE FIELD ***************************************/}
-      <Field id="deckTitle" name="deckTitle" label="Deck Title">
+      {saveSuccess && <Alert severity="success"> New deck created successfully! </Alert>}
+
+      {/************************************* DECK TITLE/UNDO/REDO FIELD ***************************************/}
+      <Field id="deckTitle" name="deckTitle" label={
+        deckGenerated ? (
+          <span style={{ display: 'flex', alignItems: 'center' }}>
+            <span>Deck Title</span>
+            <UndoIcon 
+              onClick={undoChanges} 
+              fontSize="small" 
+              style={{ cursor: 'pointer', marginLeft: '10px' }} 
+            />
+            <RedoIcon 
+              onClick={redoChanges} 
+              fontSize="small" 
+              style={{ cursor: 'pointer', marginLeft: '10px' }} 
+            />
+          </span>
+        ) : 'Deck Title'
+      }>
         {({ fieldProps }) => (
-          <Textfield {...fieldProps} value={deckTitle} onChange={(e) => setDeckTitle(e.target.value)} placeholder="Type the deck title here..." />
+          <Textfield 
+            {...fieldProps} 
+            value={deckTitle} 
+            onChange={(e) => setDeckTitle(e.target.value)} 
+            placeholder="Type the deck title here..." 
+          />
         )}
       </Field>
 
-      {/************************** DECK TITLE AI GENERATE/UNDO/REDO FIELD ******************************/}
-      <Field>
-        {() => (
-          <span
-            onClick={deckGenerating || deckGenerated ? null : generateDeckTitle}
-            style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}
-          >
-            {deckGenerating ? (
-              <>
-                {'AI generating a new title...'}
-                <span><AutoAwesomeIcon className="content-byline-ai-icon" fontSize="small"/></span>
-              </>
-            ) : deckGenerated ? (
-              <>
-                <UndoIcon className="content-byline-undo-icon" onClick={undoChanges} fontSize="small" style={{ cursor: 'pointer', marginLeft: '10px' }} />Undo
-                Redo<RedoIcon className="content-byline-redo-icon" onClick={redoChanges} fontSize="small" style={{ cursor: 'pointer', marginLeft: '10px' }} />
-              </>
-            ) : (
-              <>
-                {'AI generate a new deck title!'}
-                <span><AutoAwesomeIcon className="content-byline-ai-icon" fontSize="small"/></span>
-              </>
-            )}
-          </span>
-        )}
-      </Field>
+      {/************************** DECK TITLE AI GENERATE FIELD ******************************/}
+      {(deckGenerating || !deckGenerated) && (
+        <Field>
+          {() => (
+            <span
+              onClick={deckGenerating ? null : generateDeckTitle}
+              style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}
+            >
+              {deckGenerating ? (
+                <>
+                  {'AI generating a new title...'}
+                  <span><AutoAwesomeIcon className="content-byline-ai-icon" fontSize="small" /></span>
+                </>
+              ) : (
+                <>
+                  {'AI generate a new deck title!'}
+                  <span><AutoAwesomeIcon className="content-byline-ai-icon" fontSize="small" /></span>
+                </>
+              )}
+            </span>
+          )}
+        </Field>
+      )}
 
       {/************************************* DECK FLASHCARDS FIELD ***************************************/}
       <Field id="deckFlashcards" name="deckFlashcards" label="Deck Flashcards">
@@ -218,26 +253,35 @@ function ContentByline() {
       </Field>
 
       {/***************************** DECK FLASHCARDS AI GENERATE FIELD *******************************/}
-      <Field>
-        {() => (
-          <span
-            onClick={flashcardsGenerating || flashcardsGenerated ? null : generateFlashcards}
-            style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}
-          >
-            {flashcardsGenerating ? (
-              <>
-                {'AI generating some flashcards...'}
-                <span><AutoAwesomeIcon className="content-byline-ai-icon" fontSize="small" /></span>
-              </>
-            ) : (
-              <>
-                {'AI generate flashcards for this deck!'}
-                <span><AutoAwesomeIcon className="content-byline-ai-icon" fontSize="small" /></span>
-              </>
-            )}
-          </span>
-        )}
-      </Field>
+      {(flashcardsGenerating || !flashcardsGenerated) && (
+        <Field>
+          {() => (
+            <span
+              onClick={flashcardsGenerating || flashcardsGenerated ? null : generateFlashcards}
+              style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}
+            >
+              {flashcardsGenerating ? (
+                <>
+                  {'AI generating some flashcards...'}
+                  <span><AutoAwesomeIcon className="content-byline-ai-icon" fontSize="small" /></span>
+                </>
+              ) : (
+                <>
+                  {'AI generate flashcards for this deck!'}
+                  <span><AutoAwesomeIcon className="content-byline-ai-icon" fontSize="small" /></span>
+                </>
+              )}
+            </span>
+          )}
+        </Field>
+      )}
+
+      {/***************************** SAVE DECK FIELD *******************************/}
+      {(flashcardsGenerated && (
+        <div className="content-byline-button-group">
+          <button className="content-byline-button" onClick={() => handleSave()}>Save Deck</button>
+        </div>
+      ))}
     </div>
   );
 }

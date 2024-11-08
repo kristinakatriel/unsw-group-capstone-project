@@ -5,12 +5,12 @@
   color: rgb(12, 102, 228);
 }
 
-.context-menu h2 {
+.ai-deck-creation h2 {
   margin-left: 5px;
 }
 
 .ai-deck-creation .ai-flashcards-select-scroll {
-  max-height: 70px;
+  max-height: 95px;
   overflow-y: scroll;
   flex-direction: column; 
 }
@@ -22,4 +22,34 @@
 
 .ai-deck-creation input[type="checkbox"] {
   margin-right: 10px;
+}
+
+.ai-deck-creation .content-byline-ai-icon {
+  margin-left: 5px;
+}
+
+.ai-deck-creation .css-wwet8f {
+  margin-top: 0;
+}
+
+.ai-deck-creation .content-byline-button-group {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 5px;
+}
+
+.ai-deck-creation .content-byline-button {
+  background-color: rgb(12,102,228);
+  color: white;
+  padding: 5px 10px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  margin-left: 10px;
+}
+
+.ai-deck-creation .content-byline-button:hover {
+  background-color: rgb(1,85,204);
 }
