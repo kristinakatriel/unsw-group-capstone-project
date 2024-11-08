@@ -1,3 +1,25 @@
-.context-menu-flash-icon {
-    color: rgb(12, 102, 228);
+.content-byline-flash-icon,
+.content-byline-ai-icon,
+.content-byline-redo-icon,
+.content-byline-redo-icon {
+  color: rgb(12, 102, 228);
+}
+
+.context-menu h2 {
+  margin-left: 5px;
+}
+
+.ai-deck-creation .ai-flashcards-select-scroll {
+  max-height: 70px;
+  overflow-y: scroll;
+  flex-direction: column; 
+}
+
+.ai-deck-creation .ai-flashcards-select-scroll-item {
+  display: flex;
+  align-items: center;
+}
+
+.ai-deck-creation input[type="checkbox"] {
+  margin-right: 10px;
 }
