@@ -75,11 +75,13 @@ const QuizMode = ({ deck }) => {
         status,
         sessionId,
       });
+      console.log(response);
       if (response.success) {
         if (response.message === 'quiz is finished') {
           setIsQuizCompleted(true);
           try {
             const endExecution = await invoke('endQuizSession', { sessionId });
+            console.log(endExecution)
             if (!endExecution.success) {
               console.error(endExecution.error);
             } else {
@@ -87,7 +89,7 @@ const QuizMode = ({ deck }) => {
               setEndStatus(1);
             }
           } catch (error) {
-            console.error('response is invalid');
+            console.error('response is invalid', error);
           }
         } else {
           setCurrentCardIndex(response.nextIndex);

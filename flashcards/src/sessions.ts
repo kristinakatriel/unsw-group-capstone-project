@@ -30,10 +30,10 @@ export const startQuizSession = async (req: ResolverRequest) => {
         quizSessions: [],
         studySessions: []
       }
-      user.data[deckId] = newDynamicDataObj;
+      user.data.deckId = newDynamicDataObj;
     }
     
-    const quizDeck = user.data[deckId].dynamicDeck;
+    const quizDeck = user.data.deckId.dynamicDeck;
     
     if (!quizDeck) {
       return {
@@ -171,20 +171,20 @@ export const startQuizSession = async (req: ResolverRequest) => {
       user.data[deckId].quizSessions.push(newQuizResult);
 
       // let us store a new reordered deck
-      const sortedDeck = session.deck.slice().sort((a: Card, b: Card) => {
-        const hintA = session.hintArray[session.deckInSession.indexOf(a)];
-        const hintB = session.hintArray[session.deckInSession.indexOf(b)];
+      const sortedDeck = session.deckInSession.cards.sort((a: Card, b: Card) => {
+        const hintA = session.hintArray[session.deckInSession.cards.indexOf(a)];
+        const hintB = session.hintArray[session.deckInSession.cards.indexOf(b)];
         if (hintA !== hintB) {
           return hintB - hintA;
         }
       
-        const statusA = session.statusPerCard[session.deckInSession.indexOf(a)] as QuizSessionCardStatus;
-        const statusB = session.statusPerCard[session.deckInSession.indexOf(b)] as QuizSessionCardStatus;
+        const statusA = session.statusPerCard[session.deckInSession.cards.indexOf(a)] as QuizSessionCardStatus;
+        const statusB = session.statusPerCard[session.deckInSession.cards.indexOf(b)] as QuizSessionCardStatus;
         if (statusA != statusB) {
           return statusB - statusA;
         }
 
-        return session.deckInSession.indexOf(a) - session.deckInSession.indexOf(b);
+        return session.deckInSession.cards.indexOf(a) - session.deckInSession.cards.indexOf(b);
       });
   
       // change the deck to retrieve the sorted deck when the user starts a new session
