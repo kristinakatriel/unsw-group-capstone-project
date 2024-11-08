@@ -34,12 +34,14 @@ const QuizMode = ({ deck }) => {
           console.log(response.session);
           setSessionId(response.sessionId);
           setCurrentCardIndex(response.firstIndex);
+          console.log("x is " + response.x);
+          console.log("y is " + response.y);
         } else {
           console.log(response.user)
           console.error(response.error);
         }
       } catch (error) {
-        console.error('response is invalid');
+        console.error('response is invalid', error);
       }
     };
     startQuizSession();
@@ -85,6 +87,9 @@ const QuizMode = ({ deck }) => {
             if (!endExecution.success) {
               console.error(endExecution.error);
             } else {
+              console.log("attempt num is: " + endExecution.num_attempt);
+              console.log("sorted deck is" + endExecution.card2);
+              console.log("sort category is: " + endExecution.result);
               console.log("Quiz session successfully ended and stored.");
               setEndStatus(1);
             }
