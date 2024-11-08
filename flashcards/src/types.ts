@@ -71,7 +71,7 @@ export interface DynamicData {
     dynamicDeck: Deck;
     quizSessions: QuizResult[];
     studySessions: StudyResult[];
-    numTimesAttempted: 0;
+    numTimesAttempted: number;
 }
 
 export interface QuizResult {

@@ -92,10 +92,10 @@ const QuizMode = ({ deck }) => {
               console.log("cards list is " + endExecution.cards);
               console.log("session is: " + endExecution.session);
               console.log("Quiz session successfully ended and stored.");
-              setHintCount(endExecution.hintCount);
-              setSkipCount(endExecution.skipCount);
-              setCorrectCount(endExecution.correctCount);
-              setIncorrectCount(endExecution.incorrectCount);
+              setHintCount(endExecution.countHint);
+              setSkipCount(endExecution.countSkip);
+              setCorrectCount(endExecution.countCorrect);
+              setIncorrectCount(endExecution.countIncorrect);
               console.log(incorrectCount);
               console.log("correct: " + correctCount);
               setEndStatus(1);
