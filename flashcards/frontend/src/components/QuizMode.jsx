@@ -16,12 +16,12 @@ const QuizMode = ({ deck }) => {
   const [elapsedTime, setElapsedTime] = useState(0); 
   const [isQuizCompleted, setIsQuizCompleted] = useState(false);
   const [sessionId, setSessionId] = useState(null);
-  const [correctAnswersCount, setCorrectAnswersCount] = useState(0);
+  const [correctCount, setCorrectCount] = useState(0);
   const [hintCount, setHintCount] = useState(0);
-  const [incorrectAnswersCount, setIncorrectAnswersCount] = useState(0);
+  const [incorrectCount, setIncorrectCount] = useState(0);
   const [skipCount, setSkipCount] = useState(0);
-
-  const flashcards = deck.cards;
+  const [endStatus, setEndStatus] = useState(0);
+  const [flashcards, setFlashcards] = useState(deck.cards);
   const totalCards = flashcards.length;
 
   useEffect(() => {
@@ -29,16 +29,20 @@ const QuizMode = ({ deck }) => {
       try {
         const response = await invoke('startQuizSession', { deckId: deck.id });
         if (response.success) {
+          setFlashcards(response.cards);
+          console.log("flashcards is " + flashcards)
           console.log(response.sessionId);
           console.log(response.session);
           setSessionId(response.sessionId);
           setCurrentCardIndex(response.firstIndex);
+          console.log("x is " + response.x);
+          console.log("y is " + response.y);
         } else {
           console.log(response.user)
           console.error(response.error);
         }
       } catch (error) {
-        console.error('response is invalid');
+        console.error('response is invalid', error);
       }
     };
     startQuizSession();
@@ -52,6 +56,18 @@ const QuizMode = ({ deck }) => {
     }
   }, [isQuizCompleted]);
 
+  // useEffect(() => {
+  //   const endQuizSession = async () => {
+  //     try {
+  //       await invoke('endQuizSession', { sessionId });
+  //       console.log('Quiz session ended and data saved');
+  //     } catch (error) {
+  //       console.error('Failed to end session:', error);
+  //     }
+  //     setEndStatus(prevCount => prevCount + 1);
+  //   };
+  // }, [isQuizCompleted, sessionId]);
+
   const openHintModal = () => setIsHintModalOpen(true);
   const closeHintModal = () => setIsHintModalOpen(false);
 
@@ -62,9 +78,31 @@ const QuizMode = ({ deck }) => {
         status,
         sessionId,
       });
+      console.log(status);
       if (response.success) {
         if (response.message === 'quiz is finished') {
           setIsQuizCompleted(true);
+          try {
+            const endExecution = await invoke('endQuizSession', { sessionId });
+            console.log(endExecution)
+            if (!endExecution.success) {
+              console.error(endExecution.error);
+            } else {
+              console.log("attempt num is: " + endExecution.num_attempt);
+              console.log("cards list is " + endExecution.cards);
+              console.log("session is: " + endExecution.session);
+              console.log("Quiz session successfully ended and stored.");
+              setHintCount(endExecution.countHint);
+              setSkipCount(endExecution.countSkip);
+              setCorrectCount(endExecution.countCorrect);
+              setIncorrectCount(endExecution.countIncorrect);
+              console.log(incorrectCount);
+              console.log("correct: " + correctCount);
+              setEndStatus(1);
+            }
+          } catch (error) {
+            console.error('response is invalid', error);
+          }
         } else {
           setCurrentCardIndex(response.nextIndex);
           setIsFlipped(false);
@@ -74,13 +112,12 @@ const QuizMode = ({ deck }) => {
         console.error(response.error);
       }
     } catch (error) {
-      console.error('response is invalid');
+      console.error('response is invalid', error);
     }
   };
 
   const handleCorrect = () => {
     setCardStatus('correct');
-    setCorrectAnswersCount(prevCount => prevCount + 1)
     setTimeout(() => {
       goToNextCard('correct');
       setCardStatus(null); 
@@ -89,7 +126,6 @@ const QuizMode = ({ deck }) => {
 
   const handleIncorrect = () => {
     setCardStatus('incorrect');
-    setIncorrectAnswersCount(prevCount => prevCount + 1)
     setTimeout(() => {
       goToNextCard('incorrect');
       setCardStatus(null); 
@@ -102,14 +138,12 @@ const QuizMode = ({ deck }) => {
 
   const handleHintClick = (event) => {
     event.stopPropagation();
-    setHintCount(prevCount => prevCount + 1)
     openHintModal();
     goToNextCard('hint');
   };
 
   const handleSkip = () => {
     setCardStatus('skip');
-    setSkipCount(prevCount => prevCount + 1)
     setTimeout(() => {
       goToNextCard('skip');
       setCardStatus(null); 
@@ -173,12 +207,12 @@ const QuizMode = ({ deck }) => {
         </>
       ) : (
         <div className='quiz-completed'>
-          <h1>Quiz completed!</h1>
+          <h1>Quiz completed!!!</h1>
           <p>Completed in {formatTime(elapsedTime)}</p>
-          <p>Number correct: {correctAnswersCount}</p>
+          <p>Number correct: {correctCount}</p>
           <p>Number skipped: {skipCount}</p>
-          <p>Number of incorrect: {incorrectAnswersCount}</p>
-          <p>Number that require skipped: {hintCount}</p>
+          <p>Number of incorrect: {incorrectCount}</p>
+          <p>Number that require hint: {hintCount}</p>
         </div>
       )}
 

@@ -6,12 +6,15 @@ import {
   ResolverRequest, QuizSessionCardStatus, StudySessionCardStatus
 } from './types';
 import { generateId, clearStorage, getUserName, initUserData } from './helpers'
+import { IndicatorSeparator } from 'react-select/dist/declarations/src/components/indicators';
 
 
 export const startQuizSession = async (req: ResolverRequest) => {
     const { deckId } = req.payload;
     const accountId = req.context.accountId;
     const user = await initUserData(accountId);
+    let x = 3;
+    let y = 3;
 
     if (!user) {
       return {
@@ -25,13 +28,16 @@ export const startQuizSession = async (req: ResolverRequest) => {
     }
 
     if (!(deckId in user.data)) {
+      x = 7;
       const newDynamicDataObj: DynamicData = {
         dynamicDeck: await storage.get(deckId),
         quizSessions: [],
-        studySessions: []
+        studySessions: [],
+        numTimesAttempted: 0
       }
       user.data[deckId] = newDynamicDataObj;
     }
+    await storage.set(`u-${accountId}`, user);
     
     const quizDeck = user.data[deckId].dynamicDeck;
     
@@ -53,7 +59,8 @@ export const startQuizSession = async (req: ResolverRequest) => {
         }
       }
       const statusPerCardArray: QuizSessionCardStatus[] = Array(totalCards).fill(QuizSessionCardStatus.Incomplete);
-  
+      const initialHintArray: boolean[] = Array(totalCards).fill(false);
+
       // creating a new session
       const sessionId = `q-${generateId()}`;
       const newSession: QuizSession = {
@@ -61,7 +68,8 @@ export const startQuizSession = async (req: ResolverRequest) => {
         totalCardCount: totalCards,
         currentCardIndex: 0,
         sessionStartTime: Date.now(),
-        statusPerCard: statusPerCardArray
+        statusPerCard: statusPerCardArray,
+        hintArray: initialHintArray
       }
   
       await storage.set(sessionId, newSession);
@@ -71,7 +79,10 @@ export const startQuizSession = async (req: ResolverRequest) => {
         success: true,
         session: newSession,
         firstIndex: 0,
-        sessionId: sessionId
+        sessionId: sessionId,
+        x: x,
+        y: y,
+        cards: quizDeck.cards
       }
   };
   
@@ -96,19 +107,19 @@ export const startQuizSession = async (req: ResolverRequest) => {
     }
   
     if (status == 'skip') {
-      session.statusPerCard[currentIndex] = QuizSessionCardStatus.Skip
+      session.statusPerCard[currentIndex] = QuizSessionCardStatus.Skip;
     } else if (status == 'hint') {
-      session.statusPerCard[currentIndex] = QuizSessionCardStatus.Hint
+      session.hintArray[currentIndex] = true;
     } else if (status == 'correct') {
-      session.statusPerCard[currentIndex] = QuizSessionCardStatus.Correct
+      session.statusPerCard[currentIndex] = QuizSessionCardStatus.Correct;
     } else if (status == 'incorrect') {
-      session.statusPerCard[currentIndex] = QuizSessionCardStatus.Incorrect
+      session.statusPerCard[currentIndex] = QuizSessionCardStatus.Incorrect;
     }
-  
+    await storage.set(sessionId, session);
     // now let us return the next card
     // check if quiz has finished
     let newIndex = currentIndex + 1;
-    if (newIndex == session.totalCardCount) {
+    if (newIndex == session.totalCardCount && status != 'hint') {
       return {
         success: true,
         message: 'quiz is finished'
@@ -119,11 +130,14 @@ export const startQuizSession = async (req: ResolverRequest) => {
       }
       // quiz hasnt finished so we return the next card
       session.currentCardIndex = newIndex;
+      await storage.set(sessionId, session);
       return {
         success: true,
         nextIndex: newIndex,
         nextCardId: session.deckInSession.cards?.[newIndex].id,
-        sessionId: sessionId
+        sessionId: sessionId,
+        session: session,
+        state: status
       }
     }
   }; 
@@ -132,12 +146,12 @@ export const startQuizSession = async (req: ResolverRequest) => {
     const { sessionId } = req.payload;
   
     const session = await storage.get(sessionId);
-      if (!session) {
-        return {
-          success: false,
-          error: `No session found with id: ${sessionId}`
-        };
-      }
+    if (!session) {
+      return {
+        success: false,
+        error: `No session found with id: ${sessionId}`
+      };
+    }
   
     // create a new quiz result object
     const newQuizResult: QuizResult = {
@@ -148,27 +162,79 @@ export const startQuizSession = async (req: ResolverRequest) => {
       countIncomplete: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Incomplete).length,
       countIncorrect: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Incorrect).length,
       countCorrect: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Correct).length,
-      countHints: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Hint).length,
+      countHints: session.hintArray.filter((element: boolean) => element === true).length,
       countSkip: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Skip).length,
     }
   
     const accountId = req.context.accountId;
     if (accountId) {
-      const user = await storage.get(`u-${accountId}`);
+      const user = await initUserData(accountId);
       const deckId = session.deckInSession.id;
       // check if dynamic dict does not exist 
       if (!(deckId in user.data)) {
         const newDynamicDeck: DynamicData = {
-          dynamicDeck: session.deck,
+          dynamicDeck: session.deckInSession,
           quizSessions: [],
-          studySessions: []
+          studySessions: [],
+          numTimesAttempted: 0
         }
         user.data[deckId] = newDynamicDeck
       }
       // now let us add the session to the list 
       user.data[deckId].quizSessions.push(newQuizResult);
+
+      // let us store a new reordered decks
+      if (!session.deckInSession.cards) {
+        return {
+          success: false,
+          error: 'deck not found'
+        }
+      }
+
+      session.deckInSession.cards.sort((a: Card, b: Card) => {
+        const indexA = session.deckInSession.cards.findIndex((card: Card) => card.id === a.id);
+        const indexB = session.deckInSession.cards.findIndex((card: Card) => card.id === b.id);
+
+        const hintA = session.hintArray[indexA];
+        const hintB = session.hintArray[indexB];
+
+        const statusA = session.statusPerCard[indexA] as QuizSessionCardStatus;
+        const statusB = session.statusPerCard[indexB] as QuizSessionCardStatus;
+        if (statusA !== statusB) {
+          return statusB - statusA;
+        }
+
+        if (hintA !== hintB) {
+          return hintB - hintA;
+        }
+
+        return indexA - indexB;
+      });
   
+      // change the user dynamic deck to retrieve the sorted deck when the user starts a new session
+      user.data[deckId].dynamicDeck = session.deckInSession;
+      user.data[deckId].numTimesAttempted += 1;
+
       await storage.delete(sessionId);
+      await storage.set(`u-${accountId}`, user);
+
+      // let us return data
+      return {
+        success: true,
+        session: session,
+        message: 'successful',
+        num_attempt: user.data[deckId].numTimesAttempted,
+        cards: session.deckInSession.cards,
+        countCorrect: newQuizResult.countCorrect,
+        countSkip: newQuizResult.countSkip,
+        countIncorrect: newQuizResult.countIncorrect,
+        countHint: newQuizResult.countHints
+      }
+    } else {
+      return {
+        success: false,
+        error: 'invalid user'
+      }
     }
   };
   
@@ -181,7 +247,8 @@ export const startQuizSession = async (req: ResolverRequest) => {
       const newDynamicDataObj: DynamicData = {
         dynamicDeck: await storage.get(deckId),
         quizSessions: [],
-        studySessions: []
+        studySessions: [],
+        numTimesAttempted: 0
       }
       user.data[deckId] = newDynamicDataObj;
     }
@@ -291,15 +358,16 @@ export const startQuizSession = async (req: ResolverRequest) => {
   
     const accountId = req.context.accountId;
     if (accountId) {
-      const user = await storage.get(`u-${accountId}`);
+      const user = await initUserData(accountId);
       const deckId = session.deckInSession.id;
-      const reorderedDeck = session.deck
+      const reorderedDeck = session.deckInSession
       // check if dynamic dict does not exist 
       if (!(deckId in user.data)) {
         const newDynamicDeck: DynamicData = {
           dynamicDeck: reorderedDeck,
           quizSessions: [],
-          studySessions: []
+          studySessions: [],
+          numTimesAttempted: 0
         }
         user.data[deckId] = newDynamicDeck
       } else {

@@ -7,11 +7,10 @@ export type ResolverRequest = Parameters<ResolverFunction>[0];
 //////////////////////////////////////////////////
 
 export enum QuizSessionCardStatus {
-    Incomplete,
-    Correct,
-    Incorrect,
-    Skip,
-    Hint
+    Incomplete = 0,
+    Correct = 1,
+    Incorrect = 2,
+    Skip = 3,
 }
 
 export enum StudySessionCardStatus {
@@ -72,6 +71,7 @@ export interface DynamicData {
     dynamicDeck: Deck;
     quizSessions: QuizResult[];
     studySessions: StudyResult[];
+    numTimesAttempted: number;
 }
 
 export interface QuizResult {
@@ -107,6 +107,7 @@ export interface QuizSession {
     totalCardCount: number;
     currentCardIndex: number;
     sessionStartTime: number;
+    hintArray: boolean[]
 }
 
 export interface StudySession {
@@ -117,7 +118,7 @@ export interface StudySession {
     sessionStartTime: number;
 }
 
-//////////////////////////////////////////////////
+///////////////////////////////////////////////////////
 
 export interface GenFlashcardsPair {
     question: string,
