@@ -118,7 +118,7 @@ export interface StudySession {
     sessionStartTime: number;
 }
 
-//////////////////////////////////////////////////
+///////////////////////////////////////////////////////
 
 export interface GenFlashcardsPair {
     question: string,
