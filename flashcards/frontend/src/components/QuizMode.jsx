@@ -73,6 +73,9 @@ const QuizMode = ({ deck }) => {
 
   const goToNextCard = async (status) => {
     try {
+      
+      setIsFlipped(false);
+
       const response = await invoke('updateCardStatusQuiz', {
         currentIndex: currentCardIndex,
         status,
@@ -105,7 +108,6 @@ const QuizMode = ({ deck }) => {
           }
         } else {
           setCurrentCardIndex(response.nextIndex);
-          setIsFlipped(false);
           setCardStatus(null);
         }
       } else {

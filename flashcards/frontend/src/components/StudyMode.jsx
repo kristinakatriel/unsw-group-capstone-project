@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
 import ArrowRightIcon from '@atlaskit/icon/glyph/arrow-right'
 import LightbulbIcon from '@atlaskit/icon/glyph/lightbulb';
@@ -22,17 +22,23 @@ const StudyMode = ({ deck }) => {
   const closeHintModal = () => setIsHintModalOpen(false);
 
   const goToPrevCard = () => {
-    if (currentCardIndex > 0) {
-      setCurrentCardIndex((prevIndex) => prevIndex - 1);
-    }
-    setIsFlipped(false);
-  }
-
+    setCurrentCardIndex((prevIndex) => {
+      if (prevIndex > 0) {
+        return prevIndex - 1;
+      } else {
+        return totalCards - 1;
+      }
+    });
+  };
+  
   const goToNextCard = () => {
-    if (currentCardIndex < totalCards - 1) {
-      setCurrentCardIndex((prevIndex) => prevIndex + 1);
-    }
-    setIsFlipped(false);
+    setCurrentCardIndex((prevIndex) => {
+      if (prevIndex < totalCards - 1) {
+        return prevIndex + 1;
+      } else {
+        return 0;
+      }
+    });
   };
 
   const toggleFlip = () => {
@@ -56,6 +62,23 @@ const StudyMode = ({ deck }) => {
     openHintModal();
   };
 
+  // Keyboard Shortcut
+  const handleKeyDown = (event) => {
+    console.log('Key pressed:', event.key);
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      goToPrevCard();
+    } else if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      goToNextCard();
+    }
+  };
+  
+  useEffect(() => {
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+  
   const currentCard = flashcards[currentCardIndex];
 
   return (
@@ -76,6 +99,7 @@ const StudyMode = ({ deck }) => {
         <div className='flip-card-inner'>
           <div className='flip-card-front'>
             <div className='flip-card-header'>
+              Front
               <div className='flip-card-like' onClick={handleLikeClick}>
                 <LikeIcon />
               </div>            
@@ -86,21 +110,21 @@ const StudyMode = ({ deck }) => {
                 <LightbulbIcon />
               </div>
             </div>
-
             <h1>{currentCard.front}</h1>
           </div>
           <div className='flip-card-back'>
             <div className='flip-card-header'>
-                <div className='flip-card-like' onClick={handleLikeClick}>
-                  <LikeIcon />
-                </div>            
-                <div className='flip-card-edit' onClick={handleEditClick}>
-                  <EditIcon />
-                </div>
-                <div className='flip-card-hint' onClick={handleHintClick}>
-                  <LightbulbIcon />
-                </div>
+              Back
+              <div className='flip-card-like' onClick={handleLikeClick}>
+                <LikeIcon />
+              </div>            
+              <div className='flip-card-edit' onClick={handleEditClick}>
+                <EditIcon />
               </div>
+              <div className='flip-card-hint' onClick={handleHintClick}>
+                <LightbulbIcon />
+              </div>
+            </div>
             <h1>{currentCard.back}</h1>
           </div>
         </div>
