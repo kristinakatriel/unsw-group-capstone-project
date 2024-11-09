@@ -161,3 +161,8 @@ FIX Option 2 (call different thingys in the .css file depending on if cards or d
   margin: 15px 55px;
 }
 
+.deck-tags {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+}

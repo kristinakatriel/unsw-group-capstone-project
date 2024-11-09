@@ -105,3 +105,48 @@ button:hover {
   color: #6B4BA3;
   background: #E9DDFF;
 }
+
+.global-page-search {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 10px;
+}
+
+.global-page-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid darkgray;
+  border-radius: 6px;
+  padding: 3px 8px;
+  width: 200px;
+  background-color: white;
+}
+
+.global-page-search-box:focus-within {
+  border-color: rgb(12, 102, 228);
+}
+
+.global-page-search-icon {
+  position: absolute;
+  left: 6px;
+  color: darkgray;
+  font-size: 16px;
+}
+
+#search-input {
+  width: 100%;
+  padding: 4px;
+  font-size: 14px;
+  color: darkgray;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+  border-radius: 6px;
+  margin-left: 20px;
+}
+
+#search-input::placeholder {
+  color: grey;
+  font-size: 14px;
+}
