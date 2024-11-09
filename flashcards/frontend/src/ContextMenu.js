@@ -34,6 +34,7 @@ function ContextMenu() {
   const [hint, setHint] = useState('');
   const [showHint, setShowHint] = useState(false); 
   const [locked, setLocked] = useState(false);
+  const [tags, setTags] = useState([]);
 
   {/************************************* FIRST CALL WHEN MODULE IS LOADED ***************************************/}
   {/************************************* FETCHING SELECTED TEXT ***************************************/}
@@ -130,6 +131,19 @@ function ContextMenu() {
 
   };
 
+  const generateTags = async (front, back, hint) => {
+    try {
+      const combined = front + back;
+      const tagsGen = await invoke('generateSuggestedTags', { text: combined } );
+      if (tagsGen.success) {
+        console.log('true!! yay');
+      }
+    } catch (error) {
+      console.error('No way,,,', error);
+    }
+    console.log(`Can do this! with ${front} and ${back} and ${hint} (if applicable)`);
+  };
+
   console.log('Current Context Menu Data:', generatedFlashcards);
 
   return (
@@ -224,6 +238,10 @@ function ContextMenu() {
                         </span>
                       )}
                     </Field>
+                    
+                    <div>
+                      <button onClick={() => generateTags(front[index], back[index], hint)}>Click me to generate tags</button>
+                    </div>
 
                     <div className="context-menu-button-group">
                       <Button appearance="primary" onClick={() => handleSaveFlashcard(flashcard, index)}>Save Flashcard</Button>
