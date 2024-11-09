@@ -41,7 +41,7 @@ FIX Option 2 (call different thingys in the .css file depending on if cards or d
   position: absolute;
   top: -10px;
   width: 150px;
-  height: 20px; 
+  height: 20px;
   background: white;
   border-radius: 20px 0 0 0;
   clip-path: path('M 0 0 L 120 0 C 140 2, 130 12, 150 14 L 0 50 z');
@@ -79,12 +79,37 @@ FIX Option 2 (call different thingys in the .css file depending on if cards or d
   border-radius: 40px;
 }
 
-.deck-list .deck-link .deck.blue {
+
+.deck-list .deck-link .badge.blue {
   color: #5372F0;
   background: #DDE4FF;
-  width: fit-content;
 }
 
+
+.deck-list .deck-link .badge.red {
+  color: #B22485;
+  background: #F7DFF5;
+}
+
+.deck-list .deck-link .badge.orange {
+  color: #B25A2B;
+  background: #FFE3D2;
+}
+
+.deck-list .deck-link .badge.green {
+  color: #205C20;
+  background: #D6F8D6;
+}
+
+.deck-list .deck-link .badge.yellow {
+  color: #856404;
+  background: #fff3cd;
+}
+
+.deck-list .deck-link .badge.purple {
+  color: #6B4BA3;
+  background: #E9DDFF;
+}
 
 .deck-list .deck-link .deck-name {
   font-size: 16px;
