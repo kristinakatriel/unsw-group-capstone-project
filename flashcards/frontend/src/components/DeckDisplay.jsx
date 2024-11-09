@@ -520,8 +520,6 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
                 {filteredFlashcards.map((flashcard) => (
                     <li key={flashcard.id} className="card-item">
                         <div className="card-link">
-
-
                             {/* Render tags */}
                             <div className='card-tags'>
                             {tagMap[flashcard.id]?.map((tag) => (
