@@ -1,37 +1,74 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import { invoke } from '@forge/bridge';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
 import './CardSlider.css';
 
 // added onEdit as well!
-const CardSlider = ({ cards = [], onDelete, onEdit  }) => {
+const CardSlider = ({ cards = [], onDelete, onEdit }) => {
+
+  const [cardTags, setCardTags] = useState({});
+
+  // Fetch tags for a given card
+  const fetchTagsForCard = async (passedIn) => {
+
+    //console.log('cardId passed in', passedIn);
+
+
+
+    try {
+      const response = await invoke('getTagsByCardId', {cardId: passedIn});
+      //const response = await getTagsByCardId({ payload: { cardId } });
+
+      if (response.success) {
+        setCardTags((prevTags) => ({
+          ...prevTags,
+          [passedIn]: response.tags,
+        }));
+        // Log the cards received as props
+        console.log('tags responce received for card:', passedIn);
+        console.log('tags responce:', response);
+      } else {
+        //console.error('Error fetching tags:', response.error);
+      }
+    } catch (error) {
+      console.error('Error fetching tags:', error);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch tags for each card when the component mounts or when cards are updated
+    cards.forEach((card) => {
+      fetchTagsForCard(card.id);
+    });
+  }, [cards]);
 
   // Log the cards received as props
   console.log('Cards received in CARDSLIDER:', cards);
 
-  const handleDelete = async (cardId) => {
-    const confirmDelete = window.confirm("Are you sure you want to delete all instances of the flashcard?");
+  // const handleDelete = async (cardId) => {
+  //   const confirmDelete = window.confirm("Are you sure you want to delete all instances of the flashcard?");
 
-    if (confirmDelete) {
-      try {
-        // Invoke the backend delete function
-        const response = await invoke('deleteFlashcard', { cardId });
+  //   if (confirmDelete) {
+  //     try {
+  //       // Invoke the backend delete function
+  //       const response = await invoke('deleteFlashcard', { cardId });
 
-        if (response.success) {
-          alert('Successfully deleted flashcard!');
-          // Optionally refresh the flashcard list after deletion
-          // You can call a function here to re-fetch flashcards if needed
-        } else {
-          alert('Error deleting flashcard: ' + response.error);
-        }
-      } catch (error) {
-        console.error('Error invoking deleteFlashcard:', error);
-        alert('An error occurred. Please try again.');
-      }
-    }
-  };
+  //       if (response.success) {
+  //         alert('Successfully deleted flashcard!');
+  //         // Optionally refresh the flashcard list after deletion
+  //         // You can call a function here to re-fetch flashcards if needed
+  //       } else {
+  //         alert('Error deleting flashcard: ' + response.error);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error invoking deleteFlashcard:', error);
+  //       alert('An error occurred. Please try again.');
+  //     }
+  //   }
+  // };
 
 
   return (
@@ -57,8 +94,35 @@ const CardSlider = ({ cards = [], onDelete, onEdit  }) => {
             {cards.map((card) => (
               <SplideSlide key={card.id} className='card-item'>
               <div className="card-link">
-                {/* **TODO** */}
-                <p className='badge blue'>Blue Tag</p>
+
+
+                {/* Dynamically render the tags for each card */}
+                <div className='card-tags'>
+                  {cardTags[card.id]?.map((tag) => (
+                      <span
+                        key={tag.id}
+                        className={`badge ${tag.colour}`}
+                        onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
+                      >
+                        {tag.title || "Tag"}
+                      </span>
+                    ))}
+                </div>
+
+
+
+
+                {/* **TODO**
+                <p className='badge blue'>Blue Tag</p> */}
+
+
+
+
+
+
+
+
+
                 {card.front && <h4 className='card-front'>{card.front}</h4>}
                 {card.back && <h4 className='card-back'>{card.back}</h4>}
                 <h4 className='card-owner'>By {card.name || 'Unknown'}</h4>

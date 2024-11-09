@@ -331,7 +331,7 @@ function globalPageModule() {
       // Add tags once implemented
     );
   });
-  
+
   const filteredDecks = flashdecks.filter((deck) => {
     const searchTerm = globalPageSearchTerm.toLowerCase();
     return (
@@ -341,7 +341,7 @@ function globalPageModule() {
       // Add tags once implemented
     );
   });
-  
+
   const filteredTags = tags.filter((tag) => {
     const searchTerm = globalPageSearchTerm.toLowerCase();
     return (
@@ -361,9 +361,9 @@ function globalPageModule() {
   const renderTagsList = (filteredTags) => (
     <div className="global-page-badge-container">
       {filteredTags.map((tag, index) => (
-        <p 
-          key={index} 
-          className={`badge ${tag.colour}`} 
+        <p
+          key={index}
+          className={`badge ${tag.colour}`}
           onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
         >
           {tag.title || "Tag"}
@@ -371,7 +371,7 @@ function globalPageModule() {
       ))}
     </div>
   );
-  
+
   //************************** DECK DISPLAY FUNCTIONS *****************************/
   const onDeckClick = (deck) => {
     console.log(`Deck clicked: ${deck.title}`); // Log when a deck is clicked
@@ -542,7 +542,7 @@ function globalPageModule() {
       </div>
     );
   }
-  
+
   return (
     <div className='global-page-container'>
       <div className="global-page-header">
