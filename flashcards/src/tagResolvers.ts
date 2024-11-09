@@ -256,3 +256,33 @@ export const removeTagFromDeck = async (req: ResolverRequest) => {
         message: 'Tag removed from deck',
     };
 };
+
+
+export const getTagsByCardId = async (req: ResolverRequest) => {
+    const { cardId } = req.payload;
+
+    // Fetch all tags stored in the system
+    const tags: Tag[] = [];
+
+    const query = await storage.query().where('key', startsWith('t-')).limit(50).getMany();
+
+    // Loop through the tags and check if the cardId is in the tag's cardIds array
+    query.results.forEach(({ value }) => {
+        const tag = value as Tag;
+        if (tag.cardIds.includes(cardId)) {
+            tags.push(tag);
+        }
+    });
+
+    if (tags.length === 0) {
+        return {
+            success: false,
+            error: `No tags found for card with id: ${cardId}`,
+        };
+    }
+
+    return {
+        success: true,
+        tags,
+    };
+};
