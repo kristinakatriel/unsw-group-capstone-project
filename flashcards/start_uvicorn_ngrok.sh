@@ -5,7 +5,7 @@ uvicorn src.flashcards:app --host 0.0.0.0 --port 8000 &
 UVICORN_PID=$!  # Store the PID of the Uvicorn process
 
 # Start ngrok with a reserved subdomain
-ngrok http --url=marlin-excited-gibbon.ngrok-free.app 8000 & # Start ngrok in the background
+ngrok http --url=https://marlin-excited-gibbon.ngrok-free.app 8000 & # Start ngrok in the background
 NGROK_PID=$!      # Store the PID of the ngrok process
 
 # Function to clean up the processes
