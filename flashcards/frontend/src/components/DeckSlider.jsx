@@ -40,14 +40,24 @@ const DeckSlider = ({ decks = [], onDelete, onDeckClick, onEdit }) => {
             {decks.map((deck) => (
               deck.title && (
                 <SplideSlide key={deck.id} className='deck-item'>
-                  <div className="deck-link">
+                  <div
+                    className="deck-link"
+                    onClick={() => {
+                      console.log(`Deck ${deck.id} has been clicked by user`);
+                      onDeckClick(deck);
+                    }}
+                  >
                     <div className="deck-content"></div>
                     {/* ** TODO ** */}
                     <p className='badge blue'>Blue Tag</p>
                     <h4 className='deck-name'>{deck.title || 'Unnamed Deck'}</h4>
+                    <h4 className='deck-flashcard-amount'>Flashcards: {deck.cards?.length || 0}</h4>
                     {deck.description.includes("Fetched from https://") ? (
                       <div
-                        onClick={() => handleLinkClick(deck.description.match(/https?:\/\/\S+/)[0])}
+                        onClick={(e) => {
+                          e.stopPropagation(); // Prevents triggering parent onClick
+                          handleLinkClick(deck.description.match(/https?:\/\/\S+/)[0]);
+                        }}
                         className='ai-deck-description'
                       >
                         View source page
@@ -55,22 +65,21 @@ const DeckSlider = ({ decks = [], onDelete, onDeckClick, onEdit }) => {
                     ) : (
                       <h4 className='deck-description'>{deck.description}</h4>
                     )}
-                    <h4 className='deck-flashcard-amount'>Flashcards: {deck.cards?.length || 0}</h4>
                     <h4 className='deck-owner'>By {deck.name || 'Unknown'}</h4>
                     <div className='deck-button'>
-                      <EditIcon className='deck-edit-button'  onClick={() => onEdit(deck)}/>
-                      <DeleteIcon
-                          className='deck-delete-button'
-                          onClick={() => {
-                              console.log('Delete icon clicked for deck:', deck);
-                              onDelete(deck);
-                          }}
+                      <EditIcon
+                        className='deck-edit-button'
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onEdit(deck);
+                        }}
                       />
-                      <OpenInNewIcon
-                        className='deck-open-button'
-                        onClick={() => {
-                          console.log(`Deck ${deck.id} has been clicked by user`)
-                          onDeckClick(deck)
+                      <DeleteIcon
+                        className='deck-delete-button'
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          console.log('Delete icon clicked for deck:', deck);
+                          onDelete(deck);
                         }}
                       />
                     </div>
