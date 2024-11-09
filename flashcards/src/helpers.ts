@@ -39,10 +39,10 @@ export const clearStorage = async (): Promise<void> => {
 };
 
 
-export const queryStorage = async (prefix: string): Promise<void> => {
-    const start = Date.now();
+export const queryStorage = async (prefix: string): Promise<(Card | Deck | Tag | User)[]> => {
+    // const start = Date.now();
     let cursor = '';
-    let result = [];
+    let result: (Card | Deck | Tag | User)[] = [];
     while (true) {
         const { results, nextCursor } = await storage
             .query()
@@ -54,14 +54,15 @@ export const queryStorage = async (prefix: string): Promise<void> => {
             break;
         } else {
             cursor = nextCursor ?? '';
-            result.push(...results);
+            result.push(...results.map(r => r.value as Card | Deck | Tag | User));        
         }
     }
-    console.log(result);
-    console.log(`Total results: ${result.length}`);
-    const end = Date.now();
-    console.log(`Total time: ${end - start}`);
-    console.log("Query done!");
+    // console.log(result);
+    // console.log(`Total results: ${result.length}`);
+    // const end = Date.now();
+    // console.log(`Total time: ${end - start}`);
+    // console.log("Query done!");
+    return result;
 };
 
 
@@ -114,7 +115,7 @@ export const initUserData = async (accountId: string) => {
 };
 
 
-export const fetchCardsById = async (cardIds: string[]): Promise<Card[]> => {
+export const queryCardsById = async (cardIds: string[]): Promise<Card[]> => {
     const cards: Card[] = [];
 
     for (const cardId of cardIds) {
@@ -128,7 +129,7 @@ export const fetchCardsById = async (cardIds: string[]): Promise<Card[]> => {
 };
 
 
-export const fetchDecksById = async (deckIds: string[]): Promise<Deck[]> => {
+export const queryDecksById = async (deckIds: string[]): Promise<Deck[]> => {
     const decks: Deck[] = [];
 
     for (const deckId of deckIds) {
@@ -142,7 +143,7 @@ export const fetchDecksById = async (deckIds: string[]): Promise<Deck[]> => {
 };
 
 
-export const fetchTagsById = async (tagIds: string[]): Promise<Tag[]> => {
+export const queryTagsById = async (tagIds: string[]): Promise<Tag[]> => {
     const tags: Tag[] = [];
 
     for (const tagId of tagIds) {
@@ -156,7 +157,7 @@ export const fetchTagsById = async (tagIds: string[]): Promise<Tag[]> => {
 };
 
 
-export const fetchUsersById = async (userIds: string[]): Promise<User[]> => {
+export const queryUsersById = async (userIds: string[]): Promise<User[]> => {
     const users: User[] = [];
     
     for (const userId of userIds) {
@@ -167,4 +168,17 @@ export const fetchUsersById = async (userIds: string[]): Promise<User[]> => {
     }
     
     return users;
+};
+
+
+export const queryTagsForItem = async (itemId: string, itemType: string) => {
+    const allTags = await queryStorage('t-') as Tag[];
+
+    const relTags = allTags.filter(tag => 
+        (itemType === 'card' && tag.cardIds.includes(itemId)) ||
+        (itemType === 'deck' && tag.deckIds.includes(itemId)) ||
+        (itemType === 'tag' && tag.tagIds.includes(itemId))
+    );
+
+    return relTags;
 };

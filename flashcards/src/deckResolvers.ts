@@ -5,7 +5,7 @@ import {
     QuizResult, StudyResult, QuizSession, StudySession
 } from './types';
 import { generateId, clearStorage, queryStorage, getUserName, initUserData } from './helpers'
-import { fetchCardsById, fetchDecksById, fetchTagsById, fetchUsersById } from './helpers'
+import { queryCardsById, queryDecksById, queryTagsById, queryUsersById } from './helpers'
 import { ResolverRequest } from './types'
 
 
@@ -100,7 +100,7 @@ export const deleteDeck = async (req: ResolverRequest) => {
         }
     }
 
-    const tags = await fetchTagsById(deck.tagIds || []);
+    const tags = await queryTagsById(deck.tagIds || []);
     for (const tag of tags) {
         tag.deckIds = tag.deckIds.filter(id => id !== deckId);
         await storage.set(tag.id, tag);

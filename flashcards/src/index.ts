@@ -16,8 +16,8 @@ import {
   addCardToDeck, removeCardFromDeck
 } from './deckResolvers'
 import {
-  createTag, updateTag, deleteTag, getTag, getAllTags,
-  addTagToCard, addTagToDeck, removeTagFromCard, removeTagFromDeck, getTagsByCardId
+  createTag, updateTag, deleteTag, getTag, getAllTags, getTagsForItem,
+  addTagToCard, addTagToDeck, removeTagFromCard, removeTagFromDeck
 } from './tagResolvers';
 import {
   fetchUserCards, fetchUserDecks, fetchUserTags
@@ -62,12 +62,13 @@ resolver.define('updateTag', updateTag);
 resolver.define('deleteTag', deleteTag);
 resolver.define('getTag', getTag);
 resolver.define('getAllTags', getAllTags);
+resolver.define('getTagsForItem', getTagsForItem);
 resolver.define('addTagToCard', addTagToCard);
 resolver.define('addTagToDeck', addTagToDeck);
 resolver.define('removeTagFromCard', removeTagFromCard);
 resolver.define('removeTagFromDeck', removeTagFromDeck);
 // main handler file (where the resolver is defined)
-resolver.define('getTagsByCardId', getTagsByCardId);
+// resolver.define('getTagsByCardId', getTagsByCardId);
 
 
 resolver.define('fetchUserCards', fetchUserCards);
