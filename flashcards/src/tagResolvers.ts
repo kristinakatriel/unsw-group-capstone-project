@@ -151,16 +151,33 @@ export const getAllTags = async () => {
 
 
 export const getTagsForItem = async (req: ResolverRequest) => {
+
+
     const { itemId, itemType } = req.payload;
-    const allTags = await queryStorage('t-') as Tag[];
+    try {
+        const relTags = await queryTagsForItem(itemId, itemType);
 
-    const relTags = await queryTagsForItem(itemId, itemType);
+        // Check if any tags were found and return them
+        if (relTags.length > 0) {
+            return { success: true, tags: relTags };
+        } else {
+            return { success: false, error: 'No tags found for this item.' };
+        }
+    } catch (error) {
+        console.error('Error fetching tags:', error);
+        return { success: false, error: 'Error fetching tags' };
+    }
 
 
-    return {
-        success: true,
-        tags: relTags,
-    };
+    // //const allTags = await queryStorage('t-') as Tag[];
+
+    // const relTags = await queryTagsForItem(itemId, itemType);
+
+
+    // return {
+    //     success: true,
+    //     tags: relTags,
+    // };
 };
 
 
@@ -272,31 +289,31 @@ export const removeTagFromDeck = async (req: ResolverRequest) => {
 };
 
 
-export const getTagsByCardId = async (req: ResolverRequest) => {
-    const { cardId } = req.payload;
+// export const getTagsByCardId = async (req: ResolverRequest) => {
+//     const { cardId } = req.payload;
 
-    // Fetch all tags stored in the system
-    const tags: Tag[] = [];
+//     // Fetch all tags stored in the system
+//     const tags: Tag[] = [];
 
-    const query = await storage.query().where('key', startsWith('t-')).limit(50).getMany();
+//     const query = await storage.query().where('key', startsWith('t-')).limit(50).getMany();
 
-    // Loop through the tags and check if the cardId is in the tag's cardIds array
-    query.results.forEach(({ value }) => {
-        const tag = value as Tag;
-        if (tag.cardIds.includes(cardId)) {
-            tags.push(tag);
-        }
-    });
+//     // Loop through the tags and check if the cardId is in the tag's cardIds array
+//     query.results.forEach(({ value }) => {
+//         const tag = value as Tag;
+//         if (tag.cardIds.includes(cardId)) {
+//             tags.push(tag);
+//         }
+//     });
 
-    if (tags.length === 0) {
-        return {
-            success: false,
-            error: `No tags found for card with id: ${cardId}`,
-        };
-    }
+//     if (tags.length === 0) {
+//         return {
+//             success: false,
+//             error: `No tags found for card with id: ${cardId}`,
+//         };
+//     }
 
-    return {
-        success: true,
-        tags,
-    };
-};
+//     return {
+//         success: true,
+//         tags,
+//     };
+// };

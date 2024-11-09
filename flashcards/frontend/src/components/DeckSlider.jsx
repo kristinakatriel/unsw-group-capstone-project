@@ -8,6 +8,51 @@ import './DeckSlider.css';
 
 const DeckSlider = ({ decks = [], onDelete, onDeckClick, onEdit }) => {
 
+  const [deckTags, setDeckTags] = useState({});
+
+  // Fetch tags for a given deck
+  const fetchTagsForDeck = async (passedIn) => {
+
+    console.log('deckId passed in', passedIn);
+
+
+
+    try {
+      const response = await invoke('getTagsForItem', {itemId: passedIn, itemType: 'deck'});
+      //const response = await getTagsByCardId({ payload: { deckId } });
+
+      if (response.success) {
+        setDeckTags((prevTags) => ({
+          ...prevTags,
+          [passedIn]: response.tags,
+        }));
+        // Log the cards received as props
+        console.log('tags responce received for deck:', passedIn);
+        console.log('tags responce:', response);
+      } else {
+        //console.log('tags responce:', response);
+        console.error('Error fetching tags:', response);
+      }
+    } catch (error) {
+      console.error('Error fetching tags:', error);
+    }
+  };
+
+  useEffect(() => {
+    // Fetch tags for each deck when the component mounts or when cards are updated
+    decks.forEach((deck) => {
+      fetchTagsForDecks(deck.id);
+    });
+  }, [decks]);
+
+
+
+
+
+
+
+
+
   return (
     <div className='container'>
       <div className='deck-wrapper'>

@@ -14,12 +14,12 @@ const CardSlider = ({ cards = [], onDelete, onEdit }) => {
   // Fetch tags for a given card
   const fetchTagsForCard = async (passedIn) => {
 
-    //console.log('cardId passed in', passedIn);
+    console.log('cardId passed in', passedIn);
 
 
 
     try {
-      const response = await invoke('getTagsByCardId', {cardId: passedIn});
+      const response = await invoke('getTagsForItem', {itemId: passedIn, itemType: 'card'});
       //const response = await getTagsByCardId({ payload: { cardId } });
 
       if (response.success) {
@@ -31,7 +31,8 @@ const CardSlider = ({ cards = [], onDelete, onEdit }) => {
         console.log('tags responce received for card:', passedIn);
         console.log('tags responce:', response);
       } else {
-        //console.error('Error fetching tags:', response.error);
+        //console.log('tags responce:', response);
+        console.error('Error fetching tags:', response);
       }
     } catch (error) {
       console.error('Error fetching tags:', error);
@@ -46,7 +47,7 @@ const CardSlider = ({ cards = [], onDelete, onEdit }) => {
   }, [cards]);
 
   // Log the cards received as props
-  console.log('Cards received in CARDSLIDER:', cards);
+  //console.log('Cards received in CARDSLIDER:', cards);
 
   // const handleDelete = async (cardId) => {
   //   const confirmDelete = window.confirm("Are you sure you want to delete all instances of the flashcard?");
