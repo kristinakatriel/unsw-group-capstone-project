@@ -5,7 +5,7 @@ import {
     QuizResult, StudyResult, QuizSession, StudySession
 } from './types';
 import { generateId, clearStorage, getUserName, initUserData } from './helpers'
-import { fetchCardsById, fetchDecksById, fetchTagsById, fetchUsersById } from './helpers'
+import { queryCardsById, queryDecksById, queryTagsById, queryUsersById } from './helpers'
 import { ResolverRequest } from './types'
 
 
@@ -28,7 +28,7 @@ export const fetchUserCards = async (req: ResolverRequest) => {
         };
     }
 
-    const cards = await fetchCardsById(user.cardIds);
+    const cards = await queryCardsById(user.cardIds);
 
     return {
         success: true,
@@ -56,7 +56,7 @@ export const fetchUserDecks = async (req: ResolverRequest) => {
         };
     }
 
-    const decks = await fetchDecksById(user.deckIds);
+    const decks = await queryDecksById(user.deckIds);
 
     return {
         success: true,
@@ -84,7 +84,7 @@ export const fetchUserTags = async (req: ResolverRequest) => {
         };
     }
 
-    const tags = await fetchTagsById(user.tagIds);
+    const tags = await queryTagsById(user.tagIds);
 
     return {
         success: true,
