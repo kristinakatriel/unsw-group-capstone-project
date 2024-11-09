@@ -37,7 +37,7 @@ function CreateTagGlobal({ closeTagModal }) {
   const [decks, setDecks] = useState([]);
   const [selectedFlashcards, setSelectedFlashcards] = useState([]);
   const [selectedDecks, setSelectedDecks] = useState([]);
-  const [showDecks, setShowDecks] = useState(false); 
+  const [showDecks, setShowDecks] = useState(false);
   const [showFlashcards, setShowFlashcards] = useState(false);
 
   const handleClose = () => {
@@ -61,8 +61,8 @@ function CreateTagGlobal({ closeTagModal }) {
       const response = await invoke('createTag', {
         title: tagTitle,
         colour: selectedColour || 'blue',
-        deckIds: selectedDecks, 
-        cardIds: selectedFlashcards, 
+        deckIds: selectedDecks,
+        cardIds: selectedFlashcards,
         locked: locked
       });
 
@@ -71,8 +71,8 @@ function CreateTagGlobal({ closeTagModal }) {
         console.log('Tag created successfully:', response.tag);
         setTagTitle('');
         setTimeout(() => {
-          closeTagModal(); 
-        }, 1000); 
+          closeTagModal();
+        }, 1000);
       } else {
         setErrorMessage(response.error);
         console.error('Failed to create tag:', response.error);
@@ -152,7 +152,7 @@ function CreateTagGlobal({ closeTagModal }) {
         </ModalHeader>
 
         <ModalBody>
-          {errorMessage && 
+          {errorMessage &&
             <Collapse in={closeError}>
               <Alert
                 severity="error"
@@ -186,11 +186,11 @@ function CreateTagGlobal({ closeTagModal }) {
               </div>
             )}
           </Field>
-          
+
           {/************************************* ADD DECKS FIELD ***************************************/}
           <Field id="add-decks" name="add-decks" label={
             <div onClick={() => setShowDecks(!showDecks)} className="label-clickable">
-              <span>Add Decks (Optional)</span>
+              <span>Add Tag To Decks (Optional)</span>
               <span className="toggle-icon">
                 {showDecks ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
               </span>
@@ -226,7 +226,7 @@ function CreateTagGlobal({ closeTagModal }) {
           {/************************************* ADD FLASHCARDS FIELD ***************************************/}
           <Field id="add-flashcards" name="add-flashcards" label={
             <div onClick={() => setShowFlashcards(!showFlashcards)} className="label-clickable">
-              <span>Add Flashcards (Optional)</span>
+              <span>Add Tag To Flashcards (Optional)</span>
               <span className="toggle-icon">
                 {showFlashcards ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
               </span>
@@ -264,7 +264,7 @@ function CreateTagGlobal({ closeTagModal }) {
             {() => (
               <span onClick={() => setLocked(!locked)} style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}>
                 {locked ? 'This tag will be locked, only the owner can edit and delete' : 'This tag will be unlocked, others can edit and delete'}
-                <span> 
+                <span>
                   {locked ? (
                     <LockIcon label="Locked" />
                   ) : (
