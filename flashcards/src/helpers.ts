@@ -39,10 +39,10 @@ export const clearStorage = async (): Promise<void> => {
 };
 
 
-export const queryStorage = async (prefix: string): Promise<void> => {
-    const start = Date.now();
+export const queryStorage = async (prefix: string): Promise<(Card | Deck | Tag | User)[]> => {
+    // const start = Date.now();
     let cursor = '';
-    let result = [];
+    let result: (Card | Deck | Tag | User)[] = [];
     while (true) {
         const { results, nextCursor } = await storage
             .query()
@@ -54,14 +54,15 @@ export const queryStorage = async (prefix: string): Promise<void> => {
             break;
         } else {
             cursor = nextCursor ?? '';
-            result.push(...results);
+            result.push(...results.map(r => r.value as Card | Deck | Tag | User));        
         }
     }
-    console.log(result);
-    console.log(`Total results: ${result.length}`);
-    const end = Date.now();
-    console.log(`Total time: ${end - start}`);
-    console.log("Query done!");
+    // console.log(result);
+    // console.log(`Total results: ${result.length}`);
+    // const end = Date.now();
+    // console.log(`Total time: ${end - start}`);
+    // console.log("Query done!");
+    return result;
 };
 
 

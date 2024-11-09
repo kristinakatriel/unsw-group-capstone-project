@@ -4,7 +4,7 @@ import {
     Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
     QuizResult, StudyResult, QuizSession, StudySession
 } from './types';
-import { generateId, clearStorage, getUserName, initUserData } from './helpers'
+import { generateId, clearStorage, queryStorage, getUserName, initUserData } from './helpers'
 import { fetchCardsById, fetchDecksById, fetchTagsById, fetchUsersById } from './helpers'
 import { ResolverRequest } from './types'
 
@@ -146,6 +146,23 @@ export const getAllTags = async () => {
     return {
         success: true,
         tags,
+    };
+};
+
+
+export const getTagsForItem = async (req: ResolverRequest) => {
+    const { itemId, itemType } = req.payload;
+    const allTags = await queryStorage('t-') as Tag[];
+
+    const relTags = allTags.filter(tag => 
+        (itemType === 'card' && tag.cardIds.includes(itemId)) ||
+        (itemType === 'deck' && tag.deckIds.includes(itemId)) ||
+        (itemType === 'tag' && tag.tagIds.includes(itemId))
+    );
+
+    return {
+        success: true,
+        tags: relTags,
     };
 };
 
