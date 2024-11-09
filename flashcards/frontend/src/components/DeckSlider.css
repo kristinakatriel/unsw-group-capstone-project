@@ -5,8 +5,9 @@
 .deck-list .deck-item {
   list-style: none;
 }
+
 .deck-list .deck-item .deck-link {
-  margin: 40px 10px 8px 10px;
+  margin: 15px 10px 8px 10px;
   padding: 12px;
   border: 2px solid transparent;
   border-radius: 10px;
@@ -23,25 +24,13 @@
   width: 150px;
   height: 20px;
   background: white;
-  border-radius: 20px 0 0 0;
-  clip-path: path('M 0 0 L 120 0 C 140 2, 130 12, 150 14 L 0 50 z');
+  border-radius: 20px 20px 0 0;
   left: -1.9px;
 }
 
 .deck-list .deck-item .deck-link:hover {
-  border-color: #5372F0;
+  border-color: #0155cc;
   cursor: pointer;
-}
-
-.deck-list .deck-item .deck-link::after {
-  content: '';
-  position: absolute;
-  top: -2px;
-  left: -2px;
-  right: -2px;
-  height: 2px;
-  background: transparent;
-  z-index: 0;
 }
 
 .deck-list .deck-item .deck-link:hover::after {
@@ -51,8 +40,9 @@
 .deck-list .deck-item .deck-link:hover::before {
   background: #fff;
   border-left: 2px solid #0155cc;
-  border-radius: 20px 0 0 0;
+  border-radius: 20px 20px 0 0;
   border-top: 2px solid #0155cc;
+  border-right: 2px solid #0155cc; 
 }
 
 .deck-list .deck-item .deck-link::after {
@@ -66,8 +56,12 @@
   border-radius: 0 0 5px 5px;
 }
 
-.deck-list .deck-item .deck-link:hover {
-  border-color: rgb(1,85,204);
+.deck-right-border {
+  background: white;
+  height: 12px;
+  position: absolute;
+  width: 158px;
+  top: 0px;
 }
 
 .deck-list .deck-link .deck-tags {
@@ -130,7 +124,7 @@
   margin-bottom: 5px;
   position: absolute;
   bottom: 40px;
-  right: 10px;
+  right: 12px;
 }
 
 .deck-list .deck-link .deck-button {
@@ -139,7 +133,7 @@
   margin-top: 15px;
   position: absolute;
   bottom: 10px;
-  right: 10px;
+  right: 12px;
 }
 
 .deck-list .deck-link .deck-edit-button,

@@ -51,6 +51,7 @@ const DeckSlider = ({ decks = [], onDelete, onDeckClick, onEdit }) => {
                       onDeckClick(deck);
                     }}
                   >
+                    <div className="deck-right-border"></div>
                     <div className="deck-content"></div>
                     {/* ** TODO ** */}
                     <p className='badge blue'>Blue Tag</p>
