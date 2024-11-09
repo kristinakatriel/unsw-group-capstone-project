@@ -99,6 +99,17 @@ FIX Option 2 (call different thingys in the .css file depending on if cards or d
   margin-bottom: 6px;
 }
 
+.deck-list .deck-link .ai-deck-description {
+  font-size: 14px;
+  color: rgb(12, 102, 228); 
+  font-weight: bold;
+  margin-bottom: 6px;
+  text-decoration: underline; 
+}
+
+.deck-list .deck-link .ai-deck-description:hover {
+  cursor: pointer;
+}
 .deck-list .deck-link .deck-flashcard-amount {
   font-size: 14px;
   color: #888;

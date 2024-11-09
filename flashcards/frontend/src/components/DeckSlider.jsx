@@ -2,11 +2,20 @@ import React from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import { router } from '@forge/bridge';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
 import './DeckSlider.css';
 
 const DeckSlider = ({ decks = [], onDelete, onDeckClick, onEdit }) => {
+
+  const handleLinkClick = async (url) => {
+    try {
+      await router.open(url);
+    } catch (error) {
+      console.error('Navigation failed or user declined to proceed:', error);
+    }
+  };
 
   return (
     <div className='container'>
@@ -36,7 +45,16 @@ const DeckSlider = ({ decks = [], onDelete, onDeckClick, onEdit }) => {
                     {/* ** TODO ** */}
                     <p className='badge blue'>Blue Tag</p>
                     <h4 className='deck-name'>{deck.title || 'Unnamed Deck'}</h4>
-                    <h4 className='deck-description'>{deck.description}</h4>
+                    {deck.description.includes("Fetched from https://") ? (
+                      <div
+                        onClick={() => handleLinkClick(deck.description.match(/https?:\/\/\S+/)[0])}
+                        className='ai-deck-description'
+                      >
+                        View source page
+                      </div>
+                    ) : (
+                      <h4 className='deck-description'>{deck.description}</h4>
+                    )}
                     <h4 className='deck-flashcard-amount'>Flashcards: {deck.cards?.length || 0}</h4>
                     <h4 className='deck-owner'>By {deck.name || 'Unknown'}</h4>
                     <div className='deck-button'>
