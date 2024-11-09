@@ -515,42 +515,42 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
 
       {updatedDeck && updatedDeck.cards && updatedDeck.cards.length > 0 ? (
         <div className="card-wrapper">
-            <ul className="card-list">
-                {/* {updatedDeck.cards.map((flashcard) => ( */}
-                {filteredFlashcards.map((flashcard) => (
-                    <li key={flashcard.id} className="card-item">
-                        <div className="card-link">
-                            {/* Render tags */}
-                            <div className='card-tags'>
-                            {tagMap[flashcard.id]?.map((tag) => (
-                            <span
-                                key={tag.id}
-                                className={`badge ${tag.colour}`}
-                                onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
-                            >
-                                {tag.title || "Tag"}
-                            </span>
-                            ))}
-                            </div>
+          <ul className="card-list">
+            {/* {updatedDeck.cards.map((flashcard) => ( */}
+            {filteredFlashcards.map((flashcard) => (
+              <li key={flashcard.id} className="card-item">
+                <div className="card-link">
+                  {/* Render tags */}
+                  <div className='card-tags'>
+                  {tagMap[flashcard.id]?.map((tag) => (
+                  <span
+                    key={tag.id}
+                    className={`badge ${tag.colour}`}
+                    onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
+                  >
+                    {tag.title || "Tag"}
+                  </span>
+                  ))}
+                  </div>
 
-                            <h4 className="card-front">{flashcard.front || 'No front available'}</h4>
-                            <h4 className="card-back">{flashcard.back || 'No back available'}</h4>
-                            <h4 className="card-owner">By {flashcard.name || 'Unknown'}</h4>
+                  <h4 className="card-front">{flashcard.front || 'No front available'}</h4>
+                  <h4 className="card-back">{flashcard.back || 'No back available'}</h4>
+                  <h4 className="card-owner">By {flashcard.name || 'Unknown'}</h4>
 
-                            <div className="card-button">
-                                <EditIcon
-                                    className="card-edit-button"
-                                    onClick={() => openFlashcardEditModal(flashcard)}
-                                />
-                                <DeleteIcon
-                                    className="card-delete-button"
-                                    onClick={() => openFlashcardDeleteModal(flashcard)}
-                                />
-                            </div>
-                        </div>
-                    </li>
-                ))}
-            </ul>
+                  <div className="card-button">
+                    <EditIcon
+                      className="card-edit-button"
+                      onClick={() => openFlashcardEditModal(flashcard)}
+                    />
+                    <DeleteIcon
+                      className="card-delete-button"
+                      onClick={() => openFlashcardDeleteModal(flashcard)}
+                    />
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
         </div>
       ) : (
         <p>No flashcards in this deck.</p>
