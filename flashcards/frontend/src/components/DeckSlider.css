@@ -80,12 +80,37 @@
   border-radius: 40px;
 }
 
-.deck-list .deck-link .deck.blue {
+
+.deck-list .deck-link .badge.blue {
   color: #5372F0;
   background: #DDE4FF;
-  width: fit-content;
 }
 
+
+.deck-list .deck-link .badge.red {
+  color: #B22485;
+  background: #F7DFF5;
+}
+
+.deck-list .deck-link .badge.orange {
+  color: #B25A2B;
+  background: #FFE3D2;
+}
+
+.deck-list .deck-link .badge.green {
+  color: #205C20;
+  background: #D6F8D6;
+}
+
+.deck-list .deck-link .badge.yellow {
+  color: #856404;
+  background: #fff3cd;
+}
+
+.deck-list .deck-link .badge.purple {
+  color: #6B4BA3;
+  background: #E9DDFF;
+}
 
 .deck-list .deck-link .deck-name {
   font-size: 16px;
@@ -151,3 +176,8 @@
   margin: 15px 55px;
 }
 
+.deck-tags {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+}

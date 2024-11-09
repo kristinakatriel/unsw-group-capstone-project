@@ -67,6 +67,9 @@ resolver.define('addTagToCard', addTagToCard);
 resolver.define('addTagToDeck', addTagToDeck);
 resolver.define('removeTagFromCard', removeTagFromCard);
 resolver.define('removeTagFromDeck', removeTagFromDeck);
+// main handler file (where the resolver is defined)
+// resolver.define('getTagsByCardId', getTagsByCardId);
+
 
 resolver.define('fetchUserCards', fetchUserCards);
 resolver.define('fetchUserDecks', fetchUserDecks);

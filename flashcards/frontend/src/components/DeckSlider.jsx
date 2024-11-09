@@ -1,13 +1,59 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { router } from '@forge/bridge';
+import { invoke, router } from '@forge/bridge';
+//import { router } from '@forge/bridge';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
 import './DeckSlider.css';
 
-const DeckSlider = ({ decks = [], onDelete, onDeckClick, onEdit }) => {
+const DeckSlider = ({ decks = [], tagMap = [], onDelete, onDeckClick, onEdit }) => {
+
+  //const [deckTags, setDeckTags] = useState({});
+
+  // // Fetch tags for a given deck
+  // const fetchTagsForDecks = async (passedIn) => {
+
+  //   console.log('deckId passed in', passedIn);
+
+
+
+  //   try {
+  //     const response = await invoke('getTagsForItem', {itemId: passedIn, itemType: 'deck'});
+  //     //const response = await getTagsByCardId({ payload: { deckId } });
+
+  //     if (response.success) {
+  //       setDeckTags((prevTags) => ({
+  //         ...prevTags,
+  //         [passedIn]: response.tags,
+  //       }));
+  //       // Log the cards received as props
+  //       console.log('tags responce received for deck:', passedIn);
+  //       console.log('tags responce:', response);
+  //     } else {
+  //       //console.log('tags responce:', response);
+  //       console.error('Error fetching tags:', response);
+  //     }
+  //   } catch (error) {
+  //     console.error('Error fetching tags:', error);
+  //   }
+  // };
+
+  // useEffect(() => {
+  //   // Fetch tags for each deck when the component mounts or when cards are updated
+  //   decks.forEach((deck) => {
+  //     fetchTagsForDecks(deck.id);
+  //   });
+  // }, [decks]);
+
+
+
+
+
+
+
+
 
   const handleLinkClick = async (url) => {
     try {
@@ -31,7 +77,7 @@ const DeckSlider = ({ decks = [], onDelete, onDeckClick, onEdit }) => {
                 800: {
                   perPage:2,
                 },
-              
+
                 1000: {
                   perPage: 3,
                 },
@@ -53,8 +99,30 @@ const DeckSlider = ({ decks = [], onDelete, onDeckClick, onEdit }) => {
                   >
                     <div className="deck-right-border"></div>
                     <div className="deck-content"></div>
-                    {/* ** TODO ** */}
-                    <p className='badge blue'>Blue Tag</p>
+
+
+
+                    {/* Dynamically render the tags for each card */}
+                    <div className='deck-tags'>
+                      {tagMap[deck.id]?.map((tag) => (
+                      //{deckTags[deck.id]?.map((tag) => (
+                          <span
+                            key={tag.id}
+                            className={`badge ${tag.colour}`}
+                            onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
+                          >
+                            {tag.title || "Tag"}
+                          </span>
+                        ))}
+                    </div>
+
+
+                    {/* ** TODO **
+                    <p className='badge blue'>Blue Tag</p> */}
+
+
+
+
                     <h4 className='deck-name'>{deck.title || 'Unnamed Deck'}</h4>
                     <h4 className='deck-flashcard-amount'>Flashcards: {deck.cards?.length || 0}</h4>
                     {deck.description.includes("Fetched from https://") ? (

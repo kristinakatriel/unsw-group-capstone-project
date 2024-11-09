@@ -54,7 +54,7 @@ export const queryStorage = async (prefix: string): Promise<(Card | Deck | Tag |
             break;
         } else {
             cursor = nextCursor ?? '';
-            result.push(...results.map(r => r.value as Card | Deck | Tag | User));        
+            result.push(...results.map(r => r.value as Card | Deck | Tag | User));
         }
     }
     // console.log(result);
@@ -159,26 +159,49 @@ export const queryTagsById = async (tagIds: string[]): Promise<Tag[]> => {
 
 export const queryUsersById = async (userIds: string[]): Promise<User[]> => {
     const users: User[] = [];
-    
+
     for (const userId of userIds) {
         const user = await storage.get(userId);
         if (user) {
             users.push(user);
         }
     }
-    
+
     return users;
 };
 
 
 export const queryTagsForItem = async (itemId: string, itemType: string) => {
-    const allTags = await queryStorage('t-') as Tag[];
 
-    const relTags = allTags.filter(tag => 
-        (itemType === 'card' && tag.cardIds.includes(itemId)) ||
-        (itemType === 'deck' && tag.deckIds.includes(itemId)) ||
-        (itemType === 'tag' && tag.tagIds.includes(itemId))
-    );
+    try {
+        // Fetch all tags from storage
+        const allTags = await queryStorage('t-') as Tag[];
 
-    return relTags;
+        // Filter tags based on the itemType
+        const relTags = allTags.filter(tag =>
+            (itemType === 'card' && tag.cardIds.includes(itemId)) ||
+            (itemType === 'deck' && tag.deckIds.includes(itemId)) ||
+            (itemType === 'tag' && tag.tagIds.includes(itemId))
+        );
+
+        // Log for debugging purposes
+        console.log(`Filtering tags for itemId: ${itemId}, itemType: ${itemType}`);
+        console.log(`Tags found: ${relTags.length}`, relTags);
+
+        return relTags;
+    } catch (error) {
+        console.error('Error querying tags for item:', error);
+        throw new Error('Error querying tags');
+    }
+
+
+    // const allTags = await queryStorage('t-') as Tag[];
+
+    // const relTags = allTags.filter(tag =>
+    //     (itemType === 'card' && tag.cardIds.includes(itemId)) ||
+    //     (itemType === 'deck' && tag.deckIds.includes(itemId)) ||
+    //     (itemType === 'tag' && tag.tagIds.includes(itemId))
+    // );
+
+    // return relTags;
 };

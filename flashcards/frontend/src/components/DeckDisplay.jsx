@@ -16,6 +16,7 @@ import EditFlashcardGlobal from '../flashcardGlobalModuleEdit'; // for editing f
 import ModalDialog from '@atlaskit/modal-dialog';
 import AddFlashcardsToDeck from '../addFlashcardsToExistingDeck';
 import EditDeckModal from '../deckModuleEdit';
+import SearchIcon from '@mui/icons-material/Search';
 
 
 /* ===========================================
@@ -34,10 +35,16 @@ const titleContainerStyles = xcss({
     gridArea: 'title',
 });
 
-const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBackIntermediate}) => {
+const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQuizMode, goBackToHome, goBackIntermediate}) => {
   // ========================
   // STATE MANAGEMENT
   // ========================
+    console.log("tag map passed in", tagMap);
+
+    const [deckDisplaySearchTerm, setDeckDisplaySearchTerm] = useState('');
+
+
+
 
   // State hooks to manage modal visibility, the selected flashcard for deletion, and the updated deck state
   const [isFlashcardDeleteModalOpen, setFlashcardDeleteModalOpen] = useState(false);
@@ -96,6 +103,22 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
     }, [errorMessage]);
 
   //DECK EDIT LOGIC
+
+    const searchDeckDisplay = (event) => {
+        setDeckDisplaySearchTerm(event.target.value);
+        console.log('Searching:', deckDisplaySearchTerm);
+    };
+
+
+    const filteredFlashcards = updatedDeck.cards.filter((card) => {
+        const searchTerm = deckDisplaySearchTerm.toLowerCase();
+        return (
+        (typeof card.front === 'string' && card.front.toLowerCase().includes(searchTerm)) ||
+        (typeof card.back === 'string' && card.back.toLowerCase().includes(searchTerm)) ||
+        (card.name && typeof card.name === 'string' && card.name.toLowerCase().includes(searchTerm))
+        // Add tags once implemented
+        );
+    });
 
   // Modal logic for editing flashcards
   // Open the edit modal
@@ -425,6 +448,17 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
 
   return (
     <div className='deck-display-container'>
+        <div className="global-page-search">
+            <div className="global-page-search-box">
+                <SearchIcon className="global-page-search-icon" />
+                <input
+                    type="text"
+                    id="search-input"
+                    onKeyUp={searchDeckDisplay}
+                    placeholder="Search..."
+                />
+            </div>
+        </div>
       <div className='deck-title-and-buttons'>
         <div className='title-left-buttons'>
           <h1>{updatedDeck.title}</h1>
@@ -452,6 +486,23 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
           </button>
         </div>
       </div>
+
+
+        <div className='deck-tags'>
+        <h2>Flashcards</h2>
+        {/* Render tags */}
+
+        {deckTags[deck.id]?.map((tag) => (
+        <span
+            key={tag.id}
+            className={`badge ${tag.colour}`}
+            onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
+        >
+            {tag.title || "Tag"}
+        </span>
+        ))}
+        </div>
+
       <h2>Flashcards</h2>
       <h4 className='deck-flashcard-amount'>Flashcards: {updatedDeck.cards?.length || 0}</h4>
       <Collapse in={showSuccessAlert} timeout={500}>
@@ -463,12 +514,30 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
       {updatedDeck && updatedDeck.cards && updatedDeck.cards.length > 0 ? (
         <div className="card-wrapper">
             <ul className="card-list">
-                {updatedDeck.cards.map((flashcard) => (
+                {/* {updatedDeck.cards.map((flashcard) => ( */}
+                {filteredFlashcards.map((flashcard) => (
                     <li key={flashcard.id} className="card-item">
                         <div className="card-link">
-                            {flashcard.tags && flashcard.tags.length > 0 && (
-                                <p className="badge blue">{flashcard.tags.join(', ')}</p>
-                            )}
+
+
+                            {/* Render tags */}
+                            <div className='card-tags'>
+                            {tagMap[flashcard.id]?.map((tag) => (
+                            <span
+                                key={tag.id}
+                                className={`badge ${tag.colour}`}
+                                onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
+                            >
+                                {tag.title || "Tag"}
+                            </span>
+                            ))}
+                            </div>
+
+
+
+
+
+
                             <h4 className="card-front">{flashcard.front || 'No front available'}</h4>
                             <h4 className="card-back">{flashcard.back || 'No back available'}</h4>
                             <h4 className="card-owner">By {flashcard.name || 'Unknown'}</h4>

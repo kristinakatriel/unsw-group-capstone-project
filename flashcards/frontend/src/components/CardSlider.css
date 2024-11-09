@@ -38,6 +38,7 @@
   background: #DDE4FF;
 }
 
+
 .card-list .card-link .badge.red {
   color: #B22485;
   background: #F7DFF5;
@@ -57,6 +58,13 @@
   color: #856404;
   background: #fff3cd;
 }
+
+.card-list .card-link .badge.purple {
+  color: #6B4BA3;
+  background: #E9DDFF;
+}
+
+
 
 .card-list .card-link .card-front {
   font-size: 16px;
@@ -101,6 +109,4 @@
 .splide__track.splide__track--slide.splide__track--ltr.splide__track--draggable {
   margin: 15px 55px;
 }
-
-
 

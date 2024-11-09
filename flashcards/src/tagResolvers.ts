@@ -134,7 +134,24 @@ export const getTag = async (req: ResolverRequest) => {
 };
 
 
+// export const getAllTags = async () => {
+//     const tags: Tag[] = [];
+
+//     const query = await storage.query().where('key', startsWith('t-')).limit(50).getMany();
+
+//     query.results.forEach(({ value }) => {
+//         tags.push(value as Tag);
+//     });
+
+//     return {
+//         success: true,
+//         tags,
+//     };
+// };
+
 export const getAllTags = async () => {
+    // const allTags = await queryStorage('t-') as Tag[]; // use once limit implemented
+
     const tags: Tag[] = [];
 
     const query = await storage.query().where('key', startsWith('t-')).limit(50).getMany();
@@ -143,24 +160,54 @@ export const getAllTags = async () => {
         tags.push(value as Tag);
     });
 
+    const allTags = await queryStorage('t-') as Tag[];
+
+    const mapTags: Record<string, Tag[]> = {};
+    allTags.forEach(tag => {
+        tag.tagIds.forEach(subId => {
+            if (!mapTags[subId]) {
+                mapTags[subId] = [];
+            }
+            mapTags[subId].push(tag);
+        });
+    });
+
     return {
         success: true,
         tags,
+        links: mapTags
     };
 };
 
 
 export const getTagsForItem = async (req: ResolverRequest) => {
+
+
     const { itemId, itemType } = req.payload;
-    const allTags = await queryStorage('t-') as Tag[];
+    try {
+        const relTags = await queryTagsForItem(itemId, itemType);
 
-    const relTags = await queryTagsForItem(itemId, itemType);
+        // Check if any tags were found and return them
+        if (relTags.length > 0) {
+            return { success: true, tags: relTags };
+        } else {
+            return { success: false, error: 'No tags found for this item.' };
+        }
+    } catch (error) {
+        console.error('Error fetching tags:', error);
+        return { success: false, error: 'Error fetching tags' };
+    }
 
 
-    return {
-        success: true,
-        tags: relTags,
-    };
+    // //const allTags = await queryStorage('t-') as Tag[];
+
+    // const relTags = await queryTagsForItem(itemId, itemType);
+
+
+    // return {
+    //     success: true,
+    //     tags: relTags,
+    // };
 };
 
 
@@ -270,3 +317,33 @@ export const removeTagFromDeck = async (req: ResolverRequest) => {
         message: 'Tag removed from deck',
     };
 };
+
+
+// export const getTagsByCardId = async (req: ResolverRequest) => {
+//     const { cardId } = req.payload;
+
+//     // Fetch all tags stored in the system
+//     const tags: Tag[] = [];
+
+//     const query = await storage.query().where('key', startsWith('t-')).limit(50).getMany();
+
+//     // Loop through the tags and check if the cardId is in the tag's cardIds array
+//     query.results.forEach(({ value }) => {
+//         const tag = value as Tag;
+//         if (tag.cardIds.includes(cardId)) {
+//             tags.push(tag);
+//         }
+//     });
+
+//     if (tags.length === 0) {
+//         return {
+//             success: false,
+//             error: `No tags found for card with id: ${cardId}`,
+//         };
+//     }
+
+//     return {
+//         success: true,
+//         tags,
+//     };
+// };

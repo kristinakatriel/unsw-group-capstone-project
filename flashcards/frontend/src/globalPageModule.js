@@ -47,6 +47,13 @@ function globalPageModule() {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
 
+
+  //tag mapping
+  const [cardTagMap, setCardTagMap] = useState([]);
+  const [deckTagMap, setDeckTagMap] = useState([]);
+  const [tagTagMap, setTagTagMap] = useState([]);
+
+
   // Modal states for flashcards and decks
   const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
   const [isDeckModalOpen, setIsDeckModalOpen] = useState(false);
@@ -181,6 +188,7 @@ function globalPageModule() {
 
       if (response.success) {
         setFlashcards(response.cards);
+        setCardTagMap(response.tags);
       }
     } catch (error) {
       console.error('Error fetching flashcards:', error);
@@ -195,6 +203,7 @@ function globalPageModule() {
       console.log(response);
       if (response.success) {
         setDecks(response.decks);
+        setDeckTagMap(response.tags);
       }
     } catch (error) {
       console.error('Error fetching decks:', error);
@@ -209,6 +218,7 @@ function globalPageModule() {
       console.log(response);
       if (response.success) {
         setTags(response.tags);
+        setTagTagMap(response.tags);
       }
     } catch (error) {
       console.error('Error fetching tags:', error);
@@ -331,7 +341,7 @@ function globalPageModule() {
       // Add tags once implemented
     );
   });
-  
+
   const filteredDecks = flashdecks.filter((deck) => {
     const searchTerm = globalPageSearchTerm.toLowerCase();
     return (
@@ -341,7 +351,7 @@ function globalPageModule() {
       // Add tags once implemented
     );
   });
-  
+
   const filteredTags = tags.filter((tag) => {
     const searchTerm = globalPageSearchTerm.toLowerCase();
     return (
@@ -351,19 +361,19 @@ function globalPageModule() {
 
   //************************** RENDER FUNCTIONS *****************************/
   const renderFlashcardsList = (filteredFlashcards) => (
-    <CardSlider cards={filteredFlashcards} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
+    <CardSlider cards={filteredFlashcards} tagMap={cardTagMap} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
   );
 
   const renderDecksList = (filteredDecks) => (
-    <DeckSlider decks={filteredDecks} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} />
+    <DeckSlider decks={filteredDecks} tagMap={deckTagMap} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} />
   );
 
   const renderTagsList = (filteredTags) => (
     <div className="global-page-badge-container">
       {filteredTags.map((tag, index) => (
-        <p 
-          key={index} 
-          className={`badge ${tag.colour}`} 
+        <p
+          key={index}
+          className={`badge ${tag.colour}`}
           onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
         >
           {tag.title || "Tag"}
@@ -371,7 +381,7 @@ function globalPageModule() {
       ))}
     </div>
   );
-  
+
   //************************** DECK DISPLAY FUNCTIONS *****************************/
   const onDeckClick = (deck) => {
     console.log(`Deck clicked: ${deck.title}`); // Log when a deck is clicked
@@ -538,11 +548,11 @@ function globalPageModule() {
 
           ))}
         </Breadcrumbs>
-        <DeckDisplay deck={selectedDeck} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
+        <DeckDisplay deck={selectedDeck} tagMap={cardTagMap} deckTags={deckTagMap} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
       </div>
     );
   }
-  
+
   return (
     <div className='global-page-container'>
       <div className="global-page-header">
