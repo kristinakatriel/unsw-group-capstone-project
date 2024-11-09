@@ -25,11 +25,12 @@ const StudyMode = ({ deck }) => {
     setCurrentCardIndex((prevIndex) => {
       if (prevIndex > 0) {
         return prevIndex - 1;
+      } else {
+        return totalCards - 1;
       }
-      return prevIndex;
     });
-  }
-
+  };
+  
   const goToNextCard = () => {
     setCurrentCardIndex((prevIndex) => {
       if (prevIndex < totalCards - 1) {
