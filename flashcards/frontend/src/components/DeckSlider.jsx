@@ -28,11 +28,15 @@ const DeckSlider = ({ decks = [], onDelete, onDeckClick, onEdit }) => {
               pagination: false,
               gap: '10px',
               breakpoints: {
-                640: {
-                  perPage: 2,
+                800: {
+                  perPage:2,
                 },
-                1024: {
+              
+                1000: {
                   perPage: 3,
+                },
+                1200: {
+                  perPage: 4,
                 },
               },
             }}
