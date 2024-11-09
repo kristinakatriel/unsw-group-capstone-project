@@ -548,7 +548,7 @@ function globalPageModule() {
 
           ))}
         </Breadcrumbs>
-        <DeckDisplay deck={selectedDeck} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
+        <DeckDisplay deck={selectedDeck} tagMap={cardTagMap} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
       </div>
     );
   }

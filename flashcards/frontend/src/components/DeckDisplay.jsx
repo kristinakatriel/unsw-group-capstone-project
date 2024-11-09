@@ -34,10 +34,11 @@ const titleContainerStyles = xcss({
     gridArea: 'title',
 });
 
-const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBackIntermediate}) => {
+const DeckDisplay = ({ deck, tagMap = [], startStudyMode, startQuizMode, goBackToHome, goBackIntermediate}) => {
   // ========================
   // STATE MANAGEMENT
   // ========================
+    console.log("tag map passed in", tagMap);
 
   // State hooks to manage modal visibility, the selected flashcard for deletion, and the updated deck state
   const [isFlashcardDeleteModalOpen, setFlashcardDeleteModalOpen] = useState(false);
@@ -466,9 +467,26 @@ const DeckDisplay = ({ deck, startStudyMode, startQuizMode, goBackToHome, goBack
                 {updatedDeck.cards.map((flashcard) => (
                     <li key={flashcard.id} className="card-item">
                         <div className="card-link">
-                            {flashcard.tags && flashcard.tags.length > 0 && (
-                                <p className="badge blue">{flashcard.tags.join(', ')}</p>
-                            )}
+
+
+                            {/* Render tags */}
+                            <div className='card-tags'>
+                            {tagMap[flashcard.id]?.map((tag) => (
+                            <span
+                                key={tag.id}
+                                className={`badge ${tag.colour}`}
+                                onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
+                            >
+                                {tag.title || "Tag"}
+                            </span>
+                            ))}
+                            </div>
+
+
+
+
+
+
                             <h4 className="card-front">{flashcard.front || 'No front available'}</h4>
                             <h4 className="card-back">{flashcard.back || 'No back available'}</h4>
                             <h4 className="card-owner">By {flashcard.name || 'Unknown'}</h4>
