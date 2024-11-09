@@ -5,7 +5,7 @@ import {
   QuizResult, StudyResult, QuizSession, StudySession
 } from './types';
 import { generateId, clearStorage, getUserName, initUserData } from './helpers'
-import { queryCardsById, queryDecksById, queryTagsById, queryUsersById } from './helpers'
+import { queryCardsById, queryDecksById, queryTagsById, queryUsersById, queryStorage } from './helpers'
 import { ResolverRequest } from './types'
 
 
@@ -161,17 +161,47 @@ export const getFlashcard = async (req: ResolverRequest) => {
 };
 
 
+// export const getAllFlashcards = async (req: ResolverRequest) => {
+//   const allFlashcards: Card[] = [];
+
+//   const query = await storage.query().where('key', startsWith('c-')).limit(50).getMany();
+
+//   query.results.forEach(({ value }) => {
+//     allFlashcards.push(value as Card);
+//   });
+
+//   return {
+//     success: true,
+//     cards: allFlashcards,
+//   };
+// };
+
 export const getAllFlashcards = async (req: ResolverRequest) => {
-  const allFlashcards: Card[] = [];
+  // const allCards = await queryStorage('c-') as Card[]; // use once limit implemented
+
+  const allCards: Card[] = [];
 
   const query = await storage.query().where('key', startsWith('c-')).limit(50).getMany();
 
   query.results.forEach(({ value }) => {
-    allFlashcards.push(value as Card);
+    allCards.push(value as Card);
+  });
+
+  const allTags = await queryStorage('t-') as Tag[];
+
+  const mapTags: Record<string, Tag[]> = {};
+  allTags.forEach(tag => {
+    tag.cardIds.forEach(cardId => {
+      if (!mapTags[cardId]) {
+        mapTags[cardId] = [];
+      }
+      mapTags[cardId].push(tag);
+    });
   });
 
   return {
     success: true,
-    cards: allFlashcards,
+    cards: allCards,
+    tags: mapTags
   };
 };

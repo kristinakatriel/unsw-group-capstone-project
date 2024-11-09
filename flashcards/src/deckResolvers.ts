@@ -140,7 +140,25 @@ export const getDeck = async (req: ResolverRequest) => {
 };
 
 
+// export const getAllDecks = async (req: ResolverRequest) => {
+//     const allDecks: Deck[] = [];
+
+//     const query = await storage.query().where('key', startsWith('d-')).limit(50).getMany();
+
+//     query.results.forEach(({ value }) => {
+//         allDecks.push(value as Deck);
+//     });
+
+//     return {
+//         success: true,
+//         decks: allDecks,
+//     };
+// };
+
+
 export const getAllDecks = async (req: ResolverRequest) => {
+    // const allDecks = await queryStorage('d-') as Deck[]; // use once limit implemented
+
     const allDecks: Deck[] = [];
 
     const query = await storage.query().where('key', startsWith('d-')).limit(50).getMany();
@@ -149,12 +167,24 @@ export const getAllDecks = async (req: ResolverRequest) => {
         allDecks.push(value as Deck);
     });
 
+    const allTags = await queryStorage('t-') as Tag[];
+
+    const mapTags: Record<string, Tag[]> = {};
+    allTags.forEach(tag => {
+        tag.deckIds.forEach(deckId => {
+            if (!mapTags[deckId]) {
+                mapTags[deckId] = [];
+            }
+            mapTags[deckId].push(tag);
+        });
+    });
+
     return {
         success: true,
         decks: allDecks,
+        tags: mapTags
     };
 };
-
 
 export const addCardToDeck = async (req: ResolverRequest) => {
     const { deckId, cardId } = req.payload;
@@ -219,7 +249,7 @@ export const removeCardFromDeck = async (req: ResolverRequest) => {
     deck.cards = deck.cards?.filter(c => c.id !== cardId) || [];  // todo: remove once frontend refactored
     deck.cardIds = deck.cardIds?.filter(id => id !== cardId) || [];
     card.deckIds = card.deckIds?.filter(id => id !== deckId) || [];
-    
+
     await storage.set(deckId, deck);
 
     return {

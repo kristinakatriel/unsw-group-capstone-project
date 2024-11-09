@@ -47,6 +47,13 @@ function globalPageModule() {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
 
+
+  //tag mapping
+  const [cardTagMap, setCardTagMap] = useState([]);
+  const [deckTagMap, setDeckTagMap] = useState([]);
+  const [tagTagMap, setTagTagMap] = useState([]);
+
+
   // Modal states for flashcards and decks
   const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
   const [isDeckModalOpen, setIsDeckModalOpen] = useState(false);
@@ -181,6 +188,7 @@ function globalPageModule() {
 
       if (response.success) {
         setFlashcards(response.cards);
+        setCardTagMap(response.tags);
       }
     } catch (error) {
       console.error('Error fetching flashcards:', error);
@@ -195,6 +203,7 @@ function globalPageModule() {
       console.log(response);
       if (response.success) {
         setDecks(response.decks);
+        setDeckTagMap(response.tags);
       }
     } catch (error) {
       console.error('Error fetching decks:', error);
@@ -209,6 +218,7 @@ function globalPageModule() {
       console.log(response);
       if (response.success) {
         setTags(response.tags);
+        setTagTagMap(response.tags);
       }
     } catch (error) {
       console.error('Error fetching tags:', error);
@@ -351,11 +361,11 @@ function globalPageModule() {
 
   //************************** RENDER FUNCTIONS *****************************/
   const renderFlashcardsList = (filteredFlashcards) => (
-    <CardSlider cards={filteredFlashcards} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
+    <CardSlider cards={filteredFlashcards} tagMap={cardTagMap} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
   );
 
   const renderDecksList = (filteredDecks) => (
-    <DeckSlider decks={filteredDecks} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} />
+    <DeckSlider decks={filteredDecks} tagMap={deckTagMap} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} />
   );
 
   const renderTagsList = (filteredTags) => (

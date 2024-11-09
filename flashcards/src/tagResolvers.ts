@@ -134,7 +134,24 @@ export const getTag = async (req: ResolverRequest) => {
 };
 
 
+// export const getAllTags = async () => {
+//     const tags: Tag[] = [];
+
+//     const query = await storage.query().where('key', startsWith('t-')).limit(50).getMany();
+
+//     query.results.forEach(({ value }) => {
+//         tags.push(value as Tag);
+//     });
+
+//     return {
+//         success: true,
+//         tags,
+//     };
+// };
+
 export const getAllTags = async () => {
+    // const allTags = await queryStorage('t-') as Tag[]; // use once limit implemented
+
     const tags: Tag[] = [];
 
     const query = await storage.query().where('key', startsWith('t-')).limit(50).getMany();
@@ -143,9 +160,22 @@ export const getAllTags = async () => {
         tags.push(value as Tag);
     });
 
+    const allTags = await queryStorage('t-') as Tag[];
+
+    const mapTags: Record<string, Tag[]> = {};
+    allTags.forEach(tag => {
+        tag.tagIds.forEach(subId => {
+            if (!mapTags[subId]) {
+                mapTags[subId] = [];
+            }
+            mapTags[subId].push(tag);
+        });
+    });
+
     return {
         success: true,
         tags,
+        links: mapTags
     };
 };
 
