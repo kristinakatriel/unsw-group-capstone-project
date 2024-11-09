@@ -92,7 +92,9 @@
   position: absolute;
   top: 10px;
   right: 10px;
-  display: flex; 
+  display: flex;
+  align-items: center;
+  color: grey; 
 }
 
 .flip-card-like,

@@ -104,8 +104,8 @@ const QuizMode = ({ deck }) => {
             console.error('response is invalid', error);
           }
         } else {
-          setCurrentCardIndex(response.nextIndex);
           setIsFlipped(false);
+          setCurrentCardIndex(response.nextIndex);
           setCardStatus(null);
         }
       } else {
