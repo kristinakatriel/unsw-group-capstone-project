@@ -5,7 +5,7 @@ import {
   QuizResult, StudyResult, QuizSession, StudySession
 } from './types';
 import { generateId, clearStorage, getUserName, initUserData } from './helpers'
-import { fetchCardsById, fetchDecksById, fetchTagsById, fetchUsersById } from './helpers'
+import { queryCardsById, queryDecksById, queryTagsById, queryUsersById } from './helpers'
 import { ResolverRequest } from './types'
 
 
@@ -116,13 +116,13 @@ export const deleteFlashcard = async (req: ResolverRequest) => {
     }
   }
 
-  const decks = await fetchDecksById(card.deckIds || []);
+  const decks = await queryDecksById(card.deckIds || []);
   for (const deck of decks) {
     deck.cardIds = deck.cardIds.filter(id => id !== cardId);
     await storage.set(deck.id, deck);
   }
 
-  const tags = await fetchTagsById(card.tagIds || []);
+  const tags = await queryTagsById(card.tagIds || []);
   for (const tag of tags) {
     tag.cardIds = tag.cardIds.filter(id => id !== cardId);
     await storage.set(tag.id, tag);

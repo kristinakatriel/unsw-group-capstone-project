@@ -4,8 +4,8 @@ import {
     Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
     QuizResult, StudyResult, QuizSession, StudySession
 } from './types';
-import { generateId, clearStorage, queryStorage, getUserName, initUserData } from './helpers'
-import { fetchCardsById, fetchDecksById, fetchTagsById, fetchUsersById } from './helpers'
+import { generateId, clearStorage, queryStorage, queryTagsForItem, getUserName, initUserData } from './helpers'
+import { queryCardsById, queryDecksById, queryTagsById, queryUsersById } from './helpers'
 import { ResolverRequest } from './types'
 
 
@@ -120,9 +120,9 @@ export const getTag = async (req: ResolverRequest) => {
         };
     }
 
-    const cards = await fetchCardsById(tag.cardIds);
-    const decks = await fetchDecksById(tag.deckIds);
-    const tags = await fetchTagsById(tag.tagIds);
+    const cards = await queryCardsById(tag.cardIds);
+    const decks = await queryDecksById(tag.deckIds);
+    const tags = await queryTagsById(tag.tagIds);
 
     return {
         success: true,
@@ -154,11 +154,8 @@ export const getTagsForItem = async (req: ResolverRequest) => {
     const { itemId, itemType } = req.payload;
     const allTags = await queryStorage('t-') as Tag[];
 
-    const relTags = allTags.filter(tag => 
-        (itemType === 'card' && tag.cardIds.includes(itemId)) ||
-        (itemType === 'deck' && tag.deckIds.includes(itemId)) ||
-        (itemType === 'tag' && tag.tagIds.includes(itemId))
-    );
+    const relTags = await queryTagsForItem(itemId, itemType);
+
 
     return {
         success: true,
