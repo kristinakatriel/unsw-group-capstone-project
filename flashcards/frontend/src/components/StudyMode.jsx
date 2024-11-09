@@ -22,15 +22,22 @@ const StudyMode = ({ deck }) => {
   const closeHintModal = () => setIsHintModalOpen(false);
 
   const goToPrevCard = () => {
-    if (currentCardIndex > 0) {
-      setCurrentCardIndex((prevIndex) => prevIndex - 1);
-    }
+    setCurrentCardIndex((prevIndex) => {
+      if (prevIndex > 0) {
+        return prevIndex - 1;
+      }
+      return prevIndex;
+    });
   }
 
   const goToNextCard = () => {
-    if (currentCardIndex < totalCards - 1) {
-      setCurrentCardIndex((prevIndex) => prevIndex + 1);
-    }
+    setCurrentCardIndex((prevIndex) => {
+      if (prevIndex < totalCards - 1) {
+        return prevIndex + 1;
+      } else {
+        return 0;
+      }
+    });
   };
 
   const toggleFlip = () => {
@@ -54,22 +61,23 @@ const StudyMode = ({ deck }) => {
     openHintModal();
   };
 
-  // Keyboard shortcut for moving between cards
+  // Keyboard Shortcut
+  const handleKeyDown = (event) => {
+    console.log('Key pressed:', event.key);
+    if (event.key === 'ArrowLeft') {
+      event.preventDefault();
+      goToPrevCard();
+    } else if (event.key === 'ArrowRight') {
+      event.preventDefault();
+      goToNextCard();
+    }
+  };
+  
   useEffect(() => {
-    const handleKeyDown = (event) => {
-      console.log('Key pressed:', event.key);
-      if (event.key === 'ArrowLeft') {
-        goToPrevCard();
-      } else if (event.key === 'ArrowRight') {
-        goToNextCard();
-      }
-    };
     window.addEventListener('keydown', handleKeyDown);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-    };
+    return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
-
+  
   const currentCard = flashcards[currentCardIndex];
 
   return (
