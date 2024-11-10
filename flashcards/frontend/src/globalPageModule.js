@@ -24,6 +24,8 @@ import EditDeckModal from './deckModuleEdit';
 import CreateTagGlobal from './tagGlobalModuleCreate';
 import './tagGlobalModuleCreate.css';
 import Switch from '@mui/material/Switch';
+import Chip from '@mui/material/Chip';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const gridStyles = xcss({
     width: '100%',
@@ -144,7 +146,7 @@ function globalPageModule() {
       if (response.success) {
         setDeleteSuccess(true);
         // setFlashcards((prevFlashcards) => prevFlashcards.filter((card) => card.id !== flashcardToDelete.id));
-        loadFlashcards();
+        //loadFlashcards();
         setTimeout(() => {
           closeDeleteFlashcardConfirm(); // Delay closing modal
         }, 400); // Show message for 2 seconds before closing
@@ -376,6 +378,10 @@ function globalPageModule() {
   // };
 
   const handleTagToggle = (tagId) => {
+
+    selectedTags.includes(tagId)
+
+
     setSelectedTags((prevSelectedTags) =>
       prevSelectedTags.includes(tagId)
         ? prevSelectedTags.filter((id) => id !== tagId) // Deselect if already selected
@@ -525,21 +531,24 @@ function globalPageModule() {
   const renderTagsList = (filteredTags) => (
     <div className="global-page-badge-container">
 
-      <div className="badge all-tags">
+      {/* <div className="badge all-tags"> JUMP TO HERE
         <p>My Stuff</p>
         <Switch
           checked={isMyTagsSelected} // If the switch is on, filter only user-owned items
           onChange={selectOwnTags} // Toggle the state when the switch is changed
         />
-      </div>
+      </div> */}
 
-      <div className="badge all-tags">
-        <p>All Tags</p>
-        <Switch
-          checked={selectedTags.length === tags.length}
-          onChange={handleAllTagsToggle}
-        />
-      </div>
+
+      {/* Toggle All Tags Chip */}
+      <Chip
+        label="Toggle All Tags"
+        className={`badge ${selectedTags.length === tags.length ? "all-selected" : "all-tags"}`} // Dynamic class for selected state
+        onClick={handleAllTagsToggle} // Toggle all tags on click
+        color={selectedTags.length === tags.length ? "primary" : "default"} // Optional: use different color if all tags selected
+        sx={{ margin: 1 }} // Add spacing between chips
+      />
+
 
 
 
@@ -553,14 +562,29 @@ function globalPageModule() {
         // >
         //   {tag.title || "Tag"}
         // </p>
+        //<div key={index} className={`badge ${tag.colour}`}>
+        <Chip
+        key={index}
+        label={tag.title || "Tag"}
+        className={`badge ${tag.colour}`}
+        //color={className={`badge ${tag.colour}`}|| "default"}  // Use 'default' if no color is specified
+        onClick={() => handleTagToggle(tag.id)}
+        onDelete={selectedTags.includes(tag.id) ? () => handleTagToggle(tag.id) : undefined} // Only enable delete if selected
+        deleteIcon={selectedTags.includes(tag.id) ? <DeleteIcon /> : null} // Conditionally show delete icon
+        sx={{ margin: 1 }} // Add spacing between chips
+        />
 
-        <div key={index} className={`badge ${tag.colour}`}>
+
+
+
+        /* <div key={index} className={`badge ${tag.colour}`}>
         <p>{tag.title || "Tag"}</p>
         <Switch
             checked={selectedTags.includes(tag.id)}
             onChange={() => handleTagToggle(tag.id)}
           />
-        </div>
+        </div> */
+        //  </div>
       ))}
     </div>
   );
@@ -748,6 +772,17 @@ function globalPageModule() {
           </div>
         </div>
         <div className="global-page-search">
+          <div className="global-page-badge-container">
+
+            <div className="badge my-stuff">
+            <p>My Stuff</p>
+            <Switch
+              checked={isMyTagsSelected} // If the switch is on, filter only user-owned items
+              onChange={selectOwnTags} // Toggle the state when the switch is changed
+            />
+          </div>
+        </div>
+
           <div className="global-page-search-box">
             <SearchIcon className="global-page-search-icon" />
             <input

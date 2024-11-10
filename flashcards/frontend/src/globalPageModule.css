@@ -135,7 +135,7 @@
 }
 
 .global-page-badge-container .badge {
-  color: #5372F0;
+  color: #2c2c2c;
   padding: 6px 12px;
   margin: 12px 0 14px;
   background: #DDE4FF;
@@ -185,11 +185,22 @@
 }
 
 
-.badge.all-tags {
-  background-color: #cccccc; /* Light gray */
-  color: white;
+.global-page-badge-container .badge .all-tags {
+  background-color: #000000; /* Light gray */
+  color: rgb(255, 255, 255);
 }
+
 
 .badge.all-tags:hover {
   background-color: #b3b3b3; /* Slightly darker gray on hover */
+}
+
+
+.global-page-badge-container .badge.my-stuff {
+  display: flex;
+  align-items: center; /* Vertically align the switch and text */
+  gap: 5px; /* Space between text and switch */
+  background: #000000; /* Light gray */
+  color: white;
+  text-align: center
 }
