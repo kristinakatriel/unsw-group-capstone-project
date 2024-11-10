@@ -200,7 +200,6 @@ const QuizMode = ({ deck }) => {
                   <Tooltip title="Click to open hint!">
                     <div className='quiz-flip-card-front-hint' onClick={handleHintClick}>
                       <LightbulbIcon />
-                      <div className='quiz-flip-card-front-hint-hidden'>Click to open hint!</div>
                     </div>
                   </Tooltip>
                 )}
