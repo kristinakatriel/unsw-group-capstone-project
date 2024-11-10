@@ -10,6 +10,8 @@ import { generateId, clearStorage, getUserName, initUserData } from './helpers';
 import { ResolverRequest } from './types'
 import { addTagToCard, getAllTags } from './tagResolvers';
 
+export const url = "https://marlin-excited-gibbon.ngrok-free.app"
+
 export const getAllContent = async (req: ResolverRequest) => {
     const { pageId, siteUrl } = req.payload;
     const { accountId } = req.context;
@@ -69,7 +71,7 @@ export const getAllContent = async (req: ResolverRequest) => {
 // get generated deck info: For content byline
 export const getGeneratedDeckTitle = async (req: ResolverRequest) => {
     const { text } = req.payload;
-    const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_deck_title", {  // the url which we need to generate the deck title
+    const response = await fetch(`${url}/generate_deck_title`, {  // the url which we need to generate the deck title
         method: 'POST',
         headers: {
             Accept: 'application/json',

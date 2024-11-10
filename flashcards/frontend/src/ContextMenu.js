@@ -8,6 +8,10 @@ import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import Chip from '@mui/material/Chip';
+import Paper from '@mui/material/Paper';
+import { styled } from '@mui/material/styles';
+import TagFacesIcon from '@mui/icons-material/TagFaces';
 import { Field } from '@atlaskit/form';
 import Textfield from '@atlaskit/textfield';
 import './ContextMenu.css';
@@ -19,6 +23,10 @@ const gridStyles = xcss({
 const titleContainerStyles = xcss({
   gridArea: 'title',
 });
+
+const ListItem = styled('li')(({ theme }) => ({
+  margin: theme.spacing(0.5),
+}));
 
 function ContextMenu() {
   const [text, setText] = useState(''); // For input text to generate flashcards
@@ -36,6 +44,7 @@ function ContextMenu() {
   const [locked, setLocked] = useState(false);
   const [autoGenTag, setAutoGenTag] = useState(null);
   const [availableTags, setAvailableTags] = useState([]);
+  const [isLoading, setIsLoading] = useState(false);
   const [tagsGenerated, setTagsGenerated] = useState(false);
   const [showTags, setShowTags] = useState(false);
 
@@ -166,6 +175,7 @@ function ContextMenu() {
   };
 
   const generateTags = async (front, back, hint) => {
+    setIsLoading(true); // Start loading
     try {
       let combined = front + back;
       if (hint) {
@@ -178,6 +188,7 @@ function ContextMenu() {
     } catch (error) {
       console.error('Tags are not generated: ', error);
     }
+    setIsLoading(false);
   };
 
   console.log('Current Context Menu Data:', generatedFlashcards);
@@ -260,34 +271,60 @@ function ContextMenu() {
                     </Field>
 
                     {/************************************* TAGS FIELD ***************************************/}
-                    <Field id="flashcard-tags" name="flashcard-tags" label={
-                        <div onClick={() => {
-                          setShowTags(!showTags);
-                          // if (!tagsGenerated) {
-                          //   generateTags(front, back, hint);
-                          //   setTagsGenerated(true); // State to prevent multiple calls
-                          // }
-                        }} className="label-clickable">
+                    <Field
+                      id="flashcard-tags"
+                      name="flashcard-tags"
+                      label={
+                        <div onClick={() => setShowTags(!showTags)} className="label-clickable">
                           <span>Tags (Optional)</span>
                           <span className="toggle-icon">
-                            {showTags ? <ExpandLessIcon fontSize="small" /> : <ExpandMoreIcon fontSize="small" />}
+                            {showTags ? (
+                              <ExpandLessIcon fontSize="small" />
+                            ) : (
+                              <ExpandMoreIcon fontSize="small" />
+                            )}
                           </span>
                         </div>
                       }
                     >
                       {({ fieldProps }) => (
                         <>
-                        <h6>Hi</h6>
-                          {/* {showTags && (
-                            <Select
-                              {...fieldProps}
-                              options={availableTags} // showing available tags at all times
-                              placeholder="Select or add tags..."
-                            />
-                          )} */}
+                          {showTags && (
+                            <>
+                              <button onClick={handleGenerateTags}>Generate Tags</button>
+                              <div>
+                                {isLoading ? (
+                                  'Still generating...'
+                                ) : (
+                                  <Paper
+                                    sx={{
+                                      display: 'flex',
+                                      justifyContent: 'center',
+                                      flexWrap: 'wrap',
+                                      listStyle: 'none',
+                                      p: 0.5,
+                                      m: 0,
+                                    }}
+                                    component="ul"
+                                  >
+                                    {availableTags && availableTags.length > 0 ? (
+                                      availableTags.map((tag, index) => (
+                                        <ListItem key={index}>
+                                          <Chip label={tag} />
+                                        </ListItem>
+                                      ))
+                                    ) : (
+                                      <span>No tags generated yet</span>
+                                    )}
+                                  </Paper>
+                                )}
+                              </div>
+                            </>
+                          )}
                         </>
                       )}
                     </Field>
+
                     {/************************************* LOCK/UNLOCKED FIELD ***************************************/}
                     <Field>
                       {() => (
