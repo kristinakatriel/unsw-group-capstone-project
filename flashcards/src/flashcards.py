@@ -56,7 +56,7 @@ async def generate_qa(input: TextInput):
     flashcards = []
     for question in generated_questions:
         result = qa_pipeline(question=question, context=input.text)
-        if result['score'] > 0.2:
+        if result['score'] > 0.4:
             flashcards.append({"question": question, "answer": result['answer']})
 
     return flashcards

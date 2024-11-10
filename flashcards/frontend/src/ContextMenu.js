@@ -259,13 +259,14 @@ function ContextMenu() {
                       )}
                     </Field>
 
+                    {/************************************* TAGS FIELD ***************************************/}
                     <Field id="flashcard-tags" name="flashcard-tags" label={
                         <div onClick={() => {
                           setShowTags(!showTags);
-                          if (!tagsGenerated) {
-                            generateTags(front, back, hint);
-                            setTagsGenerated(true); // State to prevent multiple calls
-                          }
+                          // if (!tagsGenerated) {
+                          //   generateTags(front, back, hint);
+                          //   setTagsGenerated(true); // State to prevent multiple calls
+                          // }
                         }} className="label-clickable">
                           <span>Tags (Optional)</span>
                           <span className="toggle-icon">
@@ -276,13 +277,14 @@ function ContextMenu() {
                     >
                       {({ fieldProps }) => (
                         <>
-                          {showTags && (
+                        <h6>Hi</h6>
+                          {/* {showTags && (
                             <Select
                               {...fieldProps}
-                              options={availableTags} // Update this as your tags
+                              options={availableTags} // showing available tags at all times
                               placeholder="Select or add tags..."
                             />
-                          )}
+                          )} */}
                         </>
                       )}
                     </Field>
