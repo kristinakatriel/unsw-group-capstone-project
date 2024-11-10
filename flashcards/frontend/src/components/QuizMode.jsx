@@ -3,6 +3,7 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import CheckIcon from '@atlaskit/icon/glyph/check';
 import LightbulbIcon from '@atlaskit/icon/glyph/lightbulb';
 import ArrowRightIcon from '@atlaskit/icon/core/arrow-right';
+import Tooltip from '@mui/material/Tooltip';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import './QuizMode.css';
@@ -22,6 +23,7 @@ const QuizMode = ({ deck }) => {
   const [skipCount, setSkipCount] = useState(0);
   const [endStatus, setEndStatus] = useState(0);
   const [flashcards, setFlashcards] = useState(deck.cards);
+  const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const totalCards = flashcards.length;
 
   useEffect(() => {
@@ -119,21 +121,41 @@ const QuizMode = ({ deck }) => {
   };
 
   const handleCorrect = () => {
-    setCardStatus('correct');
-    setTimeout(() => {
-      goToNextCard('correct');
-      setCardStatus(null); 
-    }, 1000);
+    if (!isButtonDisabled) {
+      setCardStatus('correct');
+      setIsButtonDisabled(true);
+      setTimeout(() => {
+        goToNextCard('correct');
+        setCardStatus(null);
+        setIsButtonDisabled(false);
+      }, 1000);
+    }
   };
-
+  
   const handleIncorrect = () => {
-    setCardStatus('incorrect');
-    setTimeout(() => {
-      goToNextCard('incorrect');
-      setCardStatus(null); 
-    }, 1000);
+    if (!isButtonDisabled) {
+      setCardStatus('incorrect');
+      setIsButtonDisabled(true);
+      setTimeout(() => {
+        goToNextCard('incorrect');
+        setCardStatus(null);
+        setIsButtonDisabled(false);
+      }, 1000);
+    }
   };
-
+  
+  const handleSkip = () => {
+    if (!isButtonDisabled) {
+      setCardStatus('skip');
+      setIsButtonDisabled(true);
+      setTimeout(() => {
+        goToNextCard('skip');
+        setCardStatus(null);
+        setIsButtonDisabled(false);
+      }, 1000);
+    }
+  };
+  
   const toggleFlip = () => {
     setIsFlipped((prevFlipped) => !prevFlipped);
   };
@@ -142,14 +164,6 @@ const QuizMode = ({ deck }) => {
     event.stopPropagation();
     openHintModal();
     goToNextCard('hint');
-  };
-
-  const handleSkip = () => {
-    setCardStatus('skip');
-    setTimeout(() => {
-      goToNextCard('skip');
-      setCardStatus(null); 
-    }, 1000);
   };
 
   const formatTime = (seconds) => {
@@ -182,10 +196,14 @@ const QuizMode = ({ deck }) => {
           >
             <div className='quiz-flip-card-inner'>
               <div className='quiz-flip-card-front'>
-                <div className='quiz-flip-card-front-hint' onClick={handleHintClick}>
-                  <LightbulbIcon />
-                  <div className='quiz-flip-card-front-hint-hidden'>Click to open hint!</div>
-                </div>
+                {currentCard && currentCard.hint && (
+                  <Tooltip title="Click to open hint!">
+                    <div className='quiz-flip-card-front-hint' onClick={handleHintClick}>
+                      <LightbulbIcon />
+                      <div className='quiz-flip-card-front-hint-hidden'>Click to open hint!</div>
+                    </div>
+                  </Tooltip>
+                )}
                 <h1>{currentCard.front}</h1>
               </div>
               <div className='quiz-flip-card-back'>
@@ -195,16 +213,33 @@ const QuizMode = ({ deck }) => {
           </div>
 
           <div className='quiz-mode-bottom-buttons'>
-            <div className='quiz-mode-incorrect-button' onClick={handleIncorrect}>
-              <CrossIcon />
-            </div>
-            <div className='skip' onClick={handleSkip}>
-              <ArrowRightIcon />
-              <div className='skip message'>Click to skip!</div>
-            </div>
-            <div className='quiz-mode-correct-button' onClick={handleCorrect}>
-              <CheckIcon />
-            </div>
+            <Tooltip title="Incorrect">
+              <div
+                className={`quiz-mode-incorrect-button ${isButtonDisabled ? 'disabled' : ''}`}
+                onClick={handleIncorrect}
+                style={{ pointerEvents: isButtonDisabled ? 'none' : 'auto', opacity: isButtonDisabled ? 0.5 : 1 }}
+              >
+                <CrossIcon />
+              </div>
+            </Tooltip>
+            <Tooltip title="Skip Question">
+              <div
+                className={`quiz-mode-skip-button ${isButtonDisabled ? 'disabled' : ''}`}
+                onClick={handleSkip}
+                style={{ pointerEvents: isButtonDisabled ? 'none' : 'auto', opacity: isButtonDisabled ? 0.5 : 1 }}
+              >
+                <ArrowRightIcon />
+              </div>
+            </Tooltip>
+            <Tooltip title="Correct">
+              <div
+                className={`quiz-mode-correct-button ${isButtonDisabled ? 'disabled' : ''}`}
+                onClick={handleCorrect}
+                style={{ pointerEvents: isButtonDisabled ? 'none' : 'auto', opacity: isButtonDisabled ? 0.5 : 1 }}
+              >
+                <CheckIcon />
+              </div>
+            </Tooltip>
           </div>
         </>
       ) : (
