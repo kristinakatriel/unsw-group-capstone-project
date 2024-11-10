@@ -2,7 +2,7 @@
 .flashcards-select-scroll {
   max-height: 300px;
   overflow-y: scroll;
-  flex-direction: column; 
+  flex-direction: column;
 }
 
 .decks-select-scroll-item,
@@ -13,7 +13,7 @@
 
 .decks-select-scroll-item input,
 .flashcards-select-scroll-item input {
-  margin-right: 8px; 
+  margin-right: 8px;
 }
 
 .decks-select-scroll-item label,
@@ -37,4 +37,52 @@
 
 .css-9uim6b {
   padding-bottom: 0 !important;
+}
+
+
+
+
+.deck-page-search {
+  display: flex;
+  justify-content: flex-end;
+  padding-right: 10px;
+}
+
+.deck-page-search-box {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border: 1px solid darkgray;
+  border-radius: 6px;
+  padding: 3px 8px;
+  width: 200px;
+  background-color: white;
+}
+
+.deck-page-search-box:focus-within {
+  border-color: rgb(12, 102, 228);
+}
+
+.deck-page-search-icon {
+  position: absolute;
+  left: 6px;
+  color: darkgray;
+  font-size: 16px;
+}
+
+#search-input {
+  width: 100%;
+  padding: 4px;
+  font-size: 14px;
+  color: darkgray;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+  border-radius: 6px;
+  margin-left: 20px;
+}
+
+#search-input::placeholder {
+  color: grey;
+  font-size: 14px;
 }
