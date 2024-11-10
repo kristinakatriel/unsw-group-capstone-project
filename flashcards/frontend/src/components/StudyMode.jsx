@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import ArrowLeftIcon from '@atlaskit/icon/glyph/arrow-left'
 import ArrowRightIcon from '@atlaskit/icon/glyph/arrow-right'
 import LightbulbIcon from '@atlaskit/icon/glyph/lightbulb';
-import LikeIcon from '@atlaskit/icon/glyph/like'
-import EditIcon from '@atlaskit/icon/glyph/edit'
+import EditIcon from '@atlaskit/icon/glyph/edit';
+import Textfield from '@atlaskit/textfield';
+import { Field } from '@atlaskit/form';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import './StudyMode.css';
@@ -11,8 +12,7 @@ import './StudyMode.css';
 const StudyMode = ({ deck }) => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
-  // const [isLikeModalOpen, setIsLikeModalOpen] = useState(false); TODO
-  // const [isEditModalOpen, setIsEditModalOpen] = useState(false); TODO
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isHintModalOpen, setIsHintModalOpen] = useState(false);
 
   const flashcards = deck.cards;
@@ -20,6 +20,9 @@ const StudyMode = ({ deck }) => {
 
   const openHintModal = () => setIsHintModalOpen(true);
   const closeHintModal = () => setIsHintModalOpen(false);
+
+  const openEditModal = () => setIsEditModalOpen(true);
+  const closeEditModal = () => setIsEditModalOpen(false);
 
   const goToPrevCard = () => {
     setCurrentCardIndex((prevIndex) => {
@@ -45,16 +48,9 @@ const StudyMode = ({ deck }) => {
     setIsFlipped((prevFlipped) => !prevFlipped);
   };
 
-  const handleLikeClick = (event) => {
-    event.stopPropagation();
-    console.log('Like Clicked!')
-    //openLikeModal(); TODO
-  };
-
   const handleEditClick = (event) => {
     event.stopPropagation();
-    console.log('Edit Clicked!')
-    //openEditModal(); TODO
+    openEditModal();
   };
 
   const handleHintClick = (event) => {
@@ -100,9 +96,6 @@ const StudyMode = ({ deck }) => {
           <div className='flip-card-front'>
             <div className='flip-card-header'>
               Front
-              <div className='flip-card-like' onClick={handleLikeClick}>
-                <LikeIcon />
-              </div>            
               <div className='flip-card-edit' onClick={handleEditClick}>
                 <EditIcon />
               </div>
@@ -115,9 +108,6 @@ const StudyMode = ({ deck }) => {
           <div className='flip-card-back'>
             <div className='flip-card-header'>
               Back
-              <div className='flip-card-like' onClick={handleLikeClick}>
-                <LikeIcon />
-              </div>            
               <div className='flip-card-edit' onClick={handleEditClick}>
                 <EditIcon />
               </div>
@@ -139,6 +129,38 @@ const StudyMode = ({ deck }) => {
         </div>
       </div>
 
+      {/************************************* EDIT ICON MODAL ***************************************/}
+      <ModalTransition>
+        {isEditModalOpen && (
+          <Modal onClose={closeEditModal}>
+            <ModalHeader>
+              <ModalTitle>Edit</ModalTitle>
+            </ModalHeader>
+            <ModalBody>
+              {/************************************* FLASHCARD FRONT FIELD ***************************************/}
+              <Field id="flashcard-front" name="flashcard-front" label="Flashcard Front">
+                {({ fieldProps }) => (
+                  <Textfield {...fieldProps} value={currentCard.front} onChange={(e) => setFront(e.target.value)} placeholder="Type the front of the flashcard here..." />
+                )}
+              </Field>
+
+              {/************************************* FLASHCARD BACK FIELD ***************************************/}
+              <Field id="flashcard-back" name="flashcard-back" label="Flashcard Back">
+                {({ fieldProps }) => (
+                  <Textfield {...fieldProps} value={currentCard.back} onChange={(e) => setBack(e.target.value)} placeholder="Type the back of the flashcard here..." />
+                )}
+              </Field>
+            </ModalBody>
+            <ModalFooter>
+              <Button appearance="primary" onClick={closeEditModal}>
+                Close
+              </Button>
+            </ModalFooter>
+          </Modal>
+        )}
+      </ModalTransition>
+      
+      {/************************************* HINT ICON MODAL ***************************************/}
       <ModalTransition>
         {isHintModalOpen && (
           <Modal onClose={closeHintModal}>
@@ -146,7 +168,17 @@ const StudyMode = ({ deck }) => {
               <ModalTitle>Hint</ModalTitle>
             </ModalHeader>
             <ModalBody>
-              {currentCard && currentCard.hint}
+              {/************************************* HINT FIELD ***************************************/}
+              <Field id="flashcard-hint" name="flashcard-hint" label="Flashcard Hint">
+                {({ fieldProps }) => (
+                  <Textfield
+                    {...fieldProps}
+                    value={currentCard?.hint || ''}
+                    onChange={(e) => setHint(e.target.value)}
+                    placeholder="Type a hint for the flashcard here..."
+                  />
+                )}
+              </Field>
             </ModalBody>
             <ModalFooter>
               <Button appearance="primary" onClick={closeHintModal}>
