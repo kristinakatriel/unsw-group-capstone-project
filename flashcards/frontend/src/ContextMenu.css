@@ -173,3 +173,7 @@
   display: flex;
   justify-content: flex-end;
 }
+
+.context-menu .alert {
+  margin-top: 5px;
+}
