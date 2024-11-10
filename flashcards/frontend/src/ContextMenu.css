@@ -173,3 +173,9 @@
   display: flex;
   justify-content: flex-end;
 }
+
+.context-menu .alert,
+.context-menu .progress,
+.context-menu .success-message {
+  margin-top: 10px;
+}

@@ -14,6 +14,8 @@ import { styled } from '@mui/material/styles';
 import TagFacesIcon from '@mui/icons-material/TagFaces';
 import { Field } from '@atlaskit/form';
 import Textfield from '@atlaskit/textfield';
+import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
 import './ContextMenu.css';
 
 const gridStyles = xcss({
@@ -47,7 +49,10 @@ function ContextMenu() {
   const [isLoading, setIsLoading] = useState(false);
   const [tagsGenerated, setTagsGenerated] = useState(false);
   const [showTags, setShowTags] = useState(false);
+  const [showWarning, setShowWarning] = useState(false);
+  const [showTimeoutWarning, setShowTimeoutWarning] = useState(false);
 
+  setShowTimeoutWarning
   {/************************************* FIRST CALL WHEN MODULE IS LOADED ***************************************/}
   {/************************************* FETCHING SELECTED TEXT ***************************************/}
   useEffect(() => {
@@ -57,8 +62,12 @@ function ContextMenu() {
         console.log(context);
         const selectedText = context.extension.selectedText; // Get selected text from context
         console.log("Selected Text:", selectedText); // Log the selected text for verification
-        setText(selectedText); // Set the selected text to the state
-        setIsTextFetched(true)
+        if (selectedText.length > 1500) {
+          setShowWarning(true);
+        } else {
+          setText(selectedText);
+          setIsTextFetched(true);
+        }
       } catch (error) {
         console.error("Error fetching data:", error);
         setErrorMessage('Failed to fetch selected text');
@@ -121,6 +130,7 @@ function ContextMenu() {
         console.log("Error Generating Flashcards:", response.error);
       }
     } catch (error) {
+      setShowTimeoutWarning(true);
       setErrorMessage('Failed to generate Q&A from text');
       console.error("Exception in handleGenerateFlashcards:", error);
     } finally {
@@ -202,75 +212,88 @@ function ContextMenu() {
         </Flex>
       </Grid>
 
-      {generatedFlashcards.length > 0 ? (
+      {showTimeoutWarning || showWarning ? (
+        <Alert severity="warning" className='alert'>
+          {showTimeoutWarning
+            ? 'You have timed out due to an internal error. Please try again.'
+            : 'You must select less than 1500 characters to use this feature. Please try again, or use our other feature "Content Byline" if you want to AI generate flashcards for the entire page.'
+          }
+        </Alert>
+
+      ) : (
         <>
-          {/* <h4 className='deck-flashcard-amount'>Flashcards Generated with AI: {generatedFlashcards.length || 0}</h4> */}
-          <div className="card-wrapper">
-            {saveSuccess && (
-              <Alert severity="success">New flashcard created successfully!</Alert>
-            )}
-            <ul className="card-list">
-              {generatedFlashcards.map((flashcard, index) => (
-                <li key={index}>
-                  <div className="card-link">
-                    {/************************************* FLASHCARD FRONT FIELD ***************************************/}
-                    <Field id={`flashcard-front-${index}`} name={`flashcard-front-${index}`} label="Flashcard Front">
-                      {({ fieldProps }) => (
-                        <Textfield
-                          className="textfield"
-                          {...fieldProps}
-                          value={front[index] || ''} 
-                          onChange={(e) => {
-                              const newFront = [...front];
-                              newFront[index] = e.target.value;
-                              setFront(newFront);
-                          }}
-                          placeholder="Type the front of the flashcard here..."
-                        />
-                      )}
-                    </Field>
+          {generatedFlashcards.length === 0 && !loading && (
+            <div className="success-message">
+              You have saved all the AI-generated flashcards! Select other text to generate more AI flashcards!
+            </div>
+          )}
+          {generatedFlashcards.length > 0 ? (
+            <div className="card-wrapper">
+              {saveSuccess && (
+                <Alert severity="success">New flashcard created successfully!</Alert>
+              )}
+              <ul className="card-list">
+                {generatedFlashcards.map((flashcard, index) => (
+                  <li key={index}>
+                    <div className="card-link">
+                      {/************************************* FLASHCARD FRONT FIELD ***************************************/}
+                      <Field id={`flashcard-front-${index}`} name={`flashcard-front-${index}`} label="Flashcard Front">
+                        {({ fieldProps }) => (
+                          <Textfield
+                            className="textfield"
+                            {...fieldProps}
+                            value={front[index] || ''} 
+                            onChange={(e) => {
+                                const newFront = [...front];
+                                newFront[index] = e.target.value;
+                                setFront(newFront);
+                            }}
+                            placeholder="Type the front of the flashcard here..."
+                          />
+                        )}
+                      </Field>
 
-                    {/************************************* FLASHCARD BACK FIELD ***************************************/}
-                    <Field id={`flashcard-back-${index}`} name={`flashcard-back-${index}`} label="Flashcard Back">
-                      {({ fieldProps }) => (
-                        <Textfield
-                          className="textfield"
-                          {...fieldProps}
-                          value={back[index] || ''}
-                          onChange={(e) => {
-                              const newBack = [...back];
-                              newBack[index] = e.target.value;
-                              setBack(newBack);
-                          }}
-                          placeholder="Type the back of the flashcard here..."
-                        />
-                      )}
-                    </Field>
+                      {/************************************* FLASHCARD BACK FIELD ***************************************/}
+                      <Field id={`flashcard-back-${index}`} name={`flashcard-back-${index}`} label="Flashcard Back">
+                        {({ fieldProps }) => (
+                          <Textfield
+                            className="textfield"
+                            {...fieldProps}
+                            value={back[index] || ''}
+                            onChange={(e) => {
+                                const newBack = [...back];
+                                newBack[index] = e.target.value;
+                                setBack(newBack);
+                            }}
+                            placeholder="Type the back of the flashcard here..."
+                          />
+                        )}
+                      </Field>
 
-                    {/************************************* HINT FIELD ***************************************/}
-                    <Field id="flashcard-hint" name="flashcard-hint" label={
-                      <div onClick={() => setShowHint(!showHint)} className="label-clickable">
-                        <span>Hint (Optional)</span>
-                        <span className="toggle-icon">
-                          {showHint ? <ExpandLessIcon fontSize="small"/> : <ExpandMoreIcon fontSize="small" />}
-                        </span>
-                      </div>
-                    }>
-                      {({ fieldProps }) => (
-                        <>
-                          {showHint && (
-                            <Textfield
-                              {...fieldProps}
-                              value={hint}
-                              onChange={(e) => setHint(e.target.value)}
-                              placeholder="Type a hint for the flashcard..."
-                            />
-                          )}
-                        </>
-                      )}
-                    </Field>
+                      {/************************************* HINT FIELD ***************************************/}
+                      <Field id="flashcard-hint" name="flashcard-hint" label={
+                        <div onClick={() => setShowHint(!showHint)} className="label-clickable">
+                          <span>Hint (Optional)</span>
+                          <span className="toggle-icon">
+                            {showHint ? <ExpandLessIcon fontSize="small"/> : <ExpandMoreIcon fontSize="small" />}
+                          </span>
+                        </div>
+                      }>
+                        {({ fieldProps }) => (
+                          <>
+                            {showHint && (
+                              <Textfield
+                                {...fieldProps}
+                                value={hint}
+                                onChange={(e) => setHint(e.target.value)}
+                                placeholder="Type a hint for the flashcard..."
+                              />
+                            )}
+                          </>
+                        )}
+                      </Field>
 
-                    {/************************************* TAGS FIELD ***************************************/}
+                      {/************************************* TAGS FIELD ***************************************/}
                     <Field
                       id="flashcard-tags"
                       name="flashcard-tags"
@@ -325,45 +348,43 @@ function ContextMenu() {
                       )}
                     </Field>
 
-                    {/************************************* LOCK/UNLOCKED FIELD ***************************************/}
-                    <Field>
-                      {() => (
-                        <span onClick={() => setLocked(!locked)} style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}>
-                          {locked ? 'This flashcard will be locked' : 'This flashcard will be unlocked'}
-                          <span> 
-                            {locked ? (
-                              <LockIcon label="Locked" />
-                            ) : (
-                              <UnlockIcon label="Unlocked" />
-                            )}
+                      {/************************************* LOCK/UNLOCKED FIELD ***************************************/}
+                      <Field>
+                        {() => (
+                          <span onClick={() => setLocked(!locked)} style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}>
+                            {locked ? 'This flashcard will be locked' : 'This flashcard will be unlocked'}
+                            <span> 
+                              {locked ? (
+                                <LockIcon label="Locked" />
+                              ) : (
+                                <UnlockIcon label="Unlocked" />
+                              )}
+                            </span>
                           </span>
-                        </span>
-                      )}
-                    </Field>
-                    
-                    {/* <div>
-                      <button onClick={() => generateTags(front[index], back[index], hint)}>Click me to generate tags</button>
-                      {tags.length > 0 ? tags : 'Tags being generated'}
-                    </div> */}
+                        )}
+                      </Field>
 
-                    <div className="context-menu-button-group">
-                      <Button appearance="primary" onClick={() => handleSaveFlashcard(flashcard, index)}>Save Flashcard</Button>
+                      <div className="context-menu-button-group">
+                        <Button appearance="primary" onClick={() => handleSaveFlashcard(flashcard, index)}>Save Flashcard</Button>
+                      </div>
                     </div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </>
-
-      ) : (
-        <>
-          <h4 className='deck-flashcard-amount'>Flashcards Generated with AI: Loading...</h4>
-          <p>Generating Flashcards...</p>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          ) : (
+            loading ? (
+              <>
+                <h4 className='deck-flashcard-amount'>Generating Flashcards with AI...</h4>
+                <Box sx={{ width: '100%' }}>
+                  <LinearProgress className='progress'/>
+                </Box>
+              </>
+            ) : null
+          )}
         </>
       )}
     </div>
-
   );
 }
 
