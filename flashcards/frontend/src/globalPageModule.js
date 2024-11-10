@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/react-splide/css';
-import { invoke } from '@forge/bridge';
+import { invoke, view} from '@forge/bridge';
 import CreateFlashcardGlobal from './flashcardGlobalModuleCreate';
 import ModalDialog from '@atlaskit/modal-dialog';
 import CardSlider from './components/CardSlider';
@@ -23,6 +23,7 @@ import EditFlashcardModal from './flashcardGlobalModuleEdit';
 import EditDeckModal from './deckModuleEdit';
 import CreateTagGlobal from './tagGlobalModuleCreate';
 import './tagGlobalModuleCreate.css';
+import Switch from '@mui/material/Switch';
 
 const gridStyles = xcss({
     width: '100%',
@@ -53,6 +54,20 @@ function globalPageModule() {
   const [deckTagMap, setDeckTagMap] = useState([]);
   const [tagTagMap, setTagTagMap] = useState([]);
 
+
+  //selected tag
+  const [selectedTags, setSelectedTags] = useState(tags.map(tag => tag.id)); // All tags selected by default
+
+  //owner tags
+
+  const [isMyTagsSelected, setIsMyTagsSelected] = useState(false); // State to manage My Tags toggle
+
+  //account id feild
+
+  const [accountId, setAccountId] = useState(null); // State to store the account ID
+
+
+  // const [selectedTags, setSelectedTags] = useState(null); // State to manage selected tag
 
   // Modal states for flashcards and decks
   const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
@@ -166,6 +181,8 @@ function globalPageModule() {
   };
 
   useEffect(() => {
+
+
     if (deleteDeckFromDisplaySuccess) {
       setShowDeleteSuccessAlert(true);
 
@@ -317,6 +334,17 @@ function globalPageModule() {
   //************************** INITIAL FETCH ON COMPONENT MOUNT *****************************/
   useEffect(() => {
 
+    const fetchAccountId = async () => {
+      try {
+        const context = await view.getContext(); // Get context from Forge
+        setAccountId(context.accountId); // Set the account ID from the context
+      } catch (error) {
+        console.error("Error fetching context:", error);
+      }
+    };
+
+    fetchAccountId();
+
     loadFlashcards();
     loadDecks();
     loadTags();
@@ -326,6 +354,53 @@ function globalPageModule() {
   }, []);
 
   //************************** SEARCH FUNCTIONS *****************************/
+
+
+  //tag filtering when a tag is selected
+
+  // const handleTagClick = (tag) => {
+  //   // Toggle the selected tag
+  //   console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`); // Convert the object to a string
+  //   setSelectedTags((prevTag) => (prevTag?.id === tag.id ? null : tag));
+  // };
+
+  // const handleTagToggle = (tagId) => {
+  //   // Toggle the selected tag
+  //   console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`); // Convert the object to a string
+  //   // setSelectedTags((prevTag) => (prevTag?.id === tag.id ? null : tag));
+  //   setSelectedTags((prevSelectedTag) =>
+  //     prevSelectedTag.includes(tagId)
+  //       ? prevSelectedTag.filter((id) => id !== tagId) // Deselect if already selected
+  //       : [...prevSelectedTag, tagId] // Select if not yet selected
+  //   );
+  // };
+
+  const handleTagToggle = (tagId) => {
+    setSelectedTags((prevSelectedTags) =>
+      prevSelectedTags.includes(tagId)
+        ? prevSelectedTags.filter((id) => id !== tagId) // Deselect if already selected
+        : [...prevSelectedTags, tagId] // Select if not yet selected
+    );
+
+
+  };
+
+  const handleAllTagsToggle = () => {
+    if (selectedTags.length === tags.length) {
+      setSelectedTags([]); // Deselect all if all tags are selected
+    } else {
+      setSelectedTags(tags.map(tag => tag.id)); // Select all tags if not all are selected
+    }
+  };
+
+
+  const selectOwnTags = () => {
+
+
+    setIsMyTagsSelected((prevState) => !prevState); // Toggle the switch
+  };
+
+
   // Handle search input change
   const searchGlobalPage = (event) => {
     setGlobalPageSearchTerm(event.target.value);
@@ -333,23 +408,98 @@ function globalPageModule() {
   };
 
   const filteredFlashcards = flashcards.filter((card) => {
+
     const searchTerm = globalPageSearchTerm.toLowerCase();
-    return (
+    const matchesSearch =
       (typeof card.front === 'string' && card.front.toLowerCase().includes(searchTerm)) ||
       (typeof card.back === 'string' && card.back.toLowerCase().includes(searchTerm)) ||
-      (card.name && typeof card.name === 'string' && card.name.toLowerCase().includes(searchTerm))
-      // Add tags once implemented
+      (card.name && typeof card.name === 'string' && card.name.toLowerCase().includes(searchTerm));
+
+    // If a tag is selected, filter cards by their IDs in the selected tag’s flashcards array
+
+    const matchesTags =  selectedTags.length === 0 || selectedTags.length === tags.length || // If "All Tags" is selected
+      selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)));
+
+
+
+
+    // If "Own Tags" is selected, only show cards/decks owned by the current user (accountId)
+    const matchesOwner = (isMyTagsSelected && card.owner === accountId) || !isMyTagsSelected;
+    // console.log('matchesOwner:', matchesOwner);
+    // console.log('matchesSearch:', matchesSearch);
+    // console.log('matchesTags:', matchesTags);
+
+    // // Log the individual conditions
+    // console.log('Owner condition (!isMyTagsSelected || card.owner === accountId):', !isMyTagsSelected || card.owner === accountId);
+    // console.log('Tags condition (selectedTags.length === tags.length):', selectedTags.length === tags.length);
+    // console.log('selectedTags.length', selectedTags.length);
+    // console.log(' tags.length)', tags.length);
+
+    // console.log('Tags condition (selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)))):',
+    //   selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id))));
+    console.log(
+      'INSIDE FILTERFLASHCARDS, matchesOwner:', matchesOwner,
+      'matchesSearch:', matchesSearch,
+      'matchesTags:', matchesTags,
+      'Owner condition (!isMyTagsSelected || card.owner === accountId):', !isMyTagsSelected || card.owner === accountId,
+      'Tags condition (selectedTags.length === tags.length):', selectedTags.length === tags.length,
+      'selectedTags.length:', selectedTags.length,
+      'tags.length:', tags.length,
+      'Tags condition (selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)))):',
+      selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)))
     );
+
+
+    return matchesSearch && matchesTags && matchesOwner;
+    // const matchesTag = selectedTags
+    //   ? selectedTags.cardIds.includes(card.id)
+    //   : true;
+
+    //return matchesSearch && matchesTags;
   });
+
+  // const filteredFlashcards = flashcards.filter((card) => {
+  //   const searchTerm = globalPageSearchTerm.toLowerCase();
+  //   return (
+  //     (typeof card.front === 'string' && card.front.toLowerCase().includes(searchTerm)) ||
+  //     (typeof card.back === 'string' && card.back.toLowerCase().includes(searchTerm)) ||
+  //     (card.name && typeof card.name === 'string' && card.name.toLowerCase().includes(searchTerm))
+  //     // Add tags once implemented
+  //   );
+  // });
 
   const filteredDecks = flashdecks.filter((deck) => {
     const searchTerm = globalPageSearchTerm.toLowerCase();
-    return (
+    const matchesSearch =
       (typeof deck.title === 'string' && deck.title.toLowerCase().includes(searchTerm)) ||
       (deck.description && typeof deck.description === 'string' && deck.description.toLowerCase().includes(searchTerm)) ||
-      (deck.name && typeof deck.name === 'string' && deck.name.toLowerCase().includes(searchTerm))
-      // Add tags once implemented
-    );
+      (deck.name && typeof deck.name === 'string' && deck.name.toLowerCase().includes(searchTerm));
+
+    const matchesTags =  selectedTags.length === 0 ||  selectedTags.length === tags.length || // If "All Tags" is selected
+    selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.deckIds.includes(deck.id)));
+
+
+
+
+
+       // If "Own Tags" is selected, only show cards/decks owned by the current user (accountId)
+    const matchesOwner = !isMyTagsSelected || deck.owner === accountId;
+    console.log('matchesOwner:', matchesOwner);
+    console.log('matchesSearch:', matchesSearch);
+    console.log('matchesTags:', matchesTags);
+
+    console.log('Owner condition (!isMyTagsSelected || deck.owner === accountId):', !isMyTagsSelected || deck.owner === accountId);
+    console.log('Tags condition (selectedTags.length === tags.length):', selectedTags.length === tags.length);
+    console.log('selectedTags.length', selectedTags.length);
+    console.log(' tags.length)', tags.length);
+
+
+    console.log('Tags condition (selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.deckIds.includes(deck.id)))):',
+      selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.deckIds.includes(deck.id))));
+
+    return matchesSearch && matchesTags && matchesOwner;
+      //return matchesSearch && matchesTags;
+        // Add tags once implemented
   });
 
   const filteredTags = tags.filter((tag) => {
@@ -360,9 +510,13 @@ function globalPageModule() {
   });
 
   //************************** RENDER FUNCTIONS *****************************/
-  const renderFlashcardsList = (filteredFlashcards) => (
+  const renderFlashcardsList = (filteredFlashcards) => {
+    console.log('cards right before passed into card slider' , flashcards);
+    return (
     <CardSlider cards={filteredFlashcards} tagMap={cardTagMap} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
-  );
+    );
+
+  };
 
   const renderDecksList = (filteredDecks) => (
     <DeckSlider decks={filteredDecks} tagMap={deckTagMap} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} />
@@ -370,14 +524,43 @@ function globalPageModule() {
 
   const renderTagsList = (filteredTags) => (
     <div className="global-page-badge-container">
+
+      <div className="badge all-tags">
+        <p>My Stuff</p>
+        <Switch
+          checked={isMyTagsSelected} // If the switch is on, filter only user-owned items
+          onChange={selectOwnTags} // Toggle the state when the switch is changed
+        />
+      </div>
+
+      <div className="badge all-tags">
+        <p>All Tags</p>
+        <Switch
+          checked={selectedTags.length === tags.length}
+          onChange={handleAllTagsToggle}
+        />
+      </div>
+
+
+
+
       {filteredTags.map((tag, index) => (
-        <p
-          key={index}
-          className={`badge ${tag.colour}`}
-          onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
-        >
-          {tag.title || "Tag"}
-        </p>
+        // <p
+        //   key={index}
+        //   className={`badge ${tag.colour}`}
+        //   onClick={() => handleTagClick(tag)}
+        //   //onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
+        // >
+        //   {tag.title || "Tag"}
+        // </p>
+
+        <div key={index} className={`badge ${tag.colour}`}>
+        <p>{tag.title || "Tag"}</p>
+        <Switch
+            checked={selectedTags.includes(tag.id)}
+            onChange={() => handleTagToggle(tag.id)}
+          />
+        </div>
       ))}
     </div>
   );

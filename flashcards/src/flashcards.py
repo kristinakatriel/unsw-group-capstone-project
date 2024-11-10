@@ -28,7 +28,7 @@ title_pipeline = pipeline("text2text-generation", model=title_model, tokenizer=t
 
 # Suggested Tags
 kw_model = KeyBERT()
-    
+
 # Input Model for Request
 class TextInput(BaseModel):
     text: str
@@ -48,7 +48,7 @@ async def generate_qa(input: TextInput):
         top_k=30,
         top_p=0.95,
     )
-    
+
     # Extract questions
     generated_questions = [q['generated_text'] for q in generated_questions]
 
@@ -75,7 +75,7 @@ async def generate_deck_title(input: TextInput):
 
     # Extract generated title
     title = generated_title[0]['generated_text'].replace("<pad>", "").strip()
-    
+
     return {"title": title}
 
 # Placeholder for additional routes, e.g., suggested tags
