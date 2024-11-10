@@ -157,15 +157,15 @@ export const getDeck = async (req: ResolverRequest) => {
 
 
 export const getAllDecks = async (req: ResolverRequest) => {
-    // const allDecks = await queryStorage('d-') as Deck[]; // use once limit implemented
+    const allDecks = await queryStorage('d-') as Deck[]; // use once limit implemented
 
-    const allDecks: Deck[] = [];
+    // const allDecks: Deck[] = [];
 
-    const query = await storage.query().where('key', startsWith('d-')).limit(50).getMany();
+    // const query = await storage.query().where('key', startsWith('d-')).limit(50).getMany();
 
-    query.results.forEach(({ value }) => {
-        allDecks.push(value as Deck);
-    });
+    // query.allDecks.forEach(({ value }) => {
+    //     allDecks.push(value as Deck);
+    // });
 
     const allTags = await queryStorage('t-') as Tag[];
 
