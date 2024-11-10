@@ -10,6 +10,8 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import { Field } from '@atlaskit/form';
 import Textfield from '@atlaskit/textfield';
+import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
 import './ContextMenu.css';
 
 const gridStyles = xcss({
@@ -35,7 +37,9 @@ function ContextMenu() {
   const [showHint, setShowHint] = useState(false); 
   const [locked, setLocked] = useState(false);
   const [showWarning, setShowWarning] = useState(false);
+  const [showTimeoutWarning, setShowTimeoutWarning] = useState(false);
 
+  setShowTimeoutWarning
   {/************************************* FIRST CALL WHEN MODULE IS LOADED ***************************************/}
   {/************************************* FETCHING SELECTED TEXT ***************************************/}
   useEffect(() => {
@@ -87,6 +91,7 @@ function ContextMenu() {
         console.log("Error Generating Flashcards:", response.error);
       }
     } catch (error) {
+      setShowTimeoutWarning(true);
       setErrorMessage('Failed to generate Q&A from text');
       console.error("Exception in handleGenerateFlashcards:", error);
     } finally {
@@ -146,18 +151,20 @@ function ContextMenu() {
         </Flex>
       </Grid>
 
-      {showWarning ? (
+      {showTimeoutWarning || showWarning ? (
         <Alert severity="warning" className='alert'>
-          You must select less than 1500 characters to use this feature. Please try again, or use our other feature "Content Byline" if you want to AI generate flashcards for the entire page.
+          {showTimeoutWarning
+            ? 'You have timed out due to an internal error. Please try again.'
+            : 'You must select less than 1500 characters to use this feature. Please try again, or use our other feature "Content Byline" if you want to AI generate flashcards for the entire page.'
+          }
         </Alert>
       ) : (
         <>
-          {generatedFlashcards.length === 0 && saveSuccess && (
+          {generatedFlashcards.length === 0 && !loading && (
             <div className="success-message">
               You have saved all the AI-generated flashcards! Select other text to generate more AI flashcards!
             </div>
           )}
-          
           {generatedFlashcards.length > 0 ? (
             <div className="card-wrapper">
               {saveSuccess && (
@@ -251,8 +258,10 @@ function ContextMenu() {
           ) : (
             loading ? (
               <>
-                <h4 className='deck-flashcard-amount'>Flashcards Generated with AI: Loading...</h4>
-                <p>Generating Flashcards...</p>
+                <h4 className='deck-flashcard-amount'>Generating Flashcards with AI...</h4>
+                <Box sx={{ width: '100%' }}>
+                  <LinearProgress className='progress'/>
+                </Box>
               </>
             ) : null
           )}
