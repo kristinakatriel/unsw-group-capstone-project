@@ -62,7 +62,7 @@ function ContextMenu() {
         console.log(context);
         const selectedText = context.extension.selectedText; // Get selected text from context
         console.log("Selected Text:", selectedText); // Log the selected text for verification
-        if (selectedText.length > 1500) {
+        if (selectedText.length > 1000) {
           setShowWarning(true);
         } else {
           setText(selectedText);
@@ -314,7 +314,7 @@ function ContextMenu() {
                         <>
                           {showTags && (
                             <>
-                              <button onClick={handleGenerateTags}>Generate Tags</button>
+                              <button onClick={() => generateTags(front[index], back[index], hint)}>Generate Tags</button>
                               <div>
                                 {isLoading ? (
                                   'Still generating...'
