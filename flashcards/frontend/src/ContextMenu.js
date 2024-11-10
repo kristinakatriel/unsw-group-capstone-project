@@ -45,7 +45,7 @@ function ContextMenu() {
   const [showHint, setShowHint] = useState(false); 
   const [locked, setLocked] = useState(false);
   const [autoGenTag, setAutoGenTag] = useState(null);
-  const [availableTags, setAvailableTags] = useState({});
+  const [availableTags, setAvailableTags] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [tagsGenerated, setTagsGenerated] = useState(false);
   const [showTags, setShowTags] = useState(false);
@@ -184,8 +184,15 @@ function ContextMenu() {
 
   };
 
+  function setTagsByIndex(index, newTags) {
+    setAvailableTags((prevTags) => {
+      const updatedTags = [...prevTags];
+      updatedTags[index] = newTags;
+      return updatedTags;
+    });
+  }
+  
   const generateTags = async (index, hint) => {
-    console.log(index);
     setIsLoading(true); // Start loading
     try {
       let combined = front[index] + back[index];
@@ -194,11 +201,8 @@ function ContextMenu() {
       }
       const tagsGen = await invoke('generateSuggestedTags', { text: combined } );
       if (tagsGen.success) {
-        setAvailableTags((prevTags) => ({
-          ...prevTags,         // Spread in the existing tags
-          [index]: tagsGen.tags // Update or add the tags at the specified index
-        }));
-        console.log(availableTags);
+        setTagsByIndex(index, tagsGen.tags);
+        // console.log(availableTags);
       }
     } catch (error) {
       console.error('Tags are not generated: ', error);
@@ -207,10 +211,11 @@ function ContextMenu() {
   };
 
   const handleDelete = (index, tagToDelete) => {
-    setAvailableTags((prevTags) => ({
-      ...prevTags, // Keep all existing tags
-      [index]: prevTags[index].filter((tag) => tag.id !== tagToDelete.id), // Update the specific index
-    }));
+    setAvailableTags((prevTags) => 
+      prevTags.map((tags, i) =>
+        i === index ? tags.filter((tag) => tag.id !== tagToDelete.id) : tags
+      )
+    );
   };
 
   console.log('Current Context Menu Data:', generatedFlashcards);
@@ -342,8 +347,8 @@ function ContextMenu() {
                                     }}
                                     component="ul"
                                   >
-                                    {availableTags[index] && availableTags[index].length > 0 ? (
-                                      availableTags[index].map((tag, i) => (
+                                    {availableTags && availableTags.length > 0 ? (
+                                      availableTags.map((tag, i) => (
                                         <ListItem key={i}>
                                           <Chip label={tag} onDelete={() => handleDelete(index, tag)}/>
                                         </ListItem>
