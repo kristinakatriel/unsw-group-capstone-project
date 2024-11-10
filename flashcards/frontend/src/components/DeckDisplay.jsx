@@ -18,6 +18,7 @@ import ModalDialog from '@atlaskit/modal-dialog';
 import AddFlashcardsToDeck from '../addFlashcardsToExistingDeck';
 import EditDeckModal from '../deckModuleEdit';
 import SearchIcon from '@mui/icons-material/Search';
+import PercentIcon from '@mui/icons-material/Percent';
 
 
 /* ===========================================
@@ -68,6 +69,9 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   const [errorMessage, setErrorMessage] = useState('');
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showErrorAlert, setShowErrorAlert] = useState(false);
+
+  // STATE for viewing quiz result 
+  const [quizResult, setViewQuizResult] = useState(false);
 
   const isDisabled = updatedDeck.cards?.length === 0;
 
@@ -217,6 +221,11 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     //setUpdatedDeck();
     //loadDecks();
   };
+
+  const handleViewQuizResult = () => {
+    setViewQuizResult(true);
+    console.log('Quiz Result Opened');
+  }
 
   const handleCreateFlashcard = () => {
     setIsCreateFlashcardOpen(true); // Open modal to create flashcard
@@ -461,6 +470,11 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
                 </button>
               </span>
             </Tooltip>
+            <div>
+              <button className='viewQuizResults' onClick={handleViewQuizResult}>
+                    <PercentIcon fontSize='small' /> View Quiz Results
+              </button>
+            </div>
           </div>
         </div>
         <div className='right-buttons'>

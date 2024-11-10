@@ -237,6 +237,73 @@ export const startQuizSession = async (req: ResolverRequest) => {
       }
     }
   };
+
+
+  export const viewQuizResults = async(req: ResolverRequest) => {
+    const { deckId } = req.payload;
+    const accountId = req.context.accountId;
+    const user = await initUserData(accountId);
+    if (!user.data) {
+      return {
+        success: false,
+        error: 'user.data not accessible'
+      }
+    }
+    if (!user.data[deckId]) {
+      return {
+        success: false,
+        error: 'deckid not accessible in user.data'
+      }
+    }
+    if (!user.data[deckId].dynamicDeck.quizSessions || user.data[deckId].dynamicDeck.quizSessions.length() == 0) {
+      return {
+        success: false,
+        error: 'quiz session not accessible'
+      }
+    }
+
+    if (user.data[deckId].dynamicDeck.quizSessions.length() == 0) {
+      return {
+        success: false,
+        error: 'number of quiz completed is 0 so unable to check results'
+      }
+    }
+    
+    const quizResultArray = user.data[deckId].dynamicDeck.quizSessions;
+    let percentCorrect = 0;
+    let percentIncorrect = 0;
+    let percentHint = 0;
+    let percentSkip = 0;
+    for (const quizResult of quizResultArray) {
+      const percentCorrectSpecificQuiz = (quizResult.countCorrect/quizResult.countCards) * 100
+      percentCorrect += percentCorrectSpecificQuiz;
+
+      const percentIncorrectSpecificQuiz = (quizResult.countIncorrect/quizResult.countCards) * 100
+      percentIncorrect += percentIncorrectSpecificQuiz;
+
+      const percentHintSpecificQuiz = (quizResult.countHint/quizResult.countCards) * 100
+      percentHint += percentHintSpecificQuiz;
+
+      const percentSkipSpecificQuiz = (quizResult.countSkip/quizResult.countCards) * 100
+      percentSkip += percentSkipSpecificQuiz;
+    }
+
+    const numQuizDone = user.data[deckId].dynamicDeck.quizSessions.length();
+
+    let averagePercentCorrect = percentCorrect/numQuizDone;
+    let averagePercentIncorrect = percentIncorrect/numQuizDone;
+    let averagePercentHint = percentHint/numQuizDone;
+    let averagePercentSkip = percentHint/numQuizDone;
+
+    return {
+      success: true,
+      averagePercentCorrect: averagePercentCorrect,
+      averagePercentHint: averagePercentHint,
+      averagePercentIncorrect: averagePercentIncorrect,
+      averagePercentSkip: averagePercentSkip
+    }
+  };
+
   
   export const startStudySession = async (req: ResolverRequest) => {
     const { deckId } = req.payload;
