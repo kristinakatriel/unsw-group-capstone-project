@@ -23,9 +23,11 @@ import EditFlashcardModal from './flashcardGlobalModuleEdit';
 import EditDeckModal from './deckModuleEdit';
 import CreateTagGlobal from './tagGlobalModuleCreate';
 import './tagGlobalModuleCreate.css';
-import Switch from '@mui/material/Switch';
 import Chip from '@mui/material/Chip';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Tooltip from '@mui/material/Tooltip';
 
 const gridStyles = xcss({
     width: '100%',
@@ -770,6 +772,24 @@ function globalPageModule() {
     );
   }
 
+  const [alignment, setAlignment] = useState('all');
+  
+  const handleToggleChange = (event, newAlignment) => {
+    console.log(newAlignment);
+    if (newAlignment === null) {
+      setAlignment(alignment);
+      return;
+    } 
+
+    setAlignment(newAlignment);
+    
+    if (newAlignment === 'personal' && !isMyTagsSelected) {
+      selectOwnTags();
+    } else if (newAlignment === 'all' && isMyTagsSelected) {
+      selectOwnTags();
+    } 
+  };
+
   return (
     <div className='global-page-container'>
       <div className="global-page-header">
@@ -782,16 +802,21 @@ function globalPageModule() {
           </div>
         </div>
         <div className="global-page-search">
-          <div className="global-page-badge-container">
-
-            <div className="badge my-stuff">
-            <p>My Stuff</p>
-            <Switch
-              checked={isMyTagsSelected} // If the switch is on, filter only user-owned items
-              onChange={selectOwnTags} // Toggle the state when the switch is changed
-            />
-          </div>
-        </div>
+          <ToggleButtonGroup
+            color="primary"
+            value={alignment}
+            exclusive
+            onChange={handleToggleChange}
+            aria-label="Personal or All"
+            className='toggle-button-group'
+          >
+            <Tooltip title="To view all personal content" disableInteractive>
+              <ToggleButton value="personal" className='toggle-button'>Personal</ToggleButton>
+            </Tooltip>
+            <Tooltip title="To view all content within the site" disableInteractive>
+              <ToggleButton value="all" className='toggle-button'>All</ToggleButton>
+            </Tooltip>
+          </ToggleButtonGroup>
 
           <div className="global-page-search-box">
             <SearchIcon className="global-page-search-icon" />
