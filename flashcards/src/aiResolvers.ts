@@ -219,6 +219,6 @@ export const generateSuggestedTags = async (req: ResolverRequest) => {
     // Giving tags in the end
     return {
         success: true,
-        tags: data.tags
+        tags: data
     };
 };

@@ -85,5 +85,5 @@ async def generate_suggested_tags(input: TextInput):
     keywords = kw_model.extract_keywords(input.text, keyphrase_ngram_range=(1, 2), stop_words='english', top_n=5)
 
     # Display keywords as tags
-    tags = [kw[0] for kw in keywords]
+    tags = list({kw[0] for kw in keywords})
     return tags
