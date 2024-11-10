@@ -152,9 +152,13 @@ export const startQuizSession = async (req: ResolverRequest) => {
         error: `No session found with id: ${sessionId}`
       };
     }
-  
+
+    const currentDate: Date = new Date();
+    const dateString: string = currentDate.toDateString();
+
     // create a new quiz result object
     const newQuizResult: QuizResult = {
+      date: dateString,
       sessionId: sessionId,  
       deckInArchive: session.deckInSession,
       statusPerCard: session.statusPerCard,
@@ -240,67 +244,52 @@ export const startQuizSession = async (req: ResolverRequest) => {
 
 
   export const viewQuizResults = async(req: ResolverRequest) => {
-    const { deckId } = req.payload;
+    const { deckId, index } = req.payload;
     const accountId = req.context.accountId;
     const user = await initUserData(accountId);
     if (!user.data) {
       return {
         success: false,
-        error: 'user.data not accessible'
+        error: 'complete a quiz to see results'
       }
     }
     if (!user.data[deckId]) {
       return {
         success: false,
-        error: 'deckid not accessible in user.data'
+        error: 'complete a quiz to see results'
       }
     }
-    if (!user.data[deckId].dynamicDeck.quizSessions || user.data[deckId].dynamicDeck.quizSessions.length() == 0) {
+    if (!user.data[deckId].quizSessions) {
       return {
         success: false,
         error: 'quiz session not accessible'
       }
     }
 
-    if (user.data[deckId].dynamicDeck.quizSessions.length() == 0) {
+    if (user.data[deckId].quizSessions.length === 0) {
       return {
         success: false,
         error: 'number of quiz completed is 0 so unable to check results'
       }
     }
-    
-    const quizResultArray = user.data[deckId].dynamicDeck.quizSessions;
-    let percentCorrect = 0;
-    let percentIncorrect = 0;
-    let percentHint = 0;
-    let percentSkip = 0;
-    for (const quizResult of quizResultArray) {
-      const percentCorrectSpecificQuiz = (quizResult.countCorrect/quizResult.countCards) * 100
-      percentCorrect += percentCorrectSpecificQuiz;
 
-      const percentIncorrectSpecificQuiz = (quizResult.countIncorrect/quizResult.countCards) * 100
-      percentIncorrect += percentIncorrectSpecificQuiz;
-
-      const percentHintSpecificQuiz = (quizResult.countHint/quizResult.countCards) * 100
-      percentHint += percentHintSpecificQuiz;
-
-      const percentSkipSpecificQuiz = (quizResult.countSkip/quizResult.countCards) * 100
-      percentSkip += percentSkipSpecificQuiz;
+    if (index >= user.data[deckId].quizSessions.length) {
+      return {
+        success: false,
+        error: 'out of bound error'
+      }
     }
 
-    const numQuizDone = user.data[deckId].dynamicDeck.quizSessions.length();
-
-    let averagePercentCorrect = percentCorrect/numQuizDone;
-    let averagePercentIncorrect = percentIncorrect/numQuizDone;
-    let averagePercentHint = percentHint/numQuizDone;
-    let averagePercentSkip = percentHint/numQuizDone;
+    const quizResultArray: QuizResult[] = user.data[deckId].quizSessions;
+    const quiz: QuizResult = quizResultArray[index];
 
     return {
       success: true,
-      averagePercentCorrect: averagePercentCorrect,
-      averagePercentHint: averagePercentHint,
-      averagePercentIncorrect: averagePercentIncorrect,
-      averagePercentSkip: averagePercentSkip
+      date: quiz.date,
+      numCorrect: quiz.countCorrect,
+      numIncorrect: quiz.countIncorrect,
+      numHint: quiz.countHints,
+      numSkip: quiz.countSkip
     }
   };
 

@@ -71,7 +71,9 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   const [showErrorAlert, setShowErrorAlert] = useState(false);
 
   // STATE for viewing quiz result 
-  const [quizResult, setViewQuizResult] = useState(false);
+  const [viewQuizResult, setViewQuizResult] = useState(null);
+  const [viewQuizResultBool, setViewQuizResultBool] = useState(false);
+  const [pressedButton, setPressedButton] = useState(false);
 
   const isDisabled = updatedDeck.cards?.length === 0;
 
@@ -221,11 +223,6 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     //setUpdatedDeck();
     //loadDecks();
   };
-
-  const handleViewQuizResult = () => {
-    setViewQuizResult(true);
-    console.log('Quiz Result Opened');
-  }
 
   const handleCreateFlashcard = () => {
     setIsCreateFlashcardOpen(true); // Open modal to create flashcard
@@ -433,6 +430,39 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   // DECK EDIT FUNCTIONALITY
   // ========================
 
+  const handleViewQuizResult = async () => {
+    console.log('Viewing quiz results');
+    setPressedButton(true);
+    let index = 0
+    let loopStatus = true;
+    let responseArray = [];
+
+    while (loopStatus) {
+      try {
+        const response = await invoke('viewQuizResults', {
+          deckId: updatedDeck.id, 
+          index: index
+        });
+    
+        if (response.success) {
+          responseArray.push(response);
+          console.log("response is: " + response)
+          setViewQuizResult(responseArray);
+          setViewQuizResultBool(true); // this boolean means that there are quiz results to be printed
+          index++;
+          console.log('Quiz Result:', response);
+        } else {
+          console.error('Error fetching quiz results:', response.error);
+          loopStatus = false;
+          setErrorMessage(response.error);
+        }
+      } catch (error) {
+        console.error('Error fetching quiz results:', error);
+        setErrorMessage('An error occurred while fetching quiz results');
+      }
+    }
+  };
+
   return (
     <div className='deck-display-container'>
       <div className='deck-title-and-buttons'>
@@ -516,6 +546,26 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
             {tag.title || "Tag"}
         </span>
         ))}
+      </div>
+
+      <div className='deck-view-prev-quiz-results'>
+        {viewQuizResultBool && pressedButton ? (
+          <>
+          <h3>All Quiz Results</h3>
+          {viewQuizResult.map((quiz, index) => (
+            <div key={index} className='quiz-result'>
+              <h4>Quiz Session {index + 1}</h4>
+              <p>Date of Quiz: {quiz.date}</p>
+              <p>Number Correct: {quiz.numCorrect}</p>
+              <p>Number Incorrect: {quiz.numIncorrect}</p>
+              <p>Number Skipped: {quiz.numSkip}</p>
+              <p>Number with Hints: {quiz.numHint}</p>
+            </div>
+          ))}
+        </>
+        ) : pressedButton ? ( // the line below is printed if there are no quiz results and the user presses button
+          <p>No quiz results to display. Click "View Quiz Results" to see details.</p>
+        ) : null}
       </div>
 
       <h4 className='deck-flashcard-amount'>Flashcards: {updatedDeck.cards?.length || 0}</h4>
