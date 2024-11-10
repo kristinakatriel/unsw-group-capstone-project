@@ -26,6 +26,9 @@ import './tagGlobalModuleCreate.css';
 import Switch from '@mui/material/Switch';
 import Chip from '@mui/material/Chip';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditTagGlobal from './tagGlobalPageEdit';
+// import './editTagGlobalModule.css';
+import EditIcon from '@mui/icons-material/Edit';
 
 const gridStyles = xcss({
     width: '100%',
@@ -91,6 +94,10 @@ function globalPageModule() {
   // State for DECK deletion and confirmation
   const [deckToDelete, setDeckToDelete] = useState(null);
   const [isDeleteDeckConfirmOpen, setIsDeleteDeckConfirmOpen] = useState(false);
+
+  // State for TAG editing and confirmation
+  const [editingTag, setEditingTag] = useState(null); // Store the tag being edited
+  const [isEditTagModalOpen, setIsEditTagModalOpen] = useState(false); // Modal logic for editing tags
 
   // State for DECK display
   const [selectedDeck, setSelectedDeck] = useState(null);
@@ -412,6 +419,22 @@ function globalPageModule() {
   };
 
 
+  // Open the edit modal for a tag
+  const openTagEditModal = (tag) => {
+    setEditingTag(tag); // Set the tag to be edited
+    setIsEditTagModalOpen(true); // Open the modal
+  };
+
+  // Close the edit modal and refresh tags
+  const closeTagEditModal = (updatedTag) => {
+    setIsEditTagModalOpen(false); // Close the modal
+
+    // Refresh the tag list by fetching tags
+    refreshTagFrontend();
+    refreshDeckFrontend();
+  };
+
+
   // Handle search input change
   const searchGlobalPage = (event) => {
     setGlobalPageSearchTerm(event.target.value);
@@ -524,7 +547,7 @@ function globalPageModule() {
   const renderFlashcardsList = (filteredFlashcards) => {
     //console.log('cards right before passed into card slider' , flashcards);
     return (
-    <CardSlider cards={filteredFlashcards} tagMap={cardTagMap} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
+    <CardSlider cards={filteredFlashcards} tagMap={cardTagMap} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal} onTagEdit={openTagEditModal}/>
     );
 
   };
@@ -560,37 +583,36 @@ function globalPageModule() {
 
 
       {filteredTags.map((tag, index) => (
-        // <p
-        //   key={index}
-        //   className={`badge ${tag.colour}`}
-        //   onClick={() => handleTagClick(tag)}
-        //   //onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
-        // >
-        //   {tag.title || "Tag"}
-        // </p>
-        //<div key={index} className={`badge ${tag.colour}`}>
-        <Chip
-        key={index}
-        label={tag.title || "Tag"}
-        className={`badge ${tag.colour}`}
-        //color={className={`badge ${tag.colour}`}|| "default"}  // Use 'default' if no color is specified
-        onClick={() => handleTagToggle(tag.id)}
-        onDelete={selectedTags.includes(tag.id) ? () => handleTagToggle(tag.id) : undefined} // Only enable delete if selected
-        deleteIcon={selectedTags.includes(tag.id) ? <DeleteIcon /> : null} // Conditionally show delete icon
-        sx={{ margin: 1 }} // Add spacing between chips
-        />
 
+        // <Chip
+        // key={index}
+        // label={tag.title || "Tag"}
+        // className={`badge ${tag.colour}`}
+        // //color={className={`badge ${tag.colour}`}|| "default"}  // Use 'default' if no color is specified
+        // onClick={() => handleTagToggle(tag.id)}
+        // onDelete={selectedTags.includes(tag.id) ? () => handleTagToggle(tag.id) : undefined} // Only enable delete if selected
+        // deleteIcon={selectedTags.includes(tag.id) ? <DeleteIcon /> : null} // Conditionally show delete icon
+        // sx={{ margin: 1 }} // Add spacing between chips
 
+        // />
 
-
-        /* <div key={index} className={`badge ${tag.colour}`}>
-        <p>{tag.title || "Tag"}</p>
-        <Switch
-            checked={selectedTags.includes(tag.id)}
-            onChange={() => handleTagToggle(tag.id)}
+        <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
+          <Chip
+            label={tag.title || "Tag"}
+            className={`badge ${tag.colour}`}
+            onClick={() => handleTagToggle(tag.id)} // Toggle selection
+            onDelete={selectedTags.includes(tag.id) ? () => handleTagToggle(tag.id) : undefined} // Delete functionality
+            deleteIcon={selectedTags.includes(tag.id) ? <DeleteIcon /> : null} // Conditionally show delete icon
+            sx={{ margin: 1 }} // Add spacing between chips
           />
-        </div> */
-        //  </div>
+          <EditIcon
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent triggering the onClick for Chip
+              openTagEditModal(tag); // Open the edit modal
+            }}
+            sx={{ marginLeft: 1, cursor: 'pointer' }} // Add margin and pointer cursor
+          />
+        </div>
       ))}
     </div>
   );
@@ -949,6 +971,17 @@ function globalPageModule() {
           />
         </ModalDialog>
       )}
+
+      {/* // Tags functionality: Tag Edit Modal */}
+      {isEditTagModalOpen && (
+        <ModalDialog heading="Edit Tag" onClose={closeTagEditModal}>
+          <EditTagGlobal
+            tag={editingTag} // Pass the tag to the modal
+            closeTagEditModal={closeTagEditModal}
+          />
+        </ModalDialog>
+      )}
+
 
       {/* DECK EDIT FUNCTIONALITY: DECK Edit Modal */}
       {isEditDeckModalOpen && (
