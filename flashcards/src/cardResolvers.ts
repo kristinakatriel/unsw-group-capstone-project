@@ -177,15 +177,15 @@ export const getFlashcard = async (req: ResolverRequest) => {
 // };
 
 export const getAllFlashcards = async (req: ResolverRequest) => {
-  // const allCards = await queryStorage('c-') as Card[]; // use once limit implemented
+  const allCards = await queryStorage('c-') as Card[]; // use once limit implemented
 
-  const allCards: Card[] = [];
+  // const allCards: Card[] = [];
 
-  const query = await storage.query().where('key', startsWith('c-')).limit(50).getMany();
+  // const query = await storage.query().where('key', startsWith('c-')).limit(50).getMany();
 
-  query.results.forEach(({ value }) => {
-    allCards.push(value as Card);
-  });
+  // query.results.forEach(({ value }) => {
+  //   allCards.push(value as Card);
+  // });
 
   const allTags = await queryStorage('t-') as Tag[];
 

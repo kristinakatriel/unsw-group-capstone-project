@@ -28,7 +28,7 @@ export const getAllContent = async (req: ResolverRequest) => {
         'Accept': 'application/json'
         }
     });
-    
+
     console.log(response.status);
 
     if (response.status == 200) {
@@ -164,7 +164,7 @@ export const addGeneratedFlashcards = async (req: ResolverRequest) => {
             locked: true
         };
         cardIds.push(cardId);
-        
+
         await storage.set(cardId, newCard);
         return { success: true, id: cardId };
     });

@@ -9,7 +9,7 @@ import './CardSlider.css';
 // added onEdit as well!
 const CardSlider = ({ cards = [], tagMap = [], onDelete, onEdit }) => {
 
-  console.log('tags passed in', tagMap);
+  console.log('cards passed in to cardslider', cards);
 
   // const [cardTags, setCardTags] = useState({});
 
