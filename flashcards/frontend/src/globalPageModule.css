@@ -205,3 +205,12 @@
   text-align: center;
   height: 32px;
 }
+
+.global-page-container .toggle-button-group {
+  margin-right: 10px;
+}
+
+.global-page-container .toggle-button {
+  padding: 7px;
+  font-size: 12px;
+}
