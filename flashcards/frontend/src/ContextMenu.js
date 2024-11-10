@@ -45,7 +45,7 @@ function ContextMenu() {
   const [showHint, setShowHint] = useState(false); 
   const [locked, setLocked] = useState(false);
   const [autoGenTag, setAutoGenTag] = useState(null);
-  const [availableTags, setAvailableTags] = useState([]);
+  const [availableTags, setAvailableTags] = useState({});
   const [isLoading, setIsLoading] = useState(false);
   const [tagsGenerated, setTagsGenerated] = useState(false);
   const [showTags, setShowTags] = useState(false);
@@ -184,21 +184,33 @@ function ContextMenu() {
 
   };
 
-  const generateTags = async (front, back, hint) => {
+  const generateTags = async (index, hint) => {
+    console.log(index);
     setIsLoading(true); // Start loading
     try {
-      let combined = front + back;
+      let combined = front[index] + back[index];
       if (hint) {
         combined += hint;
       }
       const tagsGen = await invoke('generateSuggestedTags', { text: combined } );
       if (tagsGen.success) {
-        setAvailableTags(tagsGen.tags);
+        setAvailableTags((prevTags) => ({
+          ...prevTags,         // Spread in the existing tags
+          [index]: tagsGen.tags // Update or add the tags at the specified index
+        }));
+        console.log(availableTags);
       }
     } catch (error) {
       console.error('Tags are not generated: ', error);
     }
     setIsLoading(false);
+  };
+
+  const handleDelete = (index, tagToDelete) => {
+    setAvailableTags((prevTags) => ({
+      ...prevTags, // Keep all existing tags
+      [index]: prevTags[index].filter((tag) => tag.id !== tagToDelete.id), // Update the specific index
+    }));
   };
 
   console.log('Current Context Menu Data:', generatedFlashcards);
@@ -314,7 +326,7 @@ function ContextMenu() {
                         <>
                           {showTags && (
                             <>
-                              <button onClick={() => generateTags(front[index], back[index], hint)}>Generate Tags</button>
+                              <button onClick={() => generateTags(index, hint)}>Generate Tags</button>
                               <div>
                                 {isLoading ? (
                                   'Still generating...'
@@ -330,10 +342,10 @@ function ContextMenu() {
                                     }}
                                     component="ul"
                                   >
-                                    {availableTags && availableTags.length > 0 ? (
-                                      availableTags.map((tag, index) => (
-                                        <ListItem key={index}>
-                                          <Chip label={tag} />
+                                    {availableTags[index] && availableTags[index].length > 0 ? (
+                                      availableTags[index].map((tag, i) => (
+                                        <ListItem key={i}>
+                                          <Chip label={tag} onDelete={() => handleDelete(index, tag)}/>
                                         </ListItem>
                                       ))
                                     ) : (
