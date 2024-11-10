@@ -13,6 +13,7 @@ import LockIcon from '@atlaskit/icon/glyph/lock';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import './deckGlobalModuleCreate.css';
+import SearchIcon from '@mui/icons-material/Search';
 
 const gridStyles = xcss({
   width: '100%',
@@ -35,12 +36,15 @@ function CreateDeckGlobal({ closeDeckModal }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [closeError, setCloseError] = useState(true);
   const [locked, setLocked] = useState(false);
-  const [showDescription, setShowDescription] = useState(false); 
+  const [showDescription, setShowDescription] = useState(false);
   const [showFlashcards, setShowFlashcards] = useState(false);
+
+
+  const [flashcardSearchTerm, setFlashcardSearchTerm] = useState('');
 
   const handleCloseGlobal = () => {
     if (typeof closeDeckModal === 'function') {
-      closeDeckModal(); 
+      closeDeckModal();
     } else {
       console.error('closeDeckModal is not a function:', closeDeckModal);
     }
@@ -107,8 +111,8 @@ function CreateDeckGlobal({ closeDeckModal }) {
         setDescription('');
         setSelectedFlashcards([]);
         setTimeout(() => {
-          closeDeckModal(); 
-        }, 1000); 
+          closeDeckModal();
+        }, 1000);
       } else {
         setErrorMessage(response.error);
         console.error('Failed to create deck:', response.error);
@@ -125,6 +129,10 @@ function CreateDeckGlobal({ closeDeckModal }) {
       setSelectedFlashcards([...selectedFlashcards, flashcardId]);
     }
   };
+
+  const filteredFlashcards = flashcards.filter((flashcard) => {
+    return flashcard.front.toLowerCase().includes(flashcardSearchTerm.toLowerCase());
+  });
 
   return (
     <ModalTransition>
@@ -146,7 +154,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
         </ModalHeader>
 
         <ModalBody>
-          {errorMessage && 
+          {errorMessage &&
             <Collapse in={closeError}>
               <Alert
                 severity="error"
@@ -163,7 +171,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
               <Textfield {...fieldProps} value={deckTitle} onChange={(e) => setDeckTitle(e.target.value)} placeholder="Type the deck title here..." />
             )}
           </Field>
-          
+
           {/************************************* DECK DESCRIPTION FIELD ***************************************/}
           <Field id="description" name="description" label={
             <div onClick={() => setShowDescription(!showDescription)} className="label-clickable">
@@ -187,6 +195,21 @@ function CreateDeckGlobal({ closeDeckModal }) {
             )}
           </Field>
 
+          {/************************************* SEARCH BAR FOR FLASHCARDS ***************************************/}
+          <div className="tag-page-search">
+            <div className="tag-page-search-box">
+              <SearchIcon className="tag-page-search-icon" />
+              <input
+                type="text"
+                id="flashcard-search-input"
+                value={flashcardSearchTerm}
+                onChange={(e) => setFlashcardSearchTerm(e.target.value)}
+                placeholder="Search flashcards..."
+              />
+            </div>
+          </div>
+
+
           {/************************************* ADD FLASHCARDS FIELD ***************************************/}
           <Field id="add-flashcards" name="add-flashcards" label={
             <div onClick={() => setShowFlashcards(!showFlashcards)} className="label-clickable">
@@ -200,8 +223,8 @@ function CreateDeckGlobal({ closeDeckModal }) {
               <div>
                 {showFlashcards && (
                   <div className='flashcards-select-scroll'>
-                    {flashcards.length > 0 ? (
-                      flashcards.map((flashcard) => (
+                    {filteredFlashcards.length > 0 ? (
+                      filteredFlashcards.map((flashcard) => (
                         <div key={flashcard.id} className="flashcards-select-scroll-item">
                           <input
                             type="checkbox"
@@ -222,13 +245,13 @@ function CreateDeckGlobal({ closeDeckModal }) {
               </div>
             )}
           </Field>
-          
+
           {/************************************* LOCK/UNLOCKED FIELD ***************************************/}
           <Field>
             {() => (
               <span onClick={() => setLocked(!locked)} style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}>
                 {locked ? 'This deck will be locked, only the owner can edit and delete' : 'This deck will be unlocked, others can edit and delete'}
-                <span> 
+                <span>
                   {locked ? (
                     <LockIcon label="Locked" />
                   ) : (

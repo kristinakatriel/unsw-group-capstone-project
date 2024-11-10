@@ -8,6 +8,7 @@ import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition
 import { Alert, Collapse } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import './deckGlobalModuleCreate.css';
+import SearchIcon from '@mui/icons-material/Search';
 
 const gridStyles = xcss({
   width: '100%',
@@ -28,6 +29,8 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
   const [flashcards, setFlashcards] = useState([]);
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [closeError, setCloseError] = useState(false);
+
+  const [deckDisplaySearchTerm, setDeckDisplaySearchTerm] = useState(''); // For search functionality
 
   const handleClose = () => {
     console.log('Function called: handleClose');
@@ -83,8 +86,8 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
       setSaveSuccess(true)
       setTimeout(() => {
         closeAddDeckModal(selectedFlashcards),
-        handleClose(); 
-      }, 1000); 
+        handleClose();
+      }, 1000);
     } catch (error) {
       console.error('Error adding flashcards to deck:', error);
     }
@@ -101,6 +104,23 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
       }
       console.log('Updated selected flashcards:', selectedFlashcards);
   };
+
+  // Search functionality: Update the search term
+  const searchDeckDisplay = (event) => {
+    setDeckDisplaySearchTerm(event.target.value);
+    console.log('Searching:', deckDisplaySearchTerm);
+  };
+
+  // Filter flashcards based on the search term
+  const filteredFlashcards = flashcards.filter((card) => {
+    const searchTerm = deckDisplaySearchTerm.toLowerCase();
+    return (
+      (typeof card.front === 'string' && card.front.toLowerCase().includes(searchTerm)) ||
+      (typeof card.back === 'string' && card.back.toLowerCase().includes(searchTerm)) ||
+      (card.name && typeof card.name === 'string' && card.name.toLowerCase().includes(searchTerm))
+    );
+  });
+
 
   return (
     <ModalTransition>
@@ -122,7 +142,7 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
         </ModalHeader>
 
         <ModalBody>
-          { errorMessage && 
+          { errorMessage &&
           <Collapse in={closeError}>
             <Alert
               severity="error"
@@ -145,12 +165,25 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
           </Collapse>
         }
 
+          <div className="global-page-search">
+            <div className="global-page-search-box">
+              <SearchIcon className="global-page-search-icon" />
+              <input
+                type="text"
+                id="search-input"
+                value={deckDisplaySearchTerm}
+                onChange={searchDeckDisplay} // Update search term
+                placeholder="Search flashcards..."
+              />
+            </div>
+          </div>
+
           {/************************************* ADD FLASHCARDS FIELD ***************************************/}
           <Field id="add-flashcards" name="add-flashcards" label="Add existing flashcards to deck">
             {() => (
               <div className='flashcards-select-scroll'>
-                {flashcards.length > 0 ? (
-                  flashcards.map((flashcard) => (
+                {filteredFlashcards.length > 0 ? (
+                  filteredFlashcards.map((flashcard) => (
                     <div key={flashcard.id} className="flashcards-select-scroll-item">
                       <input
                         type="checkbox"
