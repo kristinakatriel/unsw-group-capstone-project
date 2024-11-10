@@ -13,6 +13,7 @@ import LockIcon from '@atlaskit/icon/glyph/lock';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import './tagGlobalModuleCreate.css';
+import SearchIcon from '@mui/icons-material/Search';
 
 const gridStyles = xcss({
   width: '100%',
@@ -39,6 +40,9 @@ function CreateTagGlobal({ closeTagModal }) {
   const [selectedDecks, setSelectedDecks] = useState([]);
   const [showDecks, setShowDecks] = useState(false);
   const [showFlashcards, setShowFlashcards] = useState(false);
+
+  const [deckSearchTerm, setDeckSearchTerm] = useState('');
+  const [flashcardSearchTerm, setFlashcardSearchTerm] = useState('');
 
   const handleClose = () => {
     if (typeof closeTagModal === 'function') {
@@ -132,6 +136,14 @@ function CreateTagGlobal({ closeTagModal }) {
     }
   };
 
+  const filteredDecks = decks.filter((deck) => {
+    return deck.title.toLowerCase().includes(deckSearchTerm.toLowerCase());
+  });
+
+  const filteredFlashcards = flashcards.filter((flashcard) => {
+    return flashcard.front.toLowerCase().includes(flashcardSearchTerm.toLowerCase());
+  });
+
   return (
     <ModalTransition>
       <Modal onClose={closeTagModal}>
@@ -170,6 +182,8 @@ function CreateTagGlobal({ closeTagModal }) {
             )}
           </Field>
 
+
+
           {/************************************* TAG COLOUR SELECTION ***************************************/}
           <Field id="tagColour" name="tagColour" label={`Tag Colour: ${selectedColour.charAt(0).toUpperCase() + selectedColour.slice(1)}`}>
             {() => (
@@ -187,6 +201,22 @@ function CreateTagGlobal({ closeTagModal }) {
             )}
           </Field>
 
+
+          {/************************************* SEARCH BAR FOR DECKS ***************************************/}
+          <div className="tag-page-search">
+            <div className="tag-page-search-box">
+              <SearchIcon className="tag-page-search-icon" />
+              <input
+                type="text"
+                id="deck-search-input"
+                value={deckSearchTerm}
+                onChange={(e) => setDeckSearchTerm(e.target.value)}
+                placeholder="Search decks..."
+              />
+            </div>
+          </div>
+
+
           {/************************************* ADD DECKS FIELD ***************************************/}
           <Field id="add-decks" name="add-decks" label={
             <div onClick={() => setShowDecks(!showDecks)} className="label-clickable">
@@ -200,8 +230,8 @@ function CreateTagGlobal({ closeTagModal }) {
               <div>
                 {showDecks && (
                   <div className='decks-select-scroll'>
-                    {decks.length > 0 ? (
-                      decks.map((deck) => (
+                    {filteredDecks.length > 0 ? (
+                      filteredDecks.map((deck) => (
                         <div key={deck.id} className="decks-select-scroll-item">
                           <input
                             type="checkbox"
@@ -223,6 +253,22 @@ function CreateTagGlobal({ closeTagModal }) {
             )}
           </Field>
 
+
+          {/************************************* SEARCH BAR FOR FLASHCARDS ***************************************/}
+          <div className="tag-page-search">
+            <div className="tag-page-search-box">
+              <SearchIcon className="tag-page-search-icon" />
+              <input
+                type="text"
+                id="flashcard-search-input"
+                value={flashcardSearchTerm}
+                onChange={(e) => setFlashcardSearchTerm(e.target.value)}
+                placeholder="Search flashcards..."
+              />
+            </div>
+          </div>
+
+
           {/************************************* ADD FLASHCARDS FIELD ***************************************/}
           <Field id="add-flashcards" name="add-flashcards" label={
             <div onClick={() => setShowFlashcards(!showFlashcards)} className="label-clickable">
@@ -236,8 +282,8 @@ function CreateTagGlobal({ closeTagModal }) {
               <div>
                 {showFlashcards && (
                   <div className='flashcards-select-scroll'>
-                    {flashcards.length > 0 ? (
-                      flashcards.map((flashcard) => (
+                    {filteredFlashcards.length > 0 ? (
+                      filteredFlashcards.map((flashcard) => (
                         <div key={flashcard.id} className="flashcards-select-scroll-item">
                           <input
                             type="checkbox"

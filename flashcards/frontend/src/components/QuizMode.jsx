@@ -26,6 +26,7 @@ const QuizMode = ({ deck }) => {
   const [isButtonDisabled, setIsButtonDisabled] = useState(false);
   const totalCards = flashcards.length;
 
+  console.log("pre Updated flashcards:", flashcards);
 
   useEffect(() => {
     console.log("useEffect triggered due to change in:", {
@@ -44,6 +45,11 @@ const QuizMode = ({ deck }) => {
     // };
   }, [currentCardIndex, flashcards, isQuizCompleted]);
 
+  console.log("pre Updated flashcards:", flashcards);
+
+  useEffect(() => {
+    setFlashcards(deck.cards);
+  }, [deck.cards]);  // This ensures flashcards are updated when deck.cards changes
 
   useEffect(() => {
 
@@ -77,12 +83,15 @@ const QuizMode = ({ deck }) => {
       }
     };
     //console.log("Updated flashcards:", flashcards);
+    console.log("pre Updated flashcards:", flashcards);
     startQuizSession();
+    console.log("pre Updated flashcards:", flashcards);
 
     //console.log("Updated flashcards:", flashcards);
 
 
     if (!isQuizCompleted) {
+      console.log("pre Updated flashcards:", flashcards);
       console.log("printing flashcards: inside if isQuizCompleted true", flashcards);
       const timer = setInterval(() => {
         setElapsedTime((prevTime) => prevTime + 1);
@@ -91,7 +100,7 @@ const QuizMode = ({ deck }) => {
       return () => clearInterval(timer);
     }
   }, [isQuizCompleted]);
-
+  console.log("pre Updated flashcards:", flashcards);
   // useEffect(() => {
   //   const endQuizSession = async () => {
   //     try {
@@ -103,12 +112,13 @@ const QuizMode = ({ deck }) => {
   //     setEndStatus(prevCount => prevCount + 1);
   //   };
   // }, [isQuizCompleted, sessionId]);
-
+  console.log("pre Updated flashcards:", flashcards);
   const openHintModal = () => setIsHintModalOpen(true);
   const closeHintModal = () => setIsHintModalOpen(false);
-  // useEffect(() => {
-  //   console.log("Updated flashcards:", flashcards);
-  // }, [flashcards]);
+
+  console.log("pre Updated flashcards:", flashcards);
+
+
 
 
   const goToNextCard = async (status) => {
@@ -119,7 +129,7 @@ const QuizMode = ({ deck }) => {
     try {
 
       setIsFlipped(false);
-
+      console.log("pre Updated flashcards:", flashcards);
       const response = await invoke('updateCardStatusQuiz', {
         currentIndex: currentCardIndex,
         status,
@@ -127,7 +137,7 @@ const QuizMode = ({ deck }) => {
       });
 
 
-      console.log("Updated flashcards:", flashcards);
+      console.log("responce :", response);
 
 
       console.log(status);
@@ -165,19 +175,36 @@ const QuizMode = ({ deck }) => {
             console.error('response is invalid', error);
           }
         } else {
-          setCurrentCardIndex(response.nextIndex);
+         // setCurrentCardIndex(response.nextIndex);
           setCardStatus(null);
-        }
-      } else {
-        console.error(response.error);
-      }
-    } catch (error) {
+
+
+          setCurrentCardIndex((prevIndex) => {
+             if (prevIndex < totalCards - 1) {
+               return prevIndex + 1;
+             } else {
+               return 0;
+             }
+            });
+          };
+
+     } else {
+       console.error(response.error);
+     }
+   } catch (error) {
       console.error('response is invalid', error);
     }
+
+
 
     console.log("Updated flashcards:", flashcards);
   };
 
+
+
+
+
+  console.log("pre Updated flashcards:", flashcards);
   const handleCorrect = () => {
     console.log("Updated flashcards:", flashcards);
     if (!isButtonDisabled) {
@@ -190,6 +217,7 @@ const QuizMode = ({ deck }) => {
       }, 1000);
     }
   };
+  console.log("pre Updated flashcards:", flashcards);
 
   const handleIncorrect = () => {
     console.log("Updated flashcards:", flashcards);
@@ -201,7 +229,9 @@ const QuizMode = ({ deck }) => {
         setCardStatus(null);
         setIsButtonDisabled(false);
       }, 1000);
+      console.log("pre Updated flashcards:", flashcards);
     }
+    console.log("pre Updated flashcards:", flashcards);
   };
 
   const handleSkip = () => {
@@ -217,21 +247,27 @@ const QuizMode = ({ deck }) => {
     }
   };
 
+  console.log("pre Updated flashcards:", flashcards);
   const toggleFlip = () => {
+    console.log("pre Updated flashcards:", flashcards);
     setIsFlipped((prevFlipped) => !prevFlipped);
   };
 
   const handleHintClick = (event) => {
+    console.log("pre Updated flashcards:", flashcards);
     event.stopPropagation();
     openHintModal();
     goToNextCard('hint');
   };
 
   const formatTime = (seconds) => {
+    console.log("pre Updated flashcards:", flashcards);
     const minutes = Math.floor(seconds / 60);
     const remainingSeconds = seconds % 60;
     return `${minutes}:${remainingSeconds < 10 ? '0' : ''}${remainingSeconds}`;
   };
+  console.log("pre Updated flashcards:", flashcards);
+
   console.log("pre Updated flashcards:", flashcards);
   console.log("pre Current card index:", currentCardIndex);
   console.log("preCurrent card:", flashcards[currentCardIndex]);
@@ -353,10 +389,21 @@ const QuizMode = ({ deck }) => {
         </div>
       )}
 
+      {/* Log flashcards every time the component renders */}
+      {console.log("Current Flashcards:", flashcards)}
+
+
+
       <ModalTransition>
+        {/* Log flashcards every time the component renders */}
+        {console.log("Current Flashcards:", flashcards)}
         {isHintModalOpen && (
           <Modal onClose={closeHintModal}>
+            {/* Log flashcards every time the component renders */}
+            {console.log("Current Flashcards:", flashcards)}
             <ModalHeader>
+              {/* Log flashcards every time the component renders */}
+              {console.log("Current Flashcards:", flashcards)}
               <ModalTitle>Hint</ModalTitle>
             </ModalHeader>
             <ModalBody>
@@ -367,15 +414,23 @@ const QuizMode = ({ deck }) => {
               {console.log("Current Flashcards:", flashcards)}
             </ModalBody>
             <ModalFooter>
+              {/* Log flashcards every time the component renders */}
+            {console.log("Current Flashcards:", flashcards)}
               <Button appearance="primary" onClick={closeHintModal}>
                 Close
               </Button>
             </ModalFooter>
           </Modal>
         )}
+        {/* Log flashcards every time the component renders */}
+        {console.log("Current Flashcards:", flashcards)}
       </ModalTransition>
     </div>
+
+
   );
+
+
 };
 
 export default QuizMode;
