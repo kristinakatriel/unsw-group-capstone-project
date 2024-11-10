@@ -42,8 +42,8 @@
   display: flex;
   align-items: center;
   border: 1px solid darkgray;
-  border-radius: 6px; 
-  padding: 3px 8px; 
+  border-radius: 6px;
+  padding: 3px 8px;
   width: 200px;
   background-color: white;
 }
@@ -62,7 +62,7 @@
 #search-input {
   width: 100%;
   padding: 4px;
-  font-size: 14px; 
+  font-size: 14px;
   color: darkgray;
   border: none;
   outline: none;
@@ -125,24 +125,24 @@
 
 .breadcrumb-item {
   font-weight: bold;
-  font-size: 18px; 
+  font-size: 18px;
 }
 
 .global-page-badge-container {
   display: flex;
   gap: 10px;
-  flex-wrap: wrap; 
+  flex-wrap: wrap;
 }
 
 .global-page-badge-container .badge {
-  color: #5372F0;
+  color: #2c2c2c;
   padding: 6px 12px;
   margin: 12px 0 14px;
   background: #DDE4FF;
-  width: fit-content; 
-  border-radius: 40px; 
-  cursor: pointer; 
-  transition: background 0.3s, box-shadow 0.3s; 
+  width: fit-content;
+  border-radius: 40px;
+  cursor: pointer;
+  transition: background 0.3s, box-shadow 0.3s;
 }
 
 .global-page-badge-container .badge:hover {
@@ -151,27 +151,27 @@
 }
 
 .global-page-badge-container .badge:first-child {
-  margin-top: 12px; 
+  margin-top: 12px;
 }
 
 .global-page-badge-container .badge.blue {
-  color: #5372F0; 
-  background: #DDE4FF; 
+  color: #5372F0;
+  background: #DDE4FF;
 }
 
 .global-page-badge-container .badge.red {
-  color: #B22485; 
-  background: #F7DFF5; 
+  color: #B22485;
+  background: #F7DFF5;
 }
 
 .global-page-badge-container .badge.orange {
   color: #B25A2B;
-  background: #FFE3D2; 
+  background: #FFE3D2;
 }
 
 .global-page-badge-container .badge.green {
-  color: #205C20; 
-  background: #D6F8D6; 
+  color: #205C20;
+  background: #D6F8D6;
 }
 
 .global-page-badge-container .badge.yellow {
@@ -182,4 +182,25 @@
 .global-page-badge-container .badge.purple {
   color: #6B4BA3;
   background: #E9DDFF;
+}
+
+
+.global-page-badge-container .badge .all-tags {
+  background-color: #000000; /* Light gray */
+  color: rgb(255, 255, 255);
+}
+
+
+.badge.all-tags:hover {
+  background-color: #b3b3b3; /* Slightly darker gray on hover */
+}
+
+
+.global-page-badge-container .badge.my-stuff {
+  display: flex;
+  align-items: center; /* Vertically align the switch and text */
+  gap: 5px; /* Space between text and switch */
+  background: #000000; /* Light gray */
+  color: white;
+  text-align: center
 }
