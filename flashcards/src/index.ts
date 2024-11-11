@@ -31,7 +31,7 @@ import {
 
 import {
   startQuizSession, updateCardStatusQuiz, endQuizSession,
-  startStudySession, updateCardStatusStudy, endStudySession
+  startStudySession, nextCardStudy, endStudySession, prevCardStudy
 } from './sessions'
 
 ///////////////////////////////////////////////////////////////////////////////////
@@ -88,7 +88,8 @@ resolver.define('updateCardStatusQuiz',updateCardStatusQuiz);
 
 resolver.define('startStudySession', startStudySession);
 resolver.define('endStudySession', endStudySession);
-resolver.define('updateCardStatusStudy',updateCardStatusStudy);
+resolver.define('nextCardStudy', nextCardStudy);
+resolver.define('prevCardStudy', prevCardStudy);
 
 ///////////////////////////////////////////////////////////////////////////////////
 
