@@ -76,6 +76,7 @@ export interface DynamicData {
 }
 
 export interface QuizResult {
+    date: string
     sessionId: string;
     deckInArchive: Deck;
     statusPerCard: QuizSessionCardStatus[];

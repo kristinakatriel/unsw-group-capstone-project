@@ -176,9 +176,13 @@ import { IndicatorSeparator } from 'react-select/dist/declarations/src/component
       };
     }
 
+    const currentDate: Date = new Date();
+    const dateString: string = currentDate.toDateString();
+
     // create a new quiz result object
     const newQuizResult: QuizResult = {
-      sessionId: sessionId,
+      date: dateString,
+      sessionId: sessionId,  
       deckInArchive: session.deckInSession,
       statusPerCard: session.statusPerCard,
       countCards: session.totalCardCount,
@@ -261,6 +265,58 @@ import { IndicatorSeparator } from 'react-select/dist/declarations/src/component
     }
   };
 
+
+  export const viewQuizResults = async(req: ResolverRequest) => {
+    const { deckId, index } = req.payload;
+    const accountId = req.context.accountId;
+    const user = await initUserData(accountId);
+    if (!user.data) {
+      return {
+        success: false,
+        error: 'complete a quiz to see results'
+      }
+    }
+    if (!user.data[deckId]) {
+      return {
+        success: false,
+        error: 'complete a quiz to see results'
+      }
+    }
+    if (!user.data[deckId].quizSessions) {
+      return {
+        success: false,
+        error: 'quiz session not accessible'
+      }
+    }
+
+    if (user.data[deckId].quizSessions.length === 0) {
+      return {
+        success: false,
+        error: 'number of quiz completed is 0 so unable to check results'
+      }
+    }
+
+    if (index >= user.data[deckId].quizSessions.length) {
+      return {
+        success: false,
+        error: 'out of bound error'
+      }
+    }
+
+    const quizResultArray: QuizResult[] = user.data[deckId].quizSessions;
+    const quiz: QuizResult = quizResultArray[index];
+
+    return {
+      success: true,
+      date: quiz.date,
+      numCorrect: quiz.countCorrect,
+      numIncorrect: quiz.countIncorrect,
+      numHint: quiz.countHints,
+      numSkip: quiz.countSkip
+    }
+  };
+
+  
   export const startStudySession = async (req: ResolverRequest) => {
     const { deckId } = req.payload;
     const accountId = req.context.accountId;
