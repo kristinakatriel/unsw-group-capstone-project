@@ -164,7 +164,6 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
             </Alert>
           </Collapse>
         }
-
           <div className="global-page-search">
             <div className="global-page-search-box">
               <SearchIcon className="global-page-search-icon" />
