@@ -9,7 +9,7 @@ import { generateId, clearStorage, getUserName, initUserData } from './helpers'
 import { IndicatorSeparator } from 'react-select/dist/declarations/src/components/indicators';
 
 
-export const startQuizSession = async (req: ResolverRequest) => {
+  export const startQuizSession = async (req: ResolverRequest) => {
     const { deckId } = req.payload;
     const accountId = req.context.accountId;
     const user = await initUserData(accountId);
@@ -39,51 +39,74 @@ export const startQuizSession = async (req: ResolverRequest) => {
     }
     await storage.set(`u-${accountId}`, user);
 
-    const quizDeck = user.data[deckId].dynamicDeck;
-
+    const quizDeck : Deck = user.data[deckId].dynamicDeck;
     if (!quizDeck) {
       return {
         success: false,
         error: 'Deck not found. Please make sure the deck exists for the user.',
       };
     }
-
-      // create an array of status
-      const totalCards = quizDeck.cards?.length
-
-      // check if length = 0
-      if (totalCards == 0) {
-        return {
-          success: false,
-          error: 'cannot enter quiz mode if deck has no cards'
-        }
-      }
-      const statusPerCardArray: QuizSessionCardStatus[] = Array(totalCards).fill(QuizSessionCardStatus.Incomplete);
-      const initialHintArray: boolean[] = Array(totalCards).fill(false);
-
-      // creating a new session
-      const sessionId = `q-${generateId()}`;
-      const newSession: QuizSession = {
-        deckInSession: quizDeck,
-        totalCardCount: totalCards,
-        currentCardIndex: 0,
-        sessionStartTime: Date.now(),
-        statusPerCard: statusPerCardArray,
-        hintArray: initialHintArray
-      }
-
-      await storage.set(sessionId, newSession);
-
-      // let us return the first card and the session
+    const newDeck = await storage.get(deckId) as Deck | undefined;
+    if (!newDeck) {
       return {
-        success: true,
-        session: newSession,
-        firstIndex: 0,
-        sessionId: sessionId,
-        x: x,
-        y: y,
-        cards: quizDeck.cards
+        success: false,
+        error: 'deck does not exist'
       }
+    }
+
+    const newDeckCardIdSet = new Set(newDeck.cards.map(card => card.id));
+
+    // let us remove cards from the quiz deck not in new deck
+    quizDeck.cards = quizDeck.cards.filter(card => newDeckCardIdSet.has(card.id));
+
+    // we need to create a set of card ids that contain ids from quiz deck
+    const quizDeckCardIdSet = new Set(quizDeck.cards.map(card => card.id));
+
+    // we loop through the new deck and add cards not in quiz deck
+    for (const newCard of newDeck.cards) {
+      // check if new card is in quizDeckCardID Set
+      if (!quizDeckCardIdSet.has(newCard.id)) {
+        quizDeck.cards.push(newCard);
+        quizDeckCardIdSet.add(newCard.id);
+      }
+    }
+
+    // create an array of status
+    const totalCards = quizDeck.cards?.length
+
+    // check if length = 0
+    if (totalCards == 0) {
+      return {
+        success: false,
+        error: 'cannot enter quiz mode if deck has no cards'
+      }
+    }
+    const statusPerCardArray: QuizSessionCardStatus[] = Array(totalCards).fill(QuizSessionCardStatus.Incomplete);
+    const initialHintArray: boolean[] = Array(totalCards).fill(false);
+
+    // creating a new session
+    const sessionId = `q-${generateId()}`;
+    const newSession: QuizSession = {
+      deckInSession: quizDeck,
+      totalCardCount: totalCards,
+      currentCardIndex: 0,
+      sessionStartTime: Date.now(),
+      statusPerCard: statusPerCardArray,
+      hintArray: initialHintArray
+    }
+
+    await storage.set(sessionId, newSession);
+
+    // let us return the first card and the session
+    return {
+      success: true,
+      session: newSession,
+      firstIndex: 0,
+      sessionId: sessionId,
+      x: x,
+      y: y,
+      cards: quizDeck.cards
+    }
   };
 
 
