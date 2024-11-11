@@ -41,6 +41,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   // STATE MANAGEMENT
   // ========================
   //console.log("tag map passed in", tagMap);
+  console.log('consol log');
 
   const [deckDisplaySearchTerm, setDeckDisplaySearchTerm] = useState('');
 
@@ -74,8 +75,10 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   // ========================
   // USE EFFECT FOR SUCCESS AND ERROR ALERTS
   // ========================
+  console.log('consol log');
 
   useEffect(() => {
+    console.log('consol log');
     if (saveSuccess && errorMessage === '') {
       setShowSuccessAlert(true);
       console.log('save message shown, here is the current deck? ', deck);
@@ -91,6 +94,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   }, [saveSuccess, errorMessage]);
 
   useEffect(() => {
+    console.log('consol log');
     if (errorMessage) {
       setShowErrorAlert(true);
 
@@ -107,12 +111,14 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   // ========================
 
   const searchDeckDisplay = (event) => {
+    console.log('consol log');
     setDeckDisplaySearchTerm(event.target.value);
     console.log('Searching:', deckDisplaySearchTerm);
   };
 
 
   const filteredFlashcards = updatedDeck.cards.filter((card) => {
+    console.log('consol log');
     const searchTerm = deckDisplaySearchTerm.toLowerCase();
     return (
       (typeof card.front === 'string' && card.front.toLowerCase().includes(searchTerm)) ||
@@ -126,6 +132,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   // Modal logic for editing flashcards
   // Open the edit modal
   const openDeckEditModal = (deck) => {
+    console.log('consol log');
     console.log('opening deck edit modal. current deck:', deck);
 
     setEditingDeck(deck);
@@ -135,6 +142,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   // Close the edit modal and refresh flashcards
   // updatedFlashcard is not really needed at the moment
   const closeDeckEditModal = (updatedDeck) => {
+    console.log('consol log');
     setIsEditDeckModalOpen(false);
     // Refresh the deck list by refetching decks
     console.log('Closing deck edit modal. New deck:', updatedDeck);
@@ -219,6 +227,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   };
 
   const handleCreateFlashcard = () => {
+    console.log('consol log');
     setIsCreateFlashcardOpen(true); // Open modal to create flashcard
     console.log('Add Flashcard button clicked');
   };
@@ -227,6 +236,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   // FLASHCARD ADDITION FUNCTIONALITY
   // ========================
   const handleAddFlashcard = () => {
+    console.log('consol log');
     setIsAddFlashcardModalOpen(true);
     console.log('Add Flashcard button clicked');
   };
@@ -398,6 +408,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   };
 
   const closeFlashcardEditModal = async (updatedFlashcard) => {
+    console.log('consol log');
     setIsEditFlashcardOpen(false); // Close the edit modal
 
     // just to update the flashcard deck display

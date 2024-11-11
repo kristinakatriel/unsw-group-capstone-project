@@ -5,9 +5,10 @@ import { invoke } from '@forge/bridge';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
 import './CardSlider.css';
+import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 // added onEdit as well!
-const CardSlider = ({ cards = [], tagMap = [], onDelete, onEdit }) => {
+const CardSlider = ({ cards = [], tagMap = [], onDelete, onEdit, onTagEdit }) => {
 
   console.log('cards passed in to cardslider', cards);
 
@@ -106,8 +107,10 @@ const CardSlider = ({ cards = [], tagMap = [], onDelete, onEdit }) => {
                 {card.back && <h4 className='card-back'>{card.back}</h4>}
                 <h4 className='card-owner'>By {card.name || 'Unknown'}</h4>
                 <div className='card-button'>
+                  <LocalOfferIcon className='card-edit-button'  onClick={() => onTagEdit(card)}/>
                   <EditIcon className='card-edit-button'  onClick={() => onEdit(card)}/>
                   <DeleteIcon className='card-delete-button' onClick={() => onDelete(card)} />
+
                 </div>
               </div>
               </SplideSlide>

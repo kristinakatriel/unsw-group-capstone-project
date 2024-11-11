@@ -25,10 +25,12 @@ import CreateTagGlobal from './tagGlobalModuleCreate';
 import './tagGlobalModuleCreate.css';
 import Chip from '@mui/material/Chip';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditTagGlobal from './tagGlobalPageEdit';
+// import './editTagGlobalModule.css';
+import EditIcon from '@mui/icons-material/Edit';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Tooltip from '@mui/material/Tooltip';
-import EditIcon from '@mui/icons-material/Edit';
 import Box from '@mui/material/Box';
 import { IconButton as MuiIconButton } from '@mui/material';
 
@@ -100,6 +102,10 @@ function globalPageModule() {
   // State for TAG deletion and confirmation
   const [tagToDelete, setTagToDelete] = useState(null);
   const [isDeleteTagConfirmOpen, setIsDeleteTagConfirmOpen] = useState(false);
+  
+  // State for TAG editing and confirmation
+  const [editingTag, setEditingTag] = useState(null); // Store the tag being edited
+  const [isEditTagModalOpen, setIsEditTagModalOpen] = useState(false); // Modal logic for editing tags
 
   // State for DECK display
   const [selectedDeck, setSelectedDeck] = useState(null);
@@ -123,6 +129,7 @@ function globalPageModule() {
 
   // State for search
   const [globalPageSearchTerm, setGlobalPageSearchTerm] = useState('');
+  const [alignment, setAlignment] = useState('all');
 
   const [hoveredTag, setHoveredTag] = useState(null);
 
@@ -449,8 +456,24 @@ function globalPageModule() {
 
   const selectOwnTags = () => {
 
-
+    console.log("testing");
     setIsMyTagsSelected((prevState) => !prevState); // Toggle the switch
+  };
+
+
+  // Open the edit modal for a tag
+  const openTagEditModal = (tag) => {
+    setEditingTag(tag); // Set the tag to be edited
+    setIsEditTagModalOpen(true); // Open the modal
+  };
+
+  // Close the edit modal and refresh tags
+  const closeTagEditModal = (updatedTag) => {
+    setIsEditTagModalOpen(false); // Close the modal
+
+    // Refresh the tag list by fetching tags
+    refreshTagFrontend();
+    refreshDeckFrontend();
   };
 
 
@@ -566,7 +589,7 @@ function globalPageModule() {
   const renderFlashcardsList = (filteredFlashcards) => {
     //console.log('cards right before passed into card slider' , flashcards);
     return (
-    <CardSlider cards={filteredFlashcards} tagMap={cardTagMap} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
+    <CardSlider cards={filteredFlashcards} tagMap={cardTagMap} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal} onTagEdit={openTagEditModal}/>
     );
 
   };
@@ -603,7 +626,7 @@ function globalPageModule() {
               flexDirection: 'row',
               pointerEvents: 'auto',
             }}>
-              <MuiIconButton className='tag-edit-button'size="small" onClick={() => console.log(`Edit ${tag.id}`)}>
+              <MuiIconButton className='tag-edit-button'size="small" onClick={() => openTagEditModal(tag)}>
                 <EditIcon />
               </MuiIconButton>
               <MuiIconButton className='tag-delete-button' size="small" onClick={() => confirmDeleteTag(tag)}>
@@ -613,16 +636,6 @@ function globalPageModule() {
           )}
         </Box>
       ))}
-
-      {/* Toggle All Tags Chip */}
-      {/* <Chip
-        label="Toggle All Tags"
-        className={`global-page-badge-container badge my-stuff ${selectedTags.length === tags.length ? "all-selected" : "all-tags"}`} // Added custom class `my-stuff`
-        //className={`badge ${selectedTags.length === tags.length ? "all-selected" : "all-tags"}`} // Dynamic class for selected state
-        onClick={handleAllTagsToggle} // Toggle all tags on click
-        color={selectedTags.length === tags.length ? "primary" : "default"} // Optional: use different color if all tags selected
-        sx={{ margin: 1 }} // Add spacing between chips
-      /> */}
     </div>
   );
 
@@ -632,24 +645,36 @@ function globalPageModule() {
     setSelectedDeck(deck);
     setIsStudyMode(false);
     setIsQuizMode(false);
+    console.log("issuse here?");
+    console.log(`deck : ${deck.title}`); // Log when a deck is clicked
+    //console.log(`updaated deck : ${updatedDeck.title}`);
     setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]);
+    //setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]);
     console.log('Selected Deck:', deck); // Log the currently selected deck
     console.log('Current Breadcrumb Items:', [{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]); // Log breadcrumb items
   };
 
   const goBackIntermediate = (deleted = false) => {
+    console.log('consol log');
     if (deleted) {
+      console.log('consol log');
       setDeleteDeckFromDisplaySuccess(true);
+      console.log('consol log');
     } else {
+      console.log('consol log');
       setDeleteDeckFromDisplaySuccess(false);
+      console.log('consol log');
     }
   }
 
   const goBackToHome = () => {
+    console.log('consol log');
     console.log('Going back to FLASH (Home)'); // Log when going back to Home
     setSelectedDeck(null);
+    console.log('consol log');
     setIsStudyMode(false);
     setIsQuizMode(false);
+    console.log('consol log');
     setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }]);
     refreshDeckFrontend();
     refreshFlashcardFrontend();
@@ -660,16 +685,29 @@ function globalPageModule() {
     console.log('Going back to Deck'); // Log when going back to the deck
     setIsStudyMode(false);
     setIsQuizMode(false);
+    console.log('consol log');
+
     setBreadcrumbItems(prevItems => {
       const updatedItems = prevItems.slice(0, -1);
       console.log('Current Breadcrumb Items:', updatedItems); // Log breadcrumb items Going back to Deck
       return updatedItems;
     });
+
+    // setBreadcrumbItems(prevItems => prevItems.slice(0, -1));
+    // console.log('Current Breadcrumb Items:', prevItems.slice(0, -1)); // Log breadcrumb items
+
+    // setBreadcrumbItems(prevItems => {
+    //   const updatedItems = prevItems.slice(0, -1);
+    //   console.log('Current Breadcrumb Items:', updatedItems); // Log breadcrumb items Going back to Deck
+    //   return updatedItems;
+    // });
+    console.log('consol log');
   };
 
   //************************** STUDY MODE FUNCTIONS *****************************/
   const studyMode = async () => {
     //loadDecks();
+    console.log('consol log');
 
     console.log("selected deck going into quiz mode", selectedDeck);
     const id = selectedDeck.id;
@@ -692,13 +730,17 @@ function globalPageModule() {
     console.log("selected deck", selectedDeck);
     console.log('Entering Study Mode'); // Log when entering study mode
     setIsStudyMode(true);
+    console.log('consol log');
     setBreadcrumbItems(prevItems => [
         ...prevItems,
         { href: '#', text: 'Study Mode' }
     ]);
+
+    console.log('consol log');
   };
 
   if (isStudyMode) {
+    console.log('consol log');
     return (
       <div>
         <Breadcrumbs>
@@ -720,6 +762,9 @@ function globalPageModule() {
         <StudyMode deck={selectedDeck} onBack={goBackToDeck} />
       </div>
     );
+
+    console.log('consol log');
+
   }
 
   //************************** QUIZ MODE FUNCTIONS *****************************/
@@ -746,8 +791,9 @@ function globalPageModule() {
     console.log("selected deck", selectedDeck);
     console.log('Entering Quiz Mode'); // Log when entering quiz mode
     // loadDecks();
+    console.log('consol log');
     setIsQuizMode(true);
-
+    console.log('consol log');
     setBreadcrumbItems(prevItems => [
         ...prevItems,
         { href: '#', text: 'Quiz Mode' }
@@ -756,6 +802,7 @@ function globalPageModule() {
 
   if (isQuizMode) {
     //loadDecks();
+    console.log('consol log');
     return (
       <div>
         <Breadcrumbs>
@@ -782,6 +829,12 @@ function globalPageModule() {
 
   if (selectedDeck) {
     //loadDecks();
+    console.log('consol log');
+    console.log('Selected deck:', selectedDeck);
+    console.log('Breadcrumb items:', breadcrumbItems);
+    console.log('Tag map for cards:', cardTagMap);
+    console.log('Tag map for deck:', deckTagMap);
+
     return (
       <div >
         <Breadcrumbs>
@@ -793,31 +846,57 @@ function globalPageModule() {
               onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined}
               // className="breadcrumb-item"
               />
-
           ))}
         </Breadcrumbs>
         <DeckDisplay deck={selectedDeck} tagMap={cardTagMap} deckTags={deckTagMap} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
       </div>
     );
   }
+  //   return (
+  //     <div>
+  //       <Breadcrumbs>
+  //         {breadcrumbItems.map((item, index) => (
 
-  const [alignment, setAlignment] = useState('all');
-  
+  //           <BreadcrumbsItem
+  //             key={index}
+  //             href={item.href}
+  //             text={item.text}
+  //             onClick={() => {
+  //               console.log(`Breadcrumb clicked: ${item.text}`);
+  //               if (item.text === 'FLASH (Home)') goBackToHome();
+  //             }}
+  //             // onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined}
+  //             // className="breadcrumb-item"
+  //           />
+  //         ))}
+  //       </Breadcrumbs>
+  //       <DeckDisplay deck={selectedDeck} tagMap={cardTagMap} deckTags={deckTagMap} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
+  //     </div>
+  //   );
+  // }
+  console.log('consol log');
+  // const [alignment, setAlignment] = useState('all');
+  console.log('consol log');
+
+
   const handleToggleChange = (event, newAlignment) => {
+    console.log('consol log');
     console.log(newAlignment);
+    console.log('consol log');
     if (newAlignment === null) {
       setAlignment(alignment);
       return;
-    } 
+    }
+    console.log('consol log');
 
     setAlignment(newAlignment);
-    
+    console.log('consol log');
     if (newAlignment === 'personal' && !isMyTagsSelected) {
       selectOwnTags();
     } else if (newAlignment === 'all' && isMyTagsSelected) {
       selectOwnTags();
-    } 
-  };
+    }
+  }; //here?
 
   return (
     <div className='global-page-container'>
@@ -1039,6 +1118,17 @@ function globalPageModule() {
           />
         </ModalDialog>
       )}
+
+      {/* // Tags functionality: Tag Edit Modal */}
+      {isEditTagModalOpen && (
+        <ModalDialog heading="Edit Tag" onClose={closeTagEditModal}>
+          <EditTagGlobal
+            tag={editingTag} // Pass the tag to the modal
+            closeTagEditModal={closeTagEditModal}
+          />
+        </ModalDialog>
+      )}
+
 
       {/* DECK EDIT FUNCTIONALITY: DECK Edit Modal */}
       {isEditDeckModalOpen && (
