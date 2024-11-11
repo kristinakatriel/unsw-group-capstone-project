@@ -91,13 +91,13 @@ export const deleteTag = async (req: ResolverRequest) => {
         }
     }
 
-    for (const userId of tag.userIds) {
-        const user = await storage.get(userId);
-        if (user) {
-            user.tagIds = user.tagIds.filter((id: string) => id !== tagId);
-            await storage.set(userId, user);
-        }
-    }
+    // for (const userId of tag.userIds) {
+    //     const user = await storage.get(userId);
+    //     if (user) {
+    //         user.tagIds = user.tagIds.filter((id: string) => id !== tagId);
+    //         await storage.set(userId, user);
+    //     }
+    // }
 
     await storage.delete(tagId);
 

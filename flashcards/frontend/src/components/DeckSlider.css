@@ -42,7 +42,7 @@
   border-left: 2px solid #0155cc;
   border-radius: 20px 20px 0 0;
   border-top: 2px solid #0155cc;
-  border-right: 2px solid #0155cc; 
+  border-right: 2px solid #0155cc;
 }
 
 .deck-list .deck-item .deck-link::after {
@@ -125,12 +125,18 @@
   margin-bottom: 6px;
 }
 
+.deck-list .deck-link .deck-tags {
+  display: flex;
+  justify-content: flex-start;
+  gap: 10px;
+}
+
 .deck-list .deck-link .ai-deck-description {
   font-size: 14px;
-  color: rgb(12, 102, 228); 
+  color: rgb(12, 102, 228);
   font-weight: bold;
   margin-bottom: 6px;
-  text-decoration: underline; 
+  text-decoration: underline;
 }
 
 .deck-list .deck-link .ai-deck-description:hover {
