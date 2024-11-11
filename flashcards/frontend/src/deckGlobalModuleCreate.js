@@ -195,19 +195,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
             )}
           </Field>
 
-          {/************************************* SEARCH BAR FOR FLASHCARDS ***************************************/}
-          <div className="tag-page-search">
-            <div className="tag-page-search-box">
-              <SearchIcon className="tag-page-search-icon" />
-              <input
-                type="text"
-                id="flashcard-search-input"
-                value={flashcardSearchTerm}
-                onChange={(e) => setFlashcardSearchTerm(e.target.value)}
-                placeholder="Search flashcards..."
-              />
-            </div>
-          </div>
+
 
 
           {/************************************* ADD FLASHCARDS FIELD ***************************************/}
@@ -222,25 +210,39 @@ function CreateDeckGlobal({ closeDeckModal }) {
             {() => (
               <div>
                 {showFlashcards && (
-                  <div className='flashcards-select-scroll'>
-                    {filteredFlashcards.length > 0 ? (
-                      filteredFlashcards.map((flashcard) => (
-                        <div key={flashcard.id} className="flashcards-select-scroll-item">
-                          <input
-                            type="checkbox"
-                            id={`flashcard-${flashcard.id}`}
-                            checked={selectedFlashcards.includes(flashcard.id)}
-                            onChange={() => handleCheckboxChange(flashcard.id)}
-                          />
-                          <label htmlFor={`flashcard-${flashcard.id}`}>
-                            {flashcard.front || 'No front available'}
-                          </label>
-                        </div>
-                      ))
-                    ) : (
-                      <p>No flashcards available to select.</p>
-                    )}
-                  </div>
+                  <>
+                    <div className="tag-page-search">
+                      <div className="tag-page-search-box">
+                        <SearchIcon className="tag-page-search-icon" />
+                        <input
+                          type="text"
+                          id="flashcard-search-input"
+                          value={flashcardSearchTerm}
+                          onChange={(e) => setFlashcardSearchTerm(e.target.value)}
+                          placeholder="Search flashcards..."
+                        />
+                      </div>
+                    </div>
+                    <div className='flashcards-select-scroll'>
+                      {filteredFlashcards.length > 0 ? (
+                        filteredFlashcards.map((flashcard) => (
+                          <div key={flashcard.id} className="flashcards-select-scroll-item">
+                            <input
+                              type="checkbox"
+                              id={`flashcard-${flashcard.id}`}
+                              checked={selectedFlashcards.includes(flashcard.id)}
+                              onChange={() => handleCheckboxChange(flashcard.id)}
+                            />
+                            <label htmlFor={`flashcard-${flashcard.id}`}>
+                              {flashcard.front || 'No front available'}
+                            </label>
+                          </div>
+                        ))
+                      ) : (
+                        <p>No flashcards available to select.</p>
+                      )}
+                    </div>                  
+                  </>
                 )}
               </div>
             )}
