@@ -528,7 +528,7 @@ function globalPageModule() {
   };
 
   const renderDecksList = (filteredDecks) => (
-    <DeckSlider decks={filteredDecks} tagMap={deckTagMap} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} />
+    <DeckSlider decks={filteredDecks} tagMap={deckTagMap} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} onTagEdit={openTagEditModal}/>
   );
 
   const renderTagsList = (filteredTags) => (
@@ -812,12 +812,13 @@ function globalPageModule() {
         console.log('Set error message due to caught exception');
       }
     }
-    console.log('Exiting while loop');
-    console.log('Entering Quiz Result View');
-    setBreadcrumbItems(prevItems => [
-      ...prevItems,
-      { href: '#', text: 'Quiz Results' }
-    ]);
+    // Only update breadcrumbs if results were successfully fetched
+    if (responseArray.length > 0) {
+      setBreadcrumbItems(prevItems => [
+        ...prevItems,
+        { href: '#', text: 'Quiz Results' }
+      ]);
+    }
     console.log('Updated breadcrumb items:', breadcrumbItems);
   };
 
