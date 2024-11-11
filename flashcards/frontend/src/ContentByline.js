@@ -8,6 +8,8 @@ import { Field } from '@atlaskit/form';
 import Textfield from '@atlaskit/textfield';
 import { Flex, xcss } from '@atlaskit/primitives';
 import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
+import LinearProgress from '@mui/material/LinearProgress';
 import './ContentByline.css';
 
 const titleContainerStyles = xcss({
@@ -28,6 +30,8 @@ function ContentByline() {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [autoGenTag, setAutoGenTag] = useState(null);
   const [deckGen, setDeckGen] = useState(null);
+  const [savingDeck, setSavingDeck] = useState(false);
+  const [deckSaved, setDeckSaved] = useState(false);
 
   const chunkText = (text, chunkSize) => {
     const words = text.split(' ');
@@ -163,6 +167,8 @@ function ContentByline() {
 
         if (addResult.success) {
           setSaveSuccess(true);
+          setSavingDeck(false);
+          setDeckSaved(true);
           console.log("Flashcards added to deck successfully:", addResult.createdDeck);
         } else {
           console.error("Error adding flashcards to deck:", addResult.error);
@@ -180,7 +186,7 @@ function ContentByline() {
       console.warn("Please fill in all required fields before saving.");
       return;
     }
-
+    setSavingDeck(true);
     await createAndPopulateDeck(deckTitle, deckInfo, qAPairs);
   };
 
@@ -203,13 +209,13 @@ function ContentByline() {
         <h2>FLASH - AI Deck Generator!</h2>
       </Flex>
 
-      {saveSuccess && <Alert severity="success"> New deck created successfully! </Alert>}
+      {saveSuccess && <Alert severity="success" className='alert'> New deck created successfully! </Alert>}
 
       {/************************************* DECK TITLE/UNDO/REDO FIELD ***************************************/}
       <Field id="deckTitle" name="deckTitle" label={
         deckGenerated ? (
           <span style={{ display: 'flex', alignItems: 'center' }}>
-            <span>Deck Title</span>
+            <span>Deck Title </span>
             <UndoIcon 
               onClick={undoChanges} 
               fontSize="small" 
@@ -233,19 +239,18 @@ function ContentByline() {
         )}
       </Field>
 
-      {/************************** DECK TITLE AI GENERATE FIELD ******************************/}
-      {(deckGenerating || !deckGenerated) && (
-        <Field>
+      {/* ************************** DECK TITLE AI GENERATE FIELD ******************************/}
+      {(!deckSaved && (deckGenerating || !deckGenerated)) && (
+        <Field> 
           {() => (
             <span
               onClick={deckGenerating ? null : generateDeckTitle}
               style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}
             >
               {deckGenerating ? (
-                <>
-                  {'AI generating a new title...'}
-                  <span><AutoAwesomeIcon className="content-byline-ai-icon" fontSize="small" /></span>
-                </>
+                <Box sx={{ width: '100%' }}>
+                  <LinearProgress />
+                </Box>
               ) : (
                 <>
                   {'AI generate a new deck title!'}
@@ -293,10 +298,9 @@ function ContentByline() {
               style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}
             >
               {flashcardsGenerating ? (
-                <>
-                  {'AI generating some flashcards...'}
-                  <span><AutoAwesomeIcon className="content-byline-ai-icon" fontSize="small" /></span>
-                </>
+                <Box sx={{ width: '100%' }}>
+                  <LinearProgress/>
+                </Box>
               ) : (
                 <>
                   {'AI generate flashcards for this deck!'}
@@ -308,12 +312,18 @@ function ContentByline() {
         </Field>
       )}
 
-      {/***************************** SAVE DECK FIELD *******************************/}
-      {(flashcardsGenerated && (
+      {/* ***************************** SAVE DECK FIELD ****************************** */}
+      {flashcardsGenerated && !deckSaved && (
         <div className="content-byline-button-group">
-          <button className="content-byline-button" onClick={() => handleSave()}>Save Deck</button>
+          <button 
+            className="content-byline-button" 
+            onClick={() => handleSave()}
+            disabled={savingDeck}
+          >
+            {savingDeck ? 'Saving Deck...' : 'Save Deck'}
+          </button>
         </div>
-      ))}
+      )}
     </div>
   );
 }

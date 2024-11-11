@@ -40,7 +40,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   // ========================
   // STATE MANAGEMENT
   // ========================
-  console.log("tag map passed in", tagMap);
+  //console.log("tag map passed in", tagMap);
 
   const [deckDisplaySearchTerm, setDeckDisplaySearchTerm] = useState('');
 
@@ -505,7 +505,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
       </div>
 
       <h4 className='deck-flashcard-amount'>Flashcards: {updatedDeck.cards?.length || 0}</h4>
-      
+
       <Collapse in={showSuccessAlert} timeout={500}>
           <Alert severity="success">Flashcards added successfully!</Alert>
       </Collapse>

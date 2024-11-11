@@ -23,9 +23,11 @@ import EditFlashcardModal from './flashcardGlobalModuleEdit';
 import EditDeckModal from './deckModuleEdit';
 import CreateTagGlobal from './tagGlobalModuleCreate';
 import './tagGlobalModuleCreate.css';
-import Switch from '@mui/material/Switch';
 import Chip from '@mui/material/Chip';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ToggleButton from '@mui/material/ToggleButton';
+import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
+import Tooltip from '@mui/material/Tooltip';
 
 const gridStyles = xcss({
     width: '100%',
@@ -195,6 +197,11 @@ function globalPageModule() {
       return () => clearTimeout(timer);
     }
   }, [deleteDeckFromDisplaySuccess]);
+
+  useEffect(() => {
+    console.log("Updated selected deck:", selectedDeck);
+    // Additional logic here
+  }, [selectedDeck]); // Runs whenever `selectedDeck` changes
 
 
   //************************** FETCHING DATA (REUSABLE) *****************************/
@@ -443,17 +450,17 @@ function globalPageModule() {
 
     // console.log('Tags condition (selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)))):',
     //   selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id))));
-    console.log(
-      'INSIDE FILTERFLASHCARDS, matchesOwner:', matchesOwner,
-      'matchesSearch:', matchesSearch,
-      'matchesTags:', matchesTags,
-      'Owner condition (!isMyTagsSelected || card.owner === accountId):', !isMyTagsSelected || card.owner === accountId,
-      'Tags condition (selectedTags.length === tags.length):', selectedTags.length === tags.length,
-      'selectedTags.length:', selectedTags.length,
-      'tags.length:', tags.length,
-      'Tags condition (selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)))):',
-      selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)))
-    );
+    // console.log(
+    //   'INSIDE FILTERFLASHCARDS, matchesOwner:', matchesOwner,
+    //   'matchesSearch:', matchesSearch,
+    //   'matchesTags:', matchesTags,
+    //   'Owner condition (!isMyTagsSelected || card.owner === accountId):', !isMyTagsSelected || card.owner === accountId,
+    //   'Tags condition (selectedTags.length === tags.length):', selectedTags.length === tags.length,
+    //   'selectedTags.length:', selectedTags.length,
+    //   'tags.length:', tags.length,
+    //   'Tags condition (selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)))):',
+    //   selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)))
+    // );
 
 
     return matchesSearch && matchesTags && matchesOwner;
@@ -490,18 +497,18 @@ function globalPageModule() {
 
        // If "Own Tags" is selected, only show cards/decks owned by the current user (accountId)
     const matchesOwner = !isMyTagsSelected || deck.owner === accountId;
-    console.log('matchesOwner:', matchesOwner);
-    console.log('matchesSearch:', matchesSearch);
-    console.log('matchesTags:', matchesTags);
+    // console.log('matchesOwner:', matchesOwner);
+    // console.log('matchesSearch:', matchesSearch);
+    // console.log('matchesTags:', matchesTags);
 
-    console.log('Owner condition (!isMyTagsSelected || deck.owner === accountId):', !isMyTagsSelected || deck.owner === accountId);
-    console.log('Tags condition (selectedTags.length === tags.length):', selectedTags.length === tags.length);
-    console.log('selectedTags.length', selectedTags.length);
-    console.log(' tags.length)', tags.length);
+    // console.log('Owner condition (!isMyTagsSelected || deck.owner === accountId):', !isMyTagsSelected || deck.owner === accountId);
+    // console.log('Tags condition (selectedTags.length === tags.length):', selectedTags.length === tags.length);
+    // console.log('selectedTags.length', selectedTags.length);
+    // console.log(' tags.length)', tags.length);
 
 
-    console.log('Tags condition (selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.deckIds.includes(deck.id)))):',
-      selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.deckIds.includes(deck.id))));
+    // console.log('Tags condition (selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.deckIds.includes(deck.id)))):',
+    //   selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.deckIds.includes(deck.id))));
 
     return matchesSearch && matchesTags && matchesOwner;
       //return matchesSearch && matchesTags;
@@ -517,7 +524,7 @@ function globalPageModule() {
 
   //************************** RENDER FUNCTIONS *****************************/
   const renderFlashcardsList = (filteredFlashcards) => {
-    console.log('cards right before passed into card slider' , flashcards);
+    //console.log('cards right before passed into card slider' , flashcards);
     return (
     <CardSlider cards={filteredFlashcards} tagMap={cardTagMap} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
     );
@@ -543,7 +550,8 @@ function globalPageModule() {
       {/* Toggle All Tags Chip */}
       <Chip
         label="Toggle All Tags"
-        className={`badge ${selectedTags.length === tags.length ? "all-selected" : "all-tags"}`} // Dynamic class for selected state
+        className={`global-page-badge-container badge my-stuff ${selectedTags.length === tags.length ? "all-selected" : "all-tags"}`} // Added custom class `my-stuff`
+        //className={`badge ${selectedTags.length === tags.length ? "all-selected" : "all-tags"}`} // Dynamic class for selected state
         onClick={handleAllTagsToggle} // Toggle all tags on click
         color={selectedTags.length === tags.length ? "primary" : "default"} // Optional: use different color if all tags selected
         sx={{ margin: 1 }} // Add spacing between chips
@@ -623,8 +631,11 @@ function globalPageModule() {
     console.log('Going back to Deck'); // Log when going back to the deck
     setIsStudyMode(false);
     setIsQuizMode(false);
-    setBreadcrumbItems(prevItems => prevItems.slice(0, -1));
-    console.log('Current Breadcrumb Items:', prevItems.slice(0, -1)); // Log breadcrumb items
+    setBreadcrumbItems(prevItems => {
+      const updatedItems = prevItems.slice(0, -1);
+      console.log('Current Breadcrumb Items:', updatedItems); // Log breadcrumb items Going back to Deck
+      return updatedItems;
+    });
   };
 
   //************************** STUDY MODE FUNCTIONS *****************************/
@@ -694,6 +705,7 @@ function globalPageModule() {
       if (response.success) {
         console.log("Deck retrieved successfully:", response.deck);
         setSelectedDeck(response.deck)
+        console.log("selected deck", selectedDeck);
       } else {
         console.error("Error retrieving deck:", response.error);
         return null;
@@ -760,6 +772,24 @@ function globalPageModule() {
     );
   }
 
+  const [alignment, setAlignment] = useState('all');
+  
+  const handleToggleChange = (event, newAlignment) => {
+    console.log(newAlignment);
+    if (newAlignment === null) {
+      setAlignment(alignment);
+      return;
+    } 
+
+    setAlignment(newAlignment);
+    
+    if (newAlignment === 'personal' && !isMyTagsSelected) {
+      selectOwnTags();
+    } else if (newAlignment === 'all' && isMyTagsSelected) {
+      selectOwnTags();
+    } 
+  };
+
   return (
     <div className='global-page-container'>
       <div className="global-page-header">
@@ -772,16 +802,21 @@ function globalPageModule() {
           </div>
         </div>
         <div className="global-page-search">
-          <div className="global-page-badge-container">
-
-            <div className="badge my-stuff">
-            <p>My Stuff</p>
-            <Switch
-              checked={isMyTagsSelected} // If the switch is on, filter only user-owned items
-              onChange={selectOwnTags} // Toggle the state when the switch is changed
-            />
-          </div>
-        </div>
+          <ToggleButtonGroup
+            color="primary"
+            value={alignment}
+            exclusive
+            onChange={handleToggleChange}
+            aria-label="Personal or All"
+            className='toggle-button-group'
+          >
+            <Tooltip title="To view all personal content" disableInteractive>
+              <ToggleButton value="personal" className='toggle-button'>Personal</ToggleButton>
+            </Tooltip>
+            <Tooltip title="To view all content within the site" disableInteractive>
+              <ToggleButton value="all" className='toggle-button'>All</ToggleButton>
+            </Tooltip>
+          </ToggleButtonGroup>
 
           <div className="global-page-search-box">
             <SearchIcon className="global-page-search-icon" />
