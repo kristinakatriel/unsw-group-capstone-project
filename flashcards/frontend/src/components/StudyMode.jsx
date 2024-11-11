@@ -14,8 +14,10 @@ const StudyMode = ({ deck }) => {
   const [isFlipped, setIsFlipped] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isHintModalOpen, setIsHintModalOpen] = useState(false);
+  const [flashcards, setFlashcards] = useState(deck.cards);
+  const [session, setSession] = useState(null);
+  const [sessionId, setSessionId] = useState(null);
 
-  const flashcards = deck.cards;
   const totalCards = flashcards.length;
 
   const openHintModal = () => setIsHintModalOpen(true);
@@ -24,24 +26,71 @@ const StudyMode = ({ deck }) => {
   const openEditModal = () => setIsEditModalOpen(true);
   const closeEditModal = () => setIsEditModalOpen(false);
 
-  const goToPrevCard = () => {
-    setCurrentCardIndex((prevIndex) => {
-      if (prevIndex > 0) {
-        return prevIndex - 1;
-      } else {
-        return totalCards - 1;
+  useEffect(() => {
+    const startStudySession = async () => {
+      try {
+        const response = await invoke('startStudySession', {deckId: deck.id});
+        if (response.success) {
+          // change the flashcard variable
+          setFlashcards(response.cards);
+          setSessionId(response.sessionId);
+          setSession(response.session);
+          setCurrentCardIndex(response.firstIndex)
+        }
+      } catch (error) {
+        console.error('response has error: ' + error);
       }
-    });
+    }
+
+    startStudySession();
+
+  }, [deck.id]);
+
+  const goToPrevCard = () => {
+    try {
+      const response = invoke('prevCardStudy', { 
+        currentIndex: currentCardIndex, 
+        sessionId: sessionId });
+      
+      if (response.success) {
+        setCurrentCardIndex(response.nextIndex);
+      } else {
+        console.error('Valid Response. Error is: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Invalid Response. Error is: ' + error);
+    }
   };
   
   const goToNextCard = () => {
-    setCurrentCardIndex((prevIndex) => {
-      if (prevIndex < totalCards - 1) {
-        return prevIndex + 1;
+    try {
+      const response = invoke('nextCardStudy', { 
+        currentIndex: currentCardIndex, 
+        sessionId: sessionId });
+      
+      if (response.success) {
+        if (response.message === 'study session is finished') {
+          // invoke the end study function
+          try {
+            const responseEndStudy = invoke('endStudySession', { 
+              sessionId: sessionId });
+            if (responseEndStudy.success) {
+              console.log("quiz session is added");
+            } else {
+              console.error("valid end response. error is: " + responseEndStudy.error);
+            }
+          } catch (error) {
+            console.error("end response is invalid. error is: " + error);
+          }
+        } else {
+          setCurrentCardIndex(response.nextIndex);
+        }
       } else {
-        return 0;
+        console.error('Valid Response. Error is: ' + error)
       }
-    });
+    } catch (error) {
+      console.error('Invalid Response. Error is: ' + error);
+    }
   };
 
   const toggleFlip = () => {

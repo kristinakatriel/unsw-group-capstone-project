@@ -311,12 +311,14 @@ import { IndicatorSeparator } from 'react-select/dist/declarations/src/component
       success: true,
       firstCardId: studyDeck.cards?.[0].id,
       session: newStudySession,
-      firstIndex: 0
+      firstIndex: 0,
+      cards: studyDeck.cards,
+      sessionId: sessionId
     }
   };
   
-  export const updateCardStatusStudy = async (req: ResolverRequest) => {
-    const { currentIndex, positive, negative, sessionId } = req.payload;
+  export const nextCardStudy = async (req: ResolverRequest) => {
+    const { currentIndex, sessionId } = req.payload;
   
     const session = await storage.get(sessionId);
       if (!session) {
@@ -343,6 +345,44 @@ import { IndicatorSeparator } from 'react-select/dist/declarations/src/component
     } else {
       // study session hasnt finished so we return the next card
       session.currentCardIndex = newIndex;
+      await storage.set(sessionId, session);
+      return {
+        success: true,
+        nextIndex: newIndex,
+        nextCardId: session.deckInSession.cards?.[newIndex].id
+      }
+    }
+  };
+
+  export const prevCardStudy = async (req: ResolverRequest) => {
+    const { currentIndex, sessionId } = req.payload;
+  
+    const session = await storage.get(sessionId);
+      if (!session) {
+        return {
+          success: false,
+          error: `No session found with id: ${sessionId}`
+        };
+      }
+  
+    // check if current index is less than total length
+    if (currentIndex >= session.totalCardCount) {
+      return {
+        success: false,
+        error: 'out of index'
+      }
+    }
+  
+    const newIndex = currentIndex - 1
+    if (newIndex < 0) {
+      return {
+        success: false,
+        message: 'unable to go back'
+      }
+    } else {
+      // study session hasnt finished so we return the next card
+      session.currentCardIndex = newIndex;
+      await storage.set(sessionId, session);
       return {
         success: true,
         nextIndex: newIndex,
