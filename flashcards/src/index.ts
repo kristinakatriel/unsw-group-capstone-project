@@ -84,6 +84,8 @@ resolver.define('process-chunks', async (req: ResolverRequest) => {
     await queue.push({ text: chunk });
   }
 
+  // await invokeRemote('event-listener', {});
+
   return {
     success: true,
     string: 'yay',
