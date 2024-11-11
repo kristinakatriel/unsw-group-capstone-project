@@ -1,70 +1,68 @@
-/* Container for the entire quiz results section */
-.quiz-results-container {
+.results-and-statistics {
   display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-top: 20px;
-  padding: 20px;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  max-width: 600px;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-/* Title for the quiz results */
-.quiz-results-title {
-  font-size: 24px;
-  font-weight: bold;
-  color: #333;
-  margin-bottom: 10px;
-}
-
-/* Styling the individual result item */
-.quiz-result-item {
-  display: flex;
+  gap: 20px;
   justify-content: space-between;
+}
+
+.results-table {
   width: 100%;
-  padding: 10px 0;
-  border-bottom: 1px solid #e0e0e0;
+  overflow: hidden;
+  padding: 10px;
+  border: 1px solid lightgrey;
 }
 
-.quiz-result-item:last-child {
-  border-bottom: none;
+.results-pie {
+  overflow: hidden;
+  padding: 10px;
+  border: 1px solid lightgrey;
 }
 
-/* Labels for result categories (e.g., Correct, Skipped, etc.) */
-.quiz-result-label {
-  font-size: 16px;
-  font-weight: 500;
-  color: #555;
+.quiz-statistics {
+  width: 40%;
+  padding: 10px;
+  background-color: #f5f5f5;
+  border-radius: 8px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Values for result categories (e.g., numbers of correct answers) */
-.quiz-result-value {
-  font-size: 16px;
-  font-weight: 400;
-  color: #333;
+.table-container {
+  max-height: 440px;
 }
 
-/* Button to go back or view past results */
-.quiz-results-action-btn {
-  margin-top: 20px;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border: none;
-  border-radius: 5px;
+.table-header {
+  font-weight: bold;
+}
+
+.table-row.selected-row {
+  background-color: rgba(0, 123, 255, 0.2);
   cursor: pointer;
-  font-size: 16px;
 }
 
-.quiz-results-action-btn:hover {
-  background-color: #0056b3;
+.quiz-results-container h1 {
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
-.quiz-results-action-btn:disabled {
-  background-color: #ccc;
-  cursor: not-allowed;
+.quiz-results-container .MuiPieChart-root {
+  margin: 20px auto;
+}
+
+.quiz-results-container .MuiTablePagination-displayedRows {
+  margin-top: 0px !important;
+}
+
+.quiz-results-container .MuiTablePagination-selectLabel {
+  margin-top: 0px !important;
+}
+
+.quiz-results-container .MuiChartsLegend-series {
+  transform: translate(300px, 60px);
+}
+
+.quiz-results-container .MuiChartsLegend-series-1 {
+  transform: translate(300px, 100px);
+}
+
+.quiz-results-container .MuiChartsLegend-series-2 {
+  transform: translate(300px, 140px);
 }
