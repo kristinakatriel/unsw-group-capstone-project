@@ -108,7 +108,7 @@ const QuizResults = ({ viewQuizResult, pressedButton }) => {
                 flexDirection: 'row',
                 justifyContent: 'space-between',
                 alignItems: 'center',
-                padding: 2, // Adjust padding as needed
+                padding: 2,
               }}
             >
               <div
@@ -122,52 +122,15 @@ const QuizResults = ({ viewQuizResult, pressedButton }) => {
                   series={[
                     {
                       data: [
-                        { id: 0, value: selectedQuiz.numCorrect, color: '#A8E6A1' },
-                        { id: 1, value: selectedQuiz.numIncorrect, color: '#FF8B8B' }, 
-                        { id: 2, value: selectedQuiz.numSkip, color: '#B0B0B0' },
+                        { id: 0, value: selectedQuiz.numCorrect, label: 'Correct', color: '#A8E6A1' },
+                        { id: 1, value: selectedQuiz.numIncorrect, label: 'Incorrect', color: '#FF8B8B' }, 
+                        { id: 2, value: selectedQuiz.numSkip, label: 'Skipped',color: '#B0B0B0' },
                       ],
                     },
                   ]}
                   width={400}
                   height={200}
                 />
-              </div>
-              <div style={{ marginLeft: '20px' }}>
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-                    <div
-                      style={{
-                        width: '15px',
-                        height: '15px',
-                        backgroundColor: '#A8E6A1',
-                        marginRight: '8px',
-                      }}
-                    />
-                    <span>Correct</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-                    <div
-                      style={{
-                        width: '15px',
-                        height: '15px',
-                        backgroundColor: '#FF8B8B',
-                        marginRight: '8px',
-                      }}
-                    />
-                    <span>Incorrect</span>
-                  </div>
-                  <div style={{ display: 'flex', alignItems: 'center', marginBottom: '5px' }}>
-                    <div
-                      style={{
-                        width: '15px',
-                        height: '15px',
-                        backgroundColor: '#B0B0B0',
-                        marginRight: '8px',
-                      }}
-                    />
-                    <span>Skipped</span>
-                  </div>
-                </div>
               </div>
             </Paper>
           )}
