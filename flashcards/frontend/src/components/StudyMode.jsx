@@ -55,6 +55,7 @@ const StudyMode = ({ deck }) => {
         currentIndex: currentCardIndex, 
         sessionId: sessionId });
       console.log("current card index is: " + currentCardIndex);
+      console.log(response)
       if (response.success) {
         setCurrentCardIndex(response.newIndex);
       } else {
