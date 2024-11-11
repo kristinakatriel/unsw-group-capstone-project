@@ -118,39 +118,34 @@ function ContentByline() {
     if (allText) {
       const chunks = chunkText(allText, 500); // 500 for now during testing
       const allQAPairs = [];  // Initialize an array to hold all flashcards
-      try {
-        const res = await invoke('process-chunks', {
-          chunks: chunks
-        });
-        console.log(res.queue);
-      } catch (error) {
-        console.error('Error on flashcard generation', error);
-      }
-
-      // then, try event listener ?
-      
 
       // Generate Q&A pairs
-      // for (const chunk of chunks) {
+      for (const chunk of chunks) {
       //   // await queue.push({ text: chunk });
-      //   if (runningReq == 0) { 
-      //     setRunningReq(1);
-      //     try {
-      //       const response = await invoke('generateQA', { text: chunk });
-      //       if (response && response.success) {
-      //         const newQAPairs = response.data;
-              
-      //         setQAPairs((prevQAPairs) => [...prevQAPairs, ...newQAPairs]);
+      //   try {
+      //     const res = await invoke('setQueue', { chunk });
+      //     console.log(res.job);
+      //   } catch (error) {
+      //     console.error("Hi", error);
+        // }
+        // if (runningReq == 0) { 
+          // setRunningReq(1);
+        try {
+          const response = await invoke('generateQA', { text: chunk });
+          if (response && response.success) {
+            const newQAPairs = response.data;
+            
+            setQAPairs((prevQAPairs) => [...prevQAPairs, ...newQAPairs]);
 
-      //         allQAPairs.push(...newQAPairs);
-      //         console.log(response.data);
-      //       }
-      //     } catch (error) {
-      //       console.error('Error generating flashcards:', error);
-      //     }
-      //     setRunningReq(0);
-      //   }
-      // }
+            allQAPairs.push(...newQAPairs);
+            console.log(response.data);
+          }
+        } catch (error) {
+          console.error('Error generating flashcards:', error);
+        }
+          // setRunningReq(0);
+        // }
+      }
   
       // Update the state
       setFlashcardsGenerating(false);

@@ -14,16 +14,16 @@ nltk.download('stopwords')
 
 # Models and Pipelines
 # 1. Question Generation (QG)
-qg_model = T5ForConditionalGeneration.from_pretrained("ZhangCheng/T5-Base-Fine-Tuned-for-Question-Generation")
-qg_tokenizer = T5Tokenizer.from_pretrained("ZhangCheng/T5-Base-Fine-Tuned-for-Question-Generation")
+qg_model = "ZhangCheng/T5-Base-Fine-Tuned-for-Question-Generation"
+qg_tokenizer = "ZhangCheng/T5-Base-Fine-Tuned-for-Question-Generation"
 qg_pipeline = pipeline("text2text-generation", model=qg_model, tokenizer=qg_tokenizer)
 
 # 2. Question Answering (QA)
 qa_pipeline = pipeline("question-answering", model="mrm8488/spanbert-finetuned-squadv1", tokenizer="mrm8488/spanbert-finetuned-squadv1")
 
 # 3. Title Generation
-title_model = T5ForConditionalGeneration.from_pretrained("Michau/t5-base-en-generate-headline")
-title_tokenizer = T5Tokenizer.from_pretrained("Michau/t5-base-en-generate-headline")
+title_model = "Michau/t5-base-en-generate-headline"
+title_tokenizer = "Michau/t5-base-en-generate-headline"
 title_pipeline = pipeline("text2text-generation", model=title_model, tokenizer=title_tokenizer)
 
 # Suggested Tags

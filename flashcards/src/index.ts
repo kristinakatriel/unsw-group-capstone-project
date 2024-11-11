@@ -46,53 +46,20 @@ resolver.define('getModule', async (req) => {
   return { moduleKey };
 });
 
-resolver.define('event-listener', async (req: ResolverRequest) => {
-  const { text: chunk } = req.payload;
-  const accountId = req.context.accountId;
-  const qAPairs: string[] = [];
+// resolver.define('event-listener', async (req: ResolverRequest) => {
+//   return {
+//     success: true
+//   }
+// });
 
-  if (!accountId) {
-    return { success: false, error: 'No accountId provided' };
-  }
-
-  try {
-    const response = await generateQA({ payload: { text: chunk }, context: { accountId } });
-
-    if (response && response.success) {
-      qAPairs.push(...response.data); // Spread to add all pairs to qAPairs array
-    } else {
-      console.warn('Q&A generation failed:', response?.error);
-    }
-
-    // Here you would add logic to store or update `qAPairs` as needed
-    return { success: true, data: qAPairs };
-  } catch (error) {
-    console.error('Error processing chunk in async event:', error);
-    return { success: false, error: 'Failed to generate Q&A pairs' };
-  }
-});
-
-resolver.define('process-chunks', async (req: ResolverRequest) => {
-  const { chunks } = req.payload;
-  const accountId = req.context.accountId;
-
-  if (!accountId) {
-    return { success: false, error: 'No accountId provided' };
-  }
-
-  for (const chunk of chunks) {
-    await queue.push({ text: chunk });
-  }
-
-  // await invokeRemote('event-listener', {});
-
-  return {
-    success: true,
-    string: 'yay',
-    queue: queue
-  }
-
-});
+// resolver.define('setQueue', async(req: ResolverRequest) => {
+//   const { textJob } = req.payload;
+//   const jobId = await queue.push(textJob);
+//   return {
+//     success: true,
+//     job: queue.getJob(jobId)
+//   }
+// });
 
 resolver.define('createFlashcard', createFlashcard);
 resolver.define('updateFlashcard', updateFlashcard);
