@@ -88,11 +88,8 @@ export interface QuizResult {
 }
 
 export interface StudyResult {
-    sessionId: string;
+    session: string;
     deckInArchive: Deck;
-    statusPerCard: StudySessionCardStatus[];
-    countPositive: number;
-    countNegative: number;
 }
 
 //////////////////////////////////////////////////
@@ -113,7 +110,6 @@ export interface QuizSession {
 
 export interface StudySession {
     deckInSession: Deck;
-    statusPerCard: StudySessionCardStatus[];
     totalCardCount: number;
     currentCardIndex: number;
     sessionStartTime: number;
