@@ -121,6 +121,7 @@ function globalPageModule() {
 
   // State for search
   const [globalPageSearchTerm, setGlobalPageSearchTerm] = useState('');
+  const [alignment, setAlignment] = useState('all');
 
   //************************** DELETION LOGIC *****************************/
   const confirmDeleteFlashcard = (flashcard) => {
@@ -205,10 +206,10 @@ function globalPageModule() {
     }
   }, [deleteDeckFromDisplaySuccess]);
 
-  useEffect(() => {
-    console.log("Updated selected deck:", selectedDeck);
-    // Additional logic here
-  }, [selectedDeck]); // Runs whenever `selectedDeck` changes
+  // useEffect(() => {
+  //   console.log("Updated selected deck:", selectedDeck);
+  //   // Additional logic here
+  // }, [selectedDeck]); // Runs whenever `selectedDeck` changes
 
 
   //************************** FETCHING DATA (REUSABLE) *****************************/
@@ -416,7 +417,7 @@ function globalPageModule() {
 
   const selectOwnTags = () => {
 
-
+    console.log("testing");
     setIsMyTagsSelected((prevState) => !prevState); // Toggle the switch
   };
 
@@ -625,24 +626,36 @@ function globalPageModule() {
     setSelectedDeck(deck);
     setIsStudyMode(false);
     setIsQuizMode(false);
+    console.log("issuse here?");
+    console.log(`deck : ${deck.title}`); // Log when a deck is clicked
+    console.log(`updaated deck : ${updatedDeck.title}`);
     setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]);
+    //setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]);
     console.log('Selected Deck:', deck); // Log the currently selected deck
     console.log('Current Breadcrumb Items:', [{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]); // Log breadcrumb items
   };
 
   const goBackIntermediate = (deleted = false) => {
+    console.log('consol log');
     if (deleted) {
+      console.log('consol log');
       setDeleteDeckFromDisplaySuccess(true);
+      console.log('consol log');
     } else {
+      console.log('consol log');
       setDeleteDeckFromDisplaySuccess(false);
+      console.log('consol log');
     }
   }
 
   const goBackToHome = () => {
+    console.log('consol log');
     console.log('Going back to FLASH (Home)'); // Log when going back to Home
     setSelectedDeck(null);
+    console.log('consol log');
     setIsStudyMode(false);
     setIsQuizMode(false);
+    console.log('consol log');
     setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }]);
     refreshDeckFrontend();
     refreshFlashcardFrontend();
@@ -653,16 +666,22 @@ function globalPageModule() {
     console.log('Going back to Deck'); // Log when going back to the deck
     setIsStudyMode(false);
     setIsQuizMode(false);
-    setBreadcrumbItems(prevItems => {
-      const updatedItems = prevItems.slice(0, -1);
-      console.log('Current Breadcrumb Items:', updatedItems); // Log breadcrumb items Going back to Deck
-      return updatedItems;
-    });
+    console.log('consol log');
+    setBreadcrumbItems(prevItems => prevItems.slice(0, -1));
+    console.log('Current Breadcrumb Items:', prevItems.slice(0, -1)); // Log breadcrumb items
+
+    // setBreadcrumbItems(prevItems => {
+    //   const updatedItems = prevItems.slice(0, -1);
+    //   console.log('Current Breadcrumb Items:', updatedItems); // Log breadcrumb items Going back to Deck
+    //   return updatedItems;
+    // });
+    console.log('consol log');
   };
 
   //************************** STUDY MODE FUNCTIONS *****************************/
   const studyMode = async () => {
     //loadDecks();
+    console.log('consol log');
 
     console.log("selected deck going into quiz mode", selectedDeck);
     const id = selectedDeck.id;
@@ -685,13 +704,17 @@ function globalPageModule() {
     console.log("selected deck", selectedDeck);
     console.log('Entering Study Mode'); // Log when entering study mode
     setIsStudyMode(true);
+    console.log('consol log');
     setBreadcrumbItems(prevItems => [
         ...prevItems,
         { href: '#', text: 'Study Mode' }
     ]);
+
+    console.log('consol log');
   };
 
   if (isStudyMode) {
+    console.log('consol log');
     return (
       <div>
         <Breadcrumbs>
@@ -713,6 +736,9 @@ function globalPageModule() {
         <StudyMode deck={selectedDeck} onBack={goBackToDeck} />
       </div>
     );
+
+    console.log('consol log');
+
   }
 
   //************************** QUIZ MODE FUNCTIONS *****************************/
@@ -739,8 +765,9 @@ function globalPageModule() {
     console.log("selected deck", selectedDeck);
     console.log('Entering Quiz Mode'); // Log when entering quiz mode
     // loadDecks();
+    console.log('consol log');
     setIsQuizMode(true);
-
+    console.log('consol log');
     setBreadcrumbItems(prevItems => [
         ...prevItems,
         { href: '#', text: 'Quiz Mode' }
@@ -749,6 +776,7 @@ function globalPageModule() {
 
   if (isQuizMode) {
     //loadDecks();
+    console.log('consol log');
     return (
       <div>
         <Breadcrumbs>
@@ -775,42 +803,56 @@ function globalPageModule() {
 
   if (selectedDeck) {
     //loadDecks();
+    console.log('consol log');
+    console.log('Selected deck:', selectedDeck);
+    console.log('Breadcrumb items:', breadcrumbItems);
+    console.log('Tag map for cards:', cardTagMap);
+    console.log('Tag map for deck:', deckTagMap);
     return (
-      <div >
+      <div>
         <Breadcrumbs>
           {breadcrumbItems.map((item, index) => (
+
             <BreadcrumbsItem
               key={index}
               href={item.href}
               text={item.text}
-              onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined}
+              onClick={() => {
+                console.log(`Breadcrumb clicked: ${item.text}`);
+                if (item.text === 'FLASH (Home)') goBackToHome();
+              }}
+              // onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined}
               // className="breadcrumb-item"
-              />
-
+            />
           ))}
         </Breadcrumbs>
         <DeckDisplay deck={selectedDeck} tagMap={cardTagMap} deckTags={deckTagMap} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
       </div>
     );
   }
+  console.log('consol log');
+  // const [alignment, setAlignment] = useState('all');
+  console.log('consol log');
 
-  const [alignment, setAlignment] = useState('all');
 
   const handleToggleChange = (event, newAlignment) => {
+    console.log('consol log');
     console.log(newAlignment);
+    console.log('consol log');
     if (newAlignment === null) {
       setAlignment(alignment);
       return;
     }
+    console.log('consol log');
 
     setAlignment(newAlignment);
-
+    console.log('consol log');
     if (newAlignment === 'personal' && !isMyTagsSelected) {
       selectOwnTags();
     } else if (newAlignment === 'all' && isMyTagsSelected) {
       selectOwnTags();
     }
-  };
+  }
 
   return (
     <div className='global-page-container'>

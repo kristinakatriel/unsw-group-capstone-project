@@ -12,9 +12,8 @@ import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import './glob.css';
+import './tagGlobalModuleCreate.css';
 import SearchIcon from '@mui/icons-material/Search';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
 const gridStyles = xcss({
   width: '100%',
