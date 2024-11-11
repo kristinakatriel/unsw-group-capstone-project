@@ -33,6 +33,7 @@ import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import { IconButton as MuiIconButton } from '@mui/material';
+import QuizResults from './components/QuizResults';
 
 const gridStyles = xcss({
     width: '100%',
@@ -57,12 +58,10 @@ function globalPageModule() {
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
 
-
   //tag mapping
   const [cardTagMap, setCardTagMap] = useState([]);
   const [deckTagMap, setDeckTagMap] = useState([]);
   const [tagTagMap, setTagTagMap] = useState([]);
-
 
   //selected tag
   const [selectedTags, setSelectedTags] = useState(tags.map(tag => tag.id)); // All tags selected by default
@@ -74,9 +73,6 @@ function globalPageModule() {
   //account id feild
 
   const [accountId, setAccountId] = useState(null); // State to store the account ID
-
-
-  // const [selectedTags, setSelectedTags] = useState(null); // State to manage selected tag
 
   // Modal states for flashcards and decks
   const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
@@ -119,6 +115,14 @@ function globalPageModule() {
   // State for quizmode
   const [isQuizMode, setIsQuizMode] = useState(false);
 
+  // STATE for viewing quiz result
+  const [viewQuizResult, setViewQuizResult] = useState(null);
+  //const [viewQuizResultBool, setViewQuizResultBool] = useState(false);
+  const [pressedButton, setPressedButton] = useState(false);
+
+
+  const [isQuizResults, setIsQuizResults] = useState(false)  // State to hold quiz results
+
   // State for saving success and error messages
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
@@ -130,7 +134,6 @@ function globalPageModule() {
   // State for search
   const [globalPageSearchTerm, setGlobalPageSearchTerm] = useState('');
   const [alignment, setAlignment] = useState('all');
-
   const [hoveredTag, setHoveredTag] = useState(null);
 
   //************************** DELETION LOGIC *****************************/
@@ -215,16 +218,6 @@ function globalPageModule() {
 
   };
 
-  useEffect(() => {
-    if (deleteDeckFromDisplaySuccess) {
-      setShowDeleteSuccessAlert(true);
-      const timer = setTimeout(() => {
-        setShowDeleteSuccessAlert(false);
-      }, 2000); // Adjust the duration as needed
-      return () => clearTimeout(timer);
-    }
-  }, [deleteDeckFromDisplaySuccess]);
-
   const deleteTag = async () => {
     setErrorMessage('');
     console.log(tagToDelete.id);
@@ -246,10 +239,23 @@ function globalPageModule() {
     }
   };
 
+  //USEEFFECTS FOR DELETES
+  useEffect(() => {
+    if (deleteDeckFromDisplaySuccess) {
+      setShowDeleteSuccessAlert(true);
+      const timer = setTimeout(() => {
+        setShowDeleteSuccessAlert(false);
+      }, 2000); // Adjust the duration as needed
+      return () => clearTimeout(timer);
+    }
+  }, [deleteDeckFromDisplaySuccess]);
+
   useEffect(() => {
     console.log("Updated selected deck:", selectedDeck);
     // Additional logic here
   }, [selectedDeck]); // Runs whenever `selectedDeck` changes
+
+
 
   //************************** FETCHING DATA (REUSABLE) *****************************/
   const loadFlashcards = async () => {
@@ -316,6 +322,9 @@ function globalPageModule() {
     loadTags();  // This function will reload decks and refresh the UI
   };
 
+
+
+
   //************************** MODAL HANDLERS *****************************/
   const createFlashcardGlobal = () => {
     setIsCreateFlashcardOpen(true); // Open modal to create flashcard
@@ -368,7 +377,6 @@ function globalPageModule() {
     refreshDeckFrontend();
   };
 
-
   //DECK EDIT LOGIC
 
   // Modal logic for editing flashcards
@@ -414,27 +422,9 @@ function globalPageModule() {
 
   //tag filtering when a tag is selected
 
-  // const handleTagClick = (tag) => {
-  //   // Toggle the selected tag
-  //   console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`); // Convert the object to a string
-  //   setSelectedTags((prevTag) => (prevTag?.id === tag.id ? null : tag));
-  // };
-
-  // const handleTagToggle = (tagId) => {
-  //   // Toggle the selected tag
-  //   console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`); // Convert the object to a string
-  //   // setSelectedTags((prevTag) => (prevTag?.id === tag.id ? null : tag));
-  //   setSelectedTags((prevSelectedTag) =>
-  //     prevSelectedTag.includes(tagId)
-  //       ? prevSelectedTag.filter((id) => id !== tagId) // Deselect if already selected
-  //       : [...prevSelectedTag, tagId] // Select if not yet selected
-  //   );
-  // };
-
   const handleTagToggle = (tagId) => {
 
     selectedTags.includes(tagId)
-
 
     setSelectedTags((prevSelectedTags) =>
       prevSelectedTags.includes(tagId)
@@ -483,99 +473,40 @@ function globalPageModule() {
     console.log('Searching:', globalPageSearchTerm);
   };
 
+
+
+  //****************filtered flashcards, decks and tags */
   const filteredFlashcards = flashcards.filter((card) => {
 
     const searchTerm = globalPageSearchTerm.toLowerCase();
     const matchesSearch =
-      (typeof card.front === 'string' && card.front.toLowerCase().includes(searchTerm)) ||
-      (typeof card.back === 'string' && card.back.toLowerCase().includes(searchTerm)) ||
-      (card.name && typeof card.name === 'string' && card.name.toLowerCase().includes(searchTerm));
+    (typeof card.front === 'string' && card.front.toLowerCase().includes(searchTerm)) ||
+    (typeof card.back === 'string' && card.back.toLowerCase().includes(searchTerm)) ||
+    (card.name && typeof card.name === 'string' && card.name.toLowerCase().includes(searchTerm));
 
     // If a tag is selected, filter cards by their IDs in the selected tag’s flashcards array
-
     const matchesTags =  selectedTags.length === 0 || // If "All Tags" is selected
-      selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)));
+    selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)));
 
-
-
-
-    // If "Own Tags" is selected, only show cards/decks owned by the current user (accountId)
     const matchesOwner = (isMyTagsSelected && card.owner === accountId) || !isMyTagsSelected;
-    // console.log('matchesOwner:', matchesOwner);
-    // console.log('matchesSearch:', matchesSearch);
-    // console.log('matchesTags:', matchesTags);
-
-    // // Log the individual conditions
-    // console.log('Owner condition (!isMyTagsSelected || card.owner === accountId):', !isMyTagsSelected || card.owner === accountId);
-    // console.log('Tags condition (selectedTags.length === tags.length):', selectedTags.length === tags.length);
-    // console.log('selectedTags.length', selectedTags.length);
-    // console.log(' tags.length)', tags.length);
-
-    // console.log('Tags condition (selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)))):',
-    //   selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id))));
-    // console.log(
-    //   'INSIDE FILTERFLASHCARDS, matchesOwner:', matchesOwner,
-    //   'matchesSearch:', matchesSearch,
-    //   'matchesTags:', matchesTags,
-    //   'Owner condition (!isMyTagsSelected || card.owner === accountId):', !isMyTagsSelected || card.owner === accountId,
-    //   'Tags condition (selectedTags.length === tags.length):', selectedTags.length === tags.length,
-    //   'selectedTags.length:', selectedTags.length,
-    //   'tags.length:', tags.length,
-    //   'Tags condition (selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)))):',
-    //   selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)))
-    // );
-
 
     return matchesSearch && matchesTags && matchesOwner;
-    // const matchesTag = selectedTags
-    //   ? selectedTags.cardIds.includes(card.id)
-    //   : true;
 
-    //return matchesSearch && matchesTags;
   });
-
-  // const filteredFlashcards = flashcards.filter((card) => {
-  //   const searchTerm = globalPageSearchTerm.toLowerCase();
-  //   return (
-  //     (typeof card.front === 'string' && card.front.toLowerCase().includes(searchTerm)) ||
-  //     (typeof card.back === 'string' && card.back.toLowerCase().includes(searchTerm)) ||
-  //     (card.name && typeof card.name === 'string' && card.name.toLowerCase().includes(searchTerm))
-  //     // Add tags once implemented
-  //   );
-  // });
 
   const filteredDecks = flashdecks.filter((deck) => {
     const searchTerm = globalPageSearchTerm.toLowerCase();
     const matchesSearch =
-      (typeof deck.title === 'string' && deck.title.toLowerCase().includes(searchTerm)) ||
-      (deck.description && typeof deck.description === 'string' && deck.description.toLowerCase().includes(searchTerm)) ||
-      (deck.name && typeof deck.name === 'string' && deck.name.toLowerCase().includes(searchTerm));
+    (typeof deck.title === 'string' && deck.title.toLowerCase().includes(searchTerm)) ||
+    (deck.description && typeof deck.description === 'string' && deck.description.toLowerCase().includes(searchTerm)) ||
+    (deck.name && typeof deck.name === 'string' && deck.name.toLowerCase().includes(searchTerm));
 
     const matchesTags =  selectedTags.length === 0 || // If "All Tags" is selected
     selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.deckIds.includes(deck.id)));
 
-
-
-
-
-       // If "Own Tags" is selected, only show cards/decks owned by the current user (accountId)
     const matchesOwner = !isMyTagsSelected || deck.owner === accountId;
-    // console.log('matchesOwner:', matchesOwner);
-    // console.log('matchesSearch:', matchesSearch);
-    // console.log('matchesTags:', matchesTags);
-
-    // console.log('Owner condition (!isMyTagsSelected || deck.owner === accountId):', !isMyTagsSelected || deck.owner === accountId);
-    // console.log('Tags condition (selectedTags.length === tags.length):', selectedTags.length === tags.length);
-    // console.log('selectedTags.length', selectedTags.length);
-    // console.log(' tags.length)', tags.length);
-
-
-    // console.log('Tags condition (selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.deckIds.includes(deck.id)))):',
-    //   selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.deckIds.includes(deck.id))));
 
     return matchesSearch && matchesTags && matchesOwner;
-      //return matchesSearch && matchesTags;
-        // Add tags once implemented
   });
 
   const filteredTags = tags.filter((tag) => {
@@ -584,6 +515,8 @@ function globalPageModule() {
       (typeof tag.title === 'string' && tag.title.toLowerCase().includes(searchTerm))
     );
   });
+
+
 
   //************************** RENDER FUNCTIONS *****************************/
   const renderFlashcardsList = (filteredFlashcards) => {
@@ -651,12 +584,15 @@ function globalPageModule() {
     </div>
   );
 
-  //************************** DECK DISPLAY FUNCTIONS *****************************/
+  //************************** BREADCRUMB MANAGEMENT *****************************/
   const onDeckClick = (deck) => {
     console.log(`Deck clicked: ${deck.title}`); // Log when a deck is clicked
     setSelectedDeck(deck);
     setIsStudyMode(false);
     setIsQuizMode(false);
+    setIsQuizResults(false);
+    setPressedButton(false);
+
     console.log("issuse here?");
     console.log(`deck : ${deck.title}`); // Log when a deck is clicked
     //console.log(`updaated deck : ${updatedDeck.title}`);
@@ -686,6 +622,8 @@ function globalPageModule() {
     console.log('consol log');
     setIsStudyMode(false);
     setIsQuizMode(false);
+    setIsQuizResults(false);
+    setPressedButton(false);
     console.log('consol log');
     setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }]);
     refreshDeckFrontend();
@@ -697,6 +635,8 @@ function globalPageModule() {
     console.log('Going back to Deck'); // Log when going back to the deck
     setIsStudyMode(false);
     setIsQuizMode(false);
+    setIsQuizResults(false);
+    setPressedButton(false);
     console.log('consol log');
 
     setBreadcrumbItems(prevItems => {
@@ -705,16 +645,10 @@ function globalPageModule() {
       return updatedItems;
     });
 
-    // setBreadcrumbItems(prevItems => prevItems.slice(0, -1));
-    // console.log('Current Breadcrumb Items:', prevItems.slice(0, -1)); // Log breadcrumb items
-
-    // setBreadcrumbItems(prevItems => {
-    //   const updatedItems = prevItems.slice(0, -1);
-    //   console.log('Current Breadcrumb Items:', updatedItems); // Log breadcrumb items Going back to Deck
-    //   return updatedItems;
-    // });
     console.log('consol log');
   };
+
+
 
   //************************** STUDY MODE FUNCTIONS *****************************/
   const studyMode = async () => {
@@ -775,7 +709,6 @@ function globalPageModule() {
       </div>
     );
 
-    console.log('consol log');
 
   }
 
@@ -839,6 +772,86 @@ function globalPageModule() {
     );
   }
 
+  //************************** QUIZ RESULTS MODE FUNCTIONS *****************************/
+  const quizResult = async () => {
+    console.log('Starting quizResult function');
+    console.log('Viewing quiz results');
+    setPressedButton(true);
+    let index = 0;
+    let loopStatus = true;
+    let responseArray = [];
+    console.log('Initialized variables: index =', index, ', loopStatus =', loopStatus);
+
+    while (loopStatus) {
+      console.log('Entering while loop, current index:', index);
+      try {
+        const response = await invoke('viewQuizResults', {
+          deckId: selectedDeck.id,
+          index: index,
+        });
+        console.log('API response received:', response);
+
+        if (response.success) {
+          responseArray.push(response);
+          console.log('Successful response, appended to responseArray:', responseArray);
+          setViewQuizResult(responseArray);
+          setIsQuizResults(true); // Indicates results to be displayed
+          index++;
+          console.log('Incremented index to:', index);
+          console.log('Current Quiz Result:', response);
+        } else {
+          console.error('Error fetching quiz results:', response.error);
+          loopStatus = false;
+          setErrorMessage(response.error);
+          console.log('Set loopStatus to false due to unsuccessful response');
+        }
+      } catch (error) {
+        loopStatus = false;  // Stop the loop on exception
+        console.error('Exception caught while fetching quiz results:', error);
+        setErrorMessage('An error occurred while fetching quiz results');
+        console.log('Set error message due to caught exception');
+      }
+    }
+    console.log('Exiting while loop');
+    console.log('Entering Quiz Result View');
+    setBreadcrumbItems(prevItems => [
+      ...prevItems,
+      { href: '#', text: 'Quiz Results' }
+    ]);
+    console.log('Updated breadcrumb items:', breadcrumbItems);
+  };
+
+  if (isQuizResults) {
+    console.log('isQuizResults is true, rendering Quiz Results view');
+    return (
+      <div>
+        <Breadcrumbs>
+          {breadcrumbItems.map((item, index) => (
+            <BreadcrumbsItem
+              key={index}
+              href={item.href}
+              text={item.text}
+              onClick={() => {
+                console.log('Breadcrumb item clicked:', item.text);
+                if (item.text === 'FLASH (Home)') {
+                  goBackToHome();
+                  console.log('Navigating to Home');
+                } else if (item.text === selectedDeck.title) {
+                  goBackToDeck();
+                  console.log('Navigating to Deck');
+                }
+              }}
+            />
+          ))}
+        </Breadcrumbs>
+        <QuizResults viewQuizResult={viewQuizResult} pressedButton={pressedButton}/>
+        <p>Quiz Results component rendered with viewQuizResult data</p>
+      </div>
+    );
+  }
+
+
+  //************************** DECK DISPLAY *****************************/
   if (selectedDeck) {
     //loadDecks();
     console.log('consol log');
@@ -860,37 +873,77 @@ function globalPageModule() {
               />
           ))}
         </Breadcrumbs>
-        <DeckDisplay deck={selectedDeck} tagMap={cardTagMap} deckTags={deckTagMap} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
+        <DeckDisplay deck={selectedDeck} tagMap={cardTagMap} deckTags={deckTagMap} startStudyMode={studyMode} startQuizMode={quizMode} startQuizResult={quizResult} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
       </div>
     );
   }
+  // const quizResult = async () => {
+
+  //   console.log('Viewing quiz results');
+  //   setPressedButton(true);
+  //   let index = 0
+  //   let loopStatus = true;
+  //   let responseArray = [];
+
+  //   while (loopStatus) {
+  //     try {
+  //       const response = await invoke('viewQuizResults', {
+  //         deckId: updatedDeck.id,
+  //         index: index
+  //       });
+
+  //       if (response.success) {
+  //         responseArray.push(response);
+  //         console.log("response is: " + response)
+  //         setViewQuizResult(responseArray);
+  //         setIsQuizResults(true);; // this boolean means that there are quiz results to be printed
+  //         index++;
+  //         console.log('Quiz Result:', response);
+  //       } else {
+  //         console.error('Error fetching quiz results:', response.error);
+  //         loopStatus = false;
+  //         setErrorMessage(response.error);
+  //       }
+  //     } catch (error) {
+  //       console.error('Error fetching quiz results:', error);
+  //       setErrorMessage('An error occurred while fetching quiz results');
+  //     }
+  //   }
+  //   console.log('Entering Quiz Result View');
+  //   //setIsQuizResults(true);
+  //   setBreadcrumbItems(prevItems => [
+  //     ...prevItems,
+  //     { href: '#', text: 'Quiz Results' }
+  //   ]);
+  // };
+
+
+  // if (isQuizResults) {
   //   return (
   //     <div>
   //       <Breadcrumbs>
   //         {breadcrumbItems.map((item, index) => (
-
   //           <BreadcrumbsItem
   //             key={index}
   //             href={item.href}
   //             text={item.text}
   //             onClick={() => {
-  //               console.log(`Breadcrumb clicked: ${item.text}`);
-  //               if (item.text === 'FLASH (Home)') goBackToHome();
+  //               if (item.text === 'FLASH (Home)') {
+  //                 goBackToHome();
+  //               } else if (item.text === selectedDeck.title) {
+  //                 goBackToDeck();
+  //               }
   //             }}
-  //             // onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined}
-  //             // className="breadcrumb-item"
   //           />
   //         ))}
   //       </Breadcrumbs>
-  //       <DeckDisplay deck={selectedDeck} tagMap={cardTagMap} deckTags={deckTagMap} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
+  //       <QuizResults viewQuizResult={viewQuizResult} />
   //     </div>
   //   );
   // }
-  console.log('consol log');
-  // const [alignment, setAlignment] = useState('all');
-  console.log('consol log');
 
 
+  //********************************************* kristina toggle stuff */
   const handleToggleChange = (event, newAlignment) => {
     console.log('consol log');
     console.log(newAlignment);
@@ -908,8 +961,10 @@ function globalPageModule() {
     } else if (newAlignment === 'all' && isMyTagsSelected) {
       selectOwnTags();
     }
-  }; //here?
+  };
 
+
+  //*************************************global page output  */
   return (
     <div className='global-page-container'>
       <div className="global-page-header">
