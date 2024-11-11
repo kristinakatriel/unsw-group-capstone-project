@@ -143,62 +143,66 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
 
         <ModalBody>
           { errorMessage &&
-          <Collapse in={closeError}>
-            <Alert
-              severity="error"
-              action={
-                <IconButton
-                  aria-label="close"
-                  color="inherit"
-                  size="small"
-                  onClick={() => {
-                    setCloseError(false);
-                  }}
-                >
-                <CloseIcon fontSize="inherit" />
-                </IconButton>
-              }
-              sx={{ mb: 2 }}
-            >
-              {errorMessage}
-            </Alert>
-          </Collapse>
-        }
-          <div className="global-page-search">
-            <div className="global-page-search-box">
-              <SearchIcon className="global-page-search-icon" />
-              <input
-                type="text"
-                id="search-input"
-                value={deckDisplaySearchTerm}
-                onChange={searchDeckDisplay} // Update search term
-                placeholder="Search flashcards..."
-              />
-            </div>
-          </div>
+            <Collapse in={closeError}>
+              <Alert
+                severity="error"
+                action={
+                  <IconButton
+                    aria-label="close"
+                    color="inherit"
+                    size="small"
+                    onClick={() => {
+                      setCloseError(false);
+                    }}
+                  >
+                  <CloseIcon fontSize="inherit" />
+                  </IconButton>
+                }
+                sx={{ mb: 2 }}
+              >
+                {errorMessage}
+              </Alert>
+            </Collapse>
+          }
+
 
           {/************************************* ADD FLASHCARDS FIELD ***************************************/}
           <Field id="add-flashcards" name="add-flashcards" label="Add existing flashcards to deck">
             {() => (
-              <div className='flashcards-select-scroll'>
-                {filteredFlashcards.length > 0 ? (
-                  filteredFlashcards.map((flashcard) => (
-                    <div key={flashcard.id} className="flashcards-select-scroll-item">
-                      <input
-                        type="checkbox"
-                        id={`flashcard-${flashcard.id}`}
-                        checked={selectedFlashcards.includes(flashcard.id)}
-                        onChange={() => handleCheckboxChange(flashcard.id)}
-                      />
-                      <label htmlFor={`flashcard-${flashcard.id}`}>
-                        {flashcard.front || 'No front available'}
-                      </label>
-                    </div>
-                  ))
-                ) : (
-                  <p>No flashcards available to select.</p>
-                )}
-              </div>
+              <>
+                <div className="global-page-search">
+                  <div className="global-page-search-box">
+                    <SearchIcon className="global-page-search-icon" />
+                    <input
+                      type="text"
+                      id="search-input"
+                      value={deckDisplaySearchTerm}
+                      onChange={searchDeckDisplay} // Update search term
+                      placeholder="Search flashcards..."
+                    />
+                  </div>
+                </div>
+                <div className='flashcards-select-scroll'>
+                  {filteredFlashcards.length > 0 ? (
+                    filteredFlashcards.map((flashcard) => (
+                      <div key={flashcard.id} className="flashcards-select-scroll-item">
+                        <input
+                          type="checkbox"
+                          id={`flashcard-${flashcard.id}`}
+                          checked={selectedFlashcards.includes(flashcard.id)}
+                          onChange={() => handleCheckboxChange(flashcard.id)}
+                        />
+                        <label htmlFor={`flashcard-${flashcard.id}`}>
+                          {flashcard.front || 'No front available'}
+                        </label>
+                      </div>
+                    ))
+                  ) : (
+                    <p>No flashcards available to select.</p>
+                  )}
+                </div>              
+              </>
+
             )}
           </Field>
 

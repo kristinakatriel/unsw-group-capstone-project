@@ -30,7 +30,7 @@ import {
 } from './aiResolvers'
 
 import {
-  startQuizSession, updateCardStatusQuiz, endQuizSession,
+  startQuizSession, updateCardStatusQuiz, endQuizSession, viewQuizResults,
   startStudySession, nextCardStudy, endStudySession, prevCardStudy
 } from './sessions'
 
@@ -85,6 +85,7 @@ resolver.define('generateSuggestedTags', generateSuggestedTags);
 resolver.define('startQuizSession', startQuizSession);
 resolver.define('endQuizSession', endQuizSession);
 resolver.define('updateCardStatusQuiz',updateCardStatusQuiz);
+resolver.define('viewQuizResults', viewQuizResults);
 
 resolver.define('startStudySession', startStudySession);
 resolver.define('endStudySession', endStudySession);
