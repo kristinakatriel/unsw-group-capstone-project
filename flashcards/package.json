@@ -10,6 +10,7 @@
     "typescript": "^5.6.3"
   },
   "dependencies": {
+    "@forge/events": "^0.9.4",
     "@forge/react": "^10.6.1",
     "@forge/resolver": "^1.5.40",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",

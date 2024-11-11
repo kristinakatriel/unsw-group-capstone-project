@@ -1,8 +1,10 @@
 import Resolver from '@forge/resolver';
 import api, { QueryApi, route, startsWith, storage } from '@forge/api';
+import { Queue } from '@forge/events';
 import {
   Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
-  QuizResult, StudyResult, QuizSession, StudySession
+  QuizResult, StudyResult, QuizSession, StudySession,
+  ResolverRequest
 } from './types';
 import { generateId, clearStorage, getUserName, initUserData } from './helpers'
 // import { basename } from 'path';
@@ -37,10 +39,57 @@ import {
 ///////////////////////////////////////////////////////////////////////////////////
 
 const resolver = new Resolver();
+const queue = new Queue({ key: 'flashcard-generation' });
 
 resolver.define('getModule', async (req) => {
   const { moduleKey } = req.context;
   return { moduleKey };
+});
+
+resolver.define('event-listener', async (req: ResolverRequest) => {
+  const { text: chunk } = req.payload;
+  const accountId = req.context.accountId;
+  const qAPairs: string[] = [];
+
+  if (!accountId) {
+    return { success: false, error: 'No accountId provided' };
+  }
+
+  try {
+    const response = await generateQA({ payload: { text: chunk }, context: { accountId } });
+
+    if (response && response.success) {
+      qAPairs.push(...response.data); // Spread to add all pairs to qAPairs array
+    } else {
+      console.warn('Q&A generation failed:', response?.error);
+    }
+
+    // Here you would add logic to store or update `qAPairs` as needed
+    return { success: true, data: qAPairs };
+  } catch (error) {
+    console.error('Error processing chunk in async event:', error);
+    return { success: false, error: 'Failed to generate Q&A pairs' };
+  }
+});
+
+resolver.define('process-chunks', async (req: ResolverRequest) => {
+  const { chunks } = req.payload;
+  const accountId = req.context.accountId;
+
+  if (!accountId) {
+    return { success: false, error: 'No accountId provided' };
+  }
+
+  for (const chunk of chunks) {
+    await queue.push({ text: chunk });
+  }
+
+  return {
+    success: true,
+    string: 'yay',
+    queue: queue
+  }
+
 });
 
 resolver.define('createFlashcard', createFlashcard);

@@ -34,9 +34,19 @@ modules:
       viewportSize: large
       title: FLASH - Create Flashcard(s) with whole page (AI Generation)
 
+  consumer:
+    - key: queue-consumer
+      # Name of the queue for which this consumer will be invoked
+      queue: flashcard-generation
+      resolver:
+        function: resolver
+        # resolver function to be called with payload
+        method: event-listener
+
   function:
     - key: resolver
       handler: index.handler
+      # timeoutSeconds: 600 # for example
 
 
 

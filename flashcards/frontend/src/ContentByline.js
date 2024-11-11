@@ -32,6 +32,7 @@ function ContentByline() {
   const [deckGen, setDeckGen] = useState(null);
   const [savingDeck, setSavingDeck] = useState(false);
   const [deckSaved, setDeckSaved] = useState(false);
+  const [runningReq, setRunningReq] = useState(0);
 
   const chunkText = (text, chunkSize) => {
     const words = text.split(' ');
@@ -117,21 +118,33 @@ function ContentByline() {
     if (allText) {
       const chunks = chunkText(allText, 500); // 500 for now during testing
       const allQAPairs = [];  // Initialize an array to hold all flashcards
-  
+      // try {
+      //   const res = await invoke('process-chunks', {
+      //     chunks: chunks
+      //   });
+      //   console.log(res.queue);
+      // } catch (error) {
+      //   console.error('Error on flashcard generation', error);
+      // }
       // Generate Q&A pairs
       for (const chunk of chunks) {
-        try {
-          const response = await invoke('generateQA', { text: chunk });
-          if (response && response.success) {
-            const newQAPairs = response.data;
-            
-            setQAPairs((prevQAPairs) => [...prevQAPairs, ...newQAPairs]);
+        // await queue.push({ text: chunk });
+        if (runningReq == 0) { 
+          setRunningReq(1);
+          try {
+            const response = await invoke('generateQA', { text: chunk });
+            if (response && response.success) {
+              const newQAPairs = response.data;
+              
+              setQAPairs((prevQAPairs) => [...prevQAPairs, ...newQAPairs]);
 
-            allQAPairs.push(...newQAPairs);
-            console.log(response.data);
+              allQAPairs.push(...newQAPairs);
+              console.log(response.data);
+            }
+          } catch (error) {
+            console.error('Error generating flashcards:', error);
           }
-        } catch (error) {
-          console.error('Error generating flashcards:', error);
+          setRunningReq(0);
         }
       }
   
