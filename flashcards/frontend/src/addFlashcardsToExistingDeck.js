@@ -9,14 +9,6 @@ import { Alert, Collapse } from '@mui/material';
 import CloseIcon from '@mui/icons-material/Close';
 import './deckGlobalModuleCreate.css';
 import SearchIcon from '@mui/icons-material/Search';
-//import './globalPageModule.css';
-
-
-//import CrossIcon from '@atlaskit/icon/glyph/cross';
-
-
-
-
 
 const gridStyles = xcss({
   width: '100%',
@@ -172,8 +164,7 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
             </Alert>
           </Collapse>
         }
-s
-          {/* <div className="global-page-search">
+          <div className="global-page-search">
             <div className="global-page-search-box">
               <SearchIcon className="global-page-search-icon" />
               <input
@@ -184,16 +175,14 @@ s
                 placeholder="Search flashcards..."
               />
             </div>
-          </div> */}
+          </div>
 
           {/************************************* ADD FLASHCARDS FIELD ***************************************/}
           <Field id="add-flashcards" name="add-flashcards" label="Add existing flashcards to deck">
             {() => (
               <div className='flashcards-select-scroll'>
-                {/* {filteredFlashcards.length > 0 ? (
-                  filteredFlashcards.map((flashcard) => ( */}
-                  {flashcards.length > 0 ? (
-                    flashcards.map((flashcard) => (
+                {filteredFlashcards.length > 0 ? (
+                  filteredFlashcards.map((flashcard) => (
                     <div key={flashcard.id} className="flashcards-select-scroll-item">
                       <input
                         type="checkbox"

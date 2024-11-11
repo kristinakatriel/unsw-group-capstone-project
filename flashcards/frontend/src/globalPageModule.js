@@ -628,7 +628,7 @@ function globalPageModule() {
     setIsQuizMode(false);
     console.log("issuse here?");
     console.log(`deck : ${deck.title}`); // Log when a deck is clicked
-    console.log(`updaated deck : ${updatedDeck.title}`);
+    //console.log(`updaated deck : ${updatedDeck.title}`);
     setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]);
     //setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]);
     console.log('Selected Deck:', deck); // Log the currently selected deck
@@ -667,8 +667,15 @@ function globalPageModule() {
     setIsStudyMode(false);
     setIsQuizMode(false);
     console.log('consol log');
-    setBreadcrumbItems(prevItems => prevItems.slice(0, -1));
-    console.log('Current Breadcrumb Items:', prevItems.slice(0, -1)); // Log breadcrumb items
+
+    setBreadcrumbItems(prevItems => {
+      const updatedItems = prevItems.slice(0, -1);
+      console.log('Current Breadcrumb Items:', updatedItems); // Log breadcrumb items Going back to Deck
+      return updatedItems;
+    });
+
+    // setBreadcrumbItems(prevItems => prevItems.slice(0, -1));
+    // console.log('Current Breadcrumb Items:', prevItems.slice(0, -1)); // Log breadcrumb items
 
     // setBreadcrumbItems(prevItems => {
     //   const updatedItems = prevItems.slice(0, -1);
@@ -808,28 +815,46 @@ function globalPageModule() {
     console.log('Breadcrumb items:', breadcrumbItems);
     console.log('Tag map for cards:', cardTagMap);
     console.log('Tag map for deck:', deckTagMap);
+
     return (
-      <div>
+      <div >
         <Breadcrumbs>
           {breadcrumbItems.map((item, index) => (
-
             <BreadcrumbsItem
               key={index}
               href={item.href}
               text={item.text}
-              onClick={() => {
-                console.log(`Breadcrumb clicked: ${item.text}`);
-                if (item.text === 'FLASH (Home)') goBackToHome();
-              }}
-              // onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined}
+              onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined}
               // className="breadcrumb-item"
-            />
+              />
           ))}
         </Breadcrumbs>
         <DeckDisplay deck={selectedDeck} tagMap={cardTagMap} deckTags={deckTagMap} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
       </div>
     );
   }
+  //   return (
+  //     <div>
+  //       <Breadcrumbs>
+  //         {breadcrumbItems.map((item, index) => (
+
+  //           <BreadcrumbsItem
+  //             key={index}
+  //             href={item.href}
+  //             text={item.text}
+  //             onClick={() => {
+  //               console.log(`Breadcrumb clicked: ${item.text}`);
+  //               if (item.text === 'FLASH (Home)') goBackToHome();
+  //             }}
+  //             // onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined}
+  //             // className="breadcrumb-item"
+  //           />
+  //         ))}
+  //       </Breadcrumbs>
+  //       <DeckDisplay deck={selectedDeck} tagMap={cardTagMap} deckTags={deckTagMap} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
+  //     </div>
+  //   );
+  // }
   console.log('consol log');
   // const [alignment, setAlignment] = useState('all');
   console.log('consol log');
@@ -852,7 +877,7 @@ function globalPageModule() {
     } else if (newAlignment === 'all' && isMyTagsSelected) {
       selectOwnTags();
     }
-  }
+  }; //here?
 
   return (
     <div className='global-page-container'>
