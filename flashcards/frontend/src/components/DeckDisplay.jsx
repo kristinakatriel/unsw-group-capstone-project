@@ -37,7 +37,7 @@ const titleContainerStyles = xcss({
   gridArea: 'title',
 });
 
-const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQuizMode, goBackToHome, goBackIntermediate}) => {
+const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQuizMode, startQuizResult, goBackToHome, goBackIntermediate}) => {
   // ========================
   // STATE MANAGEMENT
   // ========================
@@ -71,7 +71,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showErrorAlert, setShowErrorAlert] = useState(false);
 
-  // STATE for viewing quiz result 
+  // STATE for viewing quiz result
   const [viewQuizResult, setViewQuizResult] = useState(null);
   const [viewQuizResultBool, setViewQuizResultBool] = useState(false);
   const [pressedButton, setPressedButton] = useState(false);
@@ -442,36 +442,36 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   // ========================
 
   const handleViewQuizResult = async () => {
-    console.log('Viewing quiz results');
-    setPressedButton(true);
-    let index = 0
-    let loopStatus = true;
-    let responseArray = [];
+    // console.log('Viewing quiz results');
+    // setPressedButton(true);
+    // let index = 0
+    // let loopStatus = true;
+    // let responseArray = [];
 
-    while (loopStatus) {
-      try {
-        const response = await invoke('viewQuizResults', {
-          deckId: updatedDeck.id, 
-          index: index
-        });
-    
-        if (response.success) {
-          responseArray.push(response);
-          console.log("response is: " + response)
-          setViewQuizResult(responseArray);
-          setViewQuizResultBool(true); // this boolean means that there are quiz results to be printed
-          index++;
-          console.log('Quiz Result:', response);
-        } else {
-          console.error('Error fetching quiz results:', response.error);
-          loopStatus = false;
-          setErrorMessage(response.error);
-        }
-      } catch (error) {
-        console.error('Error fetching quiz results:', error);
-        setErrorMessage('An error occurred while fetching quiz results');
-      }
-    }
+    // while (loopStatus) {
+    //   try {
+    //     const response = await invoke('viewQuizResults', {
+    //       deckId: updatedDeck.id,
+    //       index: index
+    //     });
+
+    //     if (response.success) {
+    //       responseArray.push(response);
+    //       console.log("response is: " + response)
+    //       setViewQuizResult(responseArray);
+    //       setViewQuizResultBool(true); // this boolean means that there are quiz results to be printed
+    //       index++;
+    //       console.log('Quiz Result:', response);
+    //     } else {
+    //       console.error('Error fetching quiz results:', response.error);
+    //       loopStatus = false;
+    //       setErrorMessage(response.error);
+    //     }
+    //   } catch (error) {
+    //     console.error('Error fetching quiz results:', error);
+    //     setErrorMessage('An error occurred while fetching quiz results');
+    //   }
+    // }
   };
 
   return (
@@ -511,11 +511,30 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
                 </button>
               </span>
             </Tooltip>
-            <div>
+
+            <Tooltip title={isDisabled ? "Complete a quiz to access this feature" : ""}>
+              <span>
+                <button
+                  // className='deck-display-quiz-icon' change this
+                  className='viewQuizResults'
+                  onClick={isDisabled ? undefined : startQuizResult}
+                  disabled={isDisabled}
+                  style={{
+                    cursor: isDisabled ? 'not-allowed' : 'pointer',
+                    opacity: isDisabled ? 0.5 : 1,
+                  }}
+                >
+                  <PercentIcon fontSize='small' /> View Quiz Results
+                </button>
+              </span>
+            </Tooltip>
+
+            {/* <div>
               <button className='viewQuizResults' onClick={handleViewQuizResult}>
                     <PercentIcon fontSize='small' /> View Quiz Results
               </button>
-            </div>
+            </div> */}
+
           </div>
         </div>
         <div className='right-buttons'>
@@ -559,7 +578,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
         ))}
       </div>
 
-      <div className='deck-view-prev-quiz-results'>
+      {/* <div className='deck-view-prev-quiz-results'>
         {viewQuizResultBool && pressedButton ? (
           <>
           <h3>All Quiz Results</h3>
@@ -577,7 +596,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
         ) : pressedButton ? ( // the line below is printed if there are no quiz results and the user presses button
           <p>No quiz results to display. Click "View Quiz Results" to see details.</p>
         ) : null}
-      </div>
+      </div> */}
 
       <h4 className='deck-flashcard-amount'>Flashcards: {updatedDeck.cards?.length || 0}</h4>
 
