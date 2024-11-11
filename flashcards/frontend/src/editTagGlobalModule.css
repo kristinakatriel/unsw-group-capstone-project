@@ -1,0 +1,113 @@
+/* Container for full-width modal grid layout
+.grid-container {
+    width: 100%;
+  }
+
+  /* Style for the badge selection container
+  .badge-container {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+
+  /* Badge styles for tag color options
+  .badge {
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: white;
+    text-align: center;
+    user-select: none;
+    font-weight: bold;
+    transition: transform 0.2s;
+  }
+
+  /* Color-specific badge classes
+  .badge.blue { background-color: #0052CC; }
+  .badge.red { background-color: #DE350B; }
+  .badge.orange { background-color: #FF991F; }
+  .badge.green { background-color: #36B37E; }
+  .badge.yellow { background-color: #FFAB00; }
+  .badge.purple { background-color: #6554C0; }
+
+  /* Highlight the selected badge
+  .badge.selected {
+    transform: scale(1.1);
+    border: 2px solid #000;
+  }
+
+  /* Scrollable container for decks and flashcards
+  .decks-select-scroll, .flashcards-select-scroll {
+    max-height: 200px;
+    overflow-y: auto;
+    margin-top: 8px;
+    border: 1px solid #DFE1E6;
+    padding: 8px;
+    border-radius: 4px;
+  }
+
+  /* Individual item styling in scroll containers
+  .decks-select-scroll-item, .flashcards-select-scroll-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+  }
+
+  /* Interactive label for toggle elements
+  .label-clickable {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    font-weight: bold;
+    color: #42526E;
+  }
+
+  /* Style for toggle icons
+  .toggle-icon {
+    display: flex;
+    align-items: center;
+    margin-left: 8px;
+  }
+
+  /* Tag page search box styling
+  .tag-page-search-box {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 8px;
+    border: 1px solid #DFE1E6;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
+
+  /* Tag page search input field
+  .tag-page-search input[type="text"] {
+    width: 100%;
+    border: none;
+    outline: none;
+  }
+
+  /* Style for the success alert message
+  .alert-success {
+    background-color: #E3FCEF;
+    color: #36B37E;
+    padding: 8px;
+    border-radius: 4px;
+    margin-top: 12px;
+  }
+
+  /* Close container styles for modal
+  .close-container {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+  }
+
+  /* Title container styles for modal
+  .title-container {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+  } */

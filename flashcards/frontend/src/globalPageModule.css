@@ -186,7 +186,7 @@
 
 
 .global-page-badge-container .badge .all-tags {
-  background-color: #484848;; /* Light gray */
+  background-color: #484848; /* Light gray */
   color: rgb(255, 255, 255);
 }
 
@@ -213,4 +213,15 @@
 .global-page-container .toggle-button {
   padding: 7px;
   font-size: 12px;
+}
+
+.global-page-container .tag-edit-button,
+.global-page-container .tag-delete-button {
+  color: lightgrey;
+  cursor: pointer;
+}
+
+.global-page-container .tag-edit-button:hover,
+.global-page-container .tag-delete-button:hover {
+  color: darkgrey;
 }
