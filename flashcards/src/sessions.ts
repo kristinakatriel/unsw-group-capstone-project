@@ -392,34 +392,28 @@ import { IndicatorSeparator } from 'react-select/dist/declarations/src/component
       }
     }
   
-    const newIndex = currentIndex + 1
+    let newIndex = currentIndex + 1
     if (newIndex == session.totalCardCount) {
-      return {
-        success: true,
-        message: 'study session is finished'
-      }
-    } else {
-      // study session hasnt finished so we return the next card
-      session.currentCardIndex = newIndex;
-      await storage.set(sessionId, session);
-      return {
-        success: true,
-        nextIndex: newIndex,
-        nextCardId: session.deckInSession.cards?.[newIndex].id
-      }
+      newIndex = 0;
     }
-  };
+    session.currentCardIndex = newIndex;
+    await storage.set(sessionId, session);
+    return {
+      success: true,
+      newIndex: newIndex,
+    }
+};
 
   export const prevCardStudy = async (req: ResolverRequest) => {
     const { currentIndex, sessionId } = req.payload;
   
     const session = await storage.get(sessionId);
-      if (!session) {
-        return {
-          success: false,
-          error: `No session found with id: ${sessionId}`
-        };
-      }
+    if (!session) {
+      return {
+        success: false,
+        error: `No session found with id: ${sessionId}`
+      };
+    }
   
     // check if current index is less than total length
     if (currentIndex >= session.totalCardCount) {
@@ -429,21 +423,15 @@ import { IndicatorSeparator } from 'react-select/dist/declarations/src/component
       }
     }
   
-    const newIndex = currentIndex - 1
+    let newIndex = currentIndex - 1
     if (newIndex < 0) {
-      return {
-        success: false,
-        message: 'unable to go back'
-      }
-    } else {
-      // study session hasnt finished so we return the next card
-      session.currentCardIndex = newIndex;
-      await storage.set(sessionId, session);
-      return {
-        success: true,
-        nextIndex: newIndex,
-        nextCardId: session.deckInSession.cards?.[newIndex].id
-      }
+      newIndex = session.totalCardCount - 1;
+    }
+    session.currentCardIndex = newIndex;
+    await storage.set(sessionId, session);
+    return {
+      success: true,
+      newIndex: newIndex,
     }
   };
   
@@ -478,10 +466,10 @@ import { IndicatorSeparator } from 'react-select/dist/declarations/src/component
         }
         user.data[deckId] = newDynamicDeck
       } else {
-        user.data.deckId.dynamicDeck = session.deckInSession
+        user.data[deckId].dynamicDeck = session.deckInSession
       }
       // now let us add the session to the list
-      user.data.deckId.studySessions.push(newStudyResult);
+      user.data[deckId].studySessions.push(newStudyResult);
 
       // let us store user data
       await storage.set(`u-${accountId}`, user);

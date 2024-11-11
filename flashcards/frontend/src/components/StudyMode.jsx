@@ -8,6 +8,7 @@ import { Field } from '@atlaskit/form';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import './StudyMode.css';
+import { invoke } from '@forge/bridge';
 
 const StudyMode = ({ deck }) => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
@@ -35,7 +36,9 @@ const StudyMode = ({ deck }) => {
           setFlashcards(response.cards);
           setSessionId(response.sessionId);
           setSession(response.session);
-          setCurrentCardIndex(response.firstIndex)
+          setCurrentCardIndex(response.firstIndex);
+          console.log(flashcards);
+          console.log("first index is: " + currentCardIndex);
         }
       } catch (error) {
         console.error('response has error: ' + error);
@@ -46,14 +49,14 @@ const StudyMode = ({ deck }) => {
 
   }, [deck.id]);
 
-  const goToPrevCard = () => {
+  const goToPrevCard = async () => {
     try {
       const response = invoke('prevCardStudy', { 
         currentIndex: currentCardIndex, 
         sessionId: sessionId });
-      
+      console.log("current card index is: " + currentCardIndex);
       if (response.success) {
-        setCurrentCardIndex(response.nextIndex);
+        setCurrentCardIndex(response.newIndex);
       } else {
         console.error('Valid Response. Error is: ' + response.error);
       }
@@ -62,31 +65,16 @@ const StudyMode = ({ deck }) => {
     }
   };
   
-  const goToNextCard = () => {
+  const goToNextCard = async () => {
     try {
-      const response = invoke('nextCardStudy', { 
+      const response = await invoke('nextCardStudy', { 
         currentIndex: currentCardIndex, 
         sessionId: sessionId });
-      
       if (response.success) {
-        if (response.message === 'study session is finished') {
-          // invoke the end study function
-          try {
-            const responseEndStudy = invoke('endStudySession', { 
-              sessionId: sessionId });
-            if (responseEndStudy.success) {
-              console.log("quiz session is added");
-            } else {
-              console.error("valid end response. error is: " + responseEndStudy.error);
-            }
-          } catch (error) {
-            console.error("end response is invalid. error is: " + error);
-          }
-        } else {
-          setCurrentCardIndex(response.nextIndex);
-        }
+        console.log("current card index is: " + (response.newIndex));
+        setCurrentCardIndex(response.newIndex);
       } else {
-        console.error('Valid Response. Error is: ' + error)
+        console.error("Valid response. Error is: " + response.error);
       }
     } catch (error) {
       console.error('Invalid Response. Error is: ' + error);
