@@ -44,10 +44,10 @@ const QuizResults = ({ viewQuizResult, pressedButton }) => {
 
   return (
     <div className="quiz-results-container">
-      <h3>All Quiz Results</h3>
+      <h1>All Quiz Results</h1>
       {viewQuizResult && viewQuizResult.length > 0 ? (
         <div className="results-and-statistics">
-          <Paper className="results-table">
+          <div className="results-table">
             <TableContainer className="table-container">
               <Table stickyHeader aria-label="sticky table">
                 <TableHead>
@@ -99,18 +99,10 @@ const QuizResults = ({ viewQuizResult, pressedButton }) => {
               onPageChange={handleChangePage}
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
-          </Paper>
+          </div>
 
           {selectedQuiz && (
-            <Paper
-              sx={{
-                display: 'flex',
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                padding: 2,
-              }}
-            >
+            <div className='results-pie'>
               <div
                 style={{
                   display: 'flex',
@@ -132,7 +124,7 @@ const QuizResults = ({ viewQuizResult, pressedButton }) => {
                   height={200}
                 />
               </div>
-            </Paper>
+            </div>
           )}
         </div>
       ) : (

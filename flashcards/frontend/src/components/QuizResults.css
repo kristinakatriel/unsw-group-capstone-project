@@ -8,6 +8,13 @@
   width: 100%;
   overflow: hidden;
   padding: 10px;
+  border: 1px solid lightgrey;
+}
+
+.results-pie {
+  overflow: hidden;
+  padding: 10px;
+  border: 1px solid lightgrey;
 }
 
 .quiz-statistics {
@@ -29,6 +36,11 @@
 .table-row.selected-row {
   background-color: rgba(0, 123, 255, 0.2);
   cursor: pointer;
+}
+
+.quiz-results-container h1 {
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
 .quiz-results-container .MuiPieChart-root {
