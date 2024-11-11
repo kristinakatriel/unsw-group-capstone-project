@@ -25,9 +25,14 @@ import CreateTagGlobal from './tagGlobalModuleCreate';
 import './tagGlobalModuleCreate.css';
 import Chip from '@mui/material/Chip';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditTagGlobal from './tagGlobalPageEdit';
+// import './editTagGlobalModule.css';
+import EditIcon from '@mui/icons-material/Edit';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Tooltip from '@mui/material/Tooltip';
+import Box from '@mui/material/Box';
+import { IconButton as MuiIconButton } from '@mui/material';
 
 const gridStyles = xcss({
     width: '100%',
@@ -94,6 +99,14 @@ function globalPageModule() {
   const [deckToDelete, setDeckToDelete] = useState(null);
   const [isDeleteDeckConfirmOpen, setIsDeleteDeckConfirmOpen] = useState(false);
 
+  // State for TAG deletion and confirmation
+  const [tagToDelete, setTagToDelete] = useState(null);
+  const [isDeleteTagConfirmOpen, setIsDeleteTagConfirmOpen] = useState(false);
+
+  // State for TAG editing and confirmation
+  const [editingTag, setEditingTag] = useState(null); // Store the tag being edited
+  const [isEditTagModalOpen, setIsEditTagModalOpen] = useState(false); // Modal logic for editing tags
+
   // State for DECK display
   const [selectedDeck, setSelectedDeck] = useState(null);
 
@@ -111,9 +124,14 @@ function globalPageModule() {
   const [errorMessage, setErrorMessage] = useState('');
   const [deleteDeckFromDisplaySuccess, setDeleteDeckFromDisplaySuccess] = useState(false);
   const [showDeleteSuccessAlert, setShowDeleteSuccessAlert] = useState(false);
+  const [deleteTagFromDisplaySuccess, setDeleteTagFromDisplaySuccess] = useState(false);
+  const [showTagSuccessAlert, setShowTagSuccessAlert] = useState(false);
 
   // State for search
   const [globalPageSearchTerm, setGlobalPageSearchTerm] = useState('');
+  const [alignment, setAlignment] = useState('all');
+
+  const [hoveredTag, setHoveredTag] = useState(null);
 
   //************************** DELETION LOGIC *****************************/
   const confirmDeleteFlashcard = (flashcard) => {
@@ -126,6 +144,12 @@ function globalPageModule() {
     setIsDeleteDeckConfirmOpen(true);
   };
 
+  const confirmDeleteTag = (tag) => {
+    console.log(tag.id);
+    setTagToDelete(tag);
+    setIsDeleteTagConfirmOpen(true);
+  };
+
   const closeDeleteFlashcardConfirm = () => {
     setIsDeleteFlashcardConfirmOpen(false);
     setFlashcardToDelete(null);
@@ -136,6 +160,13 @@ function globalPageModule() {
   const closeDeleteDeckConfirm = () => {
     setIsDeleteDeckConfirmOpen(false);
     setDeckToDelete(null);
+    setErrorMessage('');
+    setDeleteSuccess(false);
+  };
+
+  const closeDeleteTagConfirm = () => {
+    setIsDeleteTagConfirmOpen(false);
+    setTagToDelete(null);
     setErrorMessage('');
     setDeleteSuccess(false);
   };
@@ -185,24 +216,40 @@ function globalPageModule() {
   };
 
   useEffect(() => {
-
-
     if (deleteDeckFromDisplaySuccess) {
       setShowDeleteSuccessAlert(true);
-
       const timer = setTimeout(() => {
         setShowDeleteSuccessAlert(false);
       }, 2000); // Adjust the duration as needed
-
       return () => clearTimeout(timer);
     }
   }, [deleteDeckFromDisplaySuccess]);
+
+  const deleteTag = async () => {
+    setErrorMessage('');
+    console.log(tagToDelete.id);
+    try {
+      const response = await invoke('deleteTag', { tagId: tagToDelete.id });
+      if (response.success) {
+        setDeleteSuccess(true);
+        loadTags();
+        setTimeout(() => {
+          closeDeleteTagConfirm();
+        }, 2000);
+        refreshTagFrontend();
+      } else {
+        setErrorMessage(response.error);
+        console.error('Error deleting tag:', response.error);
+      }
+    } catch (error) {
+      console.error('Error deleting tag:', error);
+    }
+  };
 
   useEffect(() => {
     console.log("Updated selected deck:", selectedDeck);
     // Additional logic here
   }, [selectedDeck]); // Runs whenever `selectedDeck` changes
-
 
   //************************** FETCHING DATA (REUSABLE) *****************************/
   const loadFlashcards = async () => {
@@ -409,8 +456,24 @@ function globalPageModule() {
 
   const selectOwnTags = () => {
 
-
+    console.log("testing");
     setIsMyTagsSelected((prevState) => !prevState); // Toggle the switch
+  };
+
+
+  // Open the edit modal for a tag
+  const openTagEditModal = (tag) => {
+    setEditingTag(tag); // Set the tag to be edited
+    setIsEditTagModalOpen(true); // Open the modal
+  };
+
+  // Close the edit modal and refresh tags
+  const closeTagEditModal = (updatedTag) => {
+    setIsEditTagModalOpen(false); // Close the modal
+
+    // Refresh the tag list by fetching tags
+    refreshTagFrontend();
+    refreshDeckFrontend();
   };
 
 
@@ -430,7 +493,7 @@ function globalPageModule() {
 
     // If a tag is selected, filter cards by their IDs in the selected tag’s flashcards array
 
-    const matchesTags =  selectedTags.length === 0 || selectedTags.length === tags.length || // If "All Tags" is selected
+    const matchesTags =  selectedTags.length === 0 || // If "All Tags" is selected
       selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)));
 
 
@@ -488,7 +551,7 @@ function globalPageModule() {
       (deck.description && typeof deck.description === 'string' && deck.description.toLowerCase().includes(searchTerm)) ||
       (deck.name && typeof deck.name === 'string' && deck.name.toLowerCase().includes(searchTerm));
 
-    const matchesTags =  selectedTags.length === 0 ||  selectedTags.length === tags.length || // If "All Tags" is selected
+    const matchesTags =  selectedTags.length === 0 || // If "All Tags" is selected
     selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.deckIds.includes(deck.id)));
 
 
@@ -526,7 +589,7 @@ function globalPageModule() {
   const renderFlashcardsList = (filteredFlashcards) => {
     //console.log('cards right before passed into card slider' , flashcards);
     return (
-    <CardSlider cards={filteredFlashcards} tagMap={cardTagMap} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
+    <CardSlider cards={filteredFlashcards} tagMap={cardTagMap} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal} onTagEdit={openTagEditModal}/>
     );
 
   };
@@ -538,15 +601,6 @@ function globalPageModule() {
   const renderTagsList = (filteredTags) => (
     <div className="global-page-badge-container">
 
-      {/* <div className="badge all-tags"> JUMP TO HERE
-        <p>My Stuff</p>
-        <Switch
-          checked={isMyTagsSelected} // If the switch is on, filter only user-owned items
-          onChange={selectOwnTags} // Toggle the state when the switch is changed
-        />
-      </div> */}
-
-
       {/* Toggle All Tags Chip */}
       <Chip
         label="Toggle All Tags"
@@ -555,44 +609,44 @@ function globalPageModule() {
         onClick={handleAllTagsToggle} // Toggle all tags on click
         color={selectedTags.length === tags.length ? "primary" : "default"} // Optional: use different color if all tags selected
         sx={{ margin: 1 }} // Add spacing between chips
+
       />
 
-
-
-
-
       {filteredTags.map((tag, index) => (
-        // <p
-        //   key={index}
-        //   className={`badge ${tag.colour}`}
-        //   onClick={() => handleTagClick(tag)}
-        //   //onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
-        // >
-        //   {tag.title || "Tag"}
-        // </p>
-        //<div key={index} className={`badge ${tag.colour}`}>
-        <Chip
-        key={index}
-        label={tag.title || "Tag"}
-        className={`badge ${tag.colour}`}
-        //color={className={`badge ${tag.colour}`}|| "default"}  // Use 'default' if no color is specified
-        onClick={() => handleTagToggle(tag.id)}
-        onDelete={selectedTags.includes(tag.id) ? () => handleTagToggle(tag.id) : undefined} // Only enable delete if selected
-        deleteIcon={selectedTags.includes(tag.id) ? <DeleteIcon /> : null} // Conditionally show delete icon
-        sx={{ margin: 1 }} // Add spacing between chips
-        />
-
-
-
-
-        /* <div key={index} className={`badge ${tag.colour}`}>
-        <p>{tag.title || "Tag"}</p>
-        <Switch
-            checked={selectedTags.includes(tag.id)}
-            onChange={() => handleTagToggle(tag.id)}
+        <Box
+          key={index}
+          onMouseEnter={() => setHoveredTag(tag.id)}
+          onMouseLeave={() => setHoveredTag(null)}
+          sx={{ position: 'relative', display: 'inline-block', margin: 1 }}
+        >
+          <Chip
+            label={tag.title || "Tag"}
+            className={`badge ${tag.colour}`}
+            onClick={() => handleTagToggle(tag.id)}
+            onDelete={selectedTags.includes(tag.id) ? () => handleTagToggle(tag.id) : undefined}
+            deleteIcon={selectedTags.includes(tag.id) ? <DeleteIcon /> : null}
+            sx={{ display: 'flex', alignItems: 'center' }}
           />
-        </div> */
-        //  </div>
+          {hoveredTag === tag.id && (
+            <Box sx={{
+              position: 'absolute',
+              bottom: '70%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 1,
+              display: 'flex',
+              flexDirection: 'row',
+              pointerEvents: 'auto',
+            }}>
+              <MuiIconButton className='tag-edit-button'size="small" onClick={() => openTagEditModal(tag)}>
+                <EditIcon />
+              </MuiIconButton>
+              <MuiIconButton className='tag-delete-button' size="small" onClick={() => confirmDeleteTag(tag)}>
+                <DeleteIcon />
+              </MuiIconButton>
+            </Box>
+          )}
+        </Box>
       ))}
     </div>
   );
@@ -603,24 +657,36 @@ function globalPageModule() {
     setSelectedDeck(deck);
     setIsStudyMode(false);
     setIsQuizMode(false);
+    console.log("issuse here?");
+    console.log(`deck : ${deck.title}`); // Log when a deck is clicked
+    //console.log(`updaated deck : ${updatedDeck.title}`);
     setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]);
+    //setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]);
     console.log('Selected Deck:', deck); // Log the currently selected deck
     console.log('Current Breadcrumb Items:', [{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]); // Log breadcrumb items
   };
 
   const goBackIntermediate = (deleted = false) => {
+    console.log('consol log');
     if (deleted) {
+      console.log('consol log');
       setDeleteDeckFromDisplaySuccess(true);
+      console.log('consol log');
     } else {
+      console.log('consol log');
       setDeleteDeckFromDisplaySuccess(false);
+      console.log('consol log');
     }
   }
 
   const goBackToHome = () => {
+    console.log('consol log');
     console.log('Going back to FLASH (Home)'); // Log when going back to Home
     setSelectedDeck(null);
+    console.log('consol log');
     setIsStudyMode(false);
     setIsQuizMode(false);
+    console.log('consol log');
     setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }]);
     refreshDeckFrontend();
     refreshFlashcardFrontend();
@@ -631,16 +697,29 @@ function globalPageModule() {
     console.log('Going back to Deck'); // Log when going back to the deck
     setIsStudyMode(false);
     setIsQuizMode(false);
+    console.log('consol log');
+
     setBreadcrumbItems(prevItems => {
       const updatedItems = prevItems.slice(0, -1);
       console.log('Current Breadcrumb Items:', updatedItems); // Log breadcrumb items Going back to Deck
       return updatedItems;
     });
+
+    // setBreadcrumbItems(prevItems => prevItems.slice(0, -1));
+    // console.log('Current Breadcrumb Items:', prevItems.slice(0, -1)); // Log breadcrumb items
+
+    // setBreadcrumbItems(prevItems => {
+    //   const updatedItems = prevItems.slice(0, -1);
+    //   console.log('Current Breadcrumb Items:', updatedItems); // Log breadcrumb items Going back to Deck
+    //   return updatedItems;
+    // });
+    console.log('consol log');
   };
 
   //************************** STUDY MODE FUNCTIONS *****************************/
   const studyMode = async () => {
     //loadDecks();
+    console.log('consol log');
 
     console.log("selected deck going into quiz mode", selectedDeck);
     const id = selectedDeck.id;
@@ -663,13 +742,17 @@ function globalPageModule() {
     console.log("selected deck", selectedDeck);
     console.log('Entering Study Mode'); // Log when entering study mode
     setIsStudyMode(true);
+    console.log('consol log');
     setBreadcrumbItems(prevItems => [
         ...prevItems,
         { href: '#', text: 'Study Mode' }
     ]);
+
+    console.log('consol log');
   };
 
   if (isStudyMode) {
+    console.log('consol log');
     return (
       <div>
         <Breadcrumbs>
@@ -691,6 +774,9 @@ function globalPageModule() {
         <StudyMode deck={selectedDeck} onBack={goBackToDeck} />
       </div>
     );
+
+    console.log('consol log');
+
   }
 
   //************************** QUIZ MODE FUNCTIONS *****************************/
@@ -717,8 +803,9 @@ function globalPageModule() {
     console.log("selected deck", selectedDeck);
     console.log('Entering Quiz Mode'); // Log when entering quiz mode
     // loadDecks();
+    console.log('consol log');
     setIsQuizMode(true);
-
+    console.log('consol log');
     setBreadcrumbItems(prevItems => [
         ...prevItems,
         { href: '#', text: 'Quiz Mode' }
@@ -727,6 +814,7 @@ function globalPageModule() {
 
   if (isQuizMode) {
     //loadDecks();
+    console.log('consol log');
     return (
       <div>
         <Breadcrumbs>
@@ -753,6 +841,12 @@ function globalPageModule() {
 
   if (selectedDeck) {
     //loadDecks();
+    console.log('consol log');
+    console.log('Selected deck:', selectedDeck);
+    console.log('Breadcrumb items:', breadcrumbItems);
+    console.log('Tag map for cards:', cardTagMap);
+    console.log('Tag map for deck:', deckTagMap);
+
     return (
       <div >
         <Breadcrumbs>
@@ -764,31 +858,57 @@ function globalPageModule() {
               onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined}
               // className="breadcrumb-item"
               />
-
           ))}
         </Breadcrumbs>
         <DeckDisplay deck={selectedDeck} tagMap={cardTagMap} deckTags={deckTagMap} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
       </div>
     );
   }
+  //   return (
+  //     <div>
+  //       <Breadcrumbs>
+  //         {breadcrumbItems.map((item, index) => (
 
-  const [alignment, setAlignment] = useState('all');
-  
+  //           <BreadcrumbsItem
+  //             key={index}
+  //             href={item.href}
+  //             text={item.text}
+  //             onClick={() => {
+  //               console.log(`Breadcrumb clicked: ${item.text}`);
+  //               if (item.text === 'FLASH (Home)') goBackToHome();
+  //             }}
+  //             // onClick={item.text === 'FLASH (Home)' ? goBackToHome : undefined}
+  //             // className="breadcrumb-item"
+  //           />
+  //         ))}
+  //       </Breadcrumbs>
+  //       <DeckDisplay deck={selectedDeck} tagMap={cardTagMap} deckTags={deckTagMap} startStudyMode={studyMode} startQuizMode={quizMode} goBackToHome={goBackToHome} goBackIntermediate={goBackIntermediate}/>
+  //     </div>
+  //   );
+  // }
+  console.log('consol log');
+  // const [alignment, setAlignment] = useState('all');
+  console.log('consol log');
+
+
   const handleToggleChange = (event, newAlignment) => {
+    console.log('consol log');
     console.log(newAlignment);
+    console.log('consol log');
     if (newAlignment === null) {
       setAlignment(alignment);
       return;
-    } 
+    }
+    console.log('consol log');
 
     setAlignment(newAlignment);
-    
+    console.log('consol log');
     if (newAlignment === 'personal' && !isMyTagsSelected) {
       selectOwnTags();
     } else if (newAlignment === 'all' && isMyTagsSelected) {
       selectOwnTags();
-    } 
-  };
+    }
+  }; //here?
 
   return (
     <div className='global-page-container'>
@@ -965,6 +1085,42 @@ function globalPageModule() {
           )}
       </ModalTransition>
 
+      {/* Tag Delete Confirmation Modal */}
+      <ModalTransition>
+          {isDeleteTagConfirmOpen && (
+              <Modal onClose={closeDeleteTagConfirm}>
+                  <ModalHeader>
+                      <Grid gap="space.200" templateAreas={['title close']} xcss={gridStyles}>
+                          <Flex xcss={closeContainerStyles} justifyContent="end">
+                              <IconButton
+                                  appearance="subtle"
+                                  icon={CrossIcon}
+                                  label="Close Modal"
+                                  onClick={closeDeleteTagConfirm}
+                              />
+                          </Flex>
+                          <Flex xcss={titleContainerStyles} justifyContent="start">
+                              <ModalTitle appearance="danger">Delete Tag?</ModalTitle>
+                          </Flex>
+                      </Grid>
+                  </ModalHeader>
+                  <ModalBody>
+                      <p>Are you sure you want to delete all instances of the tag? This action cannot be undone.</p>
+                      {deleteSuccess &&
+                        <Alert severity="success">Tag deleted successfully!</Alert>
+                      }
+                      {errorMessage &&
+                        <Alert severity="error"> {errorMessage} </Alert>
+                      }
+                  </ModalBody>
+                  <ModalFooter>
+                      <Button appearance="subtle" onClick={closeDeleteTagConfirm}>Cancel</Button>
+                      <Button appearance="danger" onClick={deleteTag}>Yes, Delete</Button>
+                  </ModalFooter>
+              </Modal>
+          )}
+      </ModalTransition>
+
       {/* FLASHCARD EDIT FUNCTIONALITY: Flashcard Edit Modal */}
       {isEditFlashcardModalOpen && (
         <ModalDialog heading="Edit Flashcard" onClose={closeFlashcardEditModal}>
@@ -974,6 +1130,17 @@ function globalPageModule() {
           />
         </ModalDialog>
       )}
+
+      {/* // Tags functionality: Tag Edit Modal */}
+      {isEditTagModalOpen && (
+        <ModalDialog heading="Edit Tag" onClose={closeTagEditModal}>
+          <EditTagGlobal
+            tag={editingTag} // Pass the tag to the modal
+            closeTagEditModal={closeTagEditModal}
+          />
+        </ModalDialog>
+      )}
+
 
       {/* DECK EDIT FUNCTIONALITY: DECK Edit Modal */}
       {isEditDeckModalOpen && (
