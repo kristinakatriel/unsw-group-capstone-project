@@ -102,7 +102,7 @@ function globalPageModule() {
   // State for TAG deletion and confirmation
   const [tagToDelete, setTagToDelete] = useState(null);
   const [isDeleteTagConfirmOpen, setIsDeleteTagConfirmOpen] = useState(false);
-  
+
   // State for TAG editing and confirmation
   const [editingTag, setEditingTag] = useState(null); // Store the tag being edited
   const [isEditTagModalOpen, setIsEditTagModalOpen] = useState(false); // Modal logic for editing tags
@@ -493,7 +493,7 @@ function globalPageModule() {
 
     // If a tag is selected, filter cards by their IDs in the selected tag’s flashcards array
 
-    const matchesTags =  selectedTags.length === 0 || selectedTags.length === tags.length || // If "All Tags" is selected
+    const matchesTags =  selectedTags.length === 0 || // If "All Tags" is selected
       selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)));
 
 
@@ -551,7 +551,7 @@ function globalPageModule() {
       (deck.description && typeof deck.description === 'string' && deck.description.toLowerCase().includes(searchTerm)) ||
       (deck.name && typeof deck.name === 'string' && deck.name.toLowerCase().includes(searchTerm));
 
-    const matchesTags =  selectedTags.length === 0 ||  selectedTags.length === tags.length || // If "All Tags" is selected
+    const matchesTags =  selectedTags.length === 0 || // If "All Tags" is selected
     selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.deckIds.includes(deck.id)));
 
 
@@ -600,6 +600,18 @@ function globalPageModule() {
 
   const renderTagsList = (filteredTags) => (
     <div className="global-page-badge-container">
+
+      {/* Toggle All Tags Chip */}
+      <Chip
+        label="Toggle All Tags"
+        className={`global-page-badge-container badge my-stuff ${selectedTags.length === tags.length ? "all-selected" : "all-tags"}`} // Added custom class `my-stuff`
+        //className={`badge ${selectedTags.length === tags.length ? "all-selected" : "all-tags"}`} // Dynamic class for selected state
+        onClick={handleAllTagsToggle} // Toggle all tags on click
+        color={selectedTags.length === tags.length ? "primary" : "default"} // Optional: use different color if all tags selected
+        sx={{ margin: 1 }} // Add spacing between chips
+
+      />
+
       {filteredTags.map((tag, index) => (
         <Box
           key={index}
