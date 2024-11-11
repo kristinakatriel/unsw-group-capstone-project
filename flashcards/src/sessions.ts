@@ -9,7 +9,7 @@ import { generateId, clearStorage, getUserName, initUserData } from './helpers'
 import { IndicatorSeparator } from 'react-select/dist/declarations/src/components/indicators';
 
 
-export const startQuizSession = async (req: ResolverRequest) => {
+  export const startQuizSession = async (req: ResolverRequest) => {
     const { deckId } = req.payload;
     const accountId = req.context.accountId;
     const user = await initUserData(accountId);
@@ -38,58 +38,81 @@ export const startQuizSession = async (req: ResolverRequest) => {
       user.data[deckId] = newDynamicDataObj;
     }
     await storage.set(`u-${accountId}`, user);
-    
-    const quizDeck = user.data[deckId].dynamicDeck;
-    
+
+    const quizDeck : Deck = user.data[deckId].dynamicDeck;
     if (!quizDeck) {
       return {
         success: false,
         error: 'Deck not found. Please make sure the deck exists for the user.',
       };
-    } 
-  
-      // create an array of status
-      const totalCards = quizDeck.cards?.length
-  
-      // check if length = 0
-      if (totalCards == 0) {
-        return {
-          success: false, 
-          error: 'cannot enter quiz mode if deck has no cards'
-        }
-      }
-      const statusPerCardArray: QuizSessionCardStatus[] = Array(totalCards).fill(QuizSessionCardStatus.Incomplete);
-      const initialHintArray: boolean[] = Array(totalCards).fill(false);
-
-      // creating a new session
-      const sessionId = `q-${generateId()}`;
-      const newSession: QuizSession = {
-        deckInSession: quizDeck,
-        totalCardCount: totalCards,
-        currentCardIndex: 0,
-        sessionStartTime: Date.now(),
-        statusPerCard: statusPerCardArray,
-        hintArray: initialHintArray
-      }
-  
-      await storage.set(sessionId, newSession);
-  
-      // let us return the first card and the session
+    }
+    const newDeck = await storage.get(deckId) as Deck | undefined;
+    if (!newDeck) {
       return {
-        success: true,
-        session: newSession,
-        firstIndex: 0,
-        sessionId: sessionId,
-        x: x,
-        y: y,
-        cards: quizDeck.cards
+        success: false,
+        error: 'deck does not exist'
       }
+    }
+
+    const newDeckCardIdSet = new Set(newDeck.cards.map(card => card.id));
+
+    // let us remove cards from the quiz deck not in new deck
+    quizDeck.cards = quizDeck.cards.filter(card => newDeckCardIdSet.has(card.id));
+
+    // we need to create a set of card ids that contain ids from quiz deck
+    const quizDeckCardIdSet = new Set(quizDeck.cards.map(card => card.id));
+
+    // we loop through the new deck and add cards not in quiz deck
+    for (const newCard of newDeck.cards) {
+      // check if new card is in quizDeckCardID Set
+      if (!quizDeckCardIdSet.has(newCard.id)) {
+        quizDeck.cards.push(newCard);
+        quizDeckCardIdSet.add(newCard.id);
+      }
+    }
+
+    // create an array of status
+    const totalCards = quizDeck.cards?.length
+
+    // check if length = 0
+    if (totalCards == 0) {
+      return {
+        success: false,
+        error: 'cannot enter quiz mode if deck has no cards'
+      }
+    }
+    const statusPerCardArray: QuizSessionCardStatus[] = Array(totalCards).fill(QuizSessionCardStatus.Incomplete);
+    const initialHintArray: boolean[] = Array(totalCards).fill(false);
+
+    // creating a new session
+    const sessionId = `q-${generateId()}`;
+    const newSession: QuizSession = {
+      deckInSession: quizDeck,
+      totalCardCount: totalCards,
+      currentCardIndex: 0,
+      sessionStartTime: Date.now(),
+      statusPerCard: statusPerCardArray,
+      hintArray: initialHintArray
+    }
+
+    await storage.set(sessionId, newSession);
+
+    // let us return the first card and the session
+    return {
+      success: true,
+      session: newSession,
+      firstIndex: 0,
+      sessionId: sessionId,
+      x: x,
+      y: y,
+      cards: quizDeck.cards
+    }
   };
-  
-  
+
+
   export const updateCardStatusQuiz = async (req: ResolverRequest) => {
     const { currentIndex, status, sessionId } = req.payload;
-    
+
     const session = await storage.get(sessionId);
       if (!session) {
         return {
@@ -97,7 +120,7 @@ export const startQuizSession = async (req: ResolverRequest) => {
           error: `No session found with id: ${sessionId}`
         };
       }
-  
+
     // check if current index is less than total length
     if (currentIndex >= session.totalCardCount) {
       return {
@@ -105,7 +128,7 @@ export const startQuizSession = async (req: ResolverRequest) => {
         error: 'out of index'
       }
     }
-  
+
     if (status == 'skip') {
       session.statusPerCard[currentIndex] = QuizSessionCardStatus.Skip;
     } else if (status == 'hint') {
@@ -140,11 +163,11 @@ export const startQuizSession = async (req: ResolverRequest) => {
         state: status
       }
     }
-  }; 
-  
+  };
+
   export const endQuizSession = async (req: ResolverRequest) => {
     const { sessionId } = req.payload;
-  
+
     const session = await storage.get(sessionId);
     if (!session) {
       return {
@@ -169,12 +192,12 @@ export const startQuizSession = async (req: ResolverRequest) => {
       countHints: session.hintArray.filter((element: boolean) => element === true).length,
       countSkip: session.statusPerCard.filter((status: QuizSessionCardStatus) => status === QuizSessionCardStatus.Skip).length,
     }
-  
+
     const accountId = req.context.accountId;
     if (accountId) {
       const user = await initUserData(accountId);
       const deckId = session.deckInSession.id;
-      // check if dynamic dict does not exist 
+      // check if dynamic dict does not exist
       if (!(deckId in user.data)) {
         const newDynamicDeck: DynamicData = {
           dynamicDeck: session.deckInSession,
@@ -184,7 +207,7 @@ export const startQuizSession = async (req: ResolverRequest) => {
         }
         user.data[deckId] = newDynamicDeck
       }
-      // now let us add the session to the list 
+      // now let us add the session to the list
       user.data[deckId].quizSessions.push(newQuizResult);
 
       // let us store a new reordered decks
@@ -214,7 +237,7 @@ export const startQuizSession = async (req: ResolverRequest) => {
 
         return indexA - indexB;
       });
-  
+
       // change the user dynamic deck to retrieve the sorted deck when the user starts a new session
       user.data[deckId].dynamicDeck = session.deckInSession;
       user.data[deckId].numTimesAttempted += 1;
@@ -308,28 +331,28 @@ export const startQuizSession = async (req: ResolverRequest) => {
       }
       user.data[deckId] = newDynamicDataObj;
     }
-  
+
     const studyDeck = user.data[deckId].dynamicDeck;
-  
+
       if (!studyDeck) {
           return {
               success: false,
               error: 'Deck Not found',
           };
       }
-    
+
       const totalCards = studyDeck.cards?.length
-  
+
       // check if length = 0
       if (totalCards == 0) {
         return {
-          success: false, 
+          success: false,
           error: 'cannot enter quiz mode if deck has no cards'
         }
       }
-  
+
       const statusPerCardArray: StudySessionCardStatus[] = Array(totalCards).fill(QuizSessionCardStatus.Incomplete);
-  
+
       const sessionId = `ss-${generateId()}`;
       const newStudySession: StudySession = {
         deckInSession: studyDeck,
@@ -339,7 +362,7 @@ export const startQuizSession = async (req: ResolverRequest) => {
         sessionStartTime: Date.now()
       }
       await storage.set(sessionId, newStudySession);
-  
+
       return {
         success: true,
         firstCardId: studyDeck.cards?.[0].id,
@@ -347,10 +370,10 @@ export const startQuizSession = async (req: ResolverRequest) => {
         firstIndex: 0
       }
   };
-  
+
   export const updateCardStatusStudy = async (req: ResolverRequest) => {
     const { currentIndex, positive, negative, sessionId } = req.payload;
-  
+
     const session = await storage.get(sessionId);
       if (!session) {
         return {
@@ -358,7 +381,7 @@ export const startQuizSession = async (req: ResolverRequest) => {
           error: `No session found with id: ${sessionId}`
         };
       }
-  
+
     // check if current index is less than total length
     if (currentIndex >= session.totalCardCount) {
       return {
@@ -366,14 +389,14 @@ export const startQuizSession = async (req: ResolverRequest) => {
         error: 'out of index'
       }
     }
-  
+
     if (positive) {
       session.statusPerCard[currentIndex] = StudySessionCardStatus.Positive
     }
     if (negative) {
       session.statusPerCard[currentIndex] = StudySessionCardStatus.Negative
     }
-  
+
     const newIndex = currentIndex + 1
     if (newIndex == session.totalCardCount) {
       return {
@@ -389,12 +412,12 @@ export const startQuizSession = async (req: ResolverRequest) => {
         nextCardId: session.deckInSession.cards?.[newIndex].id
       }
     }
-  
+
   };
-  
+
   export const endStudySession = async (req: ResolverRequest) => {
     const { sessionId } = req.payload
-  
+
     const session = await storage.get(sessionId);
       if (!session) {
         return {
@@ -402,22 +425,22 @@ export const startQuizSession = async (req: ResolverRequest) => {
           error: `No session found with id: ${sessionId}`
         };
       }
-    
-    // create a new study result 
+
+    // create a new study result
     const newStudyResult: StudyResult = {
-      sessionId: sessionId,  
+      sessionId: sessionId,
       deckInArchive: session.deckInSession,
       statusPerCard: session.statusPerCard,
       countNegative: session.statusPerCard.filter((status: StudySessionCardStatus) => status === StudySessionCardStatus.Negative).length,
       countPositive: session.statusPerCard.filter((status: StudySessionCardStatus) => status === StudySessionCardStatus.Positive).length
     }
-  
+
     const accountId = req.context.accountId;
     if (accountId) {
       const user = await initUserData(accountId);
       const deckId = session.deckInSession.id;
       const reorderedDeck = session.deckInSession
-      // check if dynamic dict does not exist 
+      // check if dynamic dict does not exist
       if (!(deckId in user.data)) {
         const newDynamicDeck: DynamicData = {
           dynamicDeck: reorderedDeck,
@@ -429,9 +452,9 @@ export const startQuizSession = async (req: ResolverRequest) => {
       } else {
         user.data.deckId.dynamicDeck = reorderedDeck
       }
-      // now let us add the session to the list 
+      // now let us add the session to the list
       user.data.deckId.studySessions.push(newStudyResult);
-  
+
       // now let us delete session id
       await storage.delete(sessionId);
     }
