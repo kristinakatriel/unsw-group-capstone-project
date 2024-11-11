@@ -18,6 +18,8 @@
     "@forge/ui": "^1.11.1",
     "@mui/icons-material": "^6.1.3",
     "@mui/material": "^6.1.5",
+    "@mui/x-charts": "^7.22.2",
+    "@mui/x-data-grid": "^7.22.2",
     "@splidejs/react-splide": "^0.7.12",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
