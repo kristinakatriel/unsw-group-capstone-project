@@ -528,7 +528,7 @@ function globalPageModule() {
   };
 
   const renderDecksList = (filteredDecks) => (
-    <DeckSlider decks={filteredDecks} tagMap={deckTagMap} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} />
+    <DeckSlider decks={filteredDecks} tagMap={deckTagMap} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} onTagEdit={openTagEditModal}/>
   );
 
   const renderTagsList = (filteredTags) => (
