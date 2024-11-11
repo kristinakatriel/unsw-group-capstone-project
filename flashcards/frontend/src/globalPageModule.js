@@ -31,6 +31,8 @@ import EditIcon from '@mui/icons-material/Edit';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Tooltip from '@mui/material/Tooltip';
+import Box from '@mui/material/Box';
+import { IconButton as MuiIconButton } from '@mui/material';
 
 const gridStyles = xcss({
     width: '100%',
@@ -97,6 +99,10 @@ function globalPageModule() {
   const [deckToDelete, setDeckToDelete] = useState(null);
   const [isDeleteDeckConfirmOpen, setIsDeleteDeckConfirmOpen] = useState(false);
 
+  // State for TAG deletion and confirmation
+  const [tagToDelete, setTagToDelete] = useState(null);
+  const [isDeleteTagConfirmOpen, setIsDeleteTagConfirmOpen] = useState(false);
+  
   // State for TAG editing and confirmation
   const [editingTag, setEditingTag] = useState(null); // Store the tag being edited
   const [isEditTagModalOpen, setIsEditTagModalOpen] = useState(false); // Modal logic for editing tags
@@ -118,10 +124,14 @@ function globalPageModule() {
   const [errorMessage, setErrorMessage] = useState('');
   const [deleteDeckFromDisplaySuccess, setDeleteDeckFromDisplaySuccess] = useState(false);
   const [showDeleteSuccessAlert, setShowDeleteSuccessAlert] = useState(false);
+  const [deleteTagFromDisplaySuccess, setDeleteTagFromDisplaySuccess] = useState(false);
+  const [showTagSuccessAlert, setShowTagSuccessAlert] = useState(false);
 
   // State for search
   const [globalPageSearchTerm, setGlobalPageSearchTerm] = useState('');
   const [alignment, setAlignment] = useState('all');
+
+  const [hoveredTag, setHoveredTag] = useState(null);
 
   //************************** DELETION LOGIC *****************************/
   const confirmDeleteFlashcard = (flashcard) => {
@@ -134,6 +144,12 @@ function globalPageModule() {
     setIsDeleteDeckConfirmOpen(true);
   };
 
+  const confirmDeleteTag = (tag) => {
+    console.log(tag.id);
+    setTagToDelete(tag);
+    setIsDeleteTagConfirmOpen(true);
+  };
+
   const closeDeleteFlashcardConfirm = () => {
     setIsDeleteFlashcardConfirmOpen(false);
     setFlashcardToDelete(null);
@@ -144,6 +160,13 @@ function globalPageModule() {
   const closeDeleteDeckConfirm = () => {
     setIsDeleteDeckConfirmOpen(false);
     setDeckToDelete(null);
+    setErrorMessage('');
+    setDeleteSuccess(false);
+  };
+
+  const closeDeleteTagConfirm = () => {
+    setIsDeleteTagConfirmOpen(false);
+    setTagToDelete(null);
     setErrorMessage('');
     setDeleteSuccess(false);
   };
@@ -193,24 +216,40 @@ function globalPageModule() {
   };
 
   useEffect(() => {
-
-
     if (deleteDeckFromDisplaySuccess) {
       setShowDeleteSuccessAlert(true);
-
       const timer = setTimeout(() => {
         setShowDeleteSuccessAlert(false);
       }, 2000); // Adjust the duration as needed
-
       return () => clearTimeout(timer);
     }
   }, [deleteDeckFromDisplaySuccess]);
 
-  // useEffect(() => {
-  //   console.log("Updated selected deck:", selectedDeck);
-  //   // Additional logic here
-  // }, [selectedDeck]); // Runs whenever `selectedDeck` changes
+  const deleteTag = async () => {
+    setErrorMessage('');
+    console.log(tagToDelete.id);
+    try {
+      const response = await invoke('deleteTag', { tagId: tagToDelete.id });
+      if (response.success) {
+        setDeleteSuccess(true);
+        loadTags();
+        setTimeout(() => {
+          closeDeleteTagConfirm();
+        }, 2000);
+        refreshTagFrontend();
+      } else {
+        setErrorMessage(response.error);
+        console.error('Error deleting tag:', response.error);
+      }
+    } catch (error) {
+      console.error('Error deleting tag:', error);
+    }
+  };
 
+  useEffect(() => {
+    console.log("Updated selected deck:", selectedDeck);
+    // Additional logic here
+  }, [selectedDeck]); // Runs whenever `selectedDeck` changes
 
   //************************** FETCHING DATA (REUSABLE) *****************************/
   const loadFlashcards = async () => {
@@ -561,61 +600,41 @@ function globalPageModule() {
 
   const renderTagsList = (filteredTags) => (
     <div className="global-page-badge-container">
-
-      {/* <div className="badge all-tags"> JUMP TO HERE
-        <p>My Stuff</p>
-        <Switch
-          checked={isMyTagsSelected} // If the switch is on, filter only user-owned items
-          onChange={selectOwnTags} // Toggle the state when the switch is changed
-        />
-      </div> */}
-
-
-      {/* Toggle All Tags Chip */}
-      <Chip
-        label="Toggle All Tags"
-        className={`global-page-badge-container badge my-stuff ${selectedTags.length === tags.length ? "all-selected" : "all-tags"}`} // Added custom class `my-stuff`
-        //className={`badge ${selectedTags.length === tags.length ? "all-selected" : "all-tags"}`} // Dynamic class for selected state
-        onClick={handleAllTagsToggle} // Toggle all tags on click
-        color={selectedTags.length === tags.length ? "primary" : "default"} // Optional: use different color if all tags selected
-        sx={{ margin: 1 }} // Add spacing between chips
-      />
-
-
-
-
-
       {filteredTags.map((tag, index) => (
-
-        // <Chip
-        // key={index}
-        // label={tag.title || "Tag"}
-        // className={`badge ${tag.colour}`}
-        // //color={className={`badge ${tag.colour}`}|| "default"}  // Use 'default' if no color is specified
-        // onClick={() => handleTagToggle(tag.id)}
-        // onDelete={selectedTags.includes(tag.id) ? () => handleTagToggle(tag.id) : undefined} // Only enable delete if selected
-        // deleteIcon={selectedTags.includes(tag.id) ? <DeleteIcon /> : null} // Conditionally show delete icon
-        // sx={{ margin: 1 }} // Add spacing between chips
-
-        // />
-
-        <div key={index} style={{ display: 'flex', alignItems: 'center' }}>
+        <Box
+          key={index}
+          onMouseEnter={() => setHoveredTag(tag.id)}
+          onMouseLeave={() => setHoveredTag(null)}
+          sx={{ position: 'relative', display: 'inline-block', margin: 1 }}
+        >
           <Chip
             label={tag.title || "Tag"}
             className={`badge ${tag.colour}`}
-            onClick={() => handleTagToggle(tag.id)} // Toggle selection
-            onDelete={selectedTags.includes(tag.id) ? () => handleTagToggle(tag.id) : undefined} // Delete functionality
-            deleteIcon={selectedTags.includes(tag.id) ? <DeleteIcon /> : null} // Conditionally show delete icon
-            sx={{ margin: 1 }} // Add spacing between chips
+            onClick={() => handleTagToggle(tag.id)}
+            onDelete={selectedTags.includes(tag.id) ? () => handleTagToggle(tag.id) : undefined}
+            deleteIcon={selectedTags.includes(tag.id) ? <DeleteIcon /> : null}
+            sx={{ display: 'flex', alignItems: 'center' }}
           />
-          <EditIcon
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent triggering the onClick for Chip
-              openTagEditModal(tag); // Open the edit modal
-            }}
-            sx={{ marginLeft: 1, cursor: 'pointer' }} // Add margin and pointer cursor
-          />
-        </div>
+          {hoveredTag === tag.id && (
+            <Box sx={{
+              position: 'absolute',
+              bottom: '70%',
+              left: '50%',
+              transform: 'translateX(-50%)',
+              zIndex: 1,
+              display: 'flex',
+              flexDirection: 'row',
+              pointerEvents: 'auto',
+            }}>
+              <MuiIconButton className='tag-edit-button'size="small" onClick={() => openTagEditModal(tag)}>
+                <EditIcon />
+              </MuiIconButton>
+              <MuiIconButton className='tag-delete-button' size="small" onClick={() => confirmDeleteTag(tag)}>
+                <DeleteIcon />
+              </MuiIconButton>
+            </Box>
+          )}
+        </Box>
       ))}
     </div>
   );
@@ -1049,6 +1068,42 @@ function globalPageModule() {
                   <ModalFooter>
                       <Button appearance="subtle" onClick={closeDeleteDeckConfirm}>Cancel</Button>
                       <Button appearance="danger" onClick={deleteDeck}>Yes, Delete</Button>
+                  </ModalFooter>
+              </Modal>
+          )}
+      </ModalTransition>
+
+      {/* Tag Delete Confirmation Modal */}
+      <ModalTransition>
+          {isDeleteTagConfirmOpen && (
+              <Modal onClose={closeDeleteTagConfirm}>
+                  <ModalHeader>
+                      <Grid gap="space.200" templateAreas={['title close']} xcss={gridStyles}>
+                          <Flex xcss={closeContainerStyles} justifyContent="end">
+                              <IconButton
+                                  appearance="subtle"
+                                  icon={CrossIcon}
+                                  label="Close Modal"
+                                  onClick={closeDeleteTagConfirm}
+                              />
+                          </Flex>
+                          <Flex xcss={titleContainerStyles} justifyContent="start">
+                              <ModalTitle appearance="danger">Delete Tag?</ModalTitle>
+                          </Flex>
+                      </Grid>
+                  </ModalHeader>
+                  <ModalBody>
+                      <p>Are you sure you want to delete all instances of the tag? This action cannot be undone.</p>
+                      {deleteSuccess &&
+                        <Alert severity="success">Tag deleted successfully!</Alert>
+                      }
+                      {errorMessage &&
+                        <Alert severity="error"> {errorMessage} </Alert>
+                      }
+                  </ModalBody>
+                  <ModalFooter>
+                      <Button appearance="subtle" onClick={closeDeleteTagConfirm}>Cancel</Button>
+                      <Button appearance="danger" onClick={deleteTag}>Yes, Delete</Button>
                   </ModalFooter>
               </Modal>
           )}
