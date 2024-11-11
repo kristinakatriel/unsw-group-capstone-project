@@ -45,7 +45,7 @@ function ContextMenu() {
   const [showHint, setShowHint] = useState(false); 
   const [locked, setLocked] = useState(false);
   const [autoGenTag, setAutoGenTag] = useState(null);
-  const [availableTags, setAvailableTags] = useState([]);
+  // const [availableTags, setAvailableTags] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [tagsGenerated, setTagsGenerated] = useState(false);
   const [showTags, setShowTags] = useState(false);
@@ -184,39 +184,39 @@ function ContextMenu() {
 
   };
 
-  function setTagsByIndex(index, newTags) {
-    setAvailableTags((prevTags) => {
-      const updatedTags = [...prevTags];
-      updatedTags[index] = newTags;
-      return updatedTags;
-    });
-  }
+  // function setTagsByIndex(index, newTags) {
+  //   setAvailableTags((prevTags) => {
+  //     const updatedTags = [...prevTags];
+  //     updatedTags[index] = newTags;
+  //     return updatedTags;
+  //   });
+  // }
   
-  const generateTags = async (index, hint) => {
-    setIsLoading(true); // Start loading
-    try {
-      let combined = front[index] + back[index];
-      if (hint) {
-        combined += hint;
-      }
-      const tagsGen = await invoke('generateSuggestedTags', { text: combined } );
-      if (tagsGen.success) {
-        setTagsByIndex(index, tagsGen.tags);
-        // console.log(availableTags);
-      }
-    } catch (error) {
-      console.error('Tags are not generated: ', error);
-    }
-    setIsLoading(false);
-  };
+  // const generateTags = async (index, hint) => {
+  //   setIsLoading(true); // Start loading
+  //   try {
+  //     let combined = front[index] + back[index];
+  //     if (hint) {
+  //       combined += hint;
+  //     }
+  //     const tagsGen = await invoke('generateSuggestedTags', { text: combined } );
+  //     if (tagsGen.success) {
+  //       setTagsByIndex(index, tagsGen.tags);
+  //       // console.log(availableTags);
+  //     }
+  //   } catch (error) {
+  //     console.error('Tags are not generated: ', error);
+  //   }
+  //   setIsLoading(false);
+  // };
 
-  const handleDelete = (index, tagToDelete) => {
-    setAvailableTags((prevTags) => 
-      prevTags.map((tags, i) =>
-        i === index ? tags.filter((tag) => tag.id !== tagToDelete.id) : tags
-      )
-    );
-  };
+  // const handleDelete = (index, tagToDelete) => {
+  //   setAvailableTags((prevTags) => 
+  //     prevTags.map((tags, i) =>
+  //       i === index ? tags.filter((tag) => tag.id !== tagToDelete.id) : tags
+  //     )
+  //   );
+  // };
 
   console.log('Current Context Menu Data:', generatedFlashcards);
 
@@ -311,7 +311,7 @@ function ContextMenu() {
                       </Field>
 
                       {/************************************* TAGS FIELD ***************************************/}
-                    <Field
+                    {/* <Field
                       id="flashcard-tags"
                       name="flashcard-tags"
                       label={
@@ -363,7 +363,7 @@ function ContextMenu() {
                           )}
                         </>
                       )}
-                    </Field>
+                    </Field> */}
 
                       {/************************************* LOCK/UNLOCKED FIELD ***************************************/}
                       <Field>
