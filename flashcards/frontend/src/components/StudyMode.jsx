@@ -51,7 +51,7 @@ const StudyMode = ({ deck }) => {
 
   const goToPrevCard = async () => {
     try {
-      const response = invoke('prevCardStudy', { 
+      const response = await invoke('prevCardStudy', { 
         currentIndex: currentCardIndex, 
         sessionId: sessionId });
       console.log("current card index is: " + currentCardIndex);
