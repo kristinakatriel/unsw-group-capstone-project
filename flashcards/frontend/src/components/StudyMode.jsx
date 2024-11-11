@@ -8,14 +8,17 @@ import { Field } from '@atlaskit/form';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import Button from '@atlaskit/button/new';
 import './StudyMode.css';
+import { invoke } from '@forge/bridge';
 
 const StudyMode = ({ deck }) => {
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isHintModalOpen, setIsHintModalOpen] = useState(false);
+  const [flashcards, setFlashcards] = useState(deck.cards);
+  const [session, setSession] = useState(null);
+  const [sessionId, setSessionId] = useState(null);
 
-  const flashcards = deck.cards;
   const totalCards = flashcards.length;
 
   const openHintModal = () => setIsHintModalOpen(true);
@@ -24,24 +27,59 @@ const StudyMode = ({ deck }) => {
   const openEditModal = () => setIsEditModalOpen(true);
   const closeEditModal = () => setIsEditModalOpen(false);
 
-  const goToPrevCard = () => {
-    setCurrentCardIndex((prevIndex) => {
-      if (prevIndex > 0) {
-        return prevIndex - 1;
-      } else {
-        return totalCards - 1;
+  useEffect(() => {
+    const startStudySession = async () => {
+      try {
+        const response = await invoke('startStudySession', {deckId: deck.id});
+        if (response.success) {
+          // change the flashcard variable
+          setFlashcards(response.cards);
+          setSessionId(response.sessionId);
+          setSession(response.session);
+          setCurrentCardIndex(response.firstIndex);
+          console.log(flashcards);
+          console.log("first index is: " + currentCardIndex);
+        }
+      } catch (error) {
+        console.error('response has error: ' + error);
       }
-    });
+    }
+
+    startStudySession();
+
+  }, [deck.id]);
+
+  const goToPrevCard = async () => {
+    try {
+      const response = await invoke('prevCardStudy', { 
+        currentIndex: currentCardIndex, 
+        sessionId: sessionId });
+      console.log("current card index is: " + currentCardIndex);
+      console.log(response)
+      if (response.success) {
+        setCurrentCardIndex(response.newIndex);
+      } else {
+        console.error('Valid Response. Error is: ' + response.error);
+      }
+    } catch (error) {
+      console.error('Invalid Response. Error is: ' + error);
+    }
   };
   
-  const goToNextCard = () => {
-    setCurrentCardIndex((prevIndex) => {
-      if (prevIndex < totalCards - 1) {
-        return prevIndex + 1;
+  const goToNextCard = async () => {
+    try {
+      const response = await invoke('nextCardStudy', { 
+        currentIndex: currentCardIndex, 
+        sessionId: sessionId });
+      if (response.success) {
+        console.log("current card index is: " + (response.newIndex));
+        setCurrentCardIndex(response.newIndex);
       } else {
-        return 0;
+        console.error("Valid response. Error is: " + response.error);
       }
-    });
+    } catch (error) {
+      console.error('Invalid Response. Error is: ' + error);
+    }
   };
 
   const toggleFlip = () => {
