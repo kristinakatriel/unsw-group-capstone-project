@@ -46,6 +46,7 @@ const QuizResults = ({ viewQuizResult, pressedButton }) => {
     <div className="quiz-results-container">
       <h1>All Quiz Results</h1>
       {viewQuizResult && viewQuizResult.length > 0 ? (
+        <>
         <div className="results-and-statistics">
           <div className="results-table">
             <TableContainer className="table-container">
@@ -127,6 +128,16 @@ const QuizResults = ({ viewQuizResult, pressedButton }) => {
             </div>
           )}
         </div>
+        <div className="results-qa-pairs">
+          {selectedQuiz && (
+            <div className='results-qa-pairs-table'>
+              {console.log('QUESTION ANSWER PAIRS')}
+              {console.log(viewQuizResult)}
+            </div>
+          )}
+        </div>        
+        </>
+
       ) : (
         <p>No quiz results to display.</p>
       )}

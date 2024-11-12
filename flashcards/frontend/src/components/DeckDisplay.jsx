@@ -37,7 +37,7 @@ const titleContainerStyles = xcss({
   gridArea: 'title',
 });
 
-const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQuizMode, startQuizResult, goBackToHome, goBackIntermediate}) => {
+const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQuizMode, startQuizResult, goBackToHome, goBackIntermediate }) => {
   // ========================
   // STATE MANAGEMENT
   // ========================
@@ -75,48 +75,33 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   const [pressedButton, setPressedButton] = useState(false);
   const [accountId, setAccountId] = useState('');
   const [userData, setUserData] = useState(null);
-  const [isQuizDisabled, setIsQuizDisabled] = useState(true); // State to manage quiz disable status
 
   // Check if the deck is disabled based on the number of cards
   const isDisabled = updatedDeck.cards?.length === 0;
+  const [isQuizDisabled, setIsQuizDisabled] = useState(true);
 
-  // Fetch account ID and user data
-  useEffect(() => {
-    const fetchAccountId = async () => {
-      try {
-        const context = await view.getContext(); 
-        setAccountId(context.accountId);
-      } catch (error) {
-        console.error("Error fetching context:", error);
+  const checkQuizResults = async () => {
+    try {
+      const response = await invoke('viewQuizResults', {
+        deckId: deck?.id || '', 
+        index: 0,
+      });
+  
+      if (response && response.success) {
+        setIsQuizDisabled(false);
+      } else {
+        setIsQuizDisabled(true);
       }
-    };
-
-    fetchAccountId();
-  }, []); 
-
-  useEffect(() => {
-    const loadUserData = async () => {
-      if (accountId) {
-        try {
-          const userDataFromStorage = await invoke('initUserData', accountId); 
-          setUserData(userDataFromStorage); 
-        } catch (error) {
-          console.error("Error loading user data:", error);
-        }
-      }
-    };
-
-    loadUserData();
-  }, [accountId]); 
-
-  useEffect(() => {
-    if (userData) {
-      const hasQuizResults = userData?.data?.quizSessions?.some(
-        (quiz) => quiz.deckInArchive.id === deck.id
-      );
-      setIsQuizDisabled(!hasQuizResults); 
+    } catch (error) {
+      setIsQuizDisabled(true);
     }
-  }, [userData, deck]);
+  };
+  
+  useEffect(() => {
+    if (deck) {
+      checkQuizResults();
+    }
+  }, [deck]);
 
   // ========================
   // USE EFFECT FOR SUCCESS AND ERROR ALERTS
