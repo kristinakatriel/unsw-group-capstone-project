@@ -74,35 +74,18 @@ const CardSlider = ({ cards = [], tagMap = [], onDelete, onEdit, onTagEdit }) =>
               <SplideSlide key={card.id} className='card-item'>
               <div className="card-link">
 
-
                 {/* Dynamically render the tags for each card */}
                 <div className='card-tags'>
-
                   {tagMap[card.id]?.map((tag) => (
                     <span
                       key={tag.id}
                       className={`badge ${tag.colour}`}
-                      onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
+                      // onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
                     >
                       {tag.title || "Tag"}
                     </span>
                     ))}
                 </div>
-
-
-
-
-                {/* **TODO**
-                <p className='badge blue'>Blue Tag</p> */}
-
-
-
-
-
-
-
-
-
                 {card.front && <h4 className='card-front'>{card.front}</h4>}
                 {card.back && <h4 className='card-back'>{card.back}</h4>}
                 <h4 className='card-owner'>By {card.name || 'Unknown'}</h4>

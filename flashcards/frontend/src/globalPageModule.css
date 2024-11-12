@@ -183,17 +183,14 @@
   background: #E9DDFF;
 }
 
-
 .global-page-badge-container .badge .all-tags {
   background-color: #484848; /* Light gray */
   color: rgb(255, 255, 255);
 }
 
-
 .badge.all-tags:hover {
   background-color: #b3b3b3; /* Slightly darker gray on hover */
 }
-
 
 .global-page-badge-container .badge.my-stuff {
   display: flex;
