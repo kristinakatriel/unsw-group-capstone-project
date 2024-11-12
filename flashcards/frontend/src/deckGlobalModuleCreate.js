@@ -211,9 +211,9 @@ function CreateDeckGlobal({ closeDeckModal }) {
               <div>
                 {showFlashcards && (
                   <>
-                    <div className="tag-page-search">
-                      <div className="tag-page-search-box">
-                        <SearchIcon className="tag-page-search-icon" />
+                    <div className="deck-page-search">
+                      <div className="deck-page-search-box">
+                        <SearchIcon className="deck-page-search-icon" />
                         <input
                           type="text"
                           id="flashcard-search-input"
