@@ -35,6 +35,8 @@ import Box from '@mui/material/Box';
 import { IconButton as MuiIconButton } from '@mui/material';
 import QuizResults from './components/QuizResults';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 const gridStyles = xcss({
     width: '100%',
@@ -532,59 +534,78 @@ function globalPageModule() {
   );
 
   const renderTagsList = (filteredTags) => (
-    <div className="global-page-badge-container">
-
-      {/* Toggle All Tags Chip */}
-      <Chip
-        label="Toggle All Tags"
-        className={`global-page-badge-container badge my-stuff ${selectedTags.length === tags.length ? "all-selected" : "all-tags"}`} 
-        onClick={handleAllTagsToggle}
-        color={selectedTags.length === tags.length ? "primary" : "default"}
-        sx={{ margin: 1 }}
-
-      />
-
-      {filteredTags.map((tag, index) => (
-        <Box
-          key={index}
-          onMouseEnter={() => setHoveredTag(tag.id)}
-          onMouseLeave={() => setHoveredTag(null)}
-          sx={{ position: 'relative', display: 'inline-block', margin: 1 }}
-        >
-          <Chip
-            label={tag.title || "Tag"}
-            className={`badge ${tag.colour}`}
-            onClick={() => handleTagToggle(tag.id)}
-            onDelete={selectedTags.includes(tag.id) ? () => handleTagToggle(tag.id) : undefined}
-            deleteIcon={selectedTags.includes(tag.id) ? <HighlightOffIcon fontSize="small" className="selected-tag-icon"/> : null}
+    <>
+      {filteredTags.length > 0 && (
+        <>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={selectedTags.length === tags.length}
+                onChange={handleAllTagsToggle}
+                sx={{
+                  '& .MuiSwitch-switchBase.Mui-checked': {
+                    color: 'rgb(12, 102, 228)',
+                  },
+                  '& .MuiSwitch-track': {
+                    backgroundColor: 'lightgrey',
+                  }
+                }}
+              />
+            }
+            label='View all Tags'
+            labelPlacement='start'
             sx={{
-              display: 'flex',
-              alignItems: 'center',
-              boxShadow: activeTags.includes(tag.id) ? 'inset 0 0 0 2px currentColor' : undefined,
+              margin: 0, 
+              '& .MuiTypography-root': {
+                fontSize: '14px'
+              } 
             }}
           />
-          {hoveredTag === tag.id && (
-            <Box sx={{
-              position: 'absolute',
-              bottom: '70%',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 1,
-              display: 'flex',
-              flexDirection: 'row',
-              pointerEvents: 'auto',
-            }}>
-              <MuiIconButton className='tag-edit-button'size="small" onClick={() => openTagEditModal(tag)}>
-                <EditIcon />
-              </MuiIconButton>
-              <MuiIconButton className='tag-delete-button' size="small" onClick={() => confirmDeleteTag(tag)}>
-                <DeleteIcon />
-              </MuiIconButton>
-            </Box>
-          )}
-        </Box>
-      ))}
-    </div>
+          <div className="global-page-badge-container">
+            {filteredTags.map((tag, index) => (
+              <Box
+                key={index}
+                onMouseEnter={() => setHoveredTag(tag.id)}
+                onMouseLeave={() => setHoveredTag(null)}
+                sx={{ position: 'relative', display: 'inline-block', margin: 1 }}
+              >
+                <Chip
+                  label={tag.title || "Tag"}
+                  className={`badge ${tag.colour}`}
+                  onClick={() => handleTagToggle(tag.id)}
+                  onDelete={selectedTags.includes(tag.id) ? () => handleTagToggle(tag.id) : undefined}
+                  deleteIcon={selectedTags.includes(tag.id) ? <HighlightOffIcon fontSize="small" className="selected-tag-icon"/> : null}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    boxShadow: activeTags.includes(tag.id) ? 'inset 0 0 0 2px currentColor' : undefined,
+                  }}
+                />
+                {hoveredTag === tag.id && (
+                  <Box sx={{
+                    position: 'absolute',
+                    bottom: '80%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: 1,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    pointerEvents: 'auto',
+                  }}>
+                    <MuiIconButton className='tag-edit-button'size="small" onClick={() => openTagEditModal(tag)}>
+                      <EditIcon />
+                    </MuiIconButton>
+                    <MuiIconButton className='tag-delete-button' size="small" onClick={() => confirmDeleteTag(tag)}>
+                      <DeleteIcon />
+                    </MuiIconButton>
+                  </Box>
+                )}
+              </Box>
+            ))}
+          </div> 
+        </>
+      )}
+    </>
   );
 
   //************************** BREADCRUMB MANAGEMENT *****************************/
@@ -1013,10 +1034,9 @@ function globalPageModule() {
       <div className='global-page-tags'>Tags<button className='global-page-create-tag-button' onClick={createTag}>+ Create Tag</button></div>
       {loading ? (
         <p>Loading...</p>
-      ) : flashdecks.length === 0 ? (
+      ) : tags.length === 0 ? (
         <p>No tags created. Create a tag to display here.</p>
       ) : (
-
         renderTagsList(filteredTags)
       )}
 

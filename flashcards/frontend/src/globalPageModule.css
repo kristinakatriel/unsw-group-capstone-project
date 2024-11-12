@@ -136,7 +136,7 @@
 .global-page-badge-container .badge {
   color: #2c2c2c;
   padding: 6px 12px;
-  margin: 12px 0 14px;
+  /* margin: 12px 0 14px; */
   background: #DDE4FF;
   width: fit-content;
   border-radius: 40px;
@@ -149,9 +149,9 @@
   box-shadow: inset 0 0 0 2px currentColor;
 }
 
-.global-page-badge-container .badge:first-child {
+/* .global-page-badge-container .badge:first-child {
   margin-top: 12px;
-}
+} */
 
 .global-page-badge-container .badge.blue {
   color: #5372F0;
@@ -233,4 +233,8 @@
 .global-page-badge-container .css-6ipr0p .MuiChip-deleteIcon:hover,
 .global-page-badge-container .css-1c0dsut .MuiChip-deleteIcon:hover {
   color: inherit;
+}
+
+.global-page-container .MuiTypography-root .MuiTypography-body1 .MuiFormControlLabel-label .css-fyswvn {
+  font-size: inherit !important;
 }
