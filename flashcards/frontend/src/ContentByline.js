@@ -294,12 +294,6 @@ function ContentByline() {
               {qAPairs.length > 0 ? (
                 qAPairs.map((qa, index) => (
                   <div key={index} className="ai-flashcards-select-scroll-item">
-                    <input
-                      type="checkbox"
-                      id={`qa-${index}`}
-                      checked={true}
-                      onChange={() => handleCheckboxChange(index)}
-                    />
                     <label htmlFor={`qa-${index}`}>
                       {index + 1}: {qa.question} - {qa.answer}
                     </label>
