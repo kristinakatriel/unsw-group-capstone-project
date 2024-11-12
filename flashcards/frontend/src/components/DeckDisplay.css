@@ -28,6 +28,33 @@
   gap: 10px;
 }
 
+.card-list .card-item .card-link {
+  display: block;
+  background: #fff;
+  padding: 12px;
+  border-radius: 10px;
+  text-decoration: none;
+  border: 2px solid transparent;
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
+  margin: 8px 10px;
+}
+
+.card-list .card-link .card-owner {
+  font-size: 12px;
+  color: #333;
+  font-style: italic;
+  margin-top: 15px;
+  margin-bottom: 5px;
+  text-align: right;
+}
+
+.card-list .card-link .card-button {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 15px;
+}
+
 button {
   display: flex;
   align-items: center;
@@ -64,7 +91,7 @@ button:hover {
 
 .deck-display-container .card-list {
   overflow-y: scroll;
-  max-height: 600px;
+  max-height: 625px;
 }
 
 .card-tags {

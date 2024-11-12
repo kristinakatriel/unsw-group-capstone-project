@@ -557,7 +557,8 @@ function globalPageModule() {
             sx={{
               margin: 0, 
               '& .MuiTypography-root': {
-                fontSize: '14px'
+                fontSize: '14px',
+                fontFamily: 'inherit',
               } 
             }}
           />
@@ -1058,14 +1059,14 @@ function globalPageModule() {
         renderFlashcardsList(filteredFlashcards)
       )}
 
-      <div className='global-page-recents'>Suggested</div>
+      {/* <div className='global-page-recents'>Suggested</div>
       {loading ? (
         <p>Loading...</p>
       ) : flashcards.length === 0 ? (
         <p>Nothing recently accessed. Create some flashcards!.</p>
       ) : (
         renderFlashcardsList(filteredFlashcards)
-      )}
+      )} */}
 
       {/* Flashcard Modal */}
       {isFlashcardModalOpen && (

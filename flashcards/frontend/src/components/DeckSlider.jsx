@@ -76,7 +76,7 @@ const DeckSlider = ({ decks = [], tagMap = [], onDelete, onDeckClick, onEdit, on
               gap: '10px',
               breakpoints: {
                 800: {
-                  perPage:2,
+                  perPage: 2,
                 },
 
                 1000: {

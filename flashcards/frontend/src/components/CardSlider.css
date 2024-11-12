@@ -6,7 +6,7 @@
   list-style: none;
 }
 
-.card-list .card-item .card-link {
+.global-page-container .card-list .card-item .card-link {
   display: block;
   background: #fff;
   padding: 12px;
@@ -15,6 +15,7 @@
   border: 2px solid transparent;
   box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);
   margin: 8px 10px;
+  min-height: 220px;
 }
 
 .card-list .card-link .card-tags {
@@ -80,20 +81,23 @@
   margin-bottom: 5px;
 }
 
-.card-list .card-link .card-owner {
+.global-page-container .card-list .card-link .card-owner {
   font-size: 12px;
   color: #333;
   font-style: italic;
-  margin-top: 15px;
   margin-bottom: 5px;
-  text-align: right;
+  position: absolute;
+  bottom: 55px;
+  right: 25px;
 }
 
-.card-list .card-link .card-button {
+.global-page-container .card-list .card-link .card-button {
   display: flex;
-  justify-content: flex-end;
   gap: 10px;
   margin-top: 15px;
+  position: absolute;
+  bottom: 25px;
+  right: 25px;
 }
 
 .card-list .card-link .card-edit-button,
