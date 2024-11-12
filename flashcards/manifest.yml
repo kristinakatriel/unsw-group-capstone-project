@@ -6,14 +6,14 @@ modules:
       resolver:
         function: resolver
       viewportSize: medium
-      title: FLASH - Create A Flashcard
+      title: Cardify.ai - Create a flashcard
 
   confluence:globalPage:
     - key: flashcard-global-page
       resource: main
       resolver:
         function: resolver
-      title: FLASH - Home
+      title: Cardify.ai - Homepage
       route: flashcard-global-page
 
   confluence:contextMenu:
@@ -23,7 +23,7 @@ modules:
         function: resolver
       #keep viewport size as large until we can figure out how to make the modal bigger
       viewportSize: large
-      title: FLASH - Create Flashcard(s) (AI Generation)
+      title: Cardify.ai - Flashcards Generator
   
   confluence:contentBylineItem:
     - key: flashcard-content-byline
@@ -32,7 +32,7 @@ modules:
         function: resolver
       #keep viewport size as large until we can figure out how to make the modal bigger
       viewportSize: large
-      title: FLASH - Create Flashcard(s) with whole page (AI Generation)
+      title: Cardify.ai - Deck Generator
 
   consumer:
     - key: queue-consumer

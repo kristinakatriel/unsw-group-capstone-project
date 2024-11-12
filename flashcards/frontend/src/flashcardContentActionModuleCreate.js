@@ -10,7 +10,7 @@ import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import FlashOnIcon from '@mui/icons-material/FlashOn';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import Textfield from '@atlaskit/textfield';
 import './deckGlobalModuleCreate.css';
 
@@ -85,8 +85,8 @@ function flashcardContentActionModuleCreate() {
           />
         </Flex>
         <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
-          <FlashOnIcon className="content-action-flash-icon" />
-          <h2>FLASH - Create New Flashcard</h2>
+          <AutoAwesomeIcon className="content-action-flash-icon" />
+          <h2>Cardify.ai - Create a flashcard</h2>
         </Flex>
       </Grid>
       {errorMessage && 

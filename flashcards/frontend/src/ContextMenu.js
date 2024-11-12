@@ -3,7 +3,6 @@ import { invoke, view } from '@forge/bridge';
 import { Alert } from '@mui/material';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Button, { IconButton } from '@atlaskit/button/new';
-import FlashOnIcon from '@mui/icons-material/FlashOn';
 import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
@@ -17,6 +16,7 @@ import Textfield from '@atlaskit/textfield';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
 import './ContextMenu.css';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 const gridStyles = xcss({
   width: '100%',
@@ -190,8 +190,8 @@ function ContextMenu() {
     <div className='context-menu'>
       <Grid templateAreas={['title close']} xcss={gridStyles}>
         <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
-          <FlashOnIcon className="context-menu-flash-icon" />
-          <h2>FLASH - AI Flashcard Generator!</h2>
+          <AutoAwesomeIcon className="context-menu-flash-icon" />
+          <h2>Cardify.ai - Flashcards Generator</h2>
         </Flex>
       </Grid>
 
