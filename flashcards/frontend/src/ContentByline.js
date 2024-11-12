@@ -32,7 +32,7 @@ function ContentByline() {
   const [deckGen, setDeckGen] = useState(null);
   const [savingDeck, setSavingDeck] = useState(false);
   const [deckSaved, setDeckSaved] = useState(false);
-  const [runningReq, setRunningReq] = useState(0);
+  const [runningReq, setRunningReq] = useState([]);
 
   const chunkText = (text, chunkSize) => {
     const words = text.split(' ');
@@ -122,14 +122,7 @@ function ContentByline() {
       // Generate Q&A pairs
       for (const chunk of chunks) {
       //   // await queue.push({ text: chunk });
-      //   try {
-      //     const res = await invoke('setQueue', { chunk });
-      //     console.log(res.job);
-      //   } catch (error) {
-      //     console.error("Hi", error);
-        // }
-        // if (runningReq == 0) { 
-          // setRunningReq(1);
+        // trying out for the first time
         try {
           const response = await invoke('generateQA', { text: chunk });
           if (response && response.success) {
@@ -142,9 +135,29 @@ function ContentByline() {
           }
         } catch (error) {
           console.error('Error generating flashcards:', error);
+          setRunningReq((prevRunningReq) => [...prevRunningReq, chunk]);
         }
-          // setRunningReq(0);
-        // }
+      }
+
+      // if any of the chunks are caught in the error, this command is re-run (to give)
+      // better results
+      if (runningReq) {
+        for (const chunk in runningReq) {
+          try {
+            const response = await invoke('generateQA', { text: chunk });
+            if (response && response.success) {
+              const newQAPairs = response.data;
+              
+              setQAPairs((prevQAPairs) => [...prevQAPairs, ...newQAPairs]);
+  
+              allQAPairs.push(...newQAPairs);
+              console.log(response.data);
+            }
+          } catch (error) {
+            console.error('Error generating flashcards:', error);
+          }
+        }
+        setRunningReq('');
       }
   
       // Update the state

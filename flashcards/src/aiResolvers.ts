@@ -221,30 +221,3 @@ export const addGeneratedFlashcards = async (req: ResolverRequest) => {
         createdFlashcardsCount: results.filter(result => result.success).length,
     };
 };
-
-export const generateSuggestedTags = async (req: ResolverRequest) => {
-    const { text } = req.payload;
-    const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_suggested_tags", {  // the url which we need to generate the deck title
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text }),
-    });
-
-    const data = await response.json();
-    console.log(data);
-    if (!response.ok) {
-        return {
-            success: false,
-            error: 'No Tags generated',
-        };
-    }
-
-    // Giving tags in the end
-    return {
-        success: true,
-        tags: data
-    };
-};

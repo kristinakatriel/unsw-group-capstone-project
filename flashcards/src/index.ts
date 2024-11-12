@@ -1,6 +1,5 @@
 import Resolver from '@forge/resolver';
 import api, { QueryApi, route, startsWith, storage } from '@forge/api';
-import { Queue } from '@forge/events';
 import {
   Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
   QuizResult, StudyResult, QuizSession, StudySession,
@@ -27,8 +26,7 @@ import {
 import {
   generateQA, addGeneratedFlashcards,
   getAllContent,
-  getGeneratedDeckTitle,
-  generateSuggestedTags
+  getGeneratedDeckTitle
 } from './aiResolvers'
 
 import {
@@ -39,27 +37,11 @@ import {
 ///////////////////////////////////////////////////////////////////////////////////
 
 const resolver = new Resolver();
-const queue = new Queue({ key: 'flashcard-generation' });
 
 resolver.define('getModule', async (req) => {
   const { moduleKey } = req.context;
   return { moduleKey };
 });
-
-// resolver.define('event-listener', async (req: ResolverRequest) => {
-//   return {
-//     success: true
-//   }
-// });
-
-// resolver.define('setQueue', async(req: ResolverRequest) => {
-//   const { textJob } = req.payload;
-//   const jobId = await queue.push(textJob);
-//   return {
-//     success: true,
-//     job: queue.getJob(jobId)
-//   }
-// });
 
 resolver.define('createFlashcard', createFlashcard);
 resolver.define('updateFlashcard', updateFlashcard);
@@ -93,12 +75,10 @@ resolver.define('fetchUserCards', fetchUserCards);
 resolver.define('fetchUserDecks', fetchUserDecks);
 resolver.define('fetchUserTags', fetchUserTags);
 
-// NOTE: change the name
 resolver.define('getGeneratedDeckTitle', getGeneratedDeckTitle);
 resolver.define('getAllContent', getAllContent);
 resolver.define('generateQA', generateQA);
 resolver.define('addGeneratedFlashcards', addGeneratedFlashcards);
-resolver.define('generateSuggestedTags', generateSuggestedTags);
 
 resolver.define('startQuizSession', startQuizSession);
 resolver.define('endQuizSession', endQuizSession);

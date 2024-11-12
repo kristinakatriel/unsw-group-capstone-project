@@ -184,40 +184,6 @@ function ContextMenu() {
 
   };
 
-  // function setTagsByIndex(index, newTags) {
-  //   setAvailableTags((prevTags) => {
-  //     const updatedTags = [...prevTags];
-  //     updatedTags[index] = newTags;
-  //     return updatedTags;
-  //   });
-  // }
-  
-  // const generateTags = async (index, hint) => {
-  //   setIsLoading(true); // Start loading
-  //   try {
-  //     let combined = front[index] + back[index];
-  //     if (hint) {
-  //       combined += hint;
-  //     }
-  //     const tagsGen = await invoke('generateSuggestedTags', { text: combined } );
-  //     if (tagsGen.success) {
-  //       setTagsByIndex(index, tagsGen.tags);
-  //       // console.log(availableTags);
-  //     }
-  //   } catch (error) {
-  //     console.error('Tags are not generated: ', error);
-  //   }
-  //   setIsLoading(false);
-  // };
-
-  // const handleDelete = (index, tagToDelete) => {
-  //   setAvailableTags((prevTags) => 
-  //     prevTags.map((tags, i) =>
-  //       i === index ? tags.filter((tag) => tag.id !== tagToDelete.id) : tags
-  //     )
-  //   );
-  // };
-
   console.log('Current Context Menu Data:', generatedFlashcards);
 
   return (
@@ -309,61 +275,6 @@ function ContextMenu() {
                           </>
                         )}
                       </Field>
-
-                      {/************************************* TAGS FIELD ***************************************/}
-                    {/* <Field
-                      id="flashcard-tags"
-                      name="flashcard-tags"
-                      label={
-                        <div onClick={() => setShowTags(!showTags)} className="label-clickable">
-                          <span>Tags (Optional)</span>
-                          <span className="toggle-icon">
-                            {showTags ? (
-                              <ExpandLessIcon fontSize="small" />
-                            ) : (
-                              <ExpandMoreIcon fontSize="small" />
-                            )}
-                          </span>
-                        </div>
-                      }
-                    >
-                      {({ fieldProps }) => (
-                        <>
-                          {showTags && (
-                            <>
-                              <button onClick={() => generateTags(index, hint)}>Generate Tags</button>
-                              <div>
-                                {isLoading ? (
-                                  'Still generating...'
-                                ) : (
-                                  <Paper
-                                    sx={{
-                                      display: 'flex',
-                                      justifyContent: 'center',
-                                      flexWrap: 'wrap',
-                                      listStyle: 'none',
-                                      p: 0.5,
-                                      m: 0,
-                                    }}
-                                    component="ul"
-                                  >
-                                    {availableTags && availableTags.length > 0 ? (
-                                      availableTags.map((tag, i) => (
-                                        <ListItem key={i}>
-                                          <Chip label={tag} onDelete={() => handleDelete(index, tag)}/>
-                                        </ListItem>
-                                      ))
-                                    ) : (
-                                      <span>No tags generated yet</span>
-                                    )}
-                                  </Paper>
-                                )}
-                              </div>
-                            </>
-                          )}
-                        </>
-                      )}
-                    </Field> */}
 
                       {/************************************* LOCK/UNLOCKED FIELD ***************************************/}
                       <Field>
