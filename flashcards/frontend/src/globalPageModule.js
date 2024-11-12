@@ -5,7 +5,6 @@ import { invoke, view} from '@forge/bridge';
 import CreateFlashcardGlobal from './flashcardGlobalModuleCreate';
 import ModalDialog from '@atlaskit/modal-dialog';
 import CardSlider from './components/CardSlider';
-import FlashOnIcon from '@mui/icons-material/FlashOn';
 import './globalPageModule.css';
 import CreateDeckGlobal from './deckGlobalModuleCreate';
 import DeckSlider from './components/DeckSlider';
@@ -37,6 +36,7 @@ import QuizResults from './components/QuizResults';
 import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 const gridStyles = xcss({
     width: '100%',
@@ -992,7 +992,7 @@ function globalPageModule() {
       <div className="global-page-header">
         <div className="global-page-headlines">
           <div className="global-page-headline">
-            <FlashOnIcon className="global-page-flash-icon" /> FLASH
+            <AutoAwesomeIcon className="global-page-flash-icon" /> Cardify.ai
           </div>
           <div className="global-page-subheadline">
             The Forge App that allows you to create flashcards in a flash

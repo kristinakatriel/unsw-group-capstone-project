@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { invoke, view } from '@forge/bridge';
-import FlashOnIcon from '@mui/icons-material/FlashOn';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import UndoIcon from '@mui/icons-material/Undo';
 import RedoIcon from '@mui/icons-material/Redo';
@@ -230,8 +229,8 @@ function ContentByline() {
   return (
     <div className="ai-deck-creation">
       <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
-        <FlashOnIcon className="content-byline-flash-icon" />
-        <h2>FLASH - AI Deck Generator!</h2>
+        <AutoAwesomeIcon className="content-byline-flash-icon" />
+        <h2>Cardify.ai - Deck Generator</h2>
       </Flex>
 
       {saveSuccess && <Alert severity="success" className='alert'> New deck created successfully! </Alert>}
