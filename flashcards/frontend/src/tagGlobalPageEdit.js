@@ -85,7 +85,7 @@ function EditTagGlobal({ tag, closeTagEditModal }) {
               />
             </Flex>
             <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
-              <ModalTitle>Add/Edit Tag</ModalTitle>
+              <ModalTitle>Edit Tag</ModalTitle>
             </Flex>
           </Grid>
         </ModalHeader>
