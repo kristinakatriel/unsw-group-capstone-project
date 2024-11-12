@@ -107,7 +107,7 @@ const CardSlider = ({ cards = [], tagMap = [], onDelete, onEdit, onTagEdit }) =>
                 {card.back && <h4 className='card-back'>{card.back}</h4>}
                 <h4 className='card-owner'>By {card.name || 'Unknown'}</h4>
                 <div className='card-button'>
-                  {/* <LocalOfferIcon className='card-edit-button'  onClick={() => onTagEdit(card)}/> */}
+                  <LocalOfferIcon className='card-edit-button'  onClick={() => onTagEdit(card)}/>
                   <EditIcon className='card-edit-button'  onClick={() => onEdit(card)}/>
                   <DeleteIcon className='card-delete-button' onClick={() => onDelete(card)} />
 

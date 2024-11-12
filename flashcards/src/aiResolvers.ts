@@ -182,17 +182,17 @@ export const addGeneratedFlashcards = async (req: ResolverRequest) => {
         cardIds.push(cardId);
 
         await storage.set(cardId, newCard);
-        const req = {
-            payload: {
-                cardId: cardId,
-                tagId: autoId
-            },
-            context: {
-                accountId: accountId
-            }
-        } as ResolverRequest;
-        const res = await addTagToCard(req);
-        return { success: res.success, id: cardId };
+        // const req = {
+        //     payload: {
+        //         cardId: cardId,
+        //         tagId: autoId
+        //     },
+        //     context: {
+        //         accountId: accountId
+        //     }
+        // } as ResolverRequest;
+        // const res = await addTagToCard(req);
+        return { success: true, id: cardId };
     });
 
     // Wait for all flashcards to be created

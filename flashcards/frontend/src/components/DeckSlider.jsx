@@ -141,7 +141,7 @@ const DeckSlider = ({ decks = [], tagMap = [], onDelete, onDeckClick, onEdit, on
                     )}
                     <h4 className='deck-owner'>By {deck.name || 'Unknown'}</h4>
                     <div className='deck-button'>
-                      {/* <LocalOfferIcon className='deck-edit-button' onClick={(e) => {  e.stopPropagation(); onTagEdit(deck);}}/> */}
+                      <LocalOfferIcon className='deck-edit-button' onClick={(e) => {  e.stopPropagation(); onTagEdit(deck);}}/>
                       <EditIcon
                         className='deck-edit-button'
                         onClick={(e) => {
