@@ -1,6 +1,5 @@
 import Resolver from '@forge/resolver';
 import api, { QueryApi, route, startsWith, storage } from '@forge/api';
-import { invoke } from '@forge/bridge';
 import {
     Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
     QuizResult, StudyResult, QuizSession, StudySession,

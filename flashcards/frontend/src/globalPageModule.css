@@ -130,7 +130,6 @@
 
 .global-page-badge-container {
   display: flex;
-  gap: 10px;
   flex-wrap: wrap;
 }
 
@@ -224,4 +223,14 @@
 .global-page-container .tag-edit-button:hover,
 .global-page-container .tag-delete-button:hover {
   color: darkgrey;
+}
+
+.global-page-badge-container .css-6ipr0p .MuiChip-deleteIcon,
+.global-page-badge-container .css-1c0dsut .MuiChip-deleteIcon {
+  color: inherit;
+}
+
+.global-page-badge-container .css-6ipr0p .MuiChip-deleteIcon:hover,
+.global-page-badge-container .css-1c0dsut .MuiChip-deleteIcon:hover {
+  color: inherit;
 }
