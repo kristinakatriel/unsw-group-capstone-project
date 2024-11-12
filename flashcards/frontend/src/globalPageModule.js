@@ -1191,7 +1191,7 @@ function globalPageModule() {
       {isEditTagModalOpen && (
         <ModalDialog heading="Edit Tag" onClose={closeTagEditModal}>
           <EditTagGlobal
-            tag={editingTag} // Pass the tag to the modal
+            tag={editingTag} // Pass the tag to the modal,
             closeTagEditModal={closeTagEditModal}
           />
         </ModalDialog>

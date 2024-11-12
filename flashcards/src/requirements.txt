@@ -2,7 +2,5 @@ fastapi
 uvicorn
 transformers
 torch
-nltk
 pydantic
 sentencepiece
-keybert

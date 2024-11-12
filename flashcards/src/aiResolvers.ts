@@ -1,5 +1,6 @@
 import Resolver from '@forge/resolver';
 import api, { QueryApi, route, startsWith, storage } from '@forge/api';
+import { invoke } from '@forge/bridge';
 import {
     Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
     QuizResult, StudyResult, QuizSession, StudySession,
@@ -7,6 +8,9 @@ import {
 } from './types';
 import { generateId, clearStorage, getUserName, initUserData } from './helpers';
 import { ResolverRequest } from './types'
+import { addTagToCard, getAllTags } from './tagResolvers';
+
+export const url = "https://marlin-excited-gibbon.ngrok-free.app"
 
 export const getAllContent = async (req: ResolverRequest) => {
     const { pageId, siteUrl } = req.payload;
@@ -67,7 +71,7 @@ export const getAllContent = async (req: ResolverRequest) => {
 // get generated deck info: For content byline
 export const getGeneratedDeckTitle = async (req: ResolverRequest) => {
     const { text } = req.payload;
-    const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_deck_title", {  // the url which we need to generate the deck title
+    const response = await fetch(`${url}/generate_deck_title`, {  // the url which we need to generate the deck title
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -145,6 +149,18 @@ export const addGeneratedFlashcards = async (req: ResolverRequest) => {
     }
 
     const user = await getUserName(accountId);
+    const tags = await getAllTags();
+    const autoTag = tags.tags.find(tag => tag.title === 'auto-generated') as Tag || undefined;
+    let autoId = 'undefined';
+    if (!autoTag) {
+        // here, need to make the tag. ya
+        return {
+            success: false,
+            error: 'tag not found'
+        }
+    } else {
+        autoId = autoTag.id;
+    }
     const cardIds: string[] = [];
 
     const flashcardPromises = qAPairs.map(async (pair: GenFlashcardsPair) => {
@@ -166,6 +182,16 @@ export const addGeneratedFlashcards = async (req: ResolverRequest) => {
         cardIds.push(cardId);
 
         await storage.set(cardId, newCard);
+        // const req = {
+        //     payload: {
+        //         cardId: cardId,
+        //         tagId: autoId
+        //     },
+        //     context: {
+        //         accountId: accountId
+        //     }
+        // } as ResolverRequest;
+        // const res = await addTagToCard(req);
         return { success: true, id: cardId };
     });
 
@@ -193,31 +219,5 @@ export const addGeneratedFlashcards = async (req: ResolverRequest) => {
         success: true,
         createdDeck: deck,
         createdFlashcardsCount: results.filter(result => result.success).length,
-    };
-};
-
-export const generateSuggestedTags = async (req: ResolverRequest) => {
-    const { text } = req.payload;
-    const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_suggested_tags", {  // the url which we need to generate the deck title
-        method: 'POST',
-        headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ text }),
-    });
-
-    const data = await response.json();
-    if (!response.ok) {
-        return {
-            success: false,
-            error: 'No Tags generated',
-        };
-    }
-
-    // Giving tags in the end
-    return {
-        success: true,
-        tags: data.tags
     };
 };

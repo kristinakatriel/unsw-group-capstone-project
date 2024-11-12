@@ -14,6 +14,7 @@
     "@emotion/react": "^11.13.3",
     "@emotion/styled": "^11.13.0",
     "@forge/bridge": "4.0.0",
+    "@forge/events": "^0.9.4",
     "@forge/react": "^10.6.1",
     "@forge/ui": "^1.11.1",
     "@mui/icons-material": "^6.1.3",
