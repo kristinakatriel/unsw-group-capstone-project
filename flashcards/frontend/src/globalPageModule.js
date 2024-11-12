@@ -34,6 +34,9 @@ import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
 import { IconButton as MuiIconButton } from '@mui/material';
 import QuizResults from './components/QuizResults';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import Switch from '@mui/material/Switch';
+import FormControlLabel from '@mui/material/FormControlLabel';
 
 const gridStyles = xcss({
     width: '100%',
@@ -135,6 +138,7 @@ function globalPageModule() {
   const [globalPageSearchTerm, setGlobalPageSearchTerm] = useState('');
   const [alignment, setAlignment] = useState('all');
   const [hoveredTag, setHoveredTag] = useState(null);
+  const [activeTags, setActiveTags] = useState([]);
 
   //************************** DELETION LOGIC *****************************/
   const confirmDeleteFlashcard = (flashcard) => {
@@ -322,9 +326,6 @@ function globalPageModule() {
     loadTags();  // This function will reload decks and refresh the UI
   };
 
-
-
-
   //************************** MODAL HANDLERS *****************************/
   const createFlashcardGlobal = () => {
     setIsCreateFlashcardOpen(true); // Open modal to create flashcard
@@ -394,7 +395,6 @@ function globalPageModule() {
     refreshDeckFrontend();
   };
 
-
   //************************** INITIAL FETCH ON COMPONENT MOUNT *****************************/
   useEffect(() => {
 
@@ -422,7 +422,15 @@ function globalPageModule() {
 
   //tag filtering when a tag is selected
 
+// Function to toggle tag activity
   const handleTagToggle = (tagId) => {
+    setActiveTags((prevActiveTags) => {
+      if (prevActiveTags.includes(tagId)) {
+        return prevActiveTags.filter(id => id !== tagId);
+      } else {
+        return [...prevActiveTags, tagId];
+      }
+    });
 
     selectedTags.includes(tagId)
 
@@ -431,15 +439,15 @@ function globalPageModule() {
         ? prevSelectedTags.filter((id) => id !== tagId) // Deselect if already selected
         : [...prevSelectedTags, tagId] // Select if not yet selected
     );
-
-
   };
 
   const handleAllTagsToggle = () => {
     if (selectedTags.length === tags.length) {
       setSelectedTags([]); // Deselect all if all tags are selected
+      setActiveTags([]);
     } else {
       setSelectedTags(tags.map(tag => tag.id)); // Select all tags if not all are selected
+      setActiveTags(tags.map(tag => tag.id)); 
     }
   };
 
@@ -449,7 +457,6 @@ function globalPageModule() {
     console.log("testing");
     setIsMyTagsSelected((prevState) => !prevState); // Toggle the switch
   };
-
 
   // Open the edit modal for a tag
   const openTagEditModal = (tag) => {
@@ -466,14 +473,11 @@ function globalPageModule() {
     refreshDeckFrontend();
   };
 
-
   // Handle search input change
   const searchGlobalPage = (event) => {
     setGlobalPageSearchTerm(event.target.value);
     console.log('Searching:', globalPageSearchTerm);
   };
-
-
 
   //****************filtered flashcards, decks and tags */
   const filteredFlashcards = flashcards.filter((card) => {
@@ -516,8 +520,6 @@ function globalPageModule() {
     );
   });
 
-
-
   //************************** RENDER FUNCTIONS *****************************/
   const renderFlashcardsList = (filteredFlashcards) => {
     //console.log('cards right before passed into card slider' , flashcards);
@@ -532,56 +534,78 @@ function globalPageModule() {
   );
 
   const renderTagsList = (filteredTags) => (
-    <div className="global-page-badge-container">
-
-      {/* Toggle All Tags Chip */}
-      <Chip
-        label="Toggle All Tags"
-        className={`global-page-badge-container badge my-stuff ${selectedTags.length === tags.length ? "all-selected" : "all-tags"}`} // Added custom class `my-stuff`
-        //className={`badge ${selectedTags.length === tags.length ? "all-selected" : "all-tags"}`} // Dynamic class for selected state
-        onClick={handleAllTagsToggle} // Toggle all tags on click
-        color={selectedTags.length === tags.length ? "primary" : "default"} // Optional: use different color if all tags selected
-        sx={{ margin: 1 }} // Add spacing between chips
-
-      />
-
-      {filteredTags.map((tag, index) => (
-        <Box
-          key={index}
-          onMouseEnter={() => setHoveredTag(tag.id)}
-          onMouseLeave={() => setHoveredTag(null)}
-          sx={{ position: 'relative', display: 'inline-block', margin: 1 }}
-        >
-          <Chip
-            label={tag.title || "Tag"}
-            className={`badge ${tag.colour}`}
-            onClick={() => handleTagToggle(tag.id)}
-            onDelete={selectedTags.includes(tag.id) ? () => handleTagToggle(tag.id) : undefined}
-            deleteIcon={selectedTags.includes(tag.id) ? <DeleteIcon /> : null}
-            sx={{ display: 'flex', alignItems: 'center' }}
+    <>
+      {filteredTags.length > 0 && (
+        <>
+          <FormControlLabel
+            control={
+              <Switch
+                checked={selectedTags.length === tags.length}
+                onChange={handleAllTagsToggle}
+                sx={{
+                  '& .MuiSwitch-switchBase.Mui-checked': {
+                    color: 'rgb(12, 102, 228)',
+                  },
+                  '& .MuiSwitch-track': {
+                    backgroundColor: 'lightgrey',
+                  }
+                }}
+              />
+            }
+            label='View all Tags'
+            labelPlacement='start'
+            sx={{
+              margin: 0, 
+              '& .MuiTypography-root': {
+                fontSize: '14px'
+              } 
+            }}
           />
-          {hoveredTag === tag.id && (
-            <Box sx={{
-              position: 'absolute',
-              bottom: '70%',
-              left: '50%',
-              transform: 'translateX(-50%)',
-              zIndex: 1,
-              display: 'flex',
-              flexDirection: 'row',
-              pointerEvents: 'auto',
-            }}>
-              <MuiIconButton className='tag-edit-button'size="small" onClick={() => openTagEditModal(tag)}>
-                <EditIcon />
-              </MuiIconButton>
-              <MuiIconButton className='tag-delete-button' size="small" onClick={() => confirmDeleteTag(tag)}>
-                <DeleteIcon />
-              </MuiIconButton>
-            </Box>
-          )}
-        </Box>
-      ))}
-    </div>
+          <div className="global-page-badge-container">
+            {filteredTags.map((tag, index) => (
+              <Box
+                key={index}
+                onMouseEnter={() => setHoveredTag(tag.id)}
+                onMouseLeave={() => setHoveredTag(null)}
+                sx={{ position: 'relative', display: 'inline-block', margin: 1 }}
+              >
+                <Chip
+                  label={tag.title || "Tag"}
+                  className={`badge ${tag.colour}`}
+                  onClick={() => handleTagToggle(tag.id)}
+                  onDelete={selectedTags.includes(tag.id) ? () => handleTagToggle(tag.id) : undefined}
+                  deleteIcon={selectedTags.includes(tag.id) ? <HighlightOffIcon fontSize="small" className="selected-tag-icon"/> : null}
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    boxShadow: activeTags.includes(tag.id) ? 'inset 0 0 0 2px currentColor' : undefined,
+                  }}
+                />
+                {hoveredTag === tag.id && (
+                  <Box sx={{
+                    position: 'absolute',
+                    bottom: '80%',
+                    left: '50%',
+                    transform: 'translateX(-50%)',
+                    zIndex: 1,
+                    display: 'flex',
+                    flexDirection: 'row',
+                    pointerEvents: 'auto',
+                  }}>
+                    <MuiIconButton className='tag-edit-button'size="small" onClick={() => openTagEditModal(tag)}>
+                      <EditIcon />
+                    </MuiIconButton>
+                    <MuiIconButton className='tag-delete-button' size="small" onClick={() => confirmDeleteTag(tag)}>
+                      <DeleteIcon />
+                    </MuiIconButton>
+                  </Box>
+                )}
+              </Box>
+            ))}
+          </div> 
+        </>
+      )}
+    </>
   );
 
   //************************** BREADCRUMB MANAGEMENT *****************************/
@@ -647,8 +671,6 @@ function globalPageModule() {
 
     console.log('consol log');
   };
-
-
 
   //************************** STUDY MODE FUNCTIONS *****************************/
   const studyMode = async () => {
@@ -851,7 +873,6 @@ function globalPageModule() {
     );
   }
 
-
   //************************** DECK DISPLAY *****************************/
   if (selectedDeck) {
     //loadDecks();
@@ -964,7 +985,6 @@ function globalPageModule() {
     }
   };
 
-
   //*************************************global page output  */
   return (
     <div className='global-page-container'>
@@ -1014,10 +1034,9 @@ function globalPageModule() {
       <div className='global-page-tags'>Tags<button className='global-page-create-tag-button' onClick={createTag}>+ Create Tag</button></div>
       {loading ? (
         <p>Loading...</p>
-      ) : flashdecks.length === 0 ? (
+      ) : tags.length === 0 ? (
         <p>No tags created. Create a tag to display here.</p>
       ) : (
-
         renderTagsList(filteredTags)
       )}
 

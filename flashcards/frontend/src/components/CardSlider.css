@@ -33,11 +33,14 @@
   border-radius: 40px;
 }
 
+.card-list .card-link .badge:hover {
+  cursor: default !important;
+}
+
 .card-list .card-link .badge.blue {
   color: #5372F0;
   background: #DDE4FF;
 }
-
 
 .card-list .card-link .badge.red {
   color: #B22485;
@@ -63,8 +66,6 @@
   color: #6B4BA3;
   background: #E9DDFF;
 }
-
-
 
 .card-list .card-link .card-front {
   font-size: 16px;

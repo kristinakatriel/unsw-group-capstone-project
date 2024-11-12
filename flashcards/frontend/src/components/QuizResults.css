@@ -17,6 +17,10 @@
   border: 1px solid lightgrey;
 }
 
+.results-qa-pairs {
+  border: 1px solid lightgrey; 
+}
+
 .quiz-statistics {
   width: 40%;
   padding: 10px;
@@ -56,13 +60,13 @@
 }
 
 .quiz-results-container .MuiChartsLegend-series {
-  transform: translate(300px, 60px);
+  transform: translate(280px, 60px);
 }
 
 .quiz-results-container .MuiChartsLegend-series-1 {
-  transform: translate(300px, 100px);
+  transform: translate(280px, 100px);
 }
 
 .quiz-results-container .MuiChartsLegend-series-2 {
-  transform: translate(300px, 140px);
+  transform: translate(280px, 140px);
 }

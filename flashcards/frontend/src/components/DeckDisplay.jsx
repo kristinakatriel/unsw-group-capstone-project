@@ -6,7 +6,7 @@ import QuizIcon from '@mui/icons-material/Quiz';
 import StyleIcon from '@mui/icons-material/Style';
 import Tooltip from '@mui/material/Tooltip';
 import { Alert, Collapse } from '@mui/material';
-import { invoke } from '@forge/bridge';
+import { invoke, view } from '@forge/bridge';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
@@ -37,13 +37,11 @@ const titleContainerStyles = xcss({
   gridArea: 'title',
 });
 
-const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQuizMode, startQuizResult, goBackToHome, goBackIntermediate}) => {
+const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQuizMode, startQuizResult, goBackToHome, goBackIntermediate }) => {
   // ========================
   // STATE MANAGEMENT
   // ========================
   //console.log("tag map passed in", tagMap);
-  console.log('consol log');
-
   const [deckDisplaySearchTerm, setDeckDisplaySearchTerm] = useState('');
 
   // State hooks to manage modal visibility, the selected flashcard for deletion, and the updated deck state
@@ -75,13 +73,39 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   const [viewQuizResult, setViewQuizResult] = useState(null);
   const [viewQuizResultBool, setViewQuizResultBool] = useState(false);
   const [pressedButton, setPressedButton] = useState(false);
+  const [accountId, setAccountId] = useState('');
+  const [userData, setUserData] = useState(null);
 
+  // Check if the deck is disabled based on the number of cards
   const isDisabled = updatedDeck.cards?.length === 0;
+  const [isQuizDisabled, setIsQuizDisabled] = useState(true);
+
+  const checkQuizResults = async () => {
+    try {
+      const response = await invoke('viewQuizResults', {
+        deckId: deck?.id || '', 
+        index: 0,
+      });
+  
+      if (response && response.success) {
+        setIsQuizDisabled(false);
+      } else {
+        setIsQuizDisabled(true);
+      }
+    } catch (error) {
+      setIsQuizDisabled(true);
+    }
+  };
+  
+  useEffect(() => {
+    if (deck) {
+      checkQuizResults();
+    }
+  }, [deck]);
 
   // ========================
   // USE EFFECT FOR SUCCESS AND ERROR ALERTS
   // ========================
-  console.log('consol log');
 
   useEffect(() => {
     console.log('consol log');
@@ -511,30 +535,21 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
                 </button>
               </span>
             </Tooltip>
-
-            <Tooltip title={isDisabled ? "Complete a quiz to access this feature" : ""}>
+            <Tooltip title={isQuizDisabled ? "Complete a quiz to access this feature!" : ""}>
               <span>
                 <button
-                  // className='deck-display-quiz-icon' change this
-                  className='viewQuizResults'
-                  onClick={isDisabled ? undefined : startQuizResult}
-                  disabled={isDisabled}
+                  className='deck-display-quiz-results-icon'
+                  onClick={isQuizDisabled ? undefined : startQuizResult}
+                  disabled={isQuizDisabled}
                   style={{
-                    cursor: isDisabled ? 'not-allowed' : 'pointer',
-                    opacity: isDisabled ? 0.5 : 1,
+                    cursor: isQuizDisabled ? 'not-allowed' : 'pointer',
+                    opacity: isQuizDisabled ? 0.5 : 1,
                   }}
                 >
                   <PercentIcon fontSize='small' /> View Quiz Results
                 </button>
               </span>
             </Tooltip>
-
-            {/* <div>
-              <button className='viewQuizResults' onClick={handleViewQuizResult}>
-                    <PercentIcon fontSize='small' /> View Quiz Results
-              </button>
-            </div> */}
-
           </div>
         </div>
         <div className='right-buttons'>
