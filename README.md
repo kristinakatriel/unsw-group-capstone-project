@@ -131,11 +131,6 @@ Where the folders are as follows:
         ngrok config add-authtoken 2nHmclkN2E4BZv3fWudgOG1Wj5K_zxg5Xwc9XCRNmFTtvm5P
         ```
 
-> <h2> Notes </h2>
->
-> If the ngork server return `502 Bad Gateway`, please make sure that all the pip dependencies are installed properly.
-> Should the problem persist, please contact Niranjana Arun Menon (z5417727).
-
 ## Running the Code
 
 If this is the first time you are running the code, follow these instructions:
