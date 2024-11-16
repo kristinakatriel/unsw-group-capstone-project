@@ -135,7 +135,7 @@ Where the folders are as follows:
 
 If this is the first time you are running the code, follow these instructions:
 
-1. Install top-level dependencies in `flashcards` directory:'
+1. Install top-level dependencies in `flashcards` directory:
 
 ``` (shell)
 npm install
@@ -183,8 +183,10 @@ forge install
 > 2. You can install this app on multiple sites.
 > <br><br>
 
+If there are any changes made, follow these steps:
+
 - First, `npm run build` (in the `flashcards/frontend` directory) and then `forge deploy --environment development` (in the `flashcards` directory) command when you want to persist code changes.
-- You will not need to run `forge install` again as once the app is installed on a site, the site picks up the new app changes you deploy without needing to rerun the install command.
+- You will not need to run `forge install` again as once the app is installed on the site you want to use it.
 
 ## Functionality
 
@@ -203,7 +205,6 @@ forge install
 > <h2>Notes:</h2>
 > 
 > 1. Quiz and Study mode dynamically updates based on an individual user's scores.
-> <br>
 > 2. *Locked* means that no other user can edit the flashcard/deck/tag of the person that made the flashcard/deck/tag.
 
 ## Useful Guides
