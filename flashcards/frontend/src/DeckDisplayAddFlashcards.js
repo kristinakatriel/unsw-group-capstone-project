@@ -6,10 +6,11 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import { Alert, Collapse } from '@mui/material';
-import CloseIcon from '@mui/icons-material/Close';
-import './deckGlobalModuleCreate.css';
 import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
+import './DeckDisplayAddFlashcards.css';
 
+//grid and layout styles
 const gridStyles = xcss({
   width: '100%',
 });
@@ -22,40 +23,25 @@ const titleContainerStyles = xcss({
   gridArea: 'title',
 });
 
-function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
-  console.log("deck passed in", deck);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [selectedFlashcards, setSelectedFlashcards] = useState([]);
+function DeckDisplayAddFlashcards({ deck, closeAddDeckModal }) {
+
+  //State management
   const [flashcards, setFlashcards] = useState([]);
+  const [selectedFlashcards, setSelectedFlashcards] = useState([]);
+  const [searchTerm, setSearchTerm] = useState(''); // For search functionality
+
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [closeError, setCloseError] = useState(false);
+  const [closeError, setCloseError] = useState(true);
+  const [errorMessage, setErrorMessage] = useState('');
 
-  const [deckDisplaySearchTerm, setDeckDisplaySearchTerm] = useState(''); // For search functionality
-
-  const handleClose = () => {
-    console.log('Function called: handleClose');
-    if (typeof closeAddDeckModal === 'function') {
-      closeAddDeckModal(); // Call the function passed as a prop
-    } else {
-      console.error('closeFlashcardModal is not a function:', closeAddDeckModal);
-    }
-  };
-
-  // Fetch flashcards when the component mounts
+  // Fetch flashcards (not in the deck already) on mount
   useEffect(() => {
     const fetchFlashcards = async () => {
       try {
-        console.log('Fetching flashcards...');
         const response = await invoke('getAllFlashcards', {});
-        console.log("responce cards", response.cards);
         if (response.success) {
-          // Filter out flashcards already in the deck
-          const flashcardsNotInDeck = response.cards.filter((flashcard) => !deck.cards.some(deckFlashcard => deckFlashcard.id === flashcard.id));
-
-          console.log("flashcardsNotInDeck", flashcardsNotInDeck);
-
-          //console.log('Flashcards fetched successfully:', response.cards);
-          setFlashcards(flashcardsNotInDeck);
+          const flashcardsNotInDeckAlready = response.cards.filter((flashcard) => !deck.cards.some(deckFlashcard => deckFlashcard.id === flashcard.id));
+          setFlashcards(flashcardsNotInDeckAlready);
         } else {
           console.error('Error getting flashcards:', response.error);
         }
@@ -67,10 +53,17 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
     fetchFlashcards();
   }, []);
 
+  // Close modal handler
+  const handleClose = () => {
+    if (typeof closeAddDeckModal === 'function') {
+      closeAddDeckModal(); //function passed as a prop because we are displaying a modal using breadcrumbs
+    } else {
+      console.error('closeFlashcardModal is not a function:', closeAddDeckModal);
+    }
+  };
+
+  // Save selected flashcards to the deck
   const handleSave = async () => {
-    console.log('handleSave invoked. Adding flashcards to deck...');
-    console.log('Selected Flashcards:', selectedFlashcards);
-    console.log('Current Deck:', deck);
 
     setErrorMessage('');
 
@@ -80,9 +73,6 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
     }
 
     try {
-      console.log('Clearing selected flashcards after successful addition.');
-      setSelectedFlashcards([]); // Clear selected flashcards after saving
-      console.log('Selected flashcards cleared. Now closing the modal.');
       setSaveSuccess(true)
       setTimeout(() => {
         closeAddDeckModal(selectedFlashcards),
@@ -93,38 +83,34 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
     }
   };
 
+  // Handle checkbox state change for flashcards
   const handleCheckboxChange = (flashcardId) => {
-      console.log('Checkbox change detected for flashcard:', flashcardId);
       if (selectedFlashcards.includes(flashcardId)) {
-          console.log('Flashcard removed from selected list:', flashcardId);
           setSelectedFlashcards(selectedFlashcards.filter((id) => id !== flashcardId));
       } else {
-          console.log('Flashcard added to selected list:', flashcardId);
           setSelectedFlashcards([...selectedFlashcards, flashcardId]);
       }
-      console.log('Updated selected flashcards:', selectedFlashcards);
   };
 
   // Search functionality: Update the search term
   const searchDeckDisplay = (event) => {
-    setDeckDisplaySearchTerm(event.target.value);
-    console.log('Searching:', deckDisplaySearchTerm);
+    setSearchTerm(event.target.value);
   };
 
   // Filter flashcards based on the search term
   const filteredFlashcards = flashcards.filter((card) => {
-    const searchTerm = deckDisplaySearchTerm.toLowerCase();
+    const filterSearchTerm = searchTerm.toLowerCase();
     return (
-      (typeof card.front === 'string' && card.front.toLowerCase().includes(searchTerm)) ||
-      (typeof card.back === 'string' && card.back.toLowerCase().includes(searchTerm)) ||
-      (card.name && typeof card.name === 'string' && card.name.toLowerCase().includes(searchTerm))
+      (typeof card.front === 'string' && card.front.toLowerCase().includes(filterSearchTerm)) ||
+      (typeof card.back === 'string' && card.back.toLowerCase().includes(filterSearchTerm)) ||
+      (card.name && typeof card.name === 'string' && card.name.toLowerCase().includes(filterSearchTerm))
     );
   });
-
 
   return (
     <ModalTransition>
       <Modal onClose={closeAddDeckModal}>
+        {/************************************* HEADER SECTION ***************************************/}
         <ModalHeader>
           <Grid templateAreas={['title close']} xcss={gridStyles}>
             <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
@@ -141,6 +127,7 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
           </Grid>
         </ModalHeader>
 
+        {/************************************* ERROR MESSAGE ***************************************/}
         <ModalBody>
           { errorMessage &&
             <Collapse in={closeError}>
@@ -165,7 +152,6 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
             </Collapse>
           }
 
-
           {/************************************* ADD FLASHCARDS FIELD ***************************************/}
           <Field id="add-flashcards" name="add-flashcards" label="Add existing flashcards to deck">
             {() => (
@@ -176,7 +162,7 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
                     <input
                       type="text"
                       id="search-input"
-                      value={deckDisplaySearchTerm}
+                      value={searchTerm}
                       onChange={searchDeckDisplay} // Update search term
                       placeholder="Search flashcards..."
                     />
@@ -200,16 +186,18 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
                   ) : (
                     <p>No flashcards available to select.</p>
                   )}
-                </div>              
+                </div>
               </>
 
             )}
           </Field>
 
+          {/************************************* SUCCESS MESSAGE ***************************************/}
           {saveSuccess && <Alert severity="success"> Flashcard/s added to deck successfully! </Alert>}
 
         </ModalBody>
 
+        {/************************************* ACTION BUTTONS ***************************************/}
         <ModalFooter>
           <Button appearance="subtle" onClick={handleClose}>Cancel</Button>
           <Button appearance="primary" onClick={handleSave}>Add Flashcard/s</Button>
@@ -219,4 +207,4 @@ function AddFlashcardsToDeck({ deck, closeAddDeckModal }) {
   );
 }
 
-export default AddFlashcardsToDeck;
+export default DeckDisplayAddFlashcards;

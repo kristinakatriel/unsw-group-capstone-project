@@ -12,11 +12,11 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import './DeckDisplay.css';
-import CreateFlashcardGlobal from '../flashcardGlobalModuleCreate';
-import EditFlashcardGlobal from '../flashcardGlobalModuleEdit'; // for editing flashcards in deck!
+import CreateFlashcardGlobal from '../GlobalPageFlashcardCreate';
+import EditFlashcardGlobal from '../GlobalPageFlashcardEdit'; // for editing flashcards in deck!
 import ModalDialog from '@atlaskit/modal-dialog';
-import AddFlashcardsToDeck from '../addFlashcardsToExistingDeck';
-import EditDeckModal from '../deckModuleEdit';
+import DeckDisplayAddFlashcards from '../DeckDisplayAddFlashcards';
+import EditDeckModal from '../GlobalPageDeckEdit';
 import SearchIcon from '@mui/icons-material/Search';
 import PercentIcon from '@mui/icons-material/Percent';
 
@@ -83,10 +83,10 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   const checkQuizResults = async () => {
     try {
       const response = await invoke('viewQuizResults', {
-        deckId: deck?.id || '', 
+        deckId: deck?.id || '',
         index: 0,
       });
-  
+
       if (response && response.success) {
         setIsQuizDisabled(false);
       } else {
@@ -96,7 +96,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
       setIsQuizDisabled(true);
     }
   };
-  
+
   useEffect(() => {
     if (deck) {
       checkQuizResults();
@@ -461,42 +461,6 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     }
   };
 
-  // ========================
-  // DECK EDIT FUNCTIONALITY
-  // ========================
-
-  const handleViewQuizResult = async () => {
-    // console.log('Viewing quiz results');
-    // setPressedButton(true);
-    // let index = 0
-    // let loopStatus = true;
-    // let responseArray = [];
-
-    // while (loopStatus) {
-    //   try {
-    //     const response = await invoke('viewQuizResults', {
-    //       deckId: updatedDeck.id,
-    //       index: index
-    //     });
-
-    //     if (response.success) {
-    //       responseArray.push(response);
-    //       console.log("response is: " + response)
-    //       setViewQuizResult(responseArray);
-    //       setViewQuizResultBool(true); // this boolean means that there are quiz results to be printed
-    //       index++;
-    //       console.log('Quiz Result:', response);
-    //     } else {
-    //       console.error('Error fetching quiz results:', response.error);
-    //       loopStatus = false;
-    //       setErrorMessage(response.error);
-    //     }
-    //   } catch (error) {
-    //     console.error('Error fetching quiz results:', error);
-    //     setErrorMessage('An error occurred while fetching quiz results');
-    //   }
-    // }
-  };
 
   return (
     <div className='deck-display-container'>
@@ -735,7 +699,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
       {/* Deck Modal */}
       {isAddFlashcardModalOpen && (
         <ModalDialog heading="Add Flashcards To Deck" onClose={() => closeAddDeckModal(true)}>
-          <AddFlashcardsToDeck deck={updatedDeck} closeAddDeckModal = {closeAddDeckModal}/>
+          <DeckDisplayAddFlashcards deck={updatedDeck} closeAddDeckModal = {closeAddDeckModal}/>
         </ModalDialog>
       )}
 

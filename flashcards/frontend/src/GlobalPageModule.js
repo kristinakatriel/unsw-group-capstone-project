@@ -2,11 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/react-splide/css';
 import { invoke, view} from '@forge/bridge';
-import CreateFlashcardGlobal from './flashcardGlobalModuleCreate';
+import CreateFlashcardGlobal from './GlobalPageFlashcardCreate';
 import ModalDialog from '@atlaskit/modal-dialog';
 import CardSlider from './components/CardSlider';
-import './globalPageModule.css';
-import CreateDeckGlobal from './deckGlobalModuleCreate';
+import './GlobalPageModule.css';
+import CreateDeckGlobal from './GlobalPageDeckCreate';
 import DeckSlider from './components/DeckSlider';
 import DeckDisplay from './components/DeckDisplay';
 import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
@@ -18,13 +18,13 @@ import SearchIcon from '@mui/icons-material/Search';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import QuizMode from './components/QuizMode';
 import StudyMode from './components/StudyMode';
-import EditFlashcardModal from './flashcardGlobalModuleEdit';
-import EditDeckModal from './deckModuleEdit';
-import CreateTagGlobal from './tagGlobalModuleCreate';
-import './tagGlobalModuleCreate.css';
+import EditFlashcardModal from './GlobalPageFlashcardEdit';
+import EditDeckModal from './GlobalPageDeckEdit';
+import CreateTagGlobal from './GlobalPageTagCreate';
+import './GlobalPageTagCreate.css';
 import Chip from '@mui/material/Chip';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditTagGlobal from './tagGlobalPageEdit';
+import EditTagGlobal from './GlobalPageTagEdit';
 // import './editTagGlobalModule.css';
 import EditIcon from '@mui/icons-material/Edit';
 import ToggleButton from '@mui/material/ToggleButton';
@@ -52,7 +52,7 @@ const titleContainerStyles = xcss({
 
 // ********************************** GLOBAL PAGE MODULE **********************************
 
-function globalPageModule() {
+function GlobalPageModule() {
 
   // ********************************** STATE MANAGEMENT **********************************
 
@@ -264,10 +264,10 @@ function globalPageModule() {
   //************************** FETCHING DATA (REUSABLE) *****************************/
   const loadFlashcards = async () => {
 
-    console.log('Current flashcards state before fetch:', flashcards); // Log the current state of flashcards
+    //console.log('Current flashcards state before fetch:', flashcards); // Log the current state of flashcards
     try {
       const response = await invoke('getAllFlashcards', {});
-      console.log('Response received from getAllFlashcards:', response); // Log the entire response
+      //console.log('Response received from getAllFlashcards:', response); // Log the entire response
 
       if (response.success) {
         setFlashcards(response.cards);
@@ -283,7 +283,7 @@ function globalPageModule() {
   const loadDecks = async () => {
     try {
       const response = await invoke('getAllDecks', {});
-      console.log(response);
+      //console.log(response);
       if (response.success) {
         setDecks(response.decks);
         setDeckTagMap(response.tags);
@@ -298,7 +298,7 @@ function globalPageModule() {
   const loadTags = async () => {
     try {
       const response = await invoke('getAllTags', {});
-      console.log(response);
+      //console.log(response);
       if (response.success) {
         setTags(response.tags);
         setTagTagMap(response.tags);
@@ -447,30 +447,63 @@ function globalPageModule() {
       setActiveTags([]);
     } else {
       setSelectedTags(tags.map(tag => tag.id)); // Select all tags if not all are selected
-      setActiveTags(tags.map(tag => tag.id)); 
+      setActiveTags(tags.map(tag => tag.id));
     }
   };
 
 
   const selectOwnTags = () => {
-
-    console.log("testing");
     setIsMyTagsSelected((prevState) => !prevState); // Toggle the switch
   };
 
   // Open the edit modal for a tag
   const openTagEditModal = (tag) => {
     setEditingTag(tag); // Set the tag to be edited
+
     setIsEditTagModalOpen(true); // Open the modal
+
   };
 
   // Close the edit modal and refresh tags
-  const closeTagEditModal = (updatedTag) => {
-    setIsEditTagModalOpen(false); // Close the modal
+  const closeTagEditModal = async (selectedDecks = [], selectedFlashcards = []) => {
 
-    // Refresh the tag list by fetching tags
-    refreshTagFrontend();
-    refreshDeckFrontend();
+
+
+    try {
+      console.log("selected decks", selectedDecks);
+      console.log("selected flashcards", selectedFlashcards);
+      const response = await invoke('updateTag', {
+        id: editingTag.id,
+        title: editingTag.title,
+        cardIds: selectedFlashcards,
+        deckIds: selectedDecks
+      });
+
+      //console.log("responce", response);
+
+      if (response.success) {
+
+        setTimeout(() => {
+           // Close the modal
+        }, 1000);
+        //
+
+        // Refresh the tag list by fetching tags
+        refreshTagFrontend();
+        refreshDeckFrontend();
+        refreshFlashcardFrontend();
+
+      } else {
+        setErrorMessage(response.error);
+      }
+    } catch (error) {
+      console.error('Error updating tag:', error);
+    }
+
+    setIsEditTagModalOpen(false)
+    //
+
+    //
   };
 
   // Handle search input change
@@ -555,11 +588,11 @@ function globalPageModule() {
             label='View all Tags'
             labelPlacement='start'
             sx={{
-              margin: 0, 
+              margin: 0,
               '& .MuiTypography-root': {
                 fontSize: '14px',
                 fontFamily: 'inherit',
-              } 
+              }
             }}
           />
           <div className="global-page-badge-container">
@@ -603,7 +636,7 @@ function globalPageModule() {
                 )}
               </Box>
             ))}
-          </div> 
+          </div>
         </>
       )}
     </>
@@ -1209,7 +1242,7 @@ function globalPageModule() {
 
       {/* // Tags functionality: Tag Edit Modal */}
       {isEditTagModalOpen && (
-        <ModalDialog heading="Edit Tag" onClose={closeTagEditModal}>
+        <ModalDialog heading="Edit Tag" onClose={() => closeTagEditModal(true)}>
           <EditTagGlobal
             tag={editingTag} // Pass the tag to the modal,
             closeTagEditModal={closeTagEditModal}
@@ -1232,4 +1265,4 @@ function globalPageModule() {
   );
 }
 
-export default globalPageModule;
+export default GlobalPageModule;
