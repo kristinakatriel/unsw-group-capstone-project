@@ -108,11 +108,15 @@ function EditTagGlobal({ tag, closeTagEditModal }) {
         locked: locked
       });
 
+      console.log("test");
+
       if (response.success) {
         setSaveSuccess(true);
+        console.log("test");
         setTimeout(() => {
           closeTagEditModal(selectedDecks, selectedFlashcards);
         }, 1000);
+        console.log("test");
       } else {
         setErrorMessage(response.error);
       }

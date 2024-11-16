@@ -89,6 +89,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
   return (
     <ModalTransition>
       <Modal onClose={closeFlashcardEditModal}>
+        {/************************************* HEADER SECTION ***************************************/}
         <ModalHeader>
           <Grid templateAreas={['title close']} xcss={gridStyles}>
             <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
@@ -104,7 +105,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
             </Flex>
           </Grid>
         </ModalHeader>
-
+        {/************************************* ERROR MESSAGE ***************************************/}
         <ModalBody>
           {errorMessage &&
             <Collapse in={closeError}>
@@ -154,10 +155,12 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
             )}
           </Field>
 
+          {/************************************* SUCCESS MESSAGE ***************************************/}
           {saveSuccess && <Alert severity="success"> Flashcard edited successfully! </Alert>}
 
         </ModalBody>
 
+        {/************************************* ACTION BUTTONS ***************************************/}
         <ModalFooter>
           <Button appearance="subtle" onClick={handleClose}>Cancel</Button>
           <Button appearance="primary" onClick={handleSaveGlobal}>Save</Button>
