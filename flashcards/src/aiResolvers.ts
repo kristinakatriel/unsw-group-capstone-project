@@ -176,7 +176,7 @@ export const addGeneratedFlashcards = async (req: ResolverRequest) => {
             hint: "",
             owner: accountId,
             name: user,
-            locked: true
+            locked: false
         };
         cardIds.push(cardId);
 
