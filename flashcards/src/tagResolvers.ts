@@ -56,6 +56,13 @@ export const updateTag = async (req: ResolverRequest) => {
         };
     }
 
+    if (!title) {
+        return {
+            success: false,
+            error: 'Tag title is required',
+        };
+    }
+
     const updatedTag = {
         ...existingTag,
         title: title || existingTag.title,
