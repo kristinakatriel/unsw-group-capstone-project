@@ -10,7 +10,7 @@ import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 // added onEdit as well!
 const CardSlider = ({ cards = [], tagMap = [], onDelete, onEdit, onTagEdit }) => {
 
-  console.log('cards passed in to cardslider', cards);
+  //console.log('cards passed in to cardslider', cards);
 
   // const [cardTags, setCardTags] = useState({});
 

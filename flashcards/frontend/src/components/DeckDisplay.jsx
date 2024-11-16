@@ -12,8 +12,8 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import './DeckDisplay.css';
-import CreateFlashcardGlobal from '../flashcardGlobalModuleCreate';
-import EditFlashcardGlobal from '../flashcardGlobalModuleEdit'; // for editing flashcards in deck!
+import CreateFlashcardGlobal from '../GlobalPageFlashcardCreate';
+import EditFlashcardGlobal from '../GlobalPageFlashcardEdit'; // for editing flashcards in deck!
 import ModalDialog from '@atlaskit/modal-dialog';
 import DeckDisplayAddFlashcards from '../DeckDisplayAddFlashcards';
 import EditDeckModal from '../GlobalPageDeckEdit';

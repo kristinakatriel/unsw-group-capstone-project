@@ -6,12 +6,12 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Textfield from '@atlaskit/textfield';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import Alert from '@mui/material/Alert';
-import Collapse from '@mui/material/Collapse';
 import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
 import './GlobalPageDeckCreate.css';
 
 const gridStyles = xcss({
