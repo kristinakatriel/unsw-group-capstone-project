@@ -180,6 +180,10 @@ export const addGeneratedFlashcards = async (req: ResolverRequest) => {
         };
         cardIds.push(cardId);
 
+        autoTag.cardIds.push(cardId);
+
+        await storage.set(autoTag.id, autoTag);
+
         await storage.set(cardId, newCard);
         // const req = {
         //     payload: {
