@@ -459,9 +459,9 @@ function GlobalPageModule() {
   // Open the edit modal for a tag
   const openTagEditModal = (tag) => {
     setEditingTag(tag); // Set the tag to be edited
-    console.log("test");
+
     setIsEditTagModalOpen(true); // Open the modal
-    console.log("test");
+
   };
 
   // Close the edit modal and refresh tags
@@ -478,15 +478,15 @@ function GlobalPageModule() {
         cardIds: selectedFlashcards,
         deckIds: selectedDecks
       });
-      console.log("test");
+
       //console.log("responce", response);
-      console.log("test");
+
       if (response.success) {
-        console.log("test");
+
         setTimeout(() => {
-          closeTagEditModal(selectedDecks, selectedFlashcards);
+           // Close the modal
         }, 1000);
-        console.log("test");
+        //
 
         // Refresh the tag list by fetching tags
         refreshTagFrontend();
@@ -499,9 +499,11 @@ function GlobalPageModule() {
     } catch (error) {
       console.error('Error updating tag:', error);
     }
-    console.log("test");
-    setIsEditTagModalOpen(false); // Close the modal
-    console.log("test");
+
+    setIsEditTagModalOpen(false)
+    //
+
+    //
   };
 
   // Handle search input change
