@@ -26,7 +26,7 @@ const titleContainerStyles = xcss({
 
 function ContentActionModule() {
 
-  //State Hooks
+  //State management
   const [front, setFront] = useState('');
   const [back, setBack] = useState('');
 

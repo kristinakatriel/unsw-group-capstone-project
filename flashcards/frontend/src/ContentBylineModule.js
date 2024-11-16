@@ -18,7 +18,7 @@ const titleContainerStyles = xcss({
 
 function ContentBylineModule() {
 
-  //State Hooks
+  //State management
   const [deckTitle, setDeckTitle] = useState(null);
   const [aiTitle, setAiTitle] = useState(null);
   const [pageTitle, setPageTitle] = useState(null);
