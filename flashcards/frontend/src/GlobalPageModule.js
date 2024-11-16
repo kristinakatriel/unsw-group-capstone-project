@@ -283,7 +283,7 @@ function GlobalPageModule() {
   const loadDecks = async () => {
     try {
       const response = await invoke('getAllDecks', {});
-      console.log(response);
+      //console.log(response);
       if (response.success) {
         setDecks(response.decks);
         setDeckTagMap(response.tags);
@@ -298,7 +298,7 @@ function GlobalPageModule() {
   const loadTags = async () => {
     try {
       const response = await invoke('getAllTags', {});
-      console.log(response);
+      //console.log(response);
       if (response.success) {
         setTags(response.tags);
         setTagTagMap(response.tags);
@@ -479,7 +479,7 @@ function GlobalPageModule() {
         deckIds: selectedDecks
       });
       console.log("test");
-      console.log("responce", response);
+      //console.log("responce", response);
       console.log("test");
       if (response.success) {
         console.log("test");
