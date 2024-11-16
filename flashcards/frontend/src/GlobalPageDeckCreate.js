@@ -30,7 +30,7 @@ const titleContainerStyles = xcss({
 
 function CreateDeckGlobal({ closeDeckModal }) {
 
-  //State management
+  // State management
   const [deckTitle, setDeckTitle] = useState('');
   const [description, setDescription] = useState('');
   const [locked, setLocked] = useState(false);

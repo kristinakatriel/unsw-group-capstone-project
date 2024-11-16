@@ -11,7 +11,7 @@ import Collapse from '@mui/material/Collapse';
 import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
-import './tagGlobalModuleCreate.css';
+import './GlobalPageTagCreate.css';
 
 const gridStyles = xcss({
   width: '100%',
