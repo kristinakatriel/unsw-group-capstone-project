@@ -15,7 +15,7 @@ import { Field } from '@atlaskit/form';
 import Textfield from '@atlaskit/textfield';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
-import './ContextMenu.css';
+import './ContextMenuModule.css';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 
 const gridStyles = xcss({
