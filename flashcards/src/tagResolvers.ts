@@ -45,7 +45,7 @@ export const createTag = async (req: ResolverRequest) => {
 
 
 export const updateTag = async (req: ResolverRequest) => {
-    const { id, title, colour, decks = [], flashcards = [] } = req.payload;
+    const { id, title, colour, cardIds, deckIds } = req.payload;
 
     const existingTag = await storage.get(id);
 
@@ -67,8 +67,8 @@ export const updateTag = async (req: ResolverRequest) => {
         ...existingTag,
         title: title || existingTag.title,
         colour: colour || existingTag.colour,
-        cardIds: flashcards || existingTag.flashcards,
-        deckIds: decks || existingTag.decks
+        cardIds: cardIds || existingTag.flashcards,
+        deckIds: deckIds || existingTag.decks
     };
 
     await storage.set(id, updatedTag);

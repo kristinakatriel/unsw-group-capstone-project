@@ -467,7 +467,7 @@ function GlobalPageModule() {
   // Close the edit modal and refresh tags
   const closeTagEditModal = async (selectedDecks = [], selectedFlashcards = []) => {
 
-    setIsEditTagModalOpen(false); // Close the modal
+
 
     try {
       console.log("selected decks", selectedDecks);
@@ -497,6 +497,8 @@ function GlobalPageModule() {
     } catch (error) {
       console.error('Error updating tag:', error);
     }
+
+    setIsEditTagModalOpen(false); // Close the modal
 
   };
 

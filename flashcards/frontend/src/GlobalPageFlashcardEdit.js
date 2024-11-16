@@ -6,12 +6,13 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Textfield from '@atlaskit/textfield';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import Alert from '@mui/material/Alert';
-import Collapse from '@mui/material/Collapse';
 import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
 import './GlobalPageDeckCreate.css';
 
+//grid and layout styles
 const gridStyles = xcss({
   width: '100%',
 });
@@ -25,12 +26,14 @@ const titleContainerStyles = xcss({
 });
 
 function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
+
   const [front, setFront] = useState('');
   const [back, setBack] = useState('');
   const [hint, setHint] = useState('');
+  const [locked, setLocked] = useState(false);
+
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [locked, setLocked] = useState(false);
   const [closeError, setCloseError] = useState(true);
 
   // Pre-fill the form with the current flashcard details
@@ -43,8 +46,8 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
     }
   }, [flashcard]);
 
-  // handle this!
-  const handleCloseGlobal = () => {
+  // Handle modal close
+  const handleClose = () => {
     if (typeof closeFlashcardEditModal === 'function') {
       closeFlashcardEditModal(); // Call the function passed as a prop
     } else {
@@ -52,6 +55,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
     }
   };
 
+  // Handle save
   const handleSaveGlobal = async () => {
     try {
       console.log(flashcard.id);
@@ -64,16 +68,16 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
       });
 
       if (response && response.success) {
-        setSaveSuccess(true); // Show success message
+        setSaveSuccess(true);
         setTimeout(() => {
-          closeFlashcardEditModal(response.card); // Delay closing modal
-        }, 2000); // Show success message for 0.5 before closing
+          closeFlashcardEditModal(response.card);
+        }, 1000);
       }  else {
         console.error('Failed to update flashcard:', response.error);
         setErrorMessage(response.error);
         setTimeout(() => {
-          closeFlashcardEditModal(flashcard); // Delay closing modal
-        }, 2000); // Show success message for 1 seconds before closing
+          closeFlashcardEditModal(flashcard);
+        }, 1000);
         setSaveSuccess(false);
       }
     } catch (error) {
@@ -155,7 +159,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
         </ModalBody>
 
         <ModalFooter>
-          <Button appearance="subtle" onClick={handleCloseGlobal}>Cancel</Button>
+          <Button appearance="subtle" onClick={handleClose}>Cancel</Button>
           <Button appearance="primary" onClick={handleSaveGlobal}>Save</Button>
         </ModalFooter>
       </Modal>
