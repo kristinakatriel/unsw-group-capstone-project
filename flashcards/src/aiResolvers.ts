@@ -109,7 +109,7 @@ export const generateQA = async (req: ResolverRequest) => {
 
     console.log("calling url thing");
     // get the flashcards generated using the external url
-    const response = await fetch("https://marlin-excited-gibbon.ngrok-free.app/generate_qa", {  // the url which we need to generate the flashcards
+    const response = await fetch(`${url}/generate_qa`, {  // the url which we need to generate the flashcards
         method: 'POST',
         headers: {
             Accept: 'application/json',

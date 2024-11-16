@@ -131,6 +131,11 @@ Where the folders are as follows:
         ngrok config add-authtoken 2nHmclkN2E4BZv3fWudgOG1Wj5K_zxg5Xwc9XCRNmFTtvm5P
         ```
 
+> <h2> Notes </h2>
+>
+> If the ngork server return `502 Bad Gateway`, please make sure that all the pip dependencies are installed properly.
+> Should the problem persist, please contact Niranjana Arun Menon (z5417727).
+
 ## Running the Code
 
 If this is the first time you are running the code, follow these instructions:
@@ -147,9 +152,10 @@ npm install
 npm install
 ```
 
-3. Install python dependencies inside of the `flashcards/src` directory:
+3. Create a `.venv` folder/activate it and install python dependencies inside of the `flashcards/src` directory:
 
 ``` (shell)
+python -m venv venv
 pip install -r requirements.txt
 ```
 
