@@ -30,7 +30,7 @@ const ListItem = styled('li')(({ theme }) => ({
   margin: theme.spacing(0.5),
 }));
 
-function ContextMenu() {
+function ContextMenuModule() {
   const [text, setText] = useState(''); // For input text to generate flashcards
   const [generatedFlashcards, setGeneratedFlashcards] = useState([]);
   const [errorMessage, setErrorMessage] = useState('');
@@ -42,7 +42,7 @@ function ContextMenu() {
   const [front, setFront] = useState([]);
   const [back, setBack] = useState([]);
   const [hint, setHint] = useState('');
-  const [showHint, setShowHint] = useState(false); 
+  const [showHint, setShowHint] = useState(false);
   const [locked, setLocked] = useState(false);
   const [autoGenTag, setAutoGenTag] = useState(null);
   // const [availableTags, setAvailableTags] = useState([]);
@@ -95,13 +95,13 @@ function ContextMenu() {
           // console.log("Yay", newTag.success);
           setAutoGenTag(newTag);
         }
-        
+
       } catch (error) {
         console.error('Could not fetch or create the tag', error);
       }
     }
     fetchTag(); // Calling fetch tag function
-  }, []); 
+  }, []);
 
   {/********************** SECOND CALL WHEN MODULE IS LOADED, AND SELECTED TEXT HAS BEEN FETCHED *******************/}
   {/************************************* GENERATING THE AI FLASHCARDS ***************************************/}
@@ -169,9 +169,9 @@ function ContextMenu() {
           setFront(front.filter((_, i) => i !== index));
           setBack(back.filter((_, i) => i !== index));
           setHint('');
-          setLocked(false); 
+          setLocked(false);
           setGeneratedFlashcards(generatedFlashcards.filter(fc => fc !== flashcard));
-          setSavedFlashcardIndex(null);  
+          setSavedFlashcardIndex(null);
         }, 1000); // Delay of 1 second (1000 ms)
       } else {
         setErrorMessage(response.error);
@@ -225,7 +225,7 @@ function ContextMenu() {
                           <Textfield
                             className="textfield"
                             {...fieldProps}
-                            value={front[index] || ''} 
+                            value={front[index] || ''}
                             onChange={(e) => {
                                 const newFront = [...front];
                                 newFront[index] = e.target.value;
@@ -281,7 +281,7 @@ function ContextMenu() {
                         {() => (
                           <span onClick={() => setLocked(!locked)} style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}>
                             {locked ? 'This flashcard will be locked' : 'This flashcard will be unlocked'}
-                            <span> 
+                            <span>
                               {locked ? (
                                 <LockIcon label="Locked" />
                               ) : (
@@ -317,4 +317,4 @@ function ContextMenu() {
 }
 
 
-export default ContextMenu;
+export default ContextMenuModule;

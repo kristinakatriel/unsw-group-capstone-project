@@ -26,7 +26,7 @@ const titleContainerStyles = xcss({
   gridArea: 'title',
 });
 
-function flashcardContentActionModuleCreate() {
+function ContentActionModule() {
   const [front, setFront] = useState('');
   const [back, setBack] = useState('');
   const [hint, setHint] = useState('');
@@ -34,7 +34,7 @@ function flashcardContentActionModuleCreate() {
   const [errorMessage, setErrorMessage] = useState('');
   const [closeError, setCloseError] = useState(true);
   const [locked, setLocked] = useState(false);
-  const [showHint, setShowHint] = useState(false); 
+  const [showHint, setShowHint] = useState(false);
 
   const handleSave = async () => {
     setErrorMessage('');
@@ -53,7 +53,7 @@ function flashcardContentActionModuleCreate() {
       setBack('');
       setHint('');
       setLocked(false);
-      
+
       if (response && response.success) {
         setSaveSuccess(true); // Show success message
         setTimeout(() => {
@@ -89,7 +89,7 @@ function flashcardContentActionModuleCreate() {
           <h2>Cardify.ai - Create a flashcard</h2>
         </Flex>
       </Grid>
-      {errorMessage && 
+      {errorMessage &&
         <Collapse in={closeError}>
           <Alert
             severity="error"
@@ -141,7 +141,7 @@ function flashcardContentActionModuleCreate() {
         {() => (
           <span onClick={() => setLocked(!locked)} style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}>
             {locked ? 'This flashcard will be locked, only the owner can edit and delete' : 'This flashcard will be unlocked, others can edit and delete'}
-            <span> 
+            <span>
               {locked ? (
                 <LockIcon label="Locked" />
               ) : (
@@ -164,4 +164,4 @@ function flashcardContentActionModuleCreate() {
   );
 }
 
-export default flashcardContentActionModuleCreate;
+export default ContentActionModule;

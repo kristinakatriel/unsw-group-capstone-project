@@ -52,7 +52,7 @@ const titleContainerStyles = xcss({
 
 // ********************************** GLOBAL PAGE MODULE **********************************
 
-function globalPageModule() {
+function GlobalPageModule() {
 
   // ********************************** STATE MANAGEMENT **********************************
 
@@ -447,7 +447,7 @@ function globalPageModule() {
       setActiveTags([]);
     } else {
       setSelectedTags(tags.map(tag => tag.id)); // Select all tags if not all are selected
-      setActiveTags(tags.map(tag => tag.id)); 
+      setActiveTags(tags.map(tag => tag.id));
     }
   };
 
@@ -555,11 +555,11 @@ function globalPageModule() {
             label='View all Tags'
             labelPlacement='start'
             sx={{
-              margin: 0, 
+              margin: 0,
               '& .MuiTypography-root': {
                 fontSize: '14px',
                 fontFamily: 'inherit',
-              } 
+              }
             }}
           />
           <div className="global-page-badge-container">
@@ -603,7 +603,7 @@ function globalPageModule() {
                 )}
               </Box>
             ))}
-          </div> 
+          </div>
         </>
       )}
     </>
@@ -1232,4 +1232,4 @@ function globalPageModule() {
   );
 }
 
-export default globalPageModule;
+export default GlobalPageModule;

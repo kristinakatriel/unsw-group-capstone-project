@@ -15,7 +15,7 @@ const titleContainerStyles = xcss({
   gridArea: 'title',
 });
 
-function ContentByline() {
+function ContentBylineModule() {
   const [allText, setAllText] = useState(null);
   const [deckTitle, setDeckTitle] = useState(null);
   const [pageTitle, setPageTitle] = useState(null);
@@ -57,7 +57,7 @@ function ContentByline() {
         const context = await view.getContext();
         const pageId = context.extension.content.id;
         const siteUrl = context.siteUrl;
-        
+
         const result = await invoke('getAllContent', { pageId, siteUrl });
         setAllText(result.data);
         setDeckTitle(result.title);
@@ -89,16 +89,16 @@ function ContentByline() {
           console.log("Yay", newTag.success);
           setAutoGenTag(newTag);
         }
-        
+
       } catch (error) {
         console.error('Could not fetch or create the tag', error);
       }
     }
     fetchTag(); // Calling fetch tag function
-  }, []); 
+  }, []);
 
   const generateDeckTitle = async () => {
-    setDeckGenerating(true); 
+    setDeckGenerating(true);
     if (allText) {
       try {
         const resDeck = await invoke('getGeneratedDeckTitle', { text: allText });
@@ -126,7 +126,7 @@ function ContentByline() {
           const response = await invoke('generateQA', { text: chunk });
           if (response && response.success) {
             const newQAPairs = response.data;
-            
+
             setQAPairs((prevQAPairs) => [...prevQAPairs, ...newQAPairs]);
 
             allQAPairs.push(...newQAPairs);
@@ -146,9 +146,9 @@ function ContentByline() {
             const response = await invoke('generateQA', { text: chunk });
             if (response && response.success) {
               const newQAPairs = response.data;
-              
+
               setQAPairs((prevQAPairs) => [...prevQAPairs, ...newQAPairs]);
-  
+
               allQAPairs.push(...newQAPairs);
               console.log(response.data);
             }
@@ -158,7 +158,7 @@ function ContentByline() {
         }
         setRunningReq('');
       }
-  
+
       // Update the state
       setFlashcardsGenerating(false);
       setFlashcardsGenerated(true);
@@ -182,7 +182,7 @@ function ContentByline() {
           tagId: autoGenTag.id
         });
         console.log(tagToDeck.success);
-        
+
         // Add generated flashcards to the created deck
         const addResult = await invoke('addGeneratedFlashcards', {
           deckId: createdDeck,
@@ -240,32 +240,32 @@ function ContentByline() {
         deckGenerated ? (
           <span style={{ display: 'flex', alignItems: 'center' }}>
             <span>Deck Title </span>
-            <UndoIcon 
-              onClick={undoChanges} 
-              fontSize="small" 
-              style={{ cursor: 'pointer', marginLeft: '10px' }} 
+            <UndoIcon
+              onClick={undoChanges}
+              fontSize="small"
+              style={{ cursor: 'pointer', marginLeft: '10px' }}
             />
-            <RedoIcon 
-              onClick={redoChanges} 
-              fontSize="small" 
-              style={{ cursor: 'pointer', marginLeft: '10px' }} 
+            <RedoIcon
+              onClick={redoChanges}
+              fontSize="small"
+              style={{ cursor: 'pointer', marginLeft: '10px' }}
             />
           </span>
         ) : 'Deck Title'
       }>
         {({ fieldProps }) => (
-          <Textfield 
-            {...fieldProps} 
-            value={deckTitle} 
-            onChange={(e) => setDeckTitle(e.target.value)} 
-            placeholder="Type the deck title here..." 
+          <Textfield
+            {...fieldProps}
+            value={deckTitle}
+            onChange={(e) => setDeckTitle(e.target.value)}
+            placeholder="Type the deck title here..."
           />
         )}
       </Field>
 
       {/* ************************** DECK TITLE AI GENERATE FIELD ******************************/}
       {(!deckSaved && (deckGenerating || !deckGenerated)) && (
-        <Field> 
+        <Field>
           {() => (
             <span
               onClick={deckGenerating ? null : generateDeckTitle}
@@ -333,8 +333,8 @@ function ContentByline() {
       {/* ***************************** SAVE DECK FIELD ****************************** */}
       {flashcardsGenerated && !deckSaved && (
         <div className="content-byline-button-group">
-          <button 
-            className="content-byline-button" 
+          <button
+            className="content-byline-button"
             onClick={() => handleSave()}
             disabled={savingDeck}
           >
@@ -346,4 +346,4 @@ function ContentByline() {
   );
 }
 
-export default ContentByline;
+export default ContentBylineModule;

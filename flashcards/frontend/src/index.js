@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import ReactDOM from 'react-dom';
-import FlashcardContentActionModuleCreate from './flashcardContentActionModuleCreate';
-import GlobalPageModule from './globalPageModule';
 import '@atlaskit/css-reset';
 import { invoke } from '@forge/bridge';
-import ContextMenu from './ContextMenu';
-import ContentByline from './ContentByline';
+import ContentActionModule from './ContentActionModule';
+import GlobalPageModule from './GlobalPageModule';
+import ContextMenuModule from './ContextMenuModule';
+import ContentBylineModule from './ContentBylineModule';
 
 const MainComponent = () => {
   const [moduleKey, setModuleKey] = useState(null);
@@ -32,14 +32,14 @@ const MainComponent = () => {
   // }, []);
 
   if (moduleKey === 'content-action-menu-flashcards') {
-    return <FlashcardContentActionModuleCreate />;
+    return <ContentActionModule />;
   } else if (moduleKey === 'flashcard-global-page') {
     return <GlobalPageModule />;
   } else if (moduleKey === 'flashcard-context-menu') {
-    return <ContextMenu />; 
+    return <ContextMenuModule />;
   // }
   } else if (moduleKey === 'flashcard-content-byline') {
-    return <ContentByline />
+    return <ContentBylineModule />
   }
   return <div>Loading...</div>;
 };
