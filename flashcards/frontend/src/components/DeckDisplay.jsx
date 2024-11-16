@@ -15,7 +15,7 @@ import './DeckDisplay.css';
 import CreateFlashcardGlobal from '../flashcardGlobalModuleCreate';
 import EditFlashcardGlobal from '../flashcardGlobalModuleEdit'; // for editing flashcards in deck!
 import ModalDialog from '@atlaskit/modal-dialog';
-import AddFlashcardsToDeck from '../addFlashcardsToExistingDeck';
+import DeckDisplayAddFlashcards from '../DeckDisplayAddFlashcards';
 import EditDeckModal from '../deckModuleEdit';
 import SearchIcon from '@mui/icons-material/Search';
 import PercentIcon from '@mui/icons-material/Percent';
@@ -83,10 +83,10 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   const checkQuizResults = async () => {
     try {
       const response = await invoke('viewQuizResults', {
-        deckId: deck?.id || '', 
+        deckId: deck?.id || '',
         index: 0,
       });
-  
+
       if (response && response.success) {
         setIsQuizDisabled(false);
       } else {
@@ -96,7 +96,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
       setIsQuizDisabled(true);
     }
   };
-  
+
   useEffect(() => {
     if (deck) {
       checkQuizResults();
@@ -735,7 +735,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
       {/* Deck Modal */}
       {isAddFlashcardModalOpen && (
         <ModalDialog heading="Add Flashcards To Deck" onClose={() => closeAddDeckModal(true)}>
-          <AddFlashcardsToDeck deck={updatedDeck} closeAddDeckModal = {closeAddDeckModal}/>
+          <DeckDisplayAddFlashcards deck={updatedDeck} closeAddDeckModal = {closeAddDeckModal}/>
         </ModalDialog>
       )}
 
