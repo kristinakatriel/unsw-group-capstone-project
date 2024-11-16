@@ -10,7 +10,7 @@ import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
 import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
-import './deckGlobalModuleCreate.css';
+import './GlobalPageCreateDeck.css';
 
 const gridStyles = xcss({
   width: '100%',
@@ -78,7 +78,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
       }
     } catch (error) {
       console.error('Error invoking updateFlashcard:', error);
-    } 
+    }
   };
 
 
@@ -102,7 +102,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
         </ModalHeader>
 
         <ModalBody>
-          {errorMessage && 
+          {errorMessage &&
             <Collapse in={closeError}>
               <Alert
                 severity="error"
@@ -139,7 +139,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
             {() => (
               <span onClick={() => setLocked(!locked)} style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}>
                 {locked ? 'This flashcard will be locked, only the owner can edit and delete' : 'This flashcard will be unlocked, others can edit and delete'}
-                <span> 
+                <span>
                   {locked ? (
                     <LockIcon label="Locked" />
                   ) : (

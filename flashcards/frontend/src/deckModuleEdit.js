@@ -10,7 +10,7 @@ import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
 import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
-import './deckGlobalModuleCreate.css';
+import './GlobalPageCreateDeck.css';
 
 const gridStyles = xcss({
   width: '100%',
@@ -102,7 +102,7 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
         </ModalHeader>
 
         <ModalBody>
-          {errorMessage && 
+          {errorMessage &&
             <Collapse in={closeError}>
               <Alert
                 severity="error"
@@ -132,7 +132,7 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
             {() => (
               <span onClick={() => setLocked(!locked)} style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}>
                 {locked ? 'This deck will be locked, only the owner can edit and delete' : 'This deck will be unlocked, others can edit and delete'}
-                <span> 
+                <span>
                   {locked ? (
                     <LockIcon label="Locked" />
                   ) : (

@@ -2,19 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { invoke } from '@forge/bridge';
 import Button, { IconButton } from '@atlaskit/button/new';
 import { Field } from '@atlaskit/form';
-import CrossIcon from '@atlaskit/icon/glyph/cross';
-import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Textfield from '@atlaskit/textfield';
+import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import Alert from '@mui/material/Alert';
-import Collapse from '@mui/material/Collapse';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
 import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
+import SearchIcon from '@mui/icons-material/Search';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import './deckGlobalModuleCreate.css';
-import SearchIcon from '@mui/icons-material/Search';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
+import './GlobalPageCreateDeck.css';
 
+//grid and layout styles
 const gridStyles = xcss({
   width: '100%',
 });
@@ -28,28 +29,24 @@ const titleContainerStyles = xcss({
 });
 
 function CreateDeckGlobal({ closeDeckModal }) {
+
+  //State management
   const [deckTitle, setDeckTitle] = useState('');
   const [description, setDescription] = useState('');
-  const [selectedFlashcards, setSelectedFlashcards] = useState([]);
-  const [flashcards, setFlashcards] = useState([]);
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [closeError, setCloseError] = useState(true);
   const [locked, setLocked] = useState(false);
+
+  const [flashcards, setFlashcards] = useState([]);
+  const [selectedFlashcards, setSelectedFlashcards] = useState([]);
+  const [flashcardSearchTerm, setFlashcardSearchTerm] = useState('');
+
   const [showDescription, setShowDescription] = useState(false);
   const [showFlashcards, setShowFlashcards] = useState(false);
 
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [closeError, setCloseError] = useState(true);
 
-  const [flashcardSearchTerm, setFlashcardSearchTerm] = useState('');
-
-  const handleCloseGlobal = () => {
-    if (typeof closeDeckModal === 'function') {
-      closeDeckModal();
-    } else {
-      console.error('closeDeckModal is not a function:', closeDeckModal);
-    }
-  };
-
+  // load flashcards when modal opens
   useEffect(() => {
     const fetchFlashcards = async () => {
       try {
@@ -67,7 +64,19 @@ function CreateDeckGlobal({ closeDeckModal }) {
     fetchFlashcards();
   }, []);
 
+
+  // Handle modal closing
+  const handleClose = () => {
+    if (typeof closeDeckModal === 'function') {
+      closeDeckModal();
+    } else {
+      console.error('closeDeckModal is not a function:', closeDeckModal);
+    }
+  };
+
+  // Handle saving of the deck
   const handleSave = async () => {
+
     setErrorMessage('');
     setCloseError(true);
 
@@ -90,8 +99,8 @@ function CreateDeckGlobal({ closeDeckModal }) {
       });
 
       if (response.success) {
+
         setSaveSuccess(true);
-        console.log('Deck created successfully:', response.deck);
         const deckId = response.id;
 
         for (const cardId of selectedFlashcards) {
@@ -107,12 +116,14 @@ function CreateDeckGlobal({ closeDeckModal }) {
           }
         }
 
+        //clear fields and close
         setDeckTitle('');
         setDescription('');
         setSelectedFlashcards([]);
         setTimeout(() => {
           closeDeckModal();
         }, 1000);
+
       } else {
         setErrorMessage(response.error);
         console.error('Failed to create deck:', response.error);
@@ -122,6 +133,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
     }
   };
 
+  // Handle checkbox change for selecting flashcards
   const handleCheckboxChange = (flashcardId) => {
     if (selectedFlashcards.includes(flashcardId)) {
       setSelectedFlashcards(selectedFlashcards.filter((id) => id !== flashcardId));
@@ -130,6 +142,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
     }
   };
 
+  // Filter flashcards based on the search term entered
   const filteredFlashcards = flashcards.filter((flashcard) => {
     return flashcard.front.toLowerCase().includes(flashcardSearchTerm.toLowerCase());
   });
@@ -137,6 +150,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
   return (
     <ModalTransition>
       <Modal onClose={closeDeckModal}>
+        {/************************************* HEADER SECTION ***************************************/}
         <ModalHeader>
           <Grid templateAreas={['title close']} xcss={gridStyles}>
             <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
@@ -152,7 +166,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
             </Flex>
           </Grid>
         </ModalHeader>
-
+        {/************************************* ERROR MESSAGE ***************************************/}
         <ModalBody>
           {errorMessage &&
             <Collapse in={closeError}>
@@ -194,9 +208,6 @@ function CreateDeckGlobal({ closeDeckModal }) {
               </>
             )}
           </Field>
-
-
-
 
           {/************************************* ADD FLASHCARDS FIELD ***************************************/}
           <Field id="add-flashcards" name="add-flashcards" label={
@@ -241,7 +252,7 @@ function CreateDeckGlobal({ closeDeckModal }) {
                       ) : (
                         <p>No flashcards available to select.</p>
                       )}
-                    </div>                  
+                    </div>
                   </>
                 )}
               </div>
@@ -264,14 +275,14 @@ function CreateDeckGlobal({ closeDeckModal }) {
             )}
           </Field>
 
+          {/************************************* SUCCESS MESSAGE ***************************************/}
           {saveSuccess && <Alert severity="success"> New deck created successfully! </Alert>}
 
         </ModalBody>
 
-        {/* Creating tag here: optional; suggest based on flashcards in the deck or nah ??? */}
-
+        {/************************************* ACTION BUTTONS ***************************************/}
         <ModalFooter>
-          <Button appearance="subtle" onClick={handleCloseGlobal}>Cancel</Button>
+          <Button appearance="subtle" onClick={handleClose}>Cancel</Button>
           <Button appearance="primary" onClick={handleSave}>Create Deck</Button>
         </ModalFooter>
       </Modal>

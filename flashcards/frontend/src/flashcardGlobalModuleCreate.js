@@ -12,7 +12,7 @@ import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import './deckGlobalModuleCreate.css';
+import './GlobalPageCreateDeck.css';
 
 const gridStyles = xcss({
   width: '100%',
@@ -34,7 +34,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
   const [errorMessage, setErrorMessage] = useState('');
   const [closeError, setCloseError] = useState(true);
   const [locked, setLocked] = useState(false);
-  const [showHint, setShowHint] = useState(false); 
+  const [showHint, setShowHint] = useState(false);
 
   const handleCloseGlobal = () => {
     console.log('CLOSE BUTTON WAS JUST PRESSED (Function called: handleCloseGlobal)');
@@ -114,7 +114,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
         </ModalHeader>
 
         <ModalBody>
-          {errorMessage && 
+          {errorMessage &&
             <Collapse in={closeError}>
               <Alert
                 severity="error"
@@ -167,7 +167,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
             {() => (
               <span onClick={() => setLocked(!locked)} style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}>
                 {locked ? 'This flashcard will be locked, only the owner can edit and delete' : 'This flashcard will be unlocked, others can edit and delete'}
-                <span> 
+                <span>
                   {locked ? (
                     <LockIcon label="Locked" />
                   ) : (
