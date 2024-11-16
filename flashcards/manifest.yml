@@ -1,7 +1,7 @@
 modules:
 
   confluence:contentAction:
-    - key: content-action-menu-flashcards
+    - key: content-action
       resource: main
       resolver:
         function: resolver
@@ -9,24 +9,24 @@ modules:
       title: Cardify.ai - Create a flashcard
 
   confluence:globalPage:
-    - key: flashcard-global-page
+    - key: global-page
       resource: main
       resolver:
         function: resolver
       title: Cardify.ai - Homepage
-      route: flashcard-global-page
+      route: global-page
 
   confluence:contextMenu:
-    - key: flashcard-context-menu
+    - key: context-menu
       resource: main
       resolver:
         function: resolver
       #keep viewport size as large until we can figure out how to make the modal bigger
       viewportSize: large
       title: Cardify.ai - Flashcards Generator
-  
+
   confluence:contentBylineItem:
-    - key: flashcard-content-byline
+    - key: content-byline
       resource: main
       resolver:
         function: resolver

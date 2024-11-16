@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { invoke, view } from '@forge/bridge';
-import './flashcardContentActionModuleCreate.css';
+import './ContentActionModule.css';
 import { Alert, Collapse } from '@mui/material';
 import { Field } from '@atlaskit/form';
 import Button, { IconButton } from '@atlaskit/button/new';
