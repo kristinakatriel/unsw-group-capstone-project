@@ -31,7 +31,7 @@ function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [locked, setLocked] = useState(false);
-  const [closeError, setCloseError] = useState(false);
+  const [closeError, setCloseError] = useState(true);
 
   // Pre-fill the form with the current flashcard details
   useEffect(() => {

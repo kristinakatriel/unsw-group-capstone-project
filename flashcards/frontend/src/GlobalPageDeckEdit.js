@@ -34,7 +34,7 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
 
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [closeError, setCloseError] = useState(false);
+  const [closeError, setCloseError] = useState(true);
 
   // Pre-fill the deck edit form with the deck details
   useEffect(() => {
@@ -60,12 +60,16 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
     setErrorMessage('');
 
     try {
+
+      console.log("title" , title);
       const response = await invoke('updateDeck', {
         id: deck.id,
         title: title,
         description: description,
         locked: locked
       });
+
+      console.log("title" , response);
 
       if (response && response.success) {
         setSaveSuccess(true);

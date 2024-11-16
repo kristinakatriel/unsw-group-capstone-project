@@ -16,7 +16,7 @@ import CreateFlashcardGlobal from '../flashcardGlobalModuleCreate';
 import EditFlashcardGlobal from '../flashcardGlobalModuleEdit'; // for editing flashcards in deck!
 import ModalDialog from '@atlaskit/modal-dialog';
 import DeckDisplayAddFlashcards from '../DeckDisplayAddFlashcards';
-import EditDeckModal from '../deckModuleEdit';
+import EditDeckModal from '../GlobalPageDeckEdit';
 import SearchIcon from '@mui/icons-material/Search';
 import PercentIcon from '@mui/icons-material/Percent';
 

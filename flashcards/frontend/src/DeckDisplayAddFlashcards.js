@@ -31,7 +31,7 @@ function DeckDisplayAddFlashcards({ deck, closeAddDeckModal }) {
   const [searchTerm, setSearchTerm] = useState(''); // For search functionality
 
   const [saveSuccess, setSaveSuccess] = useState(false);
-  const [closeError, setCloseError] = useState(false);
+  const [closeError, setCloseError] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
 
   // Fetch flashcards (not in the deck already) on mount
