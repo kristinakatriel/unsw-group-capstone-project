@@ -19,17 +19,33 @@ For more information about functionality, jump to this section: [Functionality](
 ``` (shell)
 ├── flashcards
 │   ├── frontend
+│   │   ├── build
+│   │   │   ├── asset-manifest.json
+│   │   │   └── index.html
 │   │   ├── package-lock.json
 │   │   ├── package.json
 │   │   ├── public
 │   │   │   └── index.html
 │   │   └── src
-│   │       ├── ContentByline.css
-│   │       ├── ContentByline.js
-│   │       ├── ContextMenu.css
-│   │       ├── ContextMenu.js
-│   │       ├── addFlashcardsToExistingDeck.css
-│   │       ├── addFlashcardsToExistingDeck.js
+│   │       ├── ContentActionModule.css
+│   │       ├── ContentActionModule.js
+│   │       ├── ContentBylineModule.css
+│   │       ├── ContentBylineModule.js
+│   │       ├── ContextMenuModule.css
+│   │       ├── ContextMenuModule.js
+│   │       ├── DeckDisplayAddFlashcards.css
+│   │       ├── DeckDisplayAddFlashcards.js
+│   │       ├── GlobalPageDeckCreate.css
+│   │       ├── GlobalPageDeckCreate.js
+│   │       ├── GlobalPageDeckEdit.js
+│   │       ├── GlobalPageFlashcard.css
+│   │       ├── GlobalPageFlashcardCreate.js
+│   │       ├── GlobalPageFlashcardEdit.js
+│   │       ├── GlobalPageModule.css
+│   │       ├── GlobalPageModule.js
+│   │       ├── GlobalPageTagCreate.css
+│   │       ├── GlobalPageTagCreate.js
+│   │       ├── GlobalPageTagEdit.js
 │   │       ├── components
 │   │       │   ├── CardSlider.css
 │   │       │   ├── CardSlider.jsx
@@ -45,26 +61,12 @@ For more information about functionality, jump to this section: [Functionality](
 │   │       │   ├── QuizResults.jsx
 │   │       │   ├── StudyMode.css
 │   │       │   └── StudyMode.jsx
-│   │       ├── deckGlobalModuleCreate.css
-│   │       ├── deckGlobalModuleCreate.js
-│   │       ├── deckModuleEdit.js
-│   │       ├── editTagGlobalModule.css
-│   │       ├── flashcardContentActionModuleCreate.css
-│   │       ├── flashcardContentActionModuleCreate.js
-│   │       ├── flashcardGlobalModule.css
-│   │       ├── flashcardGlobalModuleCreate.js
-│   │       ├── flashcardGlobalModuleEdit.js
-│   │       ├── globalPageModule.css
-│   │       ├── globalPageModule.js
-│   │       ├── index.js
-│   │       ├── tagGlobalModuleCreate.css
-│   │       ├── tagGlobalModuleCreate.js
-│   │       ├── tagGlobalPageEdit.js
-│   │       └── workings.js
+│   │       └── index.js
 │   ├── manifest.yml
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── src
+│   │   ├── aiResolvers.ts
 │   │   ├── cardResolvers.ts
 │   │   ├── deckResolvers.ts
 │   │   ├── flashcards.py
