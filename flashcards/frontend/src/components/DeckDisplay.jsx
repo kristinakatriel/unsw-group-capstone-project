@@ -461,42 +461,6 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     }
   };
 
-  // ========================
-  // DECK EDIT FUNCTIONALITY
-  // ========================
-
-  const handleViewQuizResult = async () => {
-    // console.log('Viewing quiz results');
-    // setPressedButton(true);
-    // let index = 0
-    // let loopStatus = true;
-    // let responseArray = [];
-
-    // while (loopStatus) {
-    //   try {
-    //     const response = await invoke('viewQuizResults', {
-    //       deckId: updatedDeck.id,
-    //       index: index
-    //     });
-
-    //     if (response.success) {
-    //       responseArray.push(response);
-    //       console.log("response is: " + response)
-    //       setViewQuizResult(responseArray);
-    //       setViewQuizResultBool(true); // this boolean means that there are quiz results to be printed
-    //       index++;
-    //       console.log('Quiz Result:', response);
-    //     } else {
-    //       console.error('Error fetching quiz results:', response.error);
-    //       loopStatus = false;
-    //       setErrorMessage(response.error);
-    //     }
-    //   } catch (error) {
-    //     console.error('Error fetching quiz results:', error);
-    //     setErrorMessage('An error occurred while fetching quiz results');
-    //   }
-    // }
-  };
 
   return (
     <div className='deck-display-container'>
