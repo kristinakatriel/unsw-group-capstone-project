@@ -62,6 +62,23 @@ function CreateTagGlobal({ closeTagModal }) {
     }
 
     try {
+      // Fetch all tags to check for duplicates
+      const tags = await invoke('getAllTags', {});
+
+      // Check if a tag with the same title already exists
+      const sameTitle = tags.tags.find(tag => tag.title === tagTitle);
+
+      if (sameTitle) {
+        setErrorMessage('A tag with this title already exists. Please choose a different title.');
+        return;
+      }
+
+    } catch (error) {
+      console.error('Error invoking getAllTags:', error);
+    }
+
+
+    try {
       const response = await invoke('createTag', {
         title: tagTitle,
         colour: selectedColour || 'blue',
@@ -225,7 +242,7 @@ function CreateTagGlobal({ closeTagModal }) {
                           placeholder="Search decks..."
                         />
                       </div>
-                    </div>                  
+                    </div>
                     <div className='decks-select-scroll'>
                       {filteredDecks.length > 0 ? (
                         filteredDecks.map((deck) => (
@@ -294,7 +311,7 @@ function CreateTagGlobal({ closeTagModal }) {
                       ) : (
                         <p>No flashcards available to select.</p>
                       )}
-                    </div>                  
+                    </div>
                   </>
                 )}
               </div>
