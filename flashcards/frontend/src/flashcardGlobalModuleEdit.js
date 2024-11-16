@@ -10,7 +10,7 @@ import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
 import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
-import './GlobalPageCreateDeck.css';
+import './GlobalPageDeckCreate.css';
 
 const gridStyles = xcss({
   width: '100%',

@@ -13,7 +13,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 import Alert from '@mui/material/Alert';
 import Collapse from '@mui/material/Collapse';
-import './GlobalPageCreateDeck.css';
+import './GlobalPageDeckCreate.css';
 
 //grid and layout styles
 const gridStyles = xcss({

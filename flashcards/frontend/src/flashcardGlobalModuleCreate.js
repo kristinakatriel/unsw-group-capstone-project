@@ -12,7 +12,7 @@ import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import './GlobalPageCreateDeck.css';
+import './GlobalPageDeckCreate.css';
 
 const gridStyles = xcss({
   width: '100%',

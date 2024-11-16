@@ -2,16 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { invoke } from '@forge/bridge';
 import Button, { IconButton } from '@atlaskit/button/new';
 import { Field } from '@atlaskit/form';
-import CrossIcon from '@atlaskit/icon/glyph/cross';
-import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Textfield from '@atlaskit/textfield';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import Alert from '@mui/material/Alert';
-import Collapse from '@mui/material/Collapse';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
 import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
-import './GlobalPageCreateDeck.css';
+import { Flex, Grid, xcss } from '@atlaskit/primitives';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
+import './GlobalPageDeckCreate.css';
 
+//grid and layout styles
 const gridStyles = xcss({
   width: '100%',
 });
@@ -25,14 +26,17 @@ const titleContainerStyles = xcss({
 });
 
 function EditDeckGlobal({ deck, closeDeckEditModal }) {
+
+    //  State management
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [locked, setLocked] = useState(false);
+
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
-  const [locked, setLocked] = useState(false);
   const [closeError, setCloseError] = useState(false);
 
-  // Pre-fill the form with the deck details
+  // Pre-fill the deck edit form with the deck details
   useEffect(() => {
     if (deck) {
       setTitle(deck.title || '');
@@ -41,19 +45,19 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
     }
   }, [deck]);
 
-  const handleCloseGlobal = () => {
+  // Handle modal closing
+  const handleClose = () => {
     if (typeof closeDeckEditModal === 'function') {
-      console.log('deck: ', deck);
       closeDeckEditModal(deck);
     } else {
       console.error('closeDeckEditModal is not a function:', closeDeckEditModal);
     }
   };
 
-  const handleSaveGlobal = async () => {
-    setErrorMessage('');
-    console.log('deck: ', deck);
+  // Handle saving including user
+  const handleSave = async () => {
 
+    setErrorMessage('');
 
     try {
       const response = await invoke('updateDeck', {
@@ -65,17 +69,15 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
 
       if (response && response.success) {
         setSaveSuccess(true);
-        console.log('responce.deck: ', response.deck);
 
         setTimeout(() => {
           closeDeckEditModal(response.deck); // Delay closing modal
-        }, 2000); // Show success message for 2 seconds before closing
+        }, 1000); // Show success message
       } else {
-        console.error('Failed to update deck:', response.error);
         setErrorMessage(response.error);
         setTimeout(() => {
           closeDeckEditModal(deck); // Delay closing modal
-        }, 2000); // Show success message for 2 seconds before closing
+        }, 1000); //show error message
       }
     } catch (error) {
       console.error('Error invoking updateDeck:', error);
@@ -84,7 +86,8 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
 
   return (
     <ModalTransition>
-      <Modal onClose={handleCloseGlobal}>
+      <Modal onClose={handleClose}>
+        {/************************************* HEADER SECTION ***************************************/}
         <ModalHeader>
           <Grid templateAreas={['title close']} xcss={gridStyles}>
             <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
@@ -92,7 +95,7 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
                 appearance="subtle"
                 icon={CrossIcon}
                 label="Close Modal"
-                onClick={handleCloseGlobal}
+                onClick={handleClose}
               />
             </Flex>
             <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
@@ -100,7 +103,7 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
             </Flex>
           </Grid>
         </ModalHeader>
-
+        {/************************************* ERROR MESSAGE ***************************************/}
         <ModalBody>
           {errorMessage &&
             <Collapse in={closeError}>
@@ -113,7 +116,7 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
             </Collapse>
           }
 
-          {/************************************* DECK DESCRIPTION ***************************************/}
+          {/************************************* DECK TITLE ***************************************/}
           <Field id="deck-title" name="deck-title" label="Deck Title">
             {({ fieldProps }) => (
               <Textfield {...fieldProps} value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Type the front of the flashcard here..." />
@@ -143,13 +146,14 @@ function EditDeckGlobal({ deck, closeDeckEditModal }) {
             )}
           </Field>
 
+          {/************************************* SUCCESS MESSAGE ***************************************/}
           {saveSuccess && <Alert severity="success"> Deck edited successfully! </Alert>}
 
         </ModalBody>
-
+        {/************************************* ACTION BUTTONS ***************************************/}
         <ModalFooter>
-          <Button appearance="subtle" onClick={handleCloseGlobal}>Cancel</Button>
-          <Button appearance="primary" onClick={handleSaveGlobal}>Save</Button>
+          <Button appearance="subtle" onClick={handleClose}>Cancel</Button>
+          <Button appearance="primary" onClick={handleSave}>Save</Button>
         </ModalFooter>
       </Modal>
     </ModalTransition>

@@ -6,7 +6,7 @@ import CreateFlashcardGlobal from './flashcardGlobalModuleCreate';
 import ModalDialog from '@atlaskit/modal-dialog';
 import CardSlider from './components/CardSlider';
 import './GlobalPageModule.css';
-import CreateDeckGlobal from './GlobalPageCreateDeck';
+import CreateDeckGlobal from './GlobalPageDeckCreate';
 import DeckSlider from './components/DeckSlider';
 import DeckDisplay from './components/DeckDisplay';
 import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
