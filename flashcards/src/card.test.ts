@@ -23,7 +23,7 @@ describe('Flashcards Resolver Functions', () => {
         payload: { front: 'Question', back: 'Answer', hint: 'Hint', locked: false },
         context: { accountId: '123' },
       };
-      const jestCardId = 'c-12345';
+      const jestCardId = `c-${12345}`;
 
       const result = await createFlashcard(req);
 
