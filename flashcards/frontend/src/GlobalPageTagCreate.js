@@ -2,19 +2,20 @@ import React, { useState, useEffect } from 'react';
 import { invoke } from '@forge/bridge';
 import Button, { IconButton } from '@atlaskit/button/new';
 import { Field } from '@atlaskit/form';
-import CrossIcon from '@atlaskit/icon/glyph/cross';
-import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Textfield from '@atlaskit/textfield';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import Alert from '@mui/material/Alert';
-import Collapse from '@mui/material/Collapse';
+import CrossIcon from '@atlaskit/icon/glyph/cross';
 import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
+import { Flex, Grid, xcss } from '@atlaskit/primitives';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import './tagGlobalModuleCreate.css';
 import SearchIcon from '@mui/icons-material/Search';
+import './GlobalPageTagCreate.css';
 
+//grid and layout styles
 const gridStyles = xcss({
   width: '100%',
 });
@@ -28,89 +29,27 @@ const titleContainerStyles = xcss({
 });
 
 function CreateTagGlobal({ closeTagModal }) {
+
+  // State management
   const [tagTitle, setTagTitle] = useState('');
-  const [saveSuccess, setSaveSuccess] = useState(false);
-  const [errorMessage, setErrorMessage] = useState('');
-  const [closeError, setCloseError] = useState(true);
+  const [selectedColour, setSelectedColour] = useState('blue');
   const [locked, setLocked] = useState(false);
-  const [selectedColour, setSelectedColour] = useState("blue");
-  const [flashcards, setFlashcards] = useState([]);
+
   const [decks, setDecks] = useState([]);
-  const [selectedFlashcards, setSelectedFlashcards] = useState([]);
+  const [flashcards, setFlashcards] = useState([]);
   const [selectedDecks, setSelectedDecks] = useState([]);
+  const [selectedFlashcards, setSelectedFlashcards] = useState([]);
+
   const [showDecks, setShowDecks] = useState(false);
   const [showFlashcards, setShowFlashcards] = useState(false);
-
   const [deckSearchTerm, setDeckSearchTerm] = useState('');
   const [flashcardSearchTerm, setFlashcardSearchTerm] = useState('');
 
-  const handleClose = () => {
-    if (typeof closeTagModal === 'function') {
-      closeTagModal(); // Call the function passed as a prop
-    } else {
-      console.error('closeTagModal is not a function:', closeTagModal);
-    }
-  };
+  const [saveSuccess, setSaveSuccess] = useState(false);
+  const [errorMessage, setErrorMessage] = useState('');
+  const [closeError, setCloseError] = useState(true);
 
-  const handleSave = async () => {
-    setErrorMessage('');
-    setCloseError(true);
-
-    if (tagTitle.length > 30) {
-      setErrorMessage('Tag title must be 30 characters or fewer.');
-      return;
-    }
-
-    try {
-      const response = await invoke('createTag', {
-        title: tagTitle,
-        colour: selectedColour || 'blue',
-        deckIds: selectedDecks,
-        cardIds: selectedFlashcards,
-        locked: locked
-      });
-
-      if (response.success) {
-        setSaveSuccess(true);
-        console.log('Tag created successfully:', response.tag);
-        setTagTitle('');
-        setTimeout(() => {
-          closeTagModal();
-        }, 1000);
-      } else {
-        setErrorMessage(response.error);
-        console.error('Failed to create tag:', response.error);
-      }
-    } catch (error) {
-      console.error('Error invoking createTag:', error);
-    }
-  };
-
-  useEffect(() => {
-    const fetchDecks = async () => {
-      try {
-        const response = await invoke('getAllDecks', {});
-        if (response.success) {
-          setDecks(response.decks);
-        } else {
-          console.error('Error getting decks:', response.error);
-        }
-      } catch (error) {
-        console.error('Error fetching decks:', error);
-      }
-    };
-
-    fetchDecks();
-  }, []);
-
-  const handleDecksCheckboxChange = (deckId) => {
-    if (selectedDecks.includes(deckId)) {
-      setSelectedDecks(selectedDecks.filter((id) => id !== deckId));
-    } else {
-      setSelectedDecks([...selectedDecks, deckId]);
-    }
-  };
-
+  // Fetch flashcards on mount
   useEffect(() => {
     const fetchFlashcards = async () => {
       try {
@@ -128,6 +67,87 @@ function CreateTagGlobal({ closeTagModal }) {
     fetchFlashcards();
   }, []);
 
+  // Fetch decks on mount
+  useEffect(() => {
+    const fetchDecks = async () => {
+      try {
+        const response = await invoke('getAllDecks', {});
+        if (response.success) {
+          setDecks(response.decks);
+        } else {
+          console.error('Error getting decks:', response.error);
+        }
+      } catch (error) {
+        console.error('Error fetching decks:', error);
+      }
+    };
+
+    fetchDecks();
+  }, []);
+
+  // Handle tag modal closing
+  const handleClose = () => {
+    if (typeof closeTagModal === 'function') {
+      closeTagModal(); // Call the function passed as a prop
+    } else {
+      console.error('closeTagModal is not a function:', closeTagModal);
+    }
+  };
+
+    // Handle saving of tag
+  const handleSave = async () => {
+    setErrorMessage('');
+    setCloseError(true);
+    if (tagTitle.length > 30) {
+      setErrorMessage('Tag title must be 30 characters or fewer.');
+      return;
+    }
+
+    try {
+      const tags = await invoke('getAllTags', {});
+      const sameTitle = tags.tags.find(tag => tag.title === tagTitle);
+      if (sameTitle) {
+        setErrorMessage('A tag with this title already exists. Please choose a different title.');
+        return;
+      }
+    } catch (error) {
+      console.error('Error invoking getAllTags:', error);
+    }
+
+    try {
+      const response = await invoke('createTag', {
+        title: tagTitle,
+        colour: selectedColour || 'blue',
+        deckIds: selectedDecks,
+        cardIds: selectedFlashcards,
+        locked: locked
+      });
+      //clear fields and close
+      if (response.success) {
+        setSaveSuccess(true);
+        setTagTitle('');
+        setTimeout(() => {
+          closeTagModal();
+        }, 1000);
+      } else {
+        setErrorMessage(response.error);
+        console.error('Failed to create tag:', response.error);
+      }
+    } catch (error) {
+      console.error('Error invoking createTag:', error);
+    }
+  };
+
+  // Handle checkbox change for selecting decks
+  const handleDecksCheckboxChange = (deckId) => {
+    if (selectedDecks.includes(deckId)) {
+      setSelectedDecks(selectedDecks.filter((id) => id !== deckId));
+    } else {
+      setSelectedDecks([...selectedDecks, deckId]);
+    }
+  };
+
+  // Handle checkbox change for selecting flashcards
   const handleFlashcardsCheckboxChange = (flashcardId) => {
     if (selectedFlashcards.includes(flashcardId)) {
       setSelectedFlashcards(selectedFlashcards.filter((id) => id !== flashcardId));
@@ -136,10 +156,12 @@ function CreateTagGlobal({ closeTagModal }) {
     }
   };
 
+  // Filter decks based on the search term entered
   const filteredDecks = decks.filter((deck) => {
     return deck.title.toLowerCase().includes(deckSearchTerm.toLowerCase());
   });
 
+  // Filter flashcards based on the search term entered
   const filteredFlashcards = flashcards.filter((flashcard) => {
     return flashcard.front.toLowerCase().includes(flashcardSearchTerm.toLowerCase());
   });
@@ -147,6 +169,8 @@ function CreateTagGlobal({ closeTagModal }) {
   return (
     <ModalTransition>
       <Modal onClose={closeTagModal}>
+
+        {/************************************* HEADER SECTION ***************************************/}
         <ModalHeader>
           <Grid templateAreas={['title close']} xcss={gridStyles}>
             <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
@@ -163,6 +187,7 @@ function CreateTagGlobal({ closeTagModal }) {
           </Grid>
         </ModalHeader>
 
+        {/************************************* ERROR MESSAGE ***************************************/}
         <ModalBody>
           {errorMessage &&
             <Collapse in={closeError}>
@@ -181,8 +206,6 @@ function CreateTagGlobal({ closeTagModal }) {
               <Textfield {...fieldProps} value={tagTitle} onChange={(e) => setTagTitle(e.target.value)} placeholder="Type the tag title here..." />
             )}
           </Field>
-
-
 
           {/************************************* TAG COLOUR SELECTION ***************************************/}
           <Field id="tagColour" name="tagColour" label={`Tag Colour: ${selectedColour.charAt(0).toUpperCase() + selectedColour.slice(1)}`}>
@@ -225,7 +248,7 @@ function CreateTagGlobal({ closeTagModal }) {
                           placeholder="Search decks..."
                         />
                       </div>
-                    </div>                  
+                    </div>
                     <div className='decks-select-scroll'>
                       {filteredDecks.length > 0 ? (
                         filteredDecks.map((deck) => (
@@ -294,7 +317,7 @@ function CreateTagGlobal({ closeTagModal }) {
                       ) : (
                         <p>No flashcards available to select.</p>
                       )}
-                    </div>                  
+                    </div>
                   </>
                 )}
               </div>
@@ -317,10 +340,12 @@ function CreateTagGlobal({ closeTagModal }) {
             )}
           </Field>
 
+          {/************************************* SUCCESS MESSAGE ***************************************/}
           {saveSuccess && <Alert severity="success"> New tag created successfully! </Alert>}
 
         </ModalBody>
 
+        {/************************************* ACTION BUTTONS ***************************************/}
         <ModalFooter>
           <Button appearance="subtle" onClick={handleClose}>Cancel</Button>
           <Button appearance="primary" onClick={handleSave}>Create Tag</Button>

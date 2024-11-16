@@ -6,14 +6,13 @@ import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Textfield from '@atlaskit/textfield';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
-import Alert from '@mui/material/Alert';
-import Collapse from '@mui/material/Collapse';
 import UnlockIcon from '@atlaskit/icon/glyph/unlock';
 import LockIcon from '@atlaskit/icon/glyph/lock';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import ExpandLessIcon from '@mui/icons-material/ExpandLess';
-import './deckGlobalModuleCreate.css';
+import Alert from '@mui/material/Alert';
+import Collapse from '@mui/material/Collapse';
+import './GlobalPageDeckCreate.css';
 
+//grid and layout styles
 const gridStyles = xcss({
   width: '100%',
 });
@@ -26,77 +25,71 @@ const titleContainerStyles = xcss({
   gridArea: 'title',
 });
 
-function CreateFlashcardGlobal( { closeFlashcardModal }) {
+function EditFlashcardGlobal({ flashcard, closeFlashcardEditModal }) {
+
   const [front, setFront] = useState('');
   const [back, setBack] = useState('');
   const [hint, setHint] = useState('');
+  const [locked, setLocked] = useState(false);
+
   const [saveSuccess, setSaveSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [closeError, setCloseError] = useState(true);
-  const [locked, setLocked] = useState(false);
-  const [showHint, setShowHint] = useState(false); 
 
-  const handleCloseGlobal = () => {
-    console.log('CLOSE BUTTON WAS JUST PRESSED (Function called: handleCloseGlobal)');
-    if (typeof closeFlashcardModal === 'function') {
-      closeFlashcardModal(); // Call the function passed as a prop
+  // Pre-fill the form with the current flashcard details
+  useEffect(() => {
+    if (flashcard) {
+      setFront(flashcard.front || '');
+      setBack(flashcard.back || '');
+      setHint(flashcard.hint || '');
+      setLocked(flashcard.locked || '');
+    }
+  }, [flashcard]);
+
+  // Handle modal close
+  const handleClose = () => {
+    if (typeof closeFlashcardEditModal === 'function') {
+      closeFlashcardEditModal(); // Call the function passed as a prop
     } else {
-      console.error('closeFlashcardModal is not a function:', closeFlashcardModal);
+      console.error('closeFlashcardEditModal is not a function:', closeFlashcardEditModal);
     }
   };
 
+  // Handle save
   const handleSaveGlobal = async () => {
-    setErrorMessage('');
-    setCloseError(true);
-    console.log('SAVE BUTTON WAS JUST PRESSED (Function called: handleSaveGlobal)');
-
-    // UNCOMMENT THESE OUT ONCE FINALISED LIMIT
-    if (front.length > 100) {
-      setErrorMessage('Front of flashcard must be 100 characters or fewer.');
-      return;
-    }
-
-    if (back.length > 100) {
-      setErrorMessage('Back of flashcard must be 100 characters or fewer.');
-      return;
-    }
-
     try {
-      console.log('Function called: handleSaveGlobal');
-      const response = await invoke('createFlashcard', {
+      console.log(flashcard.id);
+      const response = await invoke('updateFlashcard', {
+        id: flashcard.id,
         front: front,
         back: back,
         hint: hint,
         locked: locked
       });
 
-      // getUserEmail();
-      //console.log(response.owner);
-      console.log('Flashcard saved?:', response);
-
-      setFront('');
-      setBack('');
-      setHint('');
-
-      console.log('Flashcard saved?:', response.card);
       if (response && response.success) {
-          setSaveSuccess(true); // Show success message
-          setTimeout(() => {
-            closeFlashcardModal(response.card); // Delay closing modal
-          }, 1000); // Show success message for 2 seconds before closing
-      } else {
-          setErrorMessage(response.error);
-          console.error('Failed to create flashcard:', response.error);
+        setSaveSuccess(true);
+        setTimeout(() => {
+          closeFlashcardEditModal(response.card);
+        }, 1000);
+      }  else {
+        console.error('Failed to update flashcard:', response.error);
+        setErrorMessage(response.error);
+        setTimeout(() => {
+          closeFlashcardEditModal(flashcard);
+        }, 1000);
+        setSaveSuccess(false);
       }
     } catch (error) {
-      console.error('Error invoking createFlashcard:', error);
+      console.error('Error invoking updateFlashcard:', error);
     }
   };
 
 
   return (
     <ModalTransition>
-      <Modal onClose={closeFlashcardModal}>
+      <Modal onClose={closeFlashcardEditModal}>
+        {/************************************* HEADER SECTION ***************************************/}
         <ModalHeader>
           <Grid templateAreas={['title close']} xcss={gridStyles}>
             <Flex xcss={closeContainerStyles} justifyContent="end" alignItems="center">
@@ -104,17 +97,17 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
                 appearance="subtle"
                 icon={CrossIcon}
                 label="Close Modal"
-                onClick={closeFlashcardModal}
+                onClick={closeFlashcardEditModal}
               />
             </Flex>
             <Flex xcss={titleContainerStyles} justifyContent="start" alignItems="center">
-              <ModalTitle>Create New Flashcard</ModalTitle>
+              <ModalTitle>Edit Flashcard</ModalTitle>
             </Flex>
           </Grid>
         </ModalHeader>
-
+        {/************************************* ERROR MESSAGE ***************************************/}
         <ModalBody>
-          {errorMessage && 
+          {errorMessage &&
             <Collapse in={closeError}>
               <Alert
                 severity="error"
@@ -140,25 +133,9 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
           </Field>
 
           {/************************************* HINT FIELD ***************************************/}
-          <Field id="flashcard-hint" name="flashcard-hint" label={
-            <div onClick={() => setShowHint(!showHint)} className="label-clickable">
-              <span>Hint (Optional)</span>
-              <span className="toggle-icon">
-                {showHint ? <ExpandLessIcon fontSize="small"/> : <ExpandMoreIcon fontSize="small" />}
-              </span>
-            </div>
-          }>
+          <Field id="flashcard-hint" name="flashcard-hint" label="Flashcard Hint">
             {({ fieldProps }) => (
-              <>
-                {showHint && (
-                  <Textfield
-                    {...fieldProps}
-                    value={hint}
-                    onChange={(e) => setHint(e.target.value)}
-                    placeholder="Type a hint for the flashcard..."
-                  />
-                )}
-              </>
+              <Textfield {...fieldProps} value={hint} onChange={(e) => setHint(e.target.value)} placeholder="Type a hint for the flashcard here..." />
             )}
           </Field>
 
@@ -167,7 +144,7 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
             {() => (
               <span onClick={() => setLocked(!locked)} style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}>
                 {locked ? 'This flashcard will be locked, only the owner can edit and delete' : 'This flashcard will be unlocked, others can edit and delete'}
-                <span> 
+                <span>
                   {locked ? (
                     <LockIcon label="Locked" />
                   ) : (
@@ -178,18 +155,19 @@ function CreateFlashcardGlobal( { closeFlashcardModal }) {
             )}
           </Field>
 
-          {saveSuccess && <Alert severity="success"> New flashcard created successfully! </Alert>}
+          {/************************************* SUCCESS MESSAGE ***************************************/}
+          {saveSuccess && <Alert severity="success"> Flashcard edited successfully! </Alert>}
 
         </ModalBody>
 
+        {/************************************* ACTION BUTTONS ***************************************/}
         <ModalFooter>
-          <Button appearance="subtle" onClick={handleCloseGlobal}>Cancel</Button>
-          <Button appearance="primary" onClick={handleSaveGlobal}>Create Flashcard</Button>
+          <Button appearance="subtle" onClick={handleClose}>Cancel</Button>
+          <Button appearance="primary" onClick={handleSaveGlobal}>Save</Button>
         </ModalFooter>
       </Modal>
     </ModalTransition>
   );
 }
 
-export default CreateFlashcardGlobal;
-
+export default EditFlashcardGlobal;

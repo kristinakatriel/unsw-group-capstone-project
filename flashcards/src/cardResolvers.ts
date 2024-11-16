@@ -62,6 +62,13 @@ export const updateFlashcard = async (req: ResolverRequest) => {
     }
   }
 
+  if (!front || !back) {
+    return {
+      success: false,
+      error: 'Invalid input: front and back required',
+    };
+  }
+
   const updatedCard: Card = {
     ...existingCard,
     front: front || existingCard.front,
