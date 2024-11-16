@@ -9,7 +9,7 @@ import RedoIcon from '@mui/icons-material/Redo';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 import LinearProgress from '@mui/material/LinearProgress';
-import './ContentByline.css';
+import './ContentBylineModule.css';
 
 //title style
 const titleContainerStyles = xcss({
