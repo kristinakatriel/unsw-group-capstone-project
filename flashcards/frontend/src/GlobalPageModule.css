@@ -83,10 +83,10 @@
   position: fixed;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%); /* Center modal */
-  width: 90%; /* Use most of the width */
-  max-width: 600px; /* Cap the max width */
-  z-index: 1000; /* Keep it on top of other elements */
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 600px;
+  z-index: 1000;
 }
 
 .global-page-recents,
@@ -183,19 +183,19 @@
 }
 
 .global-page-badge-container .badge .all-tags {
-  background-color: #484848; /* Light gray */
+  background-color: #484848; 
   color: rgb(255, 255, 255);
 }
 
 .badge.all-tags:hover {
-  background-color: #b3b3b3; /* Slightly darker gray on hover */
+  background-color: #b3b3b3; 
 }
 
 .global-page-badge-container .badge.my-stuff {
   display: flex;
-  align-items: center; /* Vertically align the switch and text */
-  gap: 5px; /* Space between text and switch */
-  background: #484848; /* Light gray */
+  align-items: center; 
+  gap: 5px; 
+  background: #484848; 
   color: white;
   text-align: center;
   height: 32px;
@@ -219,6 +219,7 @@
 .global-page-container .tag-edit-button:hover,
 .global-page-container .tag-delete-button:hover {
   color: darkgrey;
+  background-color: transparent;
 }
 
 .global-page-badge-container .css-6ipr0p .MuiChip-deleteIcon,
