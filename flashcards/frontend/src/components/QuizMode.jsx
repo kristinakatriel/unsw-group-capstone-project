@@ -34,12 +34,12 @@ const QuizMode = ({ deck }) => {
   const totalCards = flashcards.length;
 
 
-  //update flashcards when deck.cards changes
+  // update flashcards when deck.cards changes
   useEffect(() => {
     setFlashcards(deck.cards);
   }, [deck.cards]);
 
-  //inital mount which starts quiz session when file opens
+  // inital mount which starts quiz session when file opens
   useEffect(() => {
 
     const startQuizSession = async () => {

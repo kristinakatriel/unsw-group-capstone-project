@@ -34,7 +34,7 @@ import StudyMode from './components/StudyMode';
 import QuizResults from './components/QuizResults';
 import './GlobalPageModule.css';
 
-//grid and layout styles
+// grid and layout styles
 const gridStyles = xcss({
     width: '100%',
 });
@@ -860,14 +860,14 @@ function GlobalPageModule() {
         </div>
       </div>
 
-      {/* *********** DELETE DECK FROM DECK DISPLAY SUCESSS MESSAGE SECTION****************************** */}
+      {/************ DELETE DECK FROM DECK DISPLAY SUCESSS MESSAGE SECTION ******************************/}
       <Collapse in={showDeleteSuccessAlert} timeout={500}>
         <Alert severity="success">
           Deck deleted successfully!
         </Alert>
       </Collapse>
 
-      {/* *********** TAGS SECTION****************************** */}
+      {/***********  TAGS SECTION *******************************/}
       <div className='global-page-tags'>Tags<button className='global-page-create-tag-button' onClick={createTag}>+ Create Tag</button></div>
       {loading ? (
         <p>Loading...</p>
@@ -877,7 +877,7 @@ function GlobalPageModule() {
         renderTagsList(filteredTags)
       )}
 
-      {/* *********** DECKS SECTION****************************** */}
+      {/************ DECKS SECTION *******************************/}
       <div className='global-page-decks'>Decks<button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button></div>
       {loading ? (
         <p>Loading...</p>
@@ -887,7 +887,7 @@ function GlobalPageModule() {
         renderDecksList(filteredDecks)
       )}
 
-      {/* *********** FLASHCARDS SECTION****************************** */}
+      {/************ FLASHCARDS SECTION*******************************/}
       <div className='global-page-flashcards'>Flashcards<button className='global-page-create-flashcard-button' onClick={createFlashcardGlobal}>+ Create Flashcard</button></div>
       {loading ? (
         <p>Loading...</p>
@@ -1046,7 +1046,7 @@ function GlobalPageModule() {
           )}
       </ModalTransition>
 
-      {/*Flashcard Edit Modal */}
+      {/* Flashcard Edit Modal */}
       {isEditFlashcardModalOpen && (
         <ModalDialog heading="Edit Flashcard" onClose={closeFlashcardEditModal}>
           <EditFlashcardModal

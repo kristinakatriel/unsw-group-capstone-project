@@ -1,4 +1,4 @@
-import React, { useCallback, useState, useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -6,14 +6,14 @@ import QuizIcon from '@mui/icons-material/Quiz';
 import StyleIcon from '@mui/icons-material/Style';
 import Tooltip from '@mui/material/Tooltip';
 import { Alert, Collapse } from '@mui/material';
-import { invoke, view } from '@forge/bridge';
+import { invoke } from '@forge/bridge';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
 import './DeckDisplay.css';
 import CreateFlashcardGlobal from '../GlobalPageFlashcardCreate';
-import EditFlashcardGlobal from '../GlobalPageFlashcardEdit'; // for editing flashcards in deck!
+import EditFlashcardGlobal from '../GlobalPageFlashcardEdit';
 import ModalDialog from '@atlaskit/modal-dialog';
 import DeckDisplayAddFlashcards from '../DeckDisplayAddFlashcards';
 import EditDeckModal from '../GlobalPageDeckEdit';
@@ -21,10 +21,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import PercentIcon from '@mui/icons-material/Percent';
 
 
-/* ===========================================
- * STYLE DEFINITIONS
- * ===========================================
- */
+// Grid and Layout styles
 const gridStyles = xcss({
   width: '100%',
 });
@@ -38,10 +35,8 @@ const titleContainerStyles = xcss({
 });
 
 const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQuizMode, startQuizResult, goBackToHome, goBackIntermediate }) => {
-  // ========================
-  // STATE MANAGEMENT
-  // ========================
-  //console.log("tag map passed in", tagMap);
+  //************************** STATE MANAGEMENT ********************************************************************************************************/
+  // State for the search bar
   const [deckDisplaySearchTerm, setDeckDisplaySearchTerm] = useState('');
 
   // State hooks to manage modal visibility, the selected flashcard for deletion, and the updated deck state
@@ -49,15 +44,15 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   const [isDeckDeleteModalOpen, setDeckDeleteModalOpen] = useState(false);
   const [flashcardToDelete, setFlashcardToDelete] = useState(null);
   const [updatedDeck, setUpdatedDeck] = useState(deck);
-  const [isFlashcardEditModalOpen, setIsEditFlashcardOpen] = useState(false); // New state for edit modal
-  const [flashcardToEdit, setFlashcardToEdit] = useState(null); // State to hold the fl
+  const [isFlashcardEditModalOpen, setIsEditFlashcardOpen] = useState(false); 
+  const [flashcardToEdit, setFlashcardToEdit] = useState(null); 
 
   // Create flashcards
   const [flashcards, setFlashcards] = useState([]);
   const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
 
   // State for DECK editing and confirmation
-  const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
+  const [editingDeck, setEditingDeck] = useState(null); 
   const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
 
   // STATE for Add flashcard
@@ -69,15 +64,10 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   const [showSuccessAlert, setShowSuccessAlert] = useState(false);
   const [showErrorAlert, setShowErrorAlert] = useState(false);
 
-  // STATE for viewing quiz result
-  const [viewQuizResult, setViewQuizResult] = useState(null);
-  const [viewQuizResultBool, setViewQuizResultBool] = useState(false);
-  const [pressedButton, setPressedButton] = useState(false);
-  const [accountId, setAccountId] = useState('');
-  const [userData, setUserData] = useState(null);
-
-  // Check if the deck is disabled based on the number of cards
+  // State to check if the deck is disabled based on the number of cards
   const isDisabled = updatedDeck.cards?.length === 0;
+  
+  //************************** CHECKS FOR QUIZ RESULTS ON MOUNT ********************************************************************************************************/
   const [isQuizDisabled, setIsQuizDisabled] = useState(true);
 
   const checkQuizResults = async () => {
@@ -103,10 +93,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     }
   }, [deck]);
 
-  // ========================
-  // USE EFFECT FOR SUCCESS AND ERROR ALERTS
-  // ========================
-
+  //************************** SUCCESS AND ERROR ALERT COMPONENTS ********************************************************************************************************/
   useEffect(() => {
     console.log('consol log');
     if (saveSuccess && errorMessage === '') {
@@ -124,7 +111,6 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   }, [saveSuccess, errorMessage]);
 
   useEffect(() => {
-    console.log('consol log');
     if (errorMessage) {
       setShowErrorAlert(true);
 
@@ -136,16 +122,12 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     }
   }, [errorMessage]);
 
-  // ========================
-  // DECK SEARCH FUNCTIONALITY
-  // ========================
-
+  //************************** DECK SEARCH COMPONENTS ********************************************************************************************************/
   const searchDeckDisplay = (event) => {
     console.log('consol log');
     setDeckDisplaySearchTerm(event.target.value);
     console.log('Searching:', deckDisplaySearchTerm);
   };
-
 
   const filteredFlashcards = updatedDeck.cards.filter((card) => {
     console.log('consol log');
@@ -154,36 +136,27 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
       (typeof card.front === 'string' && card.front.toLowerCase().includes(searchTerm)) ||
       (typeof card.back === 'string' && card.back.toLowerCase().includes(searchTerm)) ||
       (card.name && typeof card.name === 'string' && card.name.toLowerCase().includes(searchTerm))
-      // Add tags once implemented
     );
   });
 
-  // DECK EDIT LOGIC
-  // Modal logic for editing flashcards
-  // Open the edit modal
-  const openDeckEditModal = (deck) => {
-    console.log('consol log');
-    console.log('opening deck edit modal. current deck:', deck);
+  //************************** DECK EDIT COMPONENTS ********************************************************************************************************/
 
+  const openDeckEditModal = (deck) => {
+    console.log('opening deck edit modal. current deck:', deck);
     setEditingDeck(deck);
     setIsEditDeckModalOpen(true);
   };
 
   // Close the edit modal and refresh flashcards
-  // updatedFlashcard is not really needed at the moment
   const closeDeckEditModal = (updatedDeck) => {
     console.log('consol log');
     setIsEditDeckModalOpen(false);
-    // Refresh the deck list by refetching decks
     console.log('Closing deck edit modal. New deck:', updatedDeck);
     setUpdatedDeck(updatedDeck);
     console.log('updated deck set', updatedDeck);
   };
 
-  // ========================
-  // FLASHCARD CREATE FUNCTIONALITY
-  // ========================
-
+  //************************** FLASHCARD CREATE COMPONENTS ********************************************************************************************************/
   const closeFlashcardModal = async (newFlashcard) => {
     // Log the initiation of the modal closing process
     console.log('Closing flashcard modal. New flashcard:', newFlashcard);
@@ -236,13 +209,11 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     }
 
     try {
-      // Fetch the updated deck from the resolver
       const deckResponse = await invoke('getDeck', {
-        deckId: updatedDeck.id,  // Use the current deck ID
+        deckId: updatedDeck.id, 
       });
 
       if (deckResponse.success) {
-        // Update the deck with the fetched deck data
         setUpdatedDeck(deckResponse.deck);
       } else {
         console.error('Failed to fetch the updated deck:', deckResponse.error);
@@ -250,21 +221,15 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     } catch (error) {
       console.error('Error fetching the updated deck:', error);
     }
-
     console.log("deck after a flashcard has been addded", updatedDeck);
-    //setUpdatedDeck();
-    //loadDecks();
   };
 
   const handleCreateFlashcard = () => {
-    console.log('consol log');
-    setIsCreateFlashcardOpen(true); // Open modal to create flashcard
+    setIsCreateFlashcardOpen(true); 
     console.log('Add Flashcard button clicked');
   };
 
-  // ========================
-  // FLASHCARD ADDITION FUNCTIONALITY
-  // ========================
+  //************************** FLASHCARD ADD COMPONENTS ********************************************************************************************************/
   const handleAddFlashcard = () => {
     console.log('consol log');
     setIsAddFlashcardModalOpen(true);
@@ -308,7 +273,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
 
                 if (!cardToAdd) {
                   console.error(`Card with ID ${cardId} not found in flashcards.`);
-                  return prevDeck; // Return without modifying state
+                  return prevDeck;
                 }
 
                 const newDeckState = {
@@ -330,15 +295,12 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
       } else {
         console.warn('No flashcards selected to add.');
       }
-
       try {
-        // Fetch the updated deck from the resolver
         const deckResponse = await invoke('getDeck', {
-          deckId: updatedDeck.id,  // Use the current deck ID
+          deckId: updatedDeck.id, 
         });
 
         if (deckResponse.success) {
-          // Update the deck with the fetched deck data
           setUpdatedDeck(deckResponse.deck);
         } else {
           console.error('Failed to fetch the updated deck:', deckResponse.error);
@@ -346,12 +308,9 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
       } catch (error) {
         console.error('Error fetching the updated deck:', error);
       }
-    //loadDecks();
   };
 
-  // ========================
-  // FLASHCARD DELETE FUNCTIONALITY
-  // ========================
+  //************************** FLASHCARD DELETE COMPONENTS ********************************************************************************************************/
 
   // Opens the flashcard delete confirmation modal and sets the selected flashcard to delete
   const openFlashcardDeleteModal = (flashcard) => {
@@ -389,11 +348,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     }
   };
 
-  // ========================
-  // DECK DELETE FUNCTIONALITY
-  // ========================
-
-  // Functions for deck deletion
+  //************************** DECK DELETE COMPONENTS ********************************************************************************************************/
   const closeDeckDeleteModal = () => {
     setDeckDeleteModalOpen(false);
   };
@@ -425,32 +380,25 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     } catch (error) {
       setErrorMessage(error);
       console.error('Error deleting deck:', error);
-      // closeDeckDeleteModal();
     }
   };
 
-  // ========================
-  // FLASHCARD EDIT FUNCTIONALITY
-  // ========================
+  //************************** FLASHCARD EDIT COMPONENTS ********************************************************************************************************/
   const openFlashcardEditModal = (flashcard) => {
-    setFlashcardToEdit(flashcard); // Set the flashcard to be edited
-    setIsEditFlashcardOpen(true);  // Open the edit modal
+    setFlashcardToEdit(flashcard);
+    setIsEditFlashcardOpen(true);
   };
 
   const closeFlashcardEditModal = async (updatedFlashcard) => {
     console.log('consol log');
-    setIsEditFlashcardOpen(false); // Close the edit modal
+    setIsEditFlashcardOpen(false);
 
-    // just to update the flashcard deck display
     if (updatedFlashcard) {
       try {
-        // Fetch the updated deck from the resolver
         const deckResponse = await invoke('getDeck', {
-          deckId: updatedDeck.id,  // Use the current deck ID
+          deckId: updatedDeck.id, 
         });
-
         if (deckResponse.success) {
-          // Update the deck with the fetched deck data
           setUpdatedDeck(deckResponse.deck);
         } else {
           console.error('Failed to fetch the updated deck:', deckResponse.error);
@@ -461,13 +409,14 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     }
   };
 
-
   return (
     <div className='deck-display-container'>
       <div className='deck-title-and-buttons'>
         <div className='title-left-buttons'>
           <h1>{updatedDeck.title}</h1>
+          {/* *********** DECK MODES ****************************** */}
           <div className='left-buttons'>
+            {/* *********** STUDY MODE ****************************** */}
             <Tooltip title={isDisabled ? "Add Flashcards to access this feature!" : ""}>
               <span>
                 <button
@@ -484,6 +433,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
               </span>
             </Tooltip>
 
+            {/* *********** QUIZ MODE ****************************** */}
             <Tooltip title={isDisabled ? "Add Flashcards to access this feature!" : ""}>
               <span>
                 <button
@@ -499,6 +449,8 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
                 </button>
               </span>
             </Tooltip>
+
+            {/* *********** QUIZ RESULTS PAGE ****************************** */}
             <Tooltip title={isQuizDisabled ? "Complete a quiz to access this feature!" : ""}>
               <span>
                 <button
@@ -516,6 +468,8 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
             </Tooltip>
           </div>
         </div>
+
+        {/* *********** BUTTONS: CREATE/ADD FLASHCARD, EDIT/DELETE DECK ************************** */}
         <div className='right-buttons'>
           <button className='deck-display-create-flashcard-icon' onClick={handleCreateFlashcard}>
             <AddIcon fontSize='small' /> Create Flashcard
@@ -532,6 +486,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
         </div>
       </div>
 
+      {/* *********** SEARCH BAR ****************************** */}
       <div className="global-page-search">
         <div className="global-page-search-box">
           <SearchIcon className="global-page-search-icon" />
@@ -544,41 +499,21 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
         </div>
       </div>
 
+      {/* *********** DECK TAGS ****************************** */}
       <div className='deck-tags'>
-        {/* Render tags */}
         {deckTags[deck.id]?.map((tag) => (
         <span
             key={tag.id}
             className={`badge ${tag.colour}`}
-            // onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
         >
             {tag.title || "Tag"}
         </span>
         ))}
       </div>
 
-      {/* <div className='deck-view-prev-quiz-results'>
-        {viewQuizResultBool && pressedButton ? (
-          <>
-          <h3>All Quiz Results</h3>
-          {viewQuizResult.map((quiz, index) => (
-            <div key={index} className='quiz-result'>
-              <h4>Quiz Session {index + 1}</h4>
-              <p>Date of Quiz: {quiz.date}</p>
-              <p>Number Correct: {quiz.numCorrect}</p>
-              <p>Number Incorrect: {quiz.numIncorrect}</p>
-              <p>Number Skipped: {quiz.numSkip}</p>
-              <p>Number with Hints: {quiz.numHint}</p>
-            </div>
-          ))}
-        </>
-        ) : pressedButton ? ( // the line below is printed if there are no quiz results and the user presses button
-          <p>No quiz results to display. Click "View Quiz Results" to see details.</p>
-        ) : null}
-      </div> */}
-
       <h4 className='deck-flashcard-amount'>Flashcards: {updatedDeck.cards?.length || 0}</h4>
 
+      {/* *********** SUCCESS OR ERROR ALERT ****************************** */}
       <Collapse in={showSuccessAlert} timeout={500}>
           <Alert severity="success">Flashcards added successfully!</Alert>
       </Collapse>
@@ -586,20 +521,18 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
           {errorMessage && <Alert severity="error">{errorMessage}</Alert> }
       </Collapse>
 
+      {/* *********** FLASHCARDS SECTION ****************************** */}
       {updatedDeck && updatedDeck.cards && updatedDeck.cards.length > 0 ? (
         <div className="card-wrapper">
           <ul className="card-list">
-            {/* {updatedDeck.cards.map((flashcard) => ( */}
             {filteredFlashcards.map((flashcard) => (
               <li key={flashcard.id} className="card-item">
                 <div className="card-link">
-                  {/* Render tags */}
                   <div className='card-tags'>
                   {tagMap[flashcard.id]?.map((tag) => (
                   <span
                     key={tag.id}
                     className={`badge ${tag.colour}`}
-                    // onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
                   >
                     {tag.title || "Tag"}
                   </span>
@@ -689,14 +622,14 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
         )}
       </ModalTransition>
 
-      {/* Flashcard Modal */}
+      {/* Create Flashcard Modal */}
       {isFlashcardModalOpen && (
         <ModalDialog heading="Create Flashcard" onClose={() => closeFlashcardModal(true)}>
           <CreateFlashcardGlobal closeFlashcardModal={closeFlashcardModal} />
         </ModalDialog>
       )}
 
-      {/* Deck Modal */}
+      {/* Add Flashcards to Deck Modal */}
       {isAddFlashcardModalOpen && (
         <ModalDialog heading="Add Flashcards To Deck" onClose={() => closeAddDeckModal(true)}>
           <DeckDisplayAddFlashcards deck={updatedDeck} closeAddDeckModal = {closeAddDeckModal}/>
@@ -713,7 +646,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
         </ModalDialog>
       )}
 
-      {/* DECK EDIT FUNCTIONALITY: DECK Edit Modal */}
+      {/* Deck Edit Modal */}
       {isEditDeckModalOpen && (
         <ModalDialog heading="Edit Deck" onClose={() => closeDeckEditModal(true)}>
         <EditDeckModal

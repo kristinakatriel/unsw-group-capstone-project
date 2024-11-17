@@ -32,7 +32,6 @@ const StudyMode = ({ deck }) => {
       try {
         const response = await invoke('startStudySession', {deckId: deck.id});
         if (response.success) {
-          // change the flashcard variable
           setFlashcards(response.cards);
           setSessionId(response.sessionId);
           setSession(response.session);
@@ -68,11 +67,21 @@ const StudyMode = ({ deck }) => {
 
   const goToNextCard = async () => {
     try {
+      console.log("currentCardIndex:", currentCardIndex); 
+      console.log("sessionId:", sessionId);
+      
+      if (currentCardIndex == null || sessionId == null) {
+        console.error('currentCardIndex or sessionId is null or undefined');
+        return; 
+      }
+      
       const response = await invoke('nextCardStudy', {
         currentIndex: currentCardIndex,
-        sessionId: sessionId });
+        sessionId: sessionId
+      });
+      
       if (response.success) {
-        console.log("current card index is: " + (response.newIndex));
+        console.log("Current card index is: " + response.newIndex);
         setCurrentCardIndex(response.newIndex);
       } else {
         console.error("Valid response. Error is: " + response.error);
@@ -97,21 +106,27 @@ const StudyMode = ({ deck }) => {
   };
 
   // Keyboard Shortcut
-  const handleKeyDown = (event) => {
-    console.log('Key pressed:', event.key);
-    if (event.key === 'ArrowLeft') {
-      event.preventDefault();
-      goToPrevCard();
-    } else if (event.key === 'ArrowRight') {
-      event.preventDefault();
-      goToNextCard();
-    }
-  };
-
   useEffect(() => {
+    const handleKeyDown = async (event) => { 
+      console.log('Keydown event detected:', event.key); 
+  
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        console.log('ArrowLeft key pressed'); 
+        await goToPrevCard();
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        console.log('ArrowRight key pressed'); 
+        await goToNextCard();
+      }
+    };
+  
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown); 
+    }; 
+  }, []); 
+  
 
   const currentCard = flashcards[currentCardIndex];
 
