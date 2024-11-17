@@ -11,12 +11,12 @@ import './StudyMode.css';
 import { invoke } from '@forge/bridge';
 
 const StudyMode = ({ deck }) => {
+  //************************** STATE MANAGEMENT **************************************************/
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isHintModalOpen, setIsHintModalOpen] = useState(false);
   const [flashcards, setFlashcards] = useState(deck.cards);
-  const [session, setSession] = useState(null);
   const [sessionId, setSessionId] = useState(null);
 
   const totalCards = flashcards.length;
@@ -27,6 +27,7 @@ const StudyMode = ({ deck }) => {
   const openEditModal = () => setIsEditModalOpen(true);
   const closeEditModal = () => setIsEditModalOpen(false);
 
+  //********************** START STUDY SESSION **********************************//
   useEffect(() => {
     const startStudySession = async () => {
       try {
@@ -48,6 +49,7 @@ const StudyMode = ({ deck }) => {
 
   }, [deck.id]);
 
+  //********************** CHANGE FLASHCARD INDEX COMPONENTS **********************************//
   const goToPrevCard = async () => {
     try {
       const response = await invoke('prevCardStudy', {
@@ -91,21 +93,25 @@ const StudyMode = ({ deck }) => {
     }
   };
 
+  //********************** FLASHCARD MOUSE CLICK COMPONENTS **********************************//
+  // Flips the card on mouse click
   const toggleFlip = () => {
     setIsFlipped((prevFlipped) => !prevFlipped);
   };
 
+  // Edit Icon Click 
   const handleEditClick = (event) => {
     event.stopPropagation();
     openEditModal();
   };
 
+  // Hint Icon Click
   const handleHintClick = (event) => {
     event.stopPropagation();
     openHintModal();
   };
 
-  // Keyboard Shortcut
+  //********************** KEYBOARD SHORTCUT FOR MOVING BETWEEN FLASHCARDS **********************************//
   useEffect(() => {
     const handleKeyDown = async (event) => { 
       console.log('Keydown event detected:', event.key); 
@@ -135,10 +141,13 @@ const StudyMode = ({ deck }) => {
         <h1>Study Mode for {deck.title}</h1>
       </div>
       <div className='study-mode-information'>
+        {/***************************** FLASHCARD INDEX COUNTER *******************************/}
         <h4 className='study-mode-flashcard-counter'>
           Current Flashcard: {currentCardIndex + 1}/{totalCards}
         </h4>
       </div>
+
+      {/********************************* FLASHCARD COMPONENT **********************************/}
       <div
         className={`flip-card ${isFlipped ? 'flipped' : ''}`}
         onClick={toggleFlip}
@@ -172,6 +181,7 @@ const StudyMode = ({ deck }) => {
         </div>
       </div>
 
+      {/********************************* STUDY MODE ARROW BUTTONS **********************************/}
       <div className='study-mode-bottom-buttons'>
         <div className='study-mode-left-button' onClick={goToPrevCard}>
           <ArrowLeftIcon />

@@ -35,7 +35,7 @@ const titleContainerStyles = xcss({
 });
 
 const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQuizMode, startQuizResult, goBackToHome, goBackIntermediate }) => {
-  //************************** STATE MANAGEMENT ********************************************************************************************************/
+  //************************** STATE MANAGEMENT *************************************************************************//
   // State for the search bar
   const [deckDisplaySearchTerm, setDeckDisplaySearchTerm] = useState('');
 
@@ -67,7 +67,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
   // State to check if the deck is disabled based on the number of cards
   const isDisabled = updatedDeck.cards?.length === 0;
   
-  //************************** CHECKS FOR QUIZ RESULTS ON MOUNT ********************************************************************************************************/
+  //************************** CHECKS FOR QUIZ RESULTS ON MOUNT ******************************************//
   const [isQuizDisabled, setIsQuizDisabled] = useState(true);
 
   const checkQuizResults = async () => {
@@ -93,7 +93,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     }
   }, [deck]);
 
-  //************************** SUCCESS AND ERROR ALERT COMPONENTS ********************************************************************************************************/
+  //************************** SUCCESS AND ERROR ALERT COMPONENTS **************************************//
   useEffect(() => {
     console.log('consol log');
     if (saveSuccess && errorMessage === '') {
@@ -122,7 +122,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     }
   }, [errorMessage]);
 
-  //************************** DECK SEARCH COMPONENTS ********************************************************************************************************/
+  //************************** DECK SEARCH COMPONENTS ***************************************************//
   const searchDeckDisplay = (event) => {
     console.log('consol log');
     setDeckDisplaySearchTerm(event.target.value);
@@ -139,7 +139,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     );
   });
 
-  //************************** DECK EDIT COMPONENTS ********************************************************************************************************/
+  //************************** DECK EDIT COMPONENTS *****************************************************//
 
   const openDeckEditModal = (deck) => {
     console.log('opening deck edit modal. current deck:', deck);
@@ -156,7 +156,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     console.log('updated deck set', updatedDeck);
   };
 
-  //************************** FLASHCARD CREATE COMPONENTS ********************************************************************************************************/
+  //************************** FLASHCARD CREATE COMPONENTS ***********************************************//
   const closeFlashcardModal = async (newFlashcard) => {
     // Log the initiation of the modal closing process
     console.log('Closing flashcard modal. New flashcard:', newFlashcard);
@@ -229,7 +229,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     console.log('Add Flashcard button clicked');
   };
 
-  //************************** FLASHCARD ADD COMPONENTS ********************************************************************************************************/
+  //************************** FLASHCARD ADD COMPONENTS **************************************************//
   const handleAddFlashcard = () => {
     console.log('consol log');
     setIsAddFlashcardModalOpen(true);
@@ -310,7 +310,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
       }
   };
 
-  //************************** FLASHCARD DELETE COMPONENTS ********************************************************************************************************/
+  //************************** FLASHCARD DELETE COMPONENTS ********************************************//
 
   // Opens the flashcard delete confirmation modal and sets the selected flashcard to delete
   const openFlashcardDeleteModal = (flashcard) => {
@@ -348,7 +348,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     }
   };
 
-  //************************** DECK DELETE COMPONENTS ********************************************************************************************************/
+  //************************** DECK DELETE COMPONENTS ***************************************************//
   const closeDeckDeleteModal = () => {
     setDeckDeleteModalOpen(false);
   };
@@ -383,7 +383,7 @@ const DeckDisplay = ({ deck, tagMap = [], deckTags = [], startStudyMode, startQu
     }
   };
 
-  //************************** FLASHCARD EDIT COMPONENTS ********************************************************************************************************/
+  //************************** FLASHCARD EDIT COMPONENTS ***********************************************//
   const openFlashcardEditModal = (flashcard) => {
     setFlashcardToEdit(flashcard);
     setIsEditFlashcardOpen(true);
