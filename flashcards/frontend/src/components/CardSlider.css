@@ -22,6 +22,7 @@
   display: flex;
   justify-content: flex-start;
   gap: 10px;
+  overflow-x: auto;
 }
 
 .card-list .card-link .badge {
@@ -32,6 +33,7 @@
   background: #DDE4FF;
   width: fit-content;
   border-radius: 40px;
+  white-space: nowrap;
 }
 
 .card-list .card-link .badge:hover {

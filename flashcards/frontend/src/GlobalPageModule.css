@@ -1,3 +1,6 @@
+.global-page-container {
+  min-height: 900px;
+}
 .global-page-header {
   display: flex;
   justify-content: space-between;
@@ -129,14 +132,14 @@
 }
 
 .global-page-badge-container {
-  display: flex;
-  flex-wrap: wrap;
+  overflow-x: auto;
+  white-space: nowrap;
+  padding-top: 12px;
 }
 
 .global-page-badge-container .badge {
   color: #2c2c2c;
   padding: 6px 12px;
-  /* margin: 12px 0 14px; */
   background: #DDE4FF;
   width: fit-content;
   border-radius: 40px;
@@ -148,10 +151,6 @@
   cursor: pointer;
   box-shadow: inset 0 0 0 2px currentColor;
 }
-
-/* .global-page-badge-container .badge:first-child {
-  margin-top: 12px;
-} */
 
 .global-page-badge-container .badge.blue {
   color: #5372F0;
