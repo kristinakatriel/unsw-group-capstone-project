@@ -125,8 +125,7 @@ const StudyMode = ({ deck }) => {
     return () => {
       window.removeEventListener('keydown', handleKeyDown); 
     }; 
-  }, []); 
-  
+  }, [currentCardIndex, sessionId]); 
 
   const currentCard = flashcards[currentCardIndex];
 
