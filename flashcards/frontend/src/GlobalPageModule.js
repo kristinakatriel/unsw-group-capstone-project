@@ -592,6 +592,7 @@ function GlobalPageModule() {
     setIsQuizMode(false);
     setIsQuizResults(false);
     setPressedButton(false);
+    setErrorMessage('');
 
     setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }]);
 
@@ -605,6 +606,7 @@ function GlobalPageModule() {
     setIsQuizMode(false);
     setIsQuizResults(false);
     setPressedButton(false);
+    setErrorMessage('');
 
     setBreadcrumbItems(prevItems => {
       const updatedItems = prevItems.slice(0, -1);
@@ -722,7 +724,7 @@ function GlobalPageModule() {
       try {
         const response = await invoke('viewQuizResults', {
           deckId: selectedDeck.id,
-          index: index,
+          index: index
         });
 
         if (response.success) {
