@@ -5,7 +5,7 @@ import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
 import './CardSlider.css';
 
-const CardSlider = ({ cards = [], tagMap = [], onDelete, onEdit, onTagEdit }) => {
+const CardSlider = ({ cards = [], tagMap = [], onDelete, onEdit }) => {
 
   return (
 

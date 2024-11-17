@@ -8,7 +8,7 @@ import '@splidejs/splide/dist/css/splide.min.css';
 import './DeckSlider.css';
 import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
-const DeckSlider = ({ decks = [], tagMap = [], onDelete, onDeckClick, onEdit, onTagEdit }) => {
+const DeckSlider = ({ decks = [], tagMap = [], onDelete, onDeckClick, onEdit }) => {
 
   const handleLinkClick = async (url) => {
     try {
@@ -95,7 +95,6 @@ const DeckSlider = ({ decks = [], tagMap = [], onDelete, onDeckClick, onEdit, on
                     )}
                     <h4 className='deck-owner'>By {deck.name || 'Unknown'}</h4>
                     <div className='deck-button'>
-                      {/* <LocalOfferIcon className='deck-edit-button' onClick={(e) => {  e.stopPropagation(); onTagEdit(deck);}}/> */}
                       <EditIcon
                         className='deck-edit-button'
                         onClick={(e) => {

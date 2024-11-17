@@ -200,7 +200,7 @@ function GlobalPageModule() {
   // FRONTEND RENDERING
   const renderFlashcardsList = (filteredFlashcards) => {
     return (
-    <CardSlider cards={filteredFlashcards} tagMap={cardTagMap} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal} onTagEdit={openTagEditModal}/>
+    <CardSlider cards={filteredFlashcards} tagMap={cardTagMap} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal}/>
     );
   };
 
@@ -292,7 +292,7 @@ function GlobalPageModule() {
 
   // FRONTEND RENDERING
    const renderDecksList = (filteredDecks) => (
-    <DeckSlider decks={filteredDecks} tagMap={deckTagMap} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} onTagEdit={openTagEditModal}/>
+    <DeckSlider decks={filteredDecks} tagMap={deckTagMap} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal}/>
   );
 
 
