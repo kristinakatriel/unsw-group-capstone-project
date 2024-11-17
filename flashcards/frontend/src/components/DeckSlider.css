@@ -14,7 +14,7 @@
   filter: drop-shadow(0 0 3px grey);
   background: white;
   position: relative;
-  min-height: 220px;
+  min-height: 250px;
 }
 
 .deck-list .deck-item .deck-link::before {
@@ -68,6 +68,7 @@
   display: flex;
   justify-content: flex-start;
   gap: 10px;
+  overflow-x: auto;
 }
 
 .deck-list .deck-link .badge {
@@ -78,8 +79,8 @@
   background: #DDE4FF;
   width: fit-content;
   border-radius: 40px;
+  white-space: nowrap;
 }
-
 
 .deck-list .deck-link .badge.blue {
   color: #5372F0;
@@ -116,6 +117,10 @@
   font-size: 16px;
   color: #000;
   margin-bottom: 10px;
+  word-wrap: break-word;
+  overflow-y: auto;
+  max-height: 60px;
+  line-height: normal;
 }
 
 .deck-list .deck-link .deck-description {
@@ -123,12 +128,10 @@
   color: darkgrey;
   font-weight: bold;
   margin-bottom: 6px;
-}
-
-.deck-list .deck-link .deck-tags {
-  display: flex;
-  justify-content: flex-start;
-  gap: 10px;
+  word-wrap: break-word;
+  overflow-y: auto;
+  max-height: 60px;
+  line-height: normal;
 }
 
 .deck-list .deck-link .ai-deck-description {
@@ -180,10 +183,4 @@
 
 .splide__track.splide__track--slide.splide__track--ltr.splide__track--draggable {
   margin: 15px 55px;
-}
-
-.deck-tags {
-  display: flex;
-  justify-content: flex-start;
-  gap: 10px;
 }

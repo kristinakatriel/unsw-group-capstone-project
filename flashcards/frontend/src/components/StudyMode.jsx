@@ -11,12 +11,12 @@ import './StudyMode.css';
 import { invoke } from '@forge/bridge';
 
 const StudyMode = ({ deck }) => {
+  //************************** STATE MANAGEMENT **************************************************/
   const [currentCardIndex, setCurrentCardIndex] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isHintModalOpen, setIsHintModalOpen] = useState(false);
   const [flashcards, setFlashcards] = useState(deck.cards);
-  const [session, setSession] = useState(null);
   const [sessionId, setSessionId] = useState(null);
 
   const totalCards = flashcards.length;
@@ -27,12 +27,12 @@ const StudyMode = ({ deck }) => {
   const openEditModal = () => setIsEditModalOpen(true);
   const closeEditModal = () => setIsEditModalOpen(false);
 
+  //********************** START STUDY SESSION **********************************//
   useEffect(() => {
     const startStudySession = async () => {
       try {
         const response = await invoke('startStudySession', {deckId: deck.id});
         if (response.success) {
-          // change the flashcard variable
           setFlashcards(response.cards);
           setSessionId(response.sessionId);
           setSession(response.session);
@@ -49,6 +49,7 @@ const StudyMode = ({ deck }) => {
 
   }, [deck.id]);
 
+  //********************** CHANGE FLASHCARD INDEX COMPONENTS **********************************//
   const goToPrevCard = async () => {
     try {
       const response = await invoke('prevCardStudy', {
@@ -68,11 +69,21 @@ const StudyMode = ({ deck }) => {
 
   const goToNextCard = async () => {
     try {
+      console.log("currentCardIndex:", currentCardIndex); 
+      console.log("sessionId:", sessionId);
+      
+      if (currentCardIndex == null || sessionId == null) {
+        console.error('currentCardIndex or sessionId is null or undefined');
+        return; 
+      }
+      
       const response = await invoke('nextCardStudy', {
         currentIndex: currentCardIndex,
-        sessionId: sessionId });
+        sessionId: sessionId
+      });
+      
       if (response.success) {
-        console.log("current card index is: " + (response.newIndex));
+        console.log("Current card index is: " + response.newIndex);
         setCurrentCardIndex(response.newIndex);
       } else {
         console.error("Valid response. Error is: " + response.error);
@@ -82,36 +93,45 @@ const StudyMode = ({ deck }) => {
     }
   };
 
+  //********************** FLASHCARD MOUSE CLICK COMPONENTS **********************************//
+  // Flips the card on mouse click
   const toggleFlip = () => {
     setIsFlipped((prevFlipped) => !prevFlipped);
   };
 
+  // Edit Icon Click 
   const handleEditClick = (event) => {
     event.stopPropagation();
     openEditModal();
   };
 
+  // Hint Icon Click
   const handleHintClick = (event) => {
     event.stopPropagation();
     openHintModal();
   };
 
-  // Keyboard Shortcut
-  const handleKeyDown = (event) => {
-    console.log('Key pressed:', event.key);
-    if (event.key === 'ArrowLeft') {
-      event.preventDefault();
-      goToPrevCard();
-    } else if (event.key === 'ArrowRight') {
-      event.preventDefault();
-      goToNextCard();
-    }
-  };
-
+  //********************** KEYBOARD SHORTCUT FOR MOVING BETWEEN FLASHCARDS **********************************//
   useEffect(() => {
+    const handleKeyDown = async (event) => { 
+      console.log('Keydown event detected:', event.key); 
+  
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        console.log('ArrowLeft key pressed'); 
+        await goToPrevCard();
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        console.log('ArrowRight key pressed'); 
+        await goToNextCard();
+      }
+    };
+  
     window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown); 
+    }; 
+  }, [currentCardIndex, sessionId]); 
 
   const currentCard = flashcards[currentCardIndex];
 
@@ -121,10 +141,13 @@ const StudyMode = ({ deck }) => {
         <h1>Study Mode for {deck.title}</h1>
       </div>
       <div className='study-mode-information'>
+        {/***************************** FLASHCARD INDEX COUNTER *******************************/}
         <h4 className='study-mode-flashcard-counter'>
           Current Flashcard: {currentCardIndex + 1}/{totalCards}
         </h4>
       </div>
+
+      {/********************************* FLASHCARD COMPONENT **********************************/}
       <div
         className={`flip-card ${isFlipped ? 'flipped' : ''}`}
         onClick={toggleFlip}
@@ -158,6 +181,7 @@ const StudyMode = ({ deck }) => {
         </div>
       </div>
 
+      {/********************************* STUDY MODE ARROW BUTTONS **********************************/}
       <div className='study-mode-bottom-buttons'>
         <div className='study-mode-left-button' onClick={goToPrevCard}>
           <ArrowLeftIcon />

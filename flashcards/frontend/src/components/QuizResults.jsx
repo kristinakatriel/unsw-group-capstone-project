@@ -10,7 +10,8 @@ import TablePagination from '@mui/material/TablePagination';
 import TableRow from '@mui/material/TableRow';
 import { PieChart } from '@mui/x-charts/PieChart';
 
-const QuizResults = ({ viewQuizResult, pressedButton }) => {
+const QuizResults = ({ viewQuizResult }) => {
+  //************************ STATE MANAGEMENT ****************************//
   const [page, setPage] = useState(0);
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
@@ -21,6 +22,7 @@ const QuizResults = ({ viewQuizResult, pressedButton }) => {
     }
   }, [viewQuizResult]);
 
+  //************************ RESULTS TABLE COMPONENTS ***************************//
   const columns = [
     { id: 'date', label: 'Date of Quiz Completion'},
     { id: 'numCorrect', label: 'Amount Correct'},
@@ -46,8 +48,8 @@ const QuizResults = ({ viewQuizResult, pressedButton }) => {
     <div className="quiz-results-container">
       <h1>All Quiz Results</h1>
       {viewQuizResult && viewQuizResult.length > 0 ? (
-        <>
         <div className="results-and-statistics">
+          {/****************  RESULTS TABLE ****************/}
           <div className="results-table">
             <TableContainer className="table-container">
               <Table stickyHeader aria-label="sticky table">
@@ -101,7 +103,7 @@ const QuizResults = ({ viewQuizResult, pressedButton }) => {
               onRowsPerPageChange={handleChangeRowsPerPage}
             />
           </div>
-
+          {/****************  RESULTS PIE CHART ****************/}
           {selectedQuiz && (
             <div className='results-pie'>
               <div
@@ -127,17 +129,7 @@ const QuizResults = ({ viewQuizResult, pressedButton }) => {
               </div>
             </div>
           )}
-        </div>
-        <div className="results-qa-pairs">
-          {selectedQuiz && (
-            <div className='results-qa-pairs-table'>
-              {console.log('QUESTION ANSWER PAIRS')}
-              {console.log(viewQuizResult)}
-            </div>
-          )}
-        </div>        
-        </>
-
+        </div>      
       ) : (
         <p>No quiz results to display.</p>
       )}
