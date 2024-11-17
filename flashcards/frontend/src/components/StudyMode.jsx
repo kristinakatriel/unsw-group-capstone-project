@@ -51,8 +51,8 @@ const StudyMode = ({ deck }) => {
 
   const goToPrevCard = async () => {
     try {
-      const response = await invoke('prevCardStudy', { 
-        currentIndex: currentCardIndex, 
+      const response = await invoke('prevCardStudy', {
+        currentIndex: currentCardIndex,
         sessionId: sessionId });
       console.log("current card index is: " + currentCardIndex);
       console.log(response)
@@ -65,11 +65,11 @@ const StudyMode = ({ deck }) => {
       console.error('Invalid Response. Error is: ' + error);
     }
   };
-  
+
   const goToNextCard = async () => {
     try {
-      const response = await invoke('nextCardStudy', { 
-        currentIndex: currentCardIndex, 
+      const response = await invoke('nextCardStudy', {
+        currentIndex: currentCardIndex,
         sessionId: sessionId });
       if (response.success) {
         console.log("current card index is: " + (response.newIndex));
@@ -107,12 +107,12 @@ const StudyMode = ({ deck }) => {
       goToNextCard();
     }
   };
-  
+
   useEffect(() => {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, []);
-  
+
   const currentCard = flashcards[currentCardIndex];
 
   return (
@@ -197,7 +197,7 @@ const StudyMode = ({ deck }) => {
           </Modal>
         )}
       </ModalTransition>
-      
+
       {/************************************* HINT ICON MODAL ***************************************/}
       <ModalTransition>
         {isHintModalOpen && (

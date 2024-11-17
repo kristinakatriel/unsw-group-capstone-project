@@ -1,15 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import DeleteIcon from '@mui/icons-material/Delete';
-import EditIcon from '@mui/icons-material/Edit';
-import OpenInNewIcon from '@mui/icons-material/OpenInNew';
-import { invoke, router } from '@forge/bridge';
+import { router } from '@forge/bridge';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import './DeckSlider.css';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
-const DeckSlider = ({ decks = [], tagMap = [], onDelete, onDeckClick, onEdit, onTagEdit }) => {
+const DeckSlider = ({ decks = [], tagMap = [], onDelete, onDeckClick, onEdit }) => {
 
+  //Handle link click
   const handleLinkClick = async (url) => {
     try {
       await router.open(url);
@@ -20,6 +19,7 @@ const DeckSlider = ({ decks = [], tagMap = [], onDelete, onDeckClick, onEdit, on
 
   return (
     <div className='container'>
+      {/************************************* PAGE DISPLAY ***************************************/}
       <div className='deck-wrapper'>
         <ul className='deck-list'>
           <Splide
@@ -42,44 +42,36 @@ const DeckSlider = ({ decks = [], tagMap = [], onDelete, onDeckClick, onEdit, on
               },
             }}
           >
+            {/************************************* EACH DECK ITEM IN SPLIDE ***************************************/}
             {decks.map((deck) => (
               deck.title && (
                 <SplideSlide key={deck.id} className='deck-item'>
+                  {/************************************* CLICKABLE DECK FUNCTIONALITY ***************************************/}
                   <div
                     className="deck-link"
                     onClick={() => {
-                      console.log(`Deck ${deck.id} has been clicked by user`);
                       onDeckClick(deck);
                     }}
                   >
+                    {/************************************* DECK TAGS ***************************************/}
                     <div className="deck-right-border"></div>
                     <div className="deck-content"></div>
-
-
-
-                    {/* Dynamically render the tags for each card */}
                     <div className='deck-tags'>
                       {tagMap[deck.id]?.map((tag) => (
-                      //{deckTags[deck.id]?.map((tag) => (
                           <span
                             key={tag.id}
                             className={`badge ${tag.colour}`}
-                            onClick={() => console.log(`${tag.title} has been clicked! Tag Information: ${JSON.stringify(tag, null, 2)}`)} // Convert the object to a string
                           >
                             {tag.title || "Tag"}
                           </span>
                         ))}
                     </div>
 
-
-                    {/* ** TODO **
-                    <p className='badge blue'>Blue Tag</p> */}
-
-
-
-
+                    {/************************************* DECK NAME & FLASHCARD AMOUNT ***************************************/}
                     <h4 className='deck-name'>{deck.title || 'Unnamed Deck'}</h4>
                     <h4 className='deck-flashcard-amount'>Flashcards: {deck.cards?.length || 0}</h4>
+
+                    {/************************************* DECK DESCRIPTION INCLUDING LINK HANDLING***************************************/}
                     {deck.description.includes("Fetched from https://") ? (
                       <div
                         onClick={(e) => {
@@ -90,12 +82,19 @@ const DeckSlider = ({ decks = [], tagMap = [], onDelete, onDeckClick, onEdit, on
                       >
                         View source page
                       </div>
+
                     ) : (
+
                       <h4 className='deck-description'>{deck.description}</h4>
                     )}
+
+                    {/************************************* DECK OWNER ***************************************/}
+
                     <h4 className='deck-owner'>By {deck.name || 'Unknown'}</h4>
+
+
+                    {/************************************* ACTION BUTTONS ***************************************/}
                     <div className='deck-button'>
-                      {/* <LocalOfferIcon className='deck-edit-button' onClick={(e) => {  e.stopPropagation(); onTagEdit(deck);}}/> */}
                       <EditIcon
                         className='deck-edit-button'
                         onClick={(e) => {

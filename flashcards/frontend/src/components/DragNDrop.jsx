@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from "react";
-import { MdClear } from "react-icons/md";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faImage } from '@fortawesome/free-solid-svg-icons';
 import "./DragNDrop.css";
 
 const DragNDrop = ({ onFilesSelected, width, height }) => {
+
+  //File management
   const [files, setFiles] = useState([]);
 
   const handleFileChange = (event) => {
@@ -24,12 +25,8 @@ const DragNDrop = ({ onFilesSelected, width, height }) => {
     }
   };
 
-  const handleRemoveFile = (index) => {
-    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
-  };
-
+  //update parent component
   useEffect(() => {
-    //console.log('Files updated:', files); // Debug
     onFilesSelected(files);
   }, [files, onFilesSelected]);
 

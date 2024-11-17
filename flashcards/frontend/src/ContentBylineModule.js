@@ -195,8 +195,8 @@ function ContentBylineModule() {
 
         // Add generated flashcards to the created deck
         const addResult = await invoke('addGeneratedFlashcards', {
-          deckId: createdDeck,
-          qAPairs: allQAPairs
+          qAPairs: allQAPairs,
+          deckId: createdDeck
         });
 
         if (addResult.success) {
