@@ -14,7 +14,7 @@
   filter: drop-shadow(0 0 3px grey);
   background: white;
   position: relative;
-  min-height: 220px;
+  min-height: 250px;
 }
 
 .deck-list .deck-item .deck-link::before {
