@@ -20,11 +20,12 @@ jest.mock('./helpers', () => ({
   queryTagsById: jest.fn(() => Promise.resolve([])),
 }));
 
-import {createFlashcard, updateFlashcard, deleteFlashcard} from './cardResolvers';
+import {createFlashcard, updateFlashcard, deleteFlashcard, getFlashcard} from './cardResolvers';
 import { storage } from '@forge/api';
 import { Card, ResolverRequest } from './types';
 import { Resolver } from 'dns';
 import { startsWith } from '@forge/api';
+import { resourceLimits } from 'worker_threads';
 
 describe('Flashcards Resolver Functions', () => {
   describe('createFlashcard', () => {
@@ -265,6 +266,60 @@ describe('Flashcards Resolver Functions', () => {
       expect(result.success).toBe(false);
       expect(result.error).toEqual("Only owner can delete");
     });
+  });
+  describe('getFlashcard', () => {
+    it('Test 1 - successful get card', async () =>{
+      const jestCardId = `c-${12345}`;
 
+      const card = {
+        id: jestCardId,
+        front: '1+1',
+        back: '3',
+        hint: 'use addition',
+        owner: '123',
+        name: 'Freddie',
+        locked: true,
+        deckIds: []
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(card); // replicating storage get
+      (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const req = {
+        payload: { cardId: card.id },
+        context: { accountId: '123' },
+      }
+
+      const result = await getFlashcard(req);
+
+      expect(result.success).toBe(true);
+    });
+
+    it('Test 2 - successful get card with different user', async () =>{
+      const jestCardId = `c-${12345}`;
+
+      const card = {
+        id: jestCardId,
+        front: '1+1',
+        back: '3',
+        hint: 'use addition',
+        owner: '123',
+        name: 'Freddie',
+        locked: true,
+        deckIds: []
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(card); // replicating storage get
+      (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const req = {
+        payload: { cardId: card.id },
+        context: { accountId: '1234' },
+      }
+
+      const result = await getFlashcard(req);
+
+      expect(result.success).toBe(true);
+    });
   });
 });
