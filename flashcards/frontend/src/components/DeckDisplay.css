@@ -94,7 +94,7 @@ button:hover {
   max-height: 625px;
 }
 
-.card-tags {
+.deck-tags {
   display: flex;
   justify-content: flex-start;
   gap: 10px;

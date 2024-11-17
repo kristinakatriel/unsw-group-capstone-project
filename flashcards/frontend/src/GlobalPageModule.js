@@ -99,6 +99,7 @@ function GlobalPageModule() {
   const [errorMessage, setErrorMessage] = useState('');
   const [deleteDeckFromDisplaySuccess, setDeleteDeckFromDisplaySuccess] = useState(false);
   const [showDeleteSuccessAlert, setShowDeleteSuccessAlert] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   // Naviagation and search
   const [breadcrumbItems, setBreadcrumbItems] = useState([{ href: '#', text: 'FLASH (Home)' }]);
@@ -160,23 +161,26 @@ function GlobalPageModule() {
   };
   const deleteFlashcard = async () => {
     setErrorMessage('');
+    setIsDeleting(true);
     try {
       const response = await invoke('deleteFlashcard', { cardId: flashcardToDelete.id });
       if (response.success) {
         setDeleteSuccess(true);
         setTimeout(() => {
           closeDeleteFlashcardConfirm();
-        }, 400); // Show message
+          setIsDeleting(false); 
+        }, 400); // Show message and close the modal
         refreshFlashcardFrontend();  // Refresh UI
       } else {
         setErrorMessage(response.error);
+        setIsDeleting(false); 
         console.error('Error deleting flashcard:', response.error);
       }
     } catch (error) {
+      setIsDeleting(false); 
       console.error('Error deleting flashcard:', error);
     }
   };
-
   //RELOADING DATA
   const loadFlashcards = async () => {
     try {
@@ -240,22 +244,26 @@ function GlobalPageModule() {
   };
   const deleteDeck = async () => {
     setErrorMessage('');
+    setIsDeleting(true);
     try {
       const response = await invoke('deleteDeck', { deckId: deckToDelete.id });
       if (response.success) {
         setDeleteSuccess(true);
         setTimeout(() => {
           closeDeleteDeckConfirm();
+          setIsDeleting(false);
+
         }, 2000); // display message
         refreshDeckFrontend();  // Refresh UI
       } else {
         setErrorMessage(response.error);
+        setIsDeleting(false);
         console.error('Error deleting deck:', response.error);
       }
     } catch (error) {
+      setIsDeleting(false);
       console.error('Error deleting deck:', error);
     }
-
   };
 
   //RELOADING DATA
@@ -350,19 +358,23 @@ function GlobalPageModule() {
   };
   const deleteTag = async () => {
     setErrorMessage('');
+    setIsDeleting(true);
     try {
       const response = await invoke('deleteTag', { tagId: tagToDelete.id });
       if (response.success) {
         setDeleteSuccess(true);
         setTimeout(() => {
           closeDeleteTagConfirm();
+          setIsDeleting(false);
         }, 2000);
         refreshTagFrontend();
       } else {
         setErrorMessage(response.error);
+        setIsDeleting(false);
         console.error('Error deleting tag:', response.error);
       }
-    } catch (error) {
+    } catch (error) {      
+      setIsDeleting(false);
       console.error('Error deleting tag:', error);
     }
   };
@@ -937,8 +949,14 @@ function GlobalPageModule() {
                       }
                   </ModalBody>
                   <ModalFooter>
-                      <Button appearance="subtle" onClick={closeDeleteFlashcardConfirm}>Cancel</Button>
-                      <Button appearance="danger" onClick={deleteFlashcard}>Yes, Delete</Button>
+                    <Button appearance="subtle" onClick={closeDeleteFlashcardConfirm}>Cancel</Button>
+                    <Button
+                      appearance="danger"
+                      onClick={deleteFlashcard}
+                      isDisabled={isDeleting}
+                    >
+                      {isDeleting ? 'Deleting...' : 'Yes, Delete'} 
+                    </Button>
                   </ModalFooter>
               </Modal>
           )}
@@ -974,7 +992,13 @@ function GlobalPageModule() {
                   </ModalBody>
                   <ModalFooter>
                       <Button appearance="subtle" onClick={closeDeleteDeckConfirm}>Cancel</Button>
-                      <Button appearance="danger" onClick={deleteDeck}>Yes, Delete</Button>
+                      <Button
+                      appearance="danger"
+                      onClick={deleteDeck}
+                      isDisabled={isDeleting}
+                    >
+                      {isDeleting ? 'Deleting...' : 'Yes, Delete'} 
+                    </Button>
                   </ModalFooter>
               </Modal>
           )}
@@ -1009,8 +1033,14 @@ function GlobalPageModule() {
                       }
                   </ModalBody>
                   <ModalFooter>
-                      <Button appearance="subtle" onClick={closeDeleteTagConfirm}>Cancel</Button>
-                      <Button appearance="danger" onClick={deleteTag}>Yes, Delete</Button>
+                    <Button appearance="subtle" onClick={closeDeleteTagConfirm}>Cancel</Button>
+                    <Button
+                      appearance="danger"
+                      onClick={deleteTag}
+                      isDisabled={isDeleting}
+                    >
+                      {isDeleting ? 'Deleting...' : 'Yes, Delete'} 
+                    </Button>
                   </ModalFooter>
               </Modal>
           )}
@@ -1035,7 +1065,6 @@ function GlobalPageModule() {
           />
         </ModalDialog>
       )}
-
 
       {/* Deck Edit Modal */}
       {isEditDeckModalOpen && (
