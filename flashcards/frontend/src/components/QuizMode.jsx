@@ -73,17 +73,50 @@ const QuizMode = ({ deck }) => {
   const openHintModal = () => setIsHintModalOpen(true);
   const closeHintModal = () => setIsHintModalOpen(false);
 
-  const goToNextCard = async (status) => {
-
+  const updateStatus = async (status) => {
     try {
       setIsFlipped(false);
-
       const response = await invoke('updateCardStatusQuiz', {
         currentIndex: currentCardIndex,
         status,
         sessionId,
       });
+      if (response.success) {
+        if (response.message === 'quiz is finished') {
+          setIsQuizCompleted(true);
+          try {
+            const endExecution = await invoke('endQuizSession', { sessionId });
+            if (!endExecution.success) {
+              console.error(endExecution.error);
+            } else {
+              setHintCount(endExecution.countHint);
+              setSkipCount(endExecution.countSkip);
+              setCorrectCount(endExecution.countCorrect);
+              setIncorrectCount(endExecution.countIncorrect);
+              setEndStatus(1);
+            }
+          } catch (error) {
+            console.error('response is invalid', error);
+          }
+        } else {
+          setCardStatus(null);
+        };
+      } else {
+        console.error(response.error);
+      }
+    } catch (error) {
+      console.error('response is invalid', error);
+    }
+  }
 
+  const goToNextCard = async (status) => {
+    try {
+      setIsFlipped(false);
+      const response = await invoke('updateCardStatusQuiz', {
+        currentIndex: currentCardIndex,
+        status,
+        sessionId,
+      });
       if (response.success) {
         if (response.message === 'quiz is finished') {
           setIsQuizCompleted(true);
@@ -104,18 +137,17 @@ const QuizMode = ({ deck }) => {
         } else {
           setCardStatus(null);
           setCurrentCardIndex((prevIndex) => {
-             if (prevIndex < totalCards - 1) {
-               return prevIndex + 1;
-             } else {
-               return 0;
-             }
-            });
-          };
-
-     } else {
-       console.error(response.error);
-     }
-   } catch (error) {
+            if (prevIndex < totalCards - 1) {
+              return prevIndex + 1;
+            } else {
+              return 0;
+            }
+          });
+        };
+      } else {
+        console.error(response.error);
+      }
+    } catch (error) {
       console.error('response is invalid', error);
     }
   };
@@ -163,7 +195,7 @@ const QuizMode = ({ deck }) => {
   const handleHintClick = (event) => {
     event.stopPropagation();
     openHintModal();
-    goToNextCard('hint');
+    updateStatus('hint');
   };
 
   const formatTime = (seconds) => {
