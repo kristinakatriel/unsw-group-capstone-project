@@ -1,3 +1,5 @@
+
+
 jest.mock('@forge/api', () => ({
   storage: {
     get: jest.fn(),
@@ -26,6 +28,7 @@ import { Card, ResolverRequest } from './types';
 import { Resolver } from 'dns';
 import { startsWith } from '@forge/api';
 import { resourceLimits } from 'worker_threads';
+import { createDeck } from './deckResolvers';
 
 describe('Flashcards Resolver Functions', () => {
   describe('createFlashcard', () => {
@@ -96,7 +99,7 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
-      (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const updatedCard = {
         ...oldCard,
@@ -129,7 +132,7 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
-      (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const updatedCard = {
         ...oldCard,
@@ -161,7 +164,7 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
-      (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const updatedCard = {
         ...oldCard,
@@ -177,6 +180,72 @@ describe('Flashcards Resolver Functions', () => {
 
       expect(result.success).toBe(true);
       expect(result.card).toEqual(updatedCard);
+    });
+
+    it('Test 4 - unsuccessful card update - missing front', async () =>{
+      const jestCardId = `c-${12345}`;
+
+      const oldCard = {
+        id: jestCardId,
+        front: '1+1',
+        back: '3',
+        hint: 'use addition',
+        owner: '123',
+        name: 'Freddie',
+        locked: false,
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const updatedCard = {
+        ...oldCard,
+        front: ''
+      }
+
+      const req = {
+        payload: { ...updatedCard },
+        context: { accountId: '123' },
+      }
+
+      const result = await updateFlashcard(req);
+
+      // expect(storage.set).toHaveBeenCalledWith(jestCardId, updatedCard);
+      expect(result.success).toBe(false);
+      expect(result.error).toEqual("Invalid input: front and back required");
+    });
+
+    it('Test 5 - unsuccessful card update - missing back', async () =>{
+      const jestCardId = `c-${12345}`;
+
+      const oldCard = {
+        id: jestCardId,
+        front: '1+1',
+        back: '3',
+        hint: 'use addition',
+        owner: '123',
+        name: 'Freddie',
+        locked: false,
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const updatedCard = {
+        ...oldCard,
+        back: ''
+      }
+
+      const req = {
+        payload: { ...updatedCard },
+        context: { accountId: '123' },
+      }
+
+      const result = await updateFlashcard(req);
+
+      // expect(storage.set).toHaveBeenCalledWith(jestCardId, updatedCard);
+      expect(result.success).toBe(false);
+      expect(result.error).toEqual("Invalid input: front and back required");
     });
   });
   describe('deleteFlashcard', () => {
@@ -195,7 +264,7 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(card); // replicating storage get
-      (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { cardId: card.id },
@@ -224,7 +293,7 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(card); // replicating storage get
-      (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { cardId: card.id },
@@ -253,7 +322,7 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(card); // replicating storage get
-      (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { cardId: card.id },
@@ -283,7 +352,7 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(card); // replicating storage get
-      (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { cardId: card.id },
@@ -310,7 +379,7 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(card); // replicating storage get
-      (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { cardId: card.id },
@@ -320,6 +389,64 @@ describe('Flashcards Resolver Functions', () => {
       const result = await getFlashcard(req);
 
       expect(result.success).toBe(true);
+    });
+  });
+});
+
+describe('Deck Resolver Functions', () => {
+  describe('Create Deck', () => {
+    it('Test 1 - successful deck creation', async () => {
+      const req = {
+        payload: { title: 'Math', description: 'math deck', cards: [], locked: false },
+        context: { accountId: '123' },
+      };
+      const jestDeckId = `d-${12345}`;
+
+      const deck = {
+        id: jestDeckId,
+        title: 'Math',
+        description: 'math deck',
+        owner: '123',
+        name: 'Freddie',
+        cards: [],
+        cardIds: [],
+        size: 0,                 
+        locked: false
+      };
+
+      const result = await createDeck(req);
+
+      expect(storage.set).toHaveBeenCalledWith(jestDeckId, deck);
+
+      expect(result.success).toBe(true);
+      expect(result.deck).toEqual(deck);
+    });
+
+    it('Test 2 - unsuccessful deck creation - missing title', async () => {
+      const req = {
+        payload: { title: '', description: 'math deck', cards: [], locked: false },
+        context: { accountId: '123' },
+      };
+      const jestDeckId = `d-${12345}`;
+
+      const deck = {
+        id: jestDeckId,
+        title: '',
+        description: 'math deck',
+        owner: '123',
+        name: 'Freddie',
+        cards: [],
+        cardIds: [],
+        size: 0,                 
+        locked: false
+      };
+
+      const result = await createDeck(req);
+
+      // expect(storage.set).toHaveBeenCalledWith(jestDeckId, deck);
+
+      expect(result.success).toBe(false);
+      expect(result.error).toEqual("Invalid input: title required");
     });
   });
 });
