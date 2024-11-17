@@ -28,7 +28,7 @@ import { Card, ResolverRequest } from './types';
 import { Resolver } from 'dns';
 import { startsWith } from '@forge/api';
 import { resourceLimits } from 'worker_threads';
-import { createDeck } from './deckResolvers';
+import { createDeck, updateDeck } from './deckResolvers';
 
 describe('Flashcards Resolver Functions', () => {
   describe('createFlashcard', () => {
@@ -85,7 +85,7 @@ describe('Flashcards Resolver Functions', () => {
   });
 
   describe('updateFlashcard', () => {
-    it('Test 1 - successful card update', async () =>{
+    it('Test 1 - successful card update - unlocked card - same user', async () =>{
       const jestCardId = `c-${12345}`;
 
       const oldCard = {
@@ -118,7 +118,7 @@ describe('Flashcards Resolver Functions', () => {
       expect(result.card).toEqual(updatedCard);
     });
 
-    it('Test 2 - unsuccessful card update: locked card', async () =>{
+    it('Test 2 - unsuccessful card update - locked card - different user', async () =>{
       const jestCardId = `c-${12345}`;
 
       const oldCard = {
@@ -150,7 +150,7 @@ describe('Flashcards Resolver Functions', () => {
       expect(result.error).toEqual("Only owner can edit");
     });
 
-    it('Test 3 - successful card update: unlocked card but different user is trying to edit', async () =>{
+    it('Test 3 - successful card update - unlocked card - different user', async () =>{
       const jestCardId = `c-${12345}`;
 
       const oldCard = {
@@ -182,7 +182,39 @@ describe('Flashcards Resolver Functions', () => {
       expect(result.card).toEqual(updatedCard);
     });
 
-    it('Test 4 - unsuccessful card update - missing front', async () =>{
+    it('Test 4 - successful card update - locked card - same user', async () =>{
+      const jestCardId = `c-${12345}`;
+
+      const oldCard = {
+        id: jestCardId,
+        front: '1+1',
+        back: '3',
+        hint: 'use addition',
+        owner: '123',
+        name: 'Freddie',
+        locked: true,
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const updatedCard = {
+        ...oldCard,
+        back: '2'
+      }
+
+      const req = {
+        payload: { ...updatedCard },
+        context: { accountId: '123' },
+      }
+
+      const result = await updateFlashcard(req);
+
+      expect(result.success).toBe(true);
+      expect(result.card).toEqual(updatedCard);
+    });
+
+    it('Test 5 - unsuccessful card update - missing front', async () =>{
       const jestCardId = `c-${12345}`;
 
       const oldCard = {
@@ -215,7 +247,7 @@ describe('Flashcards Resolver Functions', () => {
       expect(result.error).toEqual("Invalid input: front and back required");
     });
 
-    it('Test 5 - unsuccessful card update - missing back', async () =>{
+    it('Test 6 - unsuccessful card update - missing back', async () =>{
       const jestCardId = `c-${12345}`;
 
       const oldCard = {
@@ -249,7 +281,7 @@ describe('Flashcards Resolver Functions', () => {
     });
   });
   describe('deleteFlashcard', () => {
-    it('Test 1 - successful deletion', async () =>{
+    it('Test 1 - successful deletion - unlocked card - same user', async () =>{
       const jestCardId = `c-${12345}`;
 
       const card = {
@@ -278,7 +310,7 @@ describe('Flashcards Resolver Functions', () => {
       expect(result.message).toEqual(`Deleted card with id: ${jestCardId}`);
     });
     
-    it('Test 2 - successful deletion - different user', async () =>{
+    it('Test 2 - successful deletion - unlocked card - different user', async () =>{
       const jestCardId = `c-${12345}`;
 
       const card = {
@@ -307,7 +339,7 @@ describe('Flashcards Resolver Functions', () => {
       expect(result.message).toEqual(`Deleted card with id: ${jestCardId}`);
     });
     
-    it('Test 3 - unsuccessful deletion - different user (locked card)', async () =>{
+    it('Test 3 - unsuccessful deletion - locked card - different user', async () =>{
       const jestCardId = `c-${12345}`;
 
       const card = {
@@ -334,6 +366,35 @@ describe('Flashcards Resolver Functions', () => {
       // expect(storage.delete).toHaveBeenCalledWith(jestCardId);
       expect(result.success).toBe(false);
       expect(result.error).toEqual("Only owner can delete");
+    });
+
+    it('Test 4 - successful deletion - locked card - same user', async () =>{
+      const jestCardId = `c-${12345}`;
+
+      const card = {
+        id: jestCardId,
+        front: '1+1',
+        back: '3',
+        hint: 'use addition',
+        owner: '123',
+        name: 'Freddie',
+        locked: true,
+        deckIds: []
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(card); // replicating storage get
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const req = {
+        payload: { cardId: card.id },
+        context: { accountId: '123' },
+      }
+
+      const result = await deleteFlashcard(req);
+
+      // expect(storage.delete).toHaveBeenCalledWith(jestCardId);
+      expect(result.success).toBe(true);
+      expect(result.message).toEqual(`Deleted card with id: ${jestCardId}`);
     });
   });
   describe('getFlashcard', () => {
@@ -445,6 +506,183 @@ describe('Deck Resolver Functions', () => {
 
       // expect(storage.set).toHaveBeenCalledWith(jestDeckId, deck);
 
+      expect(result.success).toBe(false);
+      expect(result.error).toEqual("Invalid input: title required");
+    });
+  });
+
+  describe('Update Deck', () => {
+    it('Test 1 - successful update - unlocked deck - same user', async () => {
+      const jestDeckId = `d-${12345}`;
+
+      const oldDeck = {
+        id: jestDeckId,
+        title: 'Math',
+        description: 'math deck',
+        owner: '123',
+        name: 'Freddie',
+        cards: [],
+        cardIds: [],
+        size: 0,                 
+        locked: false
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck); // replicating storage get
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const updatedDeck = {
+        ...oldDeck,
+        description: 'arithmetic deck'
+      }
+
+      const req = {
+        payload: { ...updatedDeck },
+        context: { accountId: '123' },
+      }
+
+      const result = await updateDeck(req);
+
+      expect(storage.set).toHaveBeenCalledWith(jestDeckId, updatedDeck);
+      expect(result.success).toBe(true);
+      expect(result.deck).toEqual(updatedDeck);
+    });
+
+    it('Test 2 - successful update - unlocked deck - different user', async () => {
+      const jestDeckId = `d-${12345}`;
+
+      const oldDeck = {
+        id: jestDeckId,
+        title: 'Math',
+        description: 'math deck',
+        owner: '123',
+        name: 'Freddie',
+        cards: [],
+        cardIds: [],
+        size: 0,                 
+        locked: false
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck); // replicating storage get
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const updatedDeck = {
+        ...oldDeck,
+        description: 'arithmetic deck'
+      }
+
+      const req = {
+        payload: { ...updatedDeck },
+        context: { accountId: '1234' },
+      }
+
+      const result = await updateDeck(req);
+
+      expect(storage.set).toHaveBeenCalledWith(jestDeckId, updatedDeck);
+      expect(result.success).toBe(true);
+      expect(result.deck).toEqual(updatedDeck);
+    });
+
+    it('Test 3 - successful update - locked deck - same user', async () => {
+      const jestDeckId = `d-${12345}`;
+
+      const oldDeck = {
+        id: jestDeckId,
+        title: 'Math',
+        description: 'math deck',
+        owner: '123',
+        name: 'Freddie',
+        cards: [],
+        cardIds: [],
+        size: 0,                 
+        locked: true
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck); // replicating storage get
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const updatedDeck = {
+        ...oldDeck,
+        description: 'arithmetic deck'
+      }
+
+      const req = {
+        payload: { ...updatedDeck },
+        context: { accountId: '123' },
+      }
+
+      const result = await updateDeck(req);
+
+      expect(storage.set).toHaveBeenCalledWith(jestDeckId, updatedDeck);
+      expect(result.success).toBe(true);
+      expect(result.deck).toEqual(updatedDeck);
+    });
+
+    it('Test 4 - unsuccessful update - locked deck - different user', async () => {
+      const jestDeckId = `d-${12345}`;
+
+      const oldDeck = {
+        id: jestDeckId,
+        title: 'Math',
+        description: 'math deck',
+        owner: '123',
+        name: 'Freddie',
+        cards: [],
+        cardIds: [],
+        size: 0,                 
+        locked: true
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck); // replicating storage get
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const updatedDeck = {
+        ...oldDeck,
+        description: 'arithmetic deck'
+      }
+
+      const req = {
+        payload: { ...updatedDeck },
+        context: { accountId: '1234' },
+      }
+
+      const result = await updateDeck(req);
+
+      // expect(storage.set).toHaveBeenCalledWith(jestDeckId, updatedDeck);
+      expect(result.success).toBe(false);
+      expect(result.error).toEqual("Only owner can edit");
+    });
+
+    it('Test 5 - missing title', async () => {
+      const jestDeckId = `d-${12345}`;
+
+      const oldDeck = {
+        id: jestDeckId,
+        title: 'Math',
+        description: 'math deck',
+        owner: '123',
+        name: 'Freddie',
+        cards: [],
+        cardIds: [],
+        size: 0,                 
+        locked: true
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck); // replicating storage get
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const updatedDeck = {
+        ...oldDeck,
+        title: ''
+      }
+
+      const req = {
+        payload: { ...updatedDeck },
+        context: { accountId: '123' },
+      }
+
+      const result = await updateDeck(req);
+
+      // expect(storage.set).toHaveBeenCalledWith(jestDeckId, updatedDeck);
       expect(result.success).toBe(false);
       expect(result.error).toEqual("Invalid input: title required");
     });
