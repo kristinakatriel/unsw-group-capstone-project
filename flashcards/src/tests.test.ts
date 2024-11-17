@@ -1,4 +1,4 @@
-
+// TESTING FILE
 
 jest.mock('@forge/api', () => ({
   storage: {
@@ -48,7 +48,8 @@ describe('Flashcards Resolver Functions', () => {
         hint: 'Hint',
         locked: false,
         owner: '123',
-        name: 'Freddie'
+        name: 'Freddie',
+        // deckIds: []
       };
 
       expect(storage.set).toHaveBeenCalledWith(jestCardId, createdCardData);
@@ -96,6 +97,7 @@ describe('Flashcards Resolver Functions', () => {
         owner: '123',
         name: 'Freddie',
         locked: false,
+        deckIds: []
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
@@ -129,6 +131,7 @@ describe('Flashcards Resolver Functions', () => {
         owner: '123',
         name: 'Freddie',
         locked: true,
+        deckIds: []
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
@@ -161,6 +164,7 @@ describe('Flashcards Resolver Functions', () => {
         owner: '123',
         name: 'Freddie',
         locked: false,
+        deckIds: []
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
@@ -178,6 +182,7 @@ describe('Flashcards Resolver Functions', () => {
 
       const result = await updateFlashcard(req);
 
+      expect(storage.set).toHaveBeenCalledWith(jestCardId, updatedCard);
       expect(result.success).toBe(true);
       expect(result.card).toEqual(updatedCard);
     });
@@ -193,6 +198,7 @@ describe('Flashcards Resolver Functions', () => {
         owner: '123',
         name: 'Freddie',
         locked: true,
+        deckIds: []
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
@@ -210,6 +216,7 @@ describe('Flashcards Resolver Functions', () => {
 
       const result = await updateFlashcard(req);
 
+      expect(storage.set).toHaveBeenCalledWith(jestCardId, updatedCard);
       expect(result.success).toBe(true);
       expect(result.card).toEqual(updatedCard);
     });
@@ -225,6 +232,7 @@ describe('Flashcards Resolver Functions', () => {
         owner: '123',
         name: 'Freddie',
         locked: false,
+        deckIds: []
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
@@ -258,6 +266,7 @@ describe('Flashcards Resolver Functions', () => {
         owner: '123',
         name: 'Freddie',
         locked: false,
+        deckIds: []
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
@@ -392,7 +401,7 @@ describe('Flashcards Resolver Functions', () => {
 
       const result = await deleteFlashcard(req);
 
-      // expect(storage.delete).toHaveBeenCalledWith(jestCardId);
+      expect(storage.delete).toHaveBeenCalledWith(jestCardId);
       expect(result.success).toBe(true);
       expect(result.message).toEqual(`Deleted card with id: ${jestCardId}`);
     });
@@ -685,6 +694,185 @@ describe('Deck Resolver Functions', () => {
       // expect(storage.set).toHaveBeenCalledWith(jestDeckId, updatedDeck);
       expect(result.success).toBe(false);
       expect(result.error).toEqual("Invalid input: title required");
+    });
+  });
+  describe('Get Deck', () => {
+    it('Test 1 - Get deck - same user - locked deck', async () => {
+      const jestDeckId = `d-${12345}`;
+
+      const deck = {
+        id: jestDeckId,
+        title: 'Math',
+        description: 'math deck',
+        owner: '123',
+        name: 'Freddie',
+        cards: [],
+        cardIds: [],
+        size: 0,                 
+        locked: true
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const req = {
+        payload: { deckId: deck.id },
+        context: { accountId: '123' },
+      }
+
+      const result = await getFlashcard(req);
+
+      expect(result.success).toBe(true);
+    });
+
+    it('Test 2 - Get deck - different user - locked deck', async () => {
+      const jestDeckId = `d-${12345}`;
+
+      const deck = {
+        id: jestDeckId,
+        title: 'Math',
+        description: 'math deck',
+        owner: '123',
+        name: 'Freddie',
+        cards: [],
+        cardIds: [],
+        size: 0,                 
+        locked: true
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const req = {
+        payload: { deckId: deck.id },
+        context: { accountId: '123' },
+      }
+
+      const result = await getFlashcard(req);
+
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('Delete Deck', () => {
+    it('Test 1 - successful delete - unlocked deck - same user', async () => {
+      const jestDeckId = `c-${12345}`;
+
+      const deck = {
+        id: jestDeckId,
+        title: 'Math',
+        description: 'math deck',
+        owner: '123',
+        name: 'Freddie',
+        cards: [],
+        cardIds: [],
+        size: 0,                 
+        locked: false
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const req = {
+        payload: { cardId: deck.id },
+        context: { accountId: '123' },
+      }
+
+      const result = await deleteFlashcard(req);
+
+      expect(storage.delete).toHaveBeenCalledWith(jestDeckId);
+      expect(result.success).toBe(true);
+      expect(result.message).toEqual(`Deleted card with id: ${jestDeckId}`);
+    });
+
+    it('Test 2 - successful delete - unlocked deck - different user', async () => {
+      const jestDeckId = `c-${12345}`;
+
+      const deck = {
+        id: jestDeckId,
+        title: 'Math',
+        description: 'math deck',
+        owner: '123',
+        name: 'Freddie',
+        cards: [],
+        cardIds: [],
+        size: 0,                 
+        locked: false
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const req = {
+        payload: { cardId: deck.id },
+        context: { accountId: '1234' },
+      }
+
+      const result = await deleteFlashcard(req);
+
+      expect(storage.delete).toHaveBeenCalledWith(jestDeckId);
+      expect(result.success).toBe(true);
+      expect(result.message).toEqual(`Deleted card with id: ${jestDeckId}`);
+    });
+
+    it('Test 3 - successful delete - locked deck - same user', async () => {
+      const jestDeckId = `c-${12345}`;
+
+      const deck = {
+        id: jestDeckId,
+        title: 'Math',
+        description: 'math deck',
+        owner: '123',
+        name: 'Freddie',
+        cards: [],
+        cardIds: [],
+        size: 0,                 
+        locked: true
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const req = {
+        payload: { cardId: deck.id },
+        context: { accountId: '123' },
+      }
+
+      const result = await deleteFlashcard(req);
+
+      expect(storage.delete).toHaveBeenCalledWith(jestDeckId);
+      expect(result.success).toBe(true);
+      expect(result.message).toEqual(`Deleted card with id: ${jestDeckId}`);
+    });
+
+    it('Test 4 - unsuccessful delete - locked deck - different user', async () => {
+      const jestDeckId = `c-${12345}`;
+
+      const deck = {
+        id: jestDeckId,
+        title: 'Math',
+        description: 'math deck',
+        owner: '123',
+        name: 'Freddie',
+        cards: [],
+        cardIds: [],
+        size: 0,                 
+        locked: true
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
+      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
+
+      const req = {
+        payload: { cardId: deck.id },
+        context: { accountId: '1234' },
+      }
+
+      const result = await deleteFlashcard(req);
+
+      // expect(storage.delete).toHaveBeenCalledWith(jestDeckId);
+      expect(result.success).toBe(false);
+      expect(result.error).toEqual("Only owner can delete");
     });
   });
 });
