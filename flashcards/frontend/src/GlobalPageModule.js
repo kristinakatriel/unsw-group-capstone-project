@@ -1,43 +1,40 @@
 import React, { useEffect, useState } from 'react';
-import { Splide, SplideSlide } from '@splidejs/react-splide';
-import '@splidejs/react-splide/css';
 import { invoke, view} from '@forge/bridge';
-import CreateFlashcardGlobal from './GlobalPageFlashcardCreate';
-import ModalDialog from '@atlaskit/modal-dialog';
-import CardSlider from './components/CardSlider';
-import './GlobalPageModule.css';
-import CreateDeckGlobal from './GlobalPageDeckCreate';
-import DeckSlider from './components/DeckSlider';
-import DeckDisplay from './components/DeckDisplay';
 import Breadcrumbs, { BreadcrumbsItem } from '@atlaskit/breadcrumbs';
 import Modal, { ModalBody, ModalFooter, ModalHeader, ModalTitle, ModalTransition } from '@atlaskit/modal-dialog';
+import ModalDialog from '@atlaskit/modal-dialog';
 import Button, { IconButton } from '@atlaskit/button/new';
 import CrossIcon from '@atlaskit/icon/glyph/cross';
-import { Alert, Collapse } from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
 import { Flex, Grid, xcss } from '@atlaskit/primitives';
-import QuizMode from './components/QuizMode';
-import StudyMode from './components/StudyMode';
-import EditFlashcardModal from './GlobalPageFlashcardEdit';
-import EditDeckModal from './GlobalPageDeckEdit';
-import CreateTagGlobal from './GlobalPageTagCreate';
-import './GlobalPageTagCreate.css';
+import { Alert, Collapse } from '@mui/material';
 import Chip from '@mui/material/Chip';
 import DeleteIcon from '@mui/icons-material/Delete';
-import EditTagGlobal from './GlobalPageTagEdit';
-// import './editTagGlobalModule.css';
 import EditIcon from '@mui/icons-material/Edit';
+import HighlightOffIcon from '@mui/icons-material/HighlightOff';
+import SearchIcon from '@mui/icons-material/Search';
+import { IconButton as MuiIconButton } from '@mui/material';
 import ToggleButton from '@mui/material/ToggleButton';
 import ToggleButtonGroup from '@mui/material/ToggleButtonGroup';
 import Tooltip from '@mui/material/Tooltip';
 import Box from '@mui/material/Box';
-import { IconButton as MuiIconButton } from '@mui/material';
-import QuizResults from './components/QuizResults';
-import HighlightOffIcon from '@mui/icons-material/HighlightOff';
 import Switch from '@mui/material/Switch';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import CreateFlashcardGlobal from './GlobalPageFlashcardCreate';
+import EditFlashcardModal from './GlobalPageFlashcardEdit';
+import CreateDeckGlobal from './GlobalPageDeckCreate';
+import EditDeckModal from './GlobalPageDeckEdit';
+import CreateTagGlobal from './GlobalPageTagCreate';
+import EditTagGlobal from './GlobalPageTagEdit';
+import CardSlider from './components/CardSlider';
+import DeckSlider from './components/DeckSlider';
+import DeckDisplay from './components/DeckDisplay';
+import QuizMode from './components/QuizMode';
+import StudyMode from './components/StudyMode';
+import QuizResults from './components/QuizResults';
+import './GlobalPageModule.css';
 
+//grid and layout styles
 const gridStyles = xcss({
     width: '100%',
 });
@@ -50,147 +47,127 @@ const titleContainerStyles = xcss({
     gridArea: 'title',
 });
 
-// ********************************** GLOBAL PAGE MODULE **********************************
 
 function GlobalPageModule() {
 
-  // ********************************** STATE MANAGEMENT **********************************
-
+  // State Management
   const [flashcards, setFlashcards] = useState([]);
   const [flashdecks, setDecks] = useState([]);
   const [tags, setTags] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  //tag mapping
+  // Tag Management
   const [cardTagMap, setCardTagMap] = useState([]);
   const [deckTagMap, setDeckTagMap] = useState([]);
-  const [tagTagMap, setTagTagMap] = useState([]);
-
-  //selected tag
   const [selectedTags, setSelectedTags] = useState(tags.map(tag => tag.id)); // All tags selected by default
+  const [isMyTagsSelected, setIsMyTagsSelected] = useState(false); //My Tags toggle
+  const [hoveredTag, setHoveredTag] = useState(null);
+  const [activeTags, setActiveTags] = useState([]);
 
-  //owner tags
+  // User Id
+  const [accountId, setAccountId] = useState(null);
 
-  const [isMyTagsSelected, setIsMyTagsSelected] = useState(false); // State to manage My Tags toggle
-
-  //account id feild
-
-  const [accountId, setAccountId] = useState(null); // State to store the account ID
-
-  // Modal states for flashcards and decks
+  // Modal States - Flashcards, Decks & Tags
   const [isFlashcardModalOpen, setIsCreateFlashcardOpen] = useState(false);
-  const [isDeckModalOpen, setIsDeckModalOpen] = useState(false);
-  const [isTagModalOpen, setIsTagModalOpen] = useState(false);
-
-  // State for FLASHCARD deletion and confirmation
+  const [editingFlashcard, setEditingFlashcard] = useState(null);
+  const [isEditFlashcardModalOpen, setIsEditFlashcardModalOpen] = useState(false);
   const [flashcardToDelete, setFlashcardToDelete] = useState(null);
   const [isDeleteFlashcardConfirmOpen, setIsDeleteFlashcardConfirmOpen] = useState(false);
 
-  // State for FLASHCARD editing and confirmation
-  const [editingFlashcard, setEditingFlashcard] = useState(null); // Store the flashcard being edited
-  const [isEditFlashcardModalOpen, setIsEditFlashcardModalOpen] = useState(false);
-
-  // State for DECK editing and confirmation
-  const [editingDeck, setEditingDeck] = useState(null); // Store the deck being edited
+  const [isDeckModalOpen, setIsDeckModalOpen] = useState(false);
+  const [editingDeck, setEditingDeck] = useState(null);
   const [isEditDeckModalOpen, setIsEditDeckModalOpen] = useState(false);
-
-  // State for DECK deletion and confirmation
   const [deckToDelete, setDeckToDelete] = useState(null);
   const [isDeleteDeckConfirmOpen, setIsDeleteDeckConfirmOpen] = useState(false);
+  const [selectedDeck, setSelectedDeck] = useState(null); // state for deck display
 
-  // State for TAG deletion and confirmation
+  const [isTagModalOpen, setIsTagModalOpen] = useState(false);
+  const [editingTag, setEditingTag] = useState(null);
+  const [isEditTagModalOpen, setIsEditTagModalOpen] = useState(false);
   const [tagToDelete, setTagToDelete] = useState(null);
   const [isDeleteTagConfirmOpen, setIsDeleteTagConfirmOpen] = useState(false);
 
-  // State for TAG editing and confirmation
-  const [editingTag, setEditingTag] = useState(null); // Store the tag being edited
-  const [isEditTagModalOpen, setIsEditTagModalOpen] = useState(false); // Modal logic for editing tags
-
-  // State for DECK display
-  const [selectedDeck, setSelectedDeck] = useState(null);
-
-  // State for breadcrumbs
-  const [breadcrumbItems, setBreadcrumbItems] = useState([{ href: '#', text: 'FLASH (Home)' }]);
-
-  // State for study mode
+  // Study and Quiz Mode
   const [isStudyMode, setIsStudyMode] = useState(false);
-
-  // State for quizmode
   const [isQuizMode, setIsQuizMode] = useState(false);
-
-  // STATE for viewing quiz result
   const [viewQuizResult, setViewQuizResult] = useState(null);
-  //const [viewQuizResultBool, setViewQuizResultBool] = useState(false);
   const [pressedButton, setPressedButton] = useState(false);
-
-
-  const [isQuizResults, setIsQuizResults] = useState(false)  // State to hold quiz results
+  const [isQuizResults, setIsQuizResults] = useState(false); // State to hold quiz results
 
   // State for saving success and error messages
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [deleteDeckFromDisplaySuccess, setDeleteDeckFromDisplaySuccess] = useState(false);
   const [showDeleteSuccessAlert, setShowDeleteSuccessAlert] = useState(false);
-  const [deleteTagFromDisplaySuccess, setDeleteTagFromDisplaySuccess] = useState(false);
-  const [showTagSuccessAlert, setShowTagSuccessAlert] = useState(false);
 
-  // State for search
+  // Naviagation and search
+  const [breadcrumbItems, setBreadcrumbItems] = useState([{ href: '#', text: 'FLASH (Home)' }]);
   const [globalPageSearchTerm, setGlobalPageSearchTerm] = useState('');
   const [alignment, setAlignment] = useState('all');
-  const [hoveredTag, setHoveredTag] = useState(null);
-  const [activeTags, setActiveTags] = useState([]);
 
-  //************************** DELETION LOGIC *****************************/
+
+  //************************** INITIAL FETCH ON COMPONENT MOUNT ******************************************************************************************/
+
+
+  useEffect(() => {
+    const fetchAccountId = async () => {
+      try {
+        const context = await view.getContext(); // Get context from Forge
+        setAccountId(context.accountId); // Set the account ID from the context
+      } catch (error) {
+        console.error("Error fetching context:", error);
+      }
+    };
+    fetchAccountId();
+    loadFlashcards();
+    loadDecks();
+    loadTags();
+  }, []);
+
+
+  //************************** FLASHCARD LOGIC - Create, Edit, Delete, Load (refresh data from backend), Helpers & Rendering******************************/
+
+
+  //CREATION
+  const createFlashcardGlobal = () => {
+    setIsCreateFlashcardOpen(true); // Open modal to create flashcard
+  };
+  const closeFlashcardModal = (shouldRefresh = false) => {
+    setIsCreateFlashcardOpen(false);
+    refreshFlashcardFrontend();
+  };
+
+  //EDITING
+  const openFlashcardEditModal = (flashcard) => {
+    setEditingFlashcard(flashcard);
+    setIsEditFlashcardModalOpen(true);
+  };
+  const closeFlashcardEditModal = (updatedFlashcard) => {
+    setIsEditFlashcardModalOpen(false);
+    refreshFlashcardFrontend();
+  };
+
+  //DELETION
   const confirmDeleteFlashcard = (flashcard) => {
     setFlashcardToDelete(flashcard);
     setIsDeleteFlashcardConfirmOpen(true);
   };
-
-  const confirmDeleteDeck = (deck) => {
-    setDeckToDelete(deck);
-    setIsDeleteDeckConfirmOpen(true);
-  };
-
-  const confirmDeleteTag = (tag) => {
-    console.log(tag.id);
-    setTagToDelete(tag);
-    setIsDeleteTagConfirmOpen(true);
-  };
-
   const closeDeleteFlashcardConfirm = () => {
     setIsDeleteFlashcardConfirmOpen(false);
     setFlashcardToDelete(null);
     setErrorMessage('');
     setDeleteSuccess(false);
   };
-
-  const closeDeleteDeckConfirm = () => {
-    setIsDeleteDeckConfirmOpen(false);
-    setDeckToDelete(null);
-    setErrorMessage('');
-    setDeleteSuccess(false);
-  };
-
-  const closeDeleteTagConfirm = () => {
-    setIsDeleteTagConfirmOpen(false);
-    setTagToDelete(null);
-    setErrorMessage('');
-    setDeleteSuccess(false);
-  };
-
   const deleteFlashcard = async () => {
     setErrorMessage('');
     try {
       const response = await invoke('deleteFlashcard', { cardId: flashcardToDelete.id });
-      console.log("FLASHCARDTODELETE");
       if (response.success) {
         setDeleteSuccess(true);
-        // setFlashcards((prevFlashcards) => prevFlashcards.filter((card) => card.id !== flashcardToDelete.id));
-        //loadFlashcards();
         setTimeout(() => {
-          closeDeleteFlashcardConfirm(); // Delay closing modal
-        }, 400); // Show message for 2 seconds before closing
-        refreshFlashcardFrontend();  // Refresh UI after deletion
+          closeDeleteFlashcardConfirm();
+        }, 400); // Show message
+        refreshFlashcardFrontend();  // Refresh UI
       } else {
         setErrorMessage(response.error);
         console.error('Error deleting flashcard:', response.error);
@@ -200,18 +177,77 @@ function GlobalPageModule() {
     }
   };
 
+  //RELOADING DATA
+  const loadFlashcards = async () => {
+    try {
+      const response = await invoke('getAllFlashcards', {});
+      if (response.success) {
+        setFlashcards(response.cards);
+        setCardTagMap(response.tags);
+      }
+    } catch (error) {
+      console.error('Error fetching flashcards:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //HELPERS
+  const refreshFlashcardFrontend = () => {
+    loadFlashcards();
+  };
+
+  // FRONTEND RENDERING
+  const renderFlashcardsList = (filteredFlashcards) => {
+    return (
+    <CardSlider cards={filteredFlashcards} tagMap={cardTagMap} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal} onTagEdit={openTagEditModal}/>
+    );
+  };
+
+
+  //**************** DECK LOGIC - Create, Edit, Delete, Load (refresh data from backend) , Helpers, Error Message Handling & Rendering *******************/
+
+
+  //CREATION
+  const createDeck = () => {
+    setIsDeckModalOpen(true); // Open modal to create deck
+  };
+  const closeDeckModal = (shouldRefresh = false) => {
+    setIsDeckModalOpen(false);
+    refreshDeckFrontend();
+  };
+
+  //EDITING
+  const openDeckEditModal = (deck) => {
+    setEditingDeck(deck);
+    setIsEditDeckModalOpen(true);
+  };
+  const closeDeckEditModal = (updatedDeck) => {
+    setIsEditDeckModalOpen(false);
+    refreshDeckFrontend();
+  };
+
+  //DELETION
+  const confirmDeleteDeck = (deck) => {
+    setDeckToDelete(deck);
+    setIsDeleteDeckConfirmOpen(true);
+  };
+  const closeDeleteDeckConfirm = () => {
+    setIsDeleteDeckConfirmOpen(false);
+    setDeckToDelete(null);
+    setErrorMessage('');
+    setDeleteSuccess(false);
+  };
   const deleteDeck = async () => {
     setErrorMessage('');
     try {
       const response = await invoke('deleteDeck', { deckId: deckToDelete.id });
       if (response.success) {
         setDeleteSuccess(true);
-        // setDecks((prevDecks) => prevDecks.filter((deck) => deck.id !== deckToDelete.id));
-        loadDecks();
         setTimeout(() => {
           closeDeleteDeckConfirm();
-        }, 2000); // Show message for 2 seconds before closing
-        refreshDeckFrontend();  // Refresh UI after deletion
+        }, 2000); // display message
+        refreshDeckFrontend();  // Refresh UI
       } else {
         setErrorMessage(response.error);
         console.error('Error deleting deck:', response.error);
@@ -222,14 +258,102 @@ function GlobalPageModule() {
 
   };
 
+  //RELOADING DATA
+  const loadDecks = async () => {
+    try {
+      const response = await invoke('getAllDecks', {});
+      if (response.success) {
+        setDecks(response.decks);
+        setDeckTagMap(response.tags);
+      }
+    } catch (error) {
+      console.error('Error fetching decks:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //HELPERS
+  const refreshDeckFrontend = () => {
+    loadDecks();
+  };
+
+  //ERROR MESSAGE HANDLING
+  //deletion error message when deck is deleted within deck display mode
+  useEffect(() => {
+    if (deleteDeckFromDisplaySuccess) {
+      setShowDeleteSuccessAlert(true);
+      const timer = setTimeout(() => {
+        setShowDeleteSuccessAlert(false);
+      }, 2000);
+      return () => clearTimeout(timer);
+    }
+  }, [deleteDeckFromDisplaySuccess]);
+
+  // FRONTEND RENDERING
+   const renderDecksList = (filteredDecks) => (
+    <DeckSlider decks={filteredDecks} tagMap={deckTagMap} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} onTagEdit={openTagEditModal}/>
+  );
+
+
+  //************************** TAG LOGIC - Create, Edit, Delete, Load (refresh data from backend) , Helpers & Rendering****************************************/
+
+
+  //CREATION
+  const createTag = () => {
+    setIsTagModalOpen(true); // Open modal to create deck
+  };
+  const closeTagModal = (shouldRefresh = false) => {
+    setIsTagModalOpen(false);
+    refreshTagFrontend();
+  };
+
+  //EDITING
+  const openTagEditModal = (tag) => {
+    setEditingTag(tag);
+    setIsEditTagModalOpen(true);
+  };
+  const closeTagEditModal = async (selectedDecks = [], selectedFlashcards = []) => {
+    try {
+     const response = await invoke('updateTag', {
+        id: editingTag.id,
+        title: editingTag.title,
+        cardIds: selectedFlashcards,
+        deckIds: selectedDecks
+      });
+
+      if (response.success) {
+        setTimeout(() => {}, 1000);
+        refreshTagFrontend();
+        refreshDeckFrontend();
+        refreshFlashcardFrontend();
+
+      } else {
+        setErrorMessage(response.error);
+      }
+    } catch (error) {
+      console.error('Error updating tag:', error);
+    }
+    setIsEditTagModalOpen(false);
+  };
+
+  //DELETION
+  const confirmDeleteTag = (tag) => {
+    setTagToDelete(tag);
+    setIsDeleteTagConfirmOpen(true);
+  };
+  const closeDeleteTagConfirm = () => {
+    setIsDeleteTagConfirmOpen(false);
+    setTagToDelete(null);
+    setErrorMessage('');
+    setDeleteSuccess(false);
+  };
   const deleteTag = async () => {
     setErrorMessage('');
-    console.log(tagToDelete.id);
     try {
       const response = await invoke('deleteTag', { tagId: tagToDelete.id });
       if (response.success) {
         setDeleteSuccess(true);
-        loadTags();
         setTimeout(() => {
           closeDeleteTagConfirm();
         }, 2000);
@@ -243,65 +367,12 @@ function GlobalPageModule() {
     }
   };
 
-  //USEEFFECTS FOR DELETES
-  useEffect(() => {
-    if (deleteDeckFromDisplaySuccess) {
-      setShowDeleteSuccessAlert(true);
-      const timer = setTimeout(() => {
-        setShowDeleteSuccessAlert(false);
-      }, 2000); // Adjust the duration as needed
-      return () => clearTimeout(timer);
-    }
-  }, [deleteDeckFromDisplaySuccess]);
-
-  useEffect(() => {
-    console.log("Updated selected deck:", selectedDeck);
-    // Additional logic here
-  }, [selectedDeck]); // Runs whenever `selectedDeck` changes
-
-
-
-  //************************** FETCHING DATA (REUSABLE) *****************************/
-  const loadFlashcards = async () => {
-
-    //console.log('Current flashcards state before fetch:', flashcards); // Log the current state of flashcards
-    try {
-      const response = await invoke('getAllFlashcards', {});
-      //console.log('Response received from getAllFlashcards:', response); // Log the entire response
-
-      if (response.success) {
-        setFlashcards(response.cards);
-        setCardTagMap(response.tags);
-      }
-    } catch (error) {
-      console.error('Error fetching flashcards:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const loadDecks = async () => {
-    try {
-      const response = await invoke('getAllDecks', {});
-      //console.log(response);
-      if (response.success) {
-        setDecks(response.decks);
-        setDeckTagMap(response.tags);
-      }
-    } catch (error) {
-      console.error('Error fetching decks:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
+  //RELOADING DATA
   const loadTags = async () => {
     try {
       const response = await invoke('getAllTags', {});
-      //console.log(response);
       if (response.success) {
         setTags(response.tags);
-        setTagTagMap(response.tags);
       }
     } catch (error) {
       console.error('Error fetching tags:', error);
@@ -310,262 +381,8 @@ function GlobalPageModule() {
     }
   };
 
-  //************************** REFRESH LOGIC *****************************/ *************************************************************************************
-  const refreshFlashcardFrontend = () => {
-    //setLoading(true);
-    loadFlashcards();  // This function will reload flashcards and refresh the UI
-  };
 
-  const refreshDeckFrontend = () => {
-    //setLoading(true);
-    loadDecks();  // This function will reload decks and refresh the UI
-  };
-
-  const refreshTagFrontend = () => {
-    //setLoading(true);
-    loadTags();  // This function will reload decks and refresh the UI
-  };
-
-  //************************** MODAL HANDLERS *****************************/
-  const createFlashcardGlobal = () => {
-    setIsCreateFlashcardOpen(true); // Open modal to create flashcard
-  };
-
-  const createDeck = () => {
-    setIsDeckModalOpen(true); // Open modal to create deck
-  };
-
-  const createTag = () => {
-    setIsTagModalOpen(true); // Open modal to create deck
-  };
-
-  const closeFlashcardModal = (shouldRefresh = false) => {
-    setIsCreateFlashcardOpen(false);
-
-    //loadFlashcards();
-    refreshFlashcardFrontend();  // Refresh after closing modal if new flashcard was created****************************************************************************************************
-
-  };
-
-  const closeDeckModal = (shouldRefresh = false) => {
-    setIsDeckModalOpen(false);
-    //loadDecks();
-    refreshDeckFrontend();  // Refresh after closing modal if new deck was created ****************************************************************************************************
-
-  };
-
-  const closeTagModal = (shouldRefresh = false) => {
-    setIsTagModalOpen(false);
-    //loadDecks();
-    refreshTagFrontend();  // Refresh after closing modal if new tag was created ****************************************************************************************************
-
-  };
-
-  // Modal logic for editing flashcards
-  // Open the edit modal
-  const openFlashcardEditModal = (flashcard) => {
-    setEditingFlashcard(flashcard);
-    setIsEditFlashcardModalOpen(true);
-  };
-
-  // Close the edit modal and refresh flashcards
-  // updatedFlashcard is not really needed at the moment
-  const closeFlashcardEditModal = (updatedFlashcard) => {
-    setIsEditFlashcardModalOpen(false);
-
-    // Refresh the flashcard list by fetching flashcards
-    refreshFlashcardFrontend();
-    refreshDeckFrontend();
-  };
-
-  //DECK EDIT LOGIC
-
-  // Modal logic for editing flashcards
-  // Open the edit modal
-  const openDeckEditModal = (deck) => {
-    setEditingDeck(deck);
-    setIsEditDeckModalOpen(true);
-  };
-
-  // Close the edit modal and refresh flashcards
-  // updatedFlashcard is not really needed at the moment
-  const closeDeckEditModal = (updatedDeck) => {
-    setIsEditDeckModalOpen(false);
-    // Refresh the deck list by refetching decks
-    refreshDeckFrontend();
-  };
-
-  //************************** INITIAL FETCH ON COMPONENT MOUNT *****************************/
-  useEffect(() => {
-
-    const fetchAccountId = async () => {
-      try {
-        const context = await view.getContext(); // Get context from Forge
-        setAccountId(context.accountId); // Set the account ID from the context
-      } catch (error) {
-        console.error("Error fetching context:", error);
-      }
-    };
-
-    fetchAccountId();
-
-    loadFlashcards();
-    loadDecks();
-    loadTags();
-
-    //refreshFlashcardFrontend();  // Load flashcards when the component mounts****************************************************************************************************
-    //refreshDeckFrontend();  // Load decks when the component mounts ****************************************************************************************************8
-  }, []);
-
-  //************************** SEARCH FUNCTIONS *****************************/
-
-
-  //tag filtering when a tag is selected
-
-// Function to toggle tag activity
-  const handleTagToggle = (tagId) => {
-    setActiveTags((prevActiveTags) => {
-      if (prevActiveTags.includes(tagId)) {
-        return prevActiveTags.filter(id => id !== tagId);
-      } else {
-        return [...prevActiveTags, tagId];
-      }
-    });
-
-    selectedTags.includes(tagId)
-
-    setSelectedTags((prevSelectedTags) =>
-      prevSelectedTags.includes(tagId)
-        ? prevSelectedTags.filter((id) => id !== tagId) // Deselect if already selected
-        : [...prevSelectedTags, tagId] // Select if not yet selected
-    );
-  };
-
-  const handleAllTagsToggle = () => {
-    if (selectedTags.length === tags.length) {
-      setSelectedTags([]); // Deselect all if all tags are selected
-      setActiveTags([]);
-    } else {
-      setSelectedTags(tags.map(tag => tag.id)); // Select all tags if not all are selected
-      setActiveTags(tags.map(tag => tag.id));
-    }
-  };
-
-
-  const selectOwnTags = () => {
-    setIsMyTagsSelected((prevState) => !prevState); // Toggle the switch
-  };
-
-  // Open the edit modal for a tag
-  const openTagEditModal = (tag) => {
-    setEditingTag(tag); // Set the tag to be edited
-
-    setIsEditTagModalOpen(true); // Open the modal
-
-  };
-
-  // Close the edit modal and refresh tags
-  const closeTagEditModal = async (selectedDecks = [], selectedFlashcards = []) => {
-
-
-
-    try {
-      console.log("selected decks", selectedDecks);
-      console.log("selected flashcards", selectedFlashcards);
-      const response = await invoke('updateTag', {
-        id: editingTag.id,
-        title: editingTag.title,
-        cardIds: selectedFlashcards,
-        deckIds: selectedDecks
-      });
-
-      //console.log("responce", response);
-
-      if (response.success) {
-
-        setTimeout(() => {
-           // Close the modal
-        }, 1000);
-        //
-
-        // Refresh the tag list by fetching tags
-        refreshTagFrontend();
-        refreshDeckFrontend();
-        refreshFlashcardFrontend();
-
-      } else {
-        setErrorMessage(response.error);
-      }
-    } catch (error) {
-      console.error('Error updating tag:', error);
-    }
-
-    setIsEditTagModalOpen(false)
-    //
-
-    //
-  };
-
-  // Handle search input change
-  const searchGlobalPage = (event) => {
-    setGlobalPageSearchTerm(event.target.value);
-    console.log('Searching:', globalPageSearchTerm);
-  };
-
-  //****************filtered flashcards, decks and tags */
-  const filteredFlashcards = flashcards.filter((card) => {
-
-    const searchTerm = globalPageSearchTerm.toLowerCase();
-    const matchesSearch =
-    (typeof card.front === 'string' && card.front.toLowerCase().includes(searchTerm)) ||
-    (typeof card.back === 'string' && card.back.toLowerCase().includes(searchTerm)) ||
-    (card.name && typeof card.name === 'string' && card.name.toLowerCase().includes(searchTerm));
-
-    // If a tag is selected, filter cards by their IDs in the selected tag’s flashcards array
-    const matchesTags =  selectedTags.length === 0 || // If "All Tags" is selected
-    selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)));
-
-    const matchesOwner = (isMyTagsSelected && card.owner === accountId) || !isMyTagsSelected;
-
-    return matchesSearch && matchesTags && matchesOwner;
-
-  });
-
-  const filteredDecks = flashdecks.filter((deck) => {
-    const searchTerm = globalPageSearchTerm.toLowerCase();
-    const matchesSearch =
-    (typeof deck.title === 'string' && deck.title.toLowerCase().includes(searchTerm)) ||
-    (deck.description && typeof deck.description === 'string' && deck.description.toLowerCase().includes(searchTerm)) ||
-    (deck.name && typeof deck.name === 'string' && deck.name.toLowerCase().includes(searchTerm));
-
-    const matchesTags =  selectedTags.length === 0 || // If "All Tags" is selected
-    selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.deckIds.includes(deck.id)));
-
-    const matchesOwner = !isMyTagsSelected || deck.owner === accountId;
-
-    return matchesSearch && matchesTags && matchesOwner;
-  });
-
-  const filteredTags = tags.filter((tag) => {
-    const searchTerm = globalPageSearchTerm.toLowerCase();
-    return (
-      (typeof tag.title === 'string' && tag.title.toLowerCase().includes(searchTerm))
-    );
-  });
-
-  //************************** RENDER FUNCTIONS *****************************/
-  const renderFlashcardsList = (filteredFlashcards) => {
-    //console.log('cards right before passed into card slider' , flashcards);
-    return (
-    <CardSlider cards={filteredFlashcards} tagMap={cardTagMap} onDelete={confirmDeleteFlashcard} onEdit={openFlashcardEditModal} onTagEdit={openTagEditModal}/>
-    );
-
-  };
-
-  const renderDecksList = (filteredDecks) => (
-    <DeckSlider decks={filteredDecks} tagMap={deckTagMap} onDelete={confirmDeleteDeck} onDeckClick={onDeckClick} onEdit ={openDeckEditModal} onTagEdit={openTagEditModal}/>
-  );
-
+  // FRONTEND RENDERING
   const renderTagsList = (filteredTags) => (
     <>
       {filteredTags.length > 0 && (
@@ -642,84 +459,166 @@ function GlobalPageModule() {
     </>
   );
 
-  //************************** BREADCRUMB MANAGEMENT *****************************/
+  //HELPERS
+  const refreshTagFrontend = () => {
+    loadTags();
+  };
+
+  //************************** SEARCH and TOGGLE FUNCTIONIONLITY **********************************************************************************************/
+
+  // Functions to toggle tag activity
+
+  const handleTagToggle = (tagId) => {
+    setActiveTags((prevActiveTags) => {
+      if (prevActiveTags.includes(tagId)) {
+        return prevActiveTags.filter(id => id !== tagId);
+      } else {
+        return [...prevActiveTags, tagId];
+      }
+    });
+    selectedTags.includes(tagId)
+    setSelectedTags((prevSelectedTags) =>
+      prevSelectedTags.includes(tagId)
+        ? prevSelectedTags.filter((id) => id !== tagId) // Deselect if already selected
+        : [...prevSelectedTags, tagId] // Select if not yet selected
+    );
+  };
+
+  const handleAllTagsToggle = () => {
+    if (selectedTags.length === tags.length) {
+      setSelectedTags([]); // Deselect all if all tags are selected
+      setActiveTags([]);
+    } else {
+      setSelectedTags(tags.map(tag => tag.id)); // Select all tags if not all are selected
+      setActiveTags(tags.map(tag => tag.id));
+    }
+  };
+
+  const handleToggleChange = (event, newAlignment) => {
+
+    if (newAlignment === null) {
+      setAlignment(alignment);
+      return;
+    }
+    setAlignment(newAlignment);
+    if (newAlignment === 'personal' && !isMyTagsSelected) {
+      selectOwnTags();
+    } else if (newAlignment === 'all' && isMyTagsSelected) {
+      selectOwnTags();
+    }
+  };
+
+  //Toggle the personal/all switch
+  const selectOwnTags = () => {
+    setIsMyTagsSelected((prevState) => !prevState); // Toggle the switch
+  };
+
+  // handle searchbar input
+  const searchGlobalPage = (event) => {
+    setGlobalPageSearchTerm(event.target.value);
+  };
+
+  //****************FILTERED FLASHCARDS, DECKS, TAGS *******************************************************************************************************/
+
+  const filteredFlashcards = flashcards.filter((card) => {
+
+    const searchTerm = globalPageSearchTerm.toLowerCase();
+    const matchesSearch =
+    (typeof card.front === 'string' && card.front.toLowerCase().includes(searchTerm)) ||
+    (typeof card.back === 'string' && card.back.toLowerCase().includes(searchTerm)) ||
+    (card.name && typeof card.name === 'string' && card.name.toLowerCase().includes(searchTerm));
+
+    const matchesTags =  selectedTags.length === 0 || // If "All Tags" is selected
+
+    selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.cardIds.includes(card.id)));
+
+    const matchesOwner = (isMyTagsSelected && card.owner === accountId) || !isMyTagsSelected;
+
+    return matchesSearch && matchesTags && matchesOwner;
+
+  });
+
+  const filteredDecks = flashdecks.filter((deck) => {
+    const searchTerm = globalPageSearchTerm.toLowerCase();
+    const matchesSearch =
+    (typeof deck.title === 'string' && deck.title.toLowerCase().includes(searchTerm)) ||
+    (deck.description && typeof deck.description === 'string' && deck.description.toLowerCase().includes(searchTerm)) ||
+    (deck.name && typeof deck.name === 'string' && deck.name.toLowerCase().includes(searchTerm));
+
+    const matchesTags =  selectedTags.length === 0 || // If "All Tags" is selected
+
+    selectedTags.some(tagId => tags.find(tag => tag.id === tagId && tag.deckIds.includes(deck.id)));
+
+    const matchesOwner = !isMyTagsSelected || deck.owner === accountId;
+
+    return matchesSearch && matchesTags && matchesOwner;
+  });
+
+  const filteredTags = tags.filter((tag) => {
+    const searchTerm = globalPageSearchTerm.toLowerCase();
+    return (
+      (typeof tag.title === 'string' && tag.title.toLowerCase().includes(searchTerm))
+    );
+  });
+
+
+  //************************** BREADCRUMB MANAGEMENT ********************************************************************************************************/
+
+  //Opening deck display when a deck is clicked and setting breadcrumbs
   const onDeckClick = (deck) => {
-    console.log(`Deck clicked: ${deck.title}`); // Log when a deck is clicked
     setSelectedDeck(deck);
     setIsStudyMode(false);
     setIsQuizMode(false);
     setIsQuizResults(false);
     setPressedButton(false);
 
-    console.log("issuse here?");
-    console.log(`deck : ${deck.title}`); // Log when a deck is clicked
-    //console.log(`updaated deck : ${updatedDeck.title}`);
     setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]);
-    //setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]);
-    console.log('Selected Deck:', deck); // Log the currently selected deck
-    console.log('Current Breadcrumb Items:', [{ href: '#', text: 'FLASH (Home)' }, { href: '#', text: deck.title }]); // Log breadcrumb items
   };
 
+  // Handle breadcrumb click back to prior breadcrumb
   const goBackIntermediate = (deleted = false) => {
-    console.log('consol log');
     if (deleted) {
-      console.log('consol log');
       setDeleteDeckFromDisplaySuccess(true);
-      console.log('consol log');
+      refreshDeckFrontend();
     } else {
-      console.log('consol log');
       setDeleteDeckFromDisplaySuccess(false);
-      console.log('consol log');
     }
   }
 
+  // handle homepage breadcrumb clicked.
   const goBackToHome = () => {
-    console.log('consol log');
-    console.log('Going back to FLASH (Home)'); // Log when going back to Home
     setSelectedDeck(null);
-    console.log('consol log');
     setIsStudyMode(false);
     setIsQuizMode(false);
     setIsQuizResults(false);
     setPressedButton(false);
-    console.log('consol log');
+
     setBreadcrumbItems([{ href: '#', text: 'FLASH (Home)' }]);
+
     refreshDeckFrontend();
     refreshFlashcardFrontend();
-    console.log('Current Breadcrumb Items:', [{ href: '#', text: 'FLASH (Home)' }]); // Log breadcrumb items
   };
 
+  //handle deck breadcrumb clicked.
   const goBackToDeck = () => {
-    console.log('Going back to Deck'); // Log when going back to the deck
     setIsStudyMode(false);
     setIsQuizMode(false);
     setIsQuizResults(false);
     setPressedButton(false);
-    console.log('consol log');
 
     setBreadcrumbItems(prevItems => {
       const updatedItems = prevItems.slice(0, -1);
-      console.log('Current Breadcrumb Items:', updatedItems); // Log breadcrumb items Going back to Deck
       return updatedItems;
     });
-
-    console.log('consol log');
   };
 
-  //************************** STUDY MODE FUNCTIONS *****************************/
+  //************************** STUDY MODE ******************************************************************************************************************/
+  //Start study mode
   const studyMode = async () => {
-    //loadDecks();
-    console.log('consol log');
-
-    console.log("selected deck going into quiz mode", selectedDeck);
     const id = selectedDeck.id;
-    console.log("id", id);
-
     try {
       const response = await invoke('getDeck', { deckId: id });
-
       if (response.success) {
-        console.log("Deck retrieved successfully:", response.deck);
         setSelectedDeck(response.deck)
       } else {
         console.error("Error retrieving deck:", response.error);
@@ -729,20 +628,15 @@ function GlobalPageModule() {
       console.error("Exception in fetchDeck:", error);
       return null;
     }
-    console.log("selected deck", selectedDeck);
-    console.log('Entering Study Mode'); // Log when entering study mode
     setIsStudyMode(true);
-    console.log('consol log');
     setBreadcrumbItems(prevItems => [
         ...prevItems,
         { href: '#', text: 'Study Mode' }
     ]);
-
-    console.log('consol log');
   };
 
+  //Study mode rendering
   if (isStudyMode) {
-    console.log('consol log');
     return (
       <div>
         <Breadcrumbs>
@@ -764,23 +658,16 @@ function GlobalPageModule() {
         <StudyMode deck={selectedDeck} onBack={goBackToDeck} />
       </div>
     );
-
-
   }
 
-  //************************** QUIZ MODE FUNCTIONS *****************************/
+  //************************** QUIZ MODE  **************************************************************************************************************/
+  //Start quiz mode
   const quizMode = async () => {
-    console.log("selected deck going into quiz mode", selectedDeck);
     const id = selectedDeck.id;
-    console.log("id", id);
-
     try {
       const response = await invoke('getDeck', { deckId: id });
-
       if (response.success) {
-        console.log("Deck retrieved successfully:", response.deck);
         setSelectedDeck(response.deck)
-        console.log("selected deck", selectedDeck);
       } else {
         console.error("Error retrieving deck:", response.error);
         return null;
@@ -789,21 +676,15 @@ function GlobalPageModule() {
       console.error("Exception in fetchDeck:", error);
       return null;
     }
-    console.log("selected deck", selectedDeck);
-    console.log('Entering Quiz Mode'); // Log when entering quiz mode
-    // loadDecks();
-    console.log('consol log');
     setIsQuizMode(true);
-    console.log('consol log');
+
     setBreadcrumbItems(prevItems => [
         ...prevItems,
         { href: '#', text: 'Quiz Mode' }
     ]);
   };
-
+  //Quiz Mode Rendering
   if (isQuizMode) {
-    //loadDecks();
-    console.log('consol log');
     return (
       <div>
         <Breadcrumbs>
@@ -828,44 +709,39 @@ function GlobalPageModule() {
     );
   }
 
-  //************************** QUIZ RESULTS MODE FUNCTIONS *****************************/
+  //************************** DISPLAYING PAST QUIZ RESULTS  ***************************************************************************************************/
+  //Start displaying past quiz results
   const quizResult = async () => {
-    console.log('Starting quizResult function');
-    console.log('Viewing quiz results');
     setPressedButton(true);
     let index = 0;
     let loopStatus = true;
     let responseArray = [];
-    console.log('Initialized variables: index =', index, ', loopStatus =', loopStatus);
 
     while (loopStatus) {
-      console.log('Entering while loop, current index:', index);
+
       try {
         const response = await invoke('viewQuizResults', {
           deckId: selectedDeck.id,
           index: index,
         });
-        console.log('API response received:', response);
 
         if (response.success) {
           responseArray.push(response);
-          console.log('Successful response, appended to responseArray:', responseArray);
           setViewQuizResult(responseArray);
           setIsQuizResults(true); // Indicates results to be displayed
           index++;
-          console.log('Incremented index to:', index);
-          console.log('Current Quiz Result:', response);
+
         } else {
           console.error('Error fetching quiz results:', response.error);
           loopStatus = false;
           setErrorMessage(response.error);
-          console.log('Set loopStatus to false due to unsuccessful response');
+
         }
       } catch (error) {
         loopStatus = false;  // Stop the loop on exception
         console.error('Exception caught while fetching quiz results:', error);
         setErrorMessage('An error occurred while fetching quiz results');
-        console.log('Set error message due to caught exception');
+
       }
     }
     // Only update breadcrumbs if results were successfully fetched
@@ -875,11 +751,9 @@ function GlobalPageModule() {
         { href: '#', text: 'Quiz Results' }
       ]);
     }
-    console.log('Updated breadcrumb items:', breadcrumbItems);
   };
-
+  //quiz results rendering
   if (isQuizResults) {
-    console.log('isQuizResults is true, rendering Quiz Results view');
     return (
       <div>
         <Breadcrumbs>
@@ -889,13 +763,13 @@ function GlobalPageModule() {
               href={item.href}
               text={item.text}
               onClick={() => {
-                console.log('Breadcrumb item clicked:', item.text);
+
                 if (item.text === 'FLASH (Home)') {
                   goBackToHome();
-                  console.log('Navigating to Home');
+
                 } else if (item.text === selectedDeck.title) {
                   goBackToDeck();
-                  console.log('Navigating to Deck');
+
                 }
               }}
             />
@@ -907,15 +781,8 @@ function GlobalPageModule() {
     );
   }
 
-  //************************** DECK DISPLAY *****************************/
+  //************************** RENDERING DECK DISPLAY ********************************************************************************************************/
   if (selectedDeck) {
-    //loadDecks();
-    console.log('consol log');
-    console.log('Selected deck:', selectedDeck);
-    console.log('Breadcrumb items:', breadcrumbItems);
-    console.log('Tag map for cards:', cardTagMap);
-    console.log('Tag map for deck:', deckTagMap);
-
     return (
       <div >
         <Breadcrumbs>
@@ -933,95 +800,12 @@ function GlobalPageModule() {
       </div>
     );
   }
-  // const quizResult = async () => {
-
-  //   console.log('Viewing quiz results');
-  //   setPressedButton(true);
-  //   let index = 0
-  //   let loopStatus = true;
-  //   let responseArray = [];
-
-  //   while (loopStatus) {
-  //     try {
-  //       const response = await invoke('viewQuizResults', {
-  //         deckId: updatedDeck.id,
-  //         index: index
-  //       });
-
-  //       if (response.success) {
-  //         responseArray.push(response);
-  //         console.log("response is: " + response)
-  //         setViewQuizResult(responseArray);
-  //         setIsQuizResults(true);; // this boolean means that there are quiz results to be printed
-  //         index++;
-  //         console.log('Quiz Result:', response);
-  //       } else {
-  //         console.error('Error fetching quiz results:', response.error);
-  //         loopStatus = false;
-  //         setErrorMessage(response.error);
-  //       }
-  //     } catch (error) {
-  //       console.error('Error fetching quiz results:', error);
-  //       setErrorMessage('An error occurred while fetching quiz results');
-  //     }
-  //   }
-  //   console.log('Entering Quiz Result View');
-  //   //setIsQuizResults(true);
-  //   setBreadcrumbItems(prevItems => [
-  //     ...prevItems,
-  //     { href: '#', text: 'Quiz Results' }
-  //   ]);
-  // };
 
 
-  // if (isQuizResults) {
-  //   return (
-  //     <div>
-  //       <Breadcrumbs>
-  //         {breadcrumbItems.map((item, index) => (
-  //           <BreadcrumbsItem
-  //             key={index}
-  //             href={item.href}
-  //             text={item.text}
-  //             onClick={() => {
-  //               if (item.text === 'FLASH (Home)') {
-  //                 goBackToHome();
-  //               } else if (item.text === selectedDeck.title) {
-  //                 goBackToDeck();
-  //               }
-  //             }}
-  //           />
-  //         ))}
-  //       </Breadcrumbs>
-  //       <QuizResults viewQuizResult={viewQuizResult} />
-  //     </div>
-  //   );
-  // }
-
-
-  //********************************************* kristina toggle stuff */
-  const handleToggleChange = (event, newAlignment) => {
-    console.log('consol log');
-    console.log(newAlignment);
-    console.log('consol log');
-    if (newAlignment === null) {
-      setAlignment(alignment);
-      return;
-    }
-    console.log('consol log');
-
-    setAlignment(newAlignment);
-    console.log('consol log');
-    if (newAlignment === 'personal' && !isMyTagsSelected) {
-      selectOwnTags();
-    } else if (newAlignment === 'all' && isMyTagsSelected) {
-      selectOwnTags();
-    }
-  };
-
-  //*************************************global page output  */
+  //*************************************GLOBAL PAGE RENDERING**********************//
   return (
     <div className='global-page-container'>
+      {/************************************* HEADER SECTION ***************************************/}
       <div className="global-page-header">
         <div className="global-page-headlines">
           <div className="global-page-headline">
@@ -1031,6 +815,8 @@ function GlobalPageModule() {
             The Forge App that allows you to create flashcards in a flash
           </div>
         </div>
+
+        {/* ************** SEARCH BAR AND TOGGLE PERSONAL ITEMS SECTION ****************************** */}
         <div className="global-page-search">
           <ToggleButtonGroup
             color="primary"
@@ -1059,12 +845,15 @@ function GlobalPageModule() {
           </div>
         </div>
       </div>
+
+      {/* *********** DELETE DECK FROM DECK DISPLAY SUCESSS MESSAGE SECTION****************************** */}
       <Collapse in={showDeleteSuccessAlert} timeout={500}>
         <Alert severity="success">
           Deck deleted successfully!
         </Alert>
       </Collapse>
 
+      {/* *********** TAGS SECTION****************************** */}
       <div className='global-page-tags'>Tags<button className='global-page-create-tag-button' onClick={createTag}>+ Create Tag</button></div>
       {loading ? (
         <p>Loading...</p>
@@ -1074,6 +863,7 @@ function GlobalPageModule() {
         renderTagsList(filteredTags)
       )}
 
+      {/* *********** DECKS SECTION****************************** */}
       <div className='global-page-decks'>Decks<button className='global-page-create-deck-button' onClick={createDeck}>+ Create Deck</button></div>
       {loading ? (
         <p>Loading...</p>
@@ -1083,6 +873,7 @@ function GlobalPageModule() {
         renderDecksList(filteredDecks)
       )}
 
+      {/* *********** FLASHCARDS SECTION****************************** */}
       <div className='global-page-flashcards'>Flashcards<button className='global-page-create-flashcard-button' onClick={createFlashcardGlobal}>+ Create Flashcard</button></div>
       {loading ? (
         <p>Loading...</p>
@@ -1092,14 +883,7 @@ function GlobalPageModule() {
         renderFlashcardsList(filteredFlashcards)
       )}
 
-      {/* <div className='global-page-recents'>Suggested</div>
-      {loading ? (
-        <p>Loading...</p>
-      ) : flashcards.length === 0 ? (
-        <p>Nothing recently accessed. Create some flashcards!.</p>
-      ) : (
-        renderFlashcardsList(filteredFlashcards)
-      )} */}
+      {/* *****************************MODAL POPUPS SECTION****************************** */}
 
       {/* Flashcard Modal */}
       {isFlashcardModalOpen && (
@@ -1230,7 +1014,7 @@ function GlobalPageModule() {
           )}
       </ModalTransition>
 
-      {/* FLASHCARD EDIT FUNCTIONALITY: Flashcard Edit Modal */}
+      {/*Flashcard Edit Modal */}
       {isEditFlashcardModalOpen && (
         <ModalDialog heading="Edit Flashcard" onClose={closeFlashcardEditModal}>
           <EditFlashcardModal
@@ -1240,7 +1024,7 @@ function GlobalPageModule() {
         </ModalDialog>
       )}
 
-      {/* // Tags functionality: Tag Edit Modal */}
+      {/* Tag Edit Modal */}
       {isEditTagModalOpen && (
         <ModalDialog heading="Edit Tag" onClose={() => closeTagEditModal(true)}>
           <EditTagGlobal
@@ -1251,7 +1035,7 @@ function GlobalPageModule() {
       )}
 
 
-      {/* DECK EDIT FUNCTIONALITY: DECK Edit Modal */}
+      {/* Deck Edit Modal */}
       {isEditDeckModalOpen && (
         <ModalDialog heading="Edit Deck" onClose={closeDeckEditModal}>
           <EditDeckModal
