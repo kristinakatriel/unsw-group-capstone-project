@@ -12,12 +12,6 @@
   padding: 30px;
 }
 
-h2 {
-  font-size: 24px;
-  font-weight: bold;
-  margin: 20px 0;
-}
-
 .deck-title {
   margin-bottom: 10px;
 }
@@ -31,12 +25,12 @@ h2 {
 }
 
 .input-field {
-  height: 40px; /* Height for the text input */
+  height: 40px;
 }
 
 .input-area {
-  height: 95px; /* Height for the text area */
-  resize: none; /* Disable resizing */
+  height: 95px; 
+  resize: none; 
 }
 
 .button-group {
@@ -46,7 +40,7 @@ h2 {
 }
 
 .save-button {
-  background-color: #0052CC; /* Primary Button Color */
+  background-color: #0052CC; 
   color: white;
   padding: 10px 15px;
   border: none;
@@ -59,11 +53,11 @@ h2 {
 }
 
 .save-button:hover {
-  background-color: #0747A6; /* Darker shade for hover effect */
+  background-color: #0747A6; 
 }
 
 .close-button {
-  background-color: #f0f0f0; /* Secondary Button Color */
+  background-color: #f0f0f0; 
   color: #333;
   padding: 10px 15px;
   border: none;
@@ -75,7 +69,7 @@ h2 {
 }
 
 .close-button:hover {
-  background-color: #ccc; /* Darker shade for hover effect */
+  background-color: #ccc; 
 }
 
 .form-group {
@@ -83,5 +77,5 @@ h2 {
 }
 
 input[type="checkbox"] {
-  margin-right: 10px; /* Space between checkbox and label */
+  margin-right: 10px; 
 }
