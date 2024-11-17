@@ -1,56 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
-import { invoke } from '@forge/bridge';
 import { Splide, SplideSlide } from '@splidejs/react-splide';
 import '@splidejs/splide/dist/css/splide.min.css';
 import './CardSlider.css';
-import LocalOfferIcon from '@mui/icons-material/LocalOffer';
 
-// added onEdit as well!
 const CardSlider = ({ cards = [], tagMap = [], onDelete, onEdit, onTagEdit }) => {
 
-  console.log('cards passed in to cardslider', cards);
-
-  // const [cardTags, setCardTags] = useState({});
-
-  // // Fetch tags for a given card
-  // const fetchTagsForCard = async (passedIn) => {
-
-  //   console.log('cardId passed in', passedIn);
-
-
-
-  //   try {
-  //     const response = await invoke('getTagsForItem', {itemId: passedIn, itemType: 'card'});
-  //     //const response = await getTagsByCardId({ payload: { cardId } });
-
-  //     if (response.success) {
-  //       setCardTags((prevTags) => ({
-  //         ...prevTags,
-  //         [passedIn]: response.tags,
-  //       }));
-  //       // Log the cards received as props
-  //       console.log('tags responce received for card:', passedIn);
-  //       console.log('tags responce:', response);
-  //     } else {
-  //       //console.log('tags responce:', response);
-  //       console.error('Error fetching tags:', response);
-  //     }
-  //   } catch (error) {
-  //     console.error('Error fetching tags:', error);
-  //   }
-  // };
-
-  // useEffect(() => {
-  //   // Fetch tags for each card when the component mounts or when cards are updated
-  //   cards.forEach((card) => {
-  //     fetchTagsForCard(card.id);
-  //   });
-  // }, [cards]);
-
-
   return (
+
     <div className='container'>
       <div className='card-wrapper'>
         <ul className='card-list'>

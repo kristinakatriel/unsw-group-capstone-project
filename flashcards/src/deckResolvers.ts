@@ -65,6 +65,13 @@ export const updateDeck = async (req: ResolverRequest) => {
         }
     }
 
+    if (!title) {
+        return {
+            success: false,
+            error: 'Invalid input: title required',
+        };
+    }
+
     const updatedDeck: Deck = {
         ...existingDeck,
         title: title || existingDeck.title,

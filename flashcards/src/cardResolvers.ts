@@ -20,6 +20,7 @@ export const createFlashcard = async (req: ResolverRequest) => {
     };
   }
 
+  // await clearStorage();
   initUserData(accountId);
   const name = await getUserName(accountId);
 
@@ -62,12 +63,18 @@ export const updateFlashcard = async (req: ResolverRequest) => {
     }
   }
 
+  if (!front || !back) {
+    return {
+      success: false,
+      error: 'Invalid input: front and back required',
+    };
+  }
+
   const updatedCard: Card = {
     ...existingCard,
     front: front || existingCard.front,
     back: back || existingCard.back,
     hint: hint || existingCard.hint,
-    locked: locked || existingCard.locked
   };
 
   await storage.set(id, updatedCard);
