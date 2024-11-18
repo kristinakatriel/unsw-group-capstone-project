@@ -1,6 +1,5 @@
 import { asUser, storage } from '@forge/api';
 import { addGeneratedFlashcards, getAllContent, getGeneratedDeckTitle, generateQA } from '../aiResolvers';
-import { getUserName } from '../helpers';
 import { getAllTags } from '../tagResolvers';
 
 global.fetch = jest.fn() as jest.Mock;
@@ -164,7 +163,6 @@ describe('Adding Generated Flashcards Tests', () => {
   });
 
   it('Test 2 - should add flashcards successfully', async () => {
-    // Mock the get and set methods
     (storage.get as jest.Mock).mockResolvedValueOnce({
       id: 'deck-123',
       cards: [{ question: 'q1', answer: 'a1' }, { question: 'q2', answer: 'a2' }],
@@ -176,7 +174,6 @@ describe('Adding Generated Flashcards Tests', () => {
   
     (storage.set as jest.Mock).mockResolvedValue(true);
     
-    // Mock the request payload
     const req = {
       payload: {
         qAPairs: [

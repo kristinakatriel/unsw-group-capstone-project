@@ -1,17 +1,22 @@
-import Resolver from '@forge/resolver';
-import api, { QueryApi, route, startsWith, storage } from '@forge/api';
-import {
-    Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
-    QuizResult, StudyResult, QuizSession, StudySession,
-    ParagraphType
-} from './types';
-import { generateId, clearStorage, getUserName, initUserData } from './helpers';
-import { ResolverRequest } from './types'
-import { addTagToCard, getAllTags } from './tagResolvers';
+import api, { route, storage } from '@forge/api';
+import { ResolverRequest, Deck, Tag, GenFlashcardsPair, ParagraphType } from './types';
+import { getAllTags } from './tagResolvers';
+import { generateId, getUserName } from './helpers';
 
 export const url = "https://marlin-excited-gibbon.ngrok-free.app"
 
-export const getAllContent = async (req: ResolverRequest) => {
+// /**
+//  * Fetches all content from a Confluence page, extracts paragraph text recursively, and returns it along with metadata.
+//  *
+//  * @param {ResolverRequest} req - The request object containing payload and context.
+//  * @param {object} req.payload - The payload data.
+//  * @param {string} req.payload.pageId - The ID of the Confluence page to retrieve content from.
+//  * @param {string} req.payload.siteUrl - The base URL of the Confluence site.
+//  * @param {object} req.context - The request context.
+//  * @param {string} req.context.accountId - The ID of the user making the request.
+//  * @returns {Promise<object>} A response object indicating success or failure.
+//  */
+export const getAllContent = async (req: ResolverRequest): Promise<object> => {
     const { pageId, siteUrl } = req.payload;
     const { accountId } = req.context;
 
@@ -22,10 +27,6 @@ export const getAllContent = async (req: ResolverRequest) => {
         };
     }
 
-    console.log(req.payload);
-    // view: HTML but diff
-    // storage: shit
-    // atlas_doc_format: best bet
     const response = await api.asUser().requestConfluence(route`/wiki/api/v2/pages/${pageId}?body-format=atlas_doc_format`, {
         headers: {
         'Accept': 'application/json'
@@ -37,7 +38,8 @@ export const getAllContent = async (req: ResolverRequest) => {
     if (response.status == 200) {
         const data = await response.json();
         const doc = JSON.parse(data.body.atlas_doc_format.value);
-        // Function to recursively extract paragraph texts
+
+        // recursively extract paragraph text
         const extractParagraphs = (content: any[]): string[] => {
             return content.flatMap(item => {
             if (item.type === 'paragraph' && item.content) {
@@ -49,7 +51,7 @@ export const getAllContent = async (req: ResolverRequest) => {
             });
         };
 
-        // Get all paragraph texts
+        // return all extracted content 
         const paragraphs = extractParagraphs(doc.content);
         const allText = paragraphs.join(' ');
         return {
@@ -60,17 +62,19 @@ export const getAllContent = async (req: ResolverRequest) => {
         }
     }
 
-    // console.log(text);
     return {
         success: false,
         error: response.statusText
     };
 };
 
+// rewrite this comment
 // get generated deck info: For content byline
 export const getGeneratedDeckTitle = async (req: ResolverRequest) => {
     const { text } = req.payload;
-    const response = await fetch(`${url}/generate_deck_title`, {  // the url which we need to generate the deck title
+
+    // access content byline
+    const response = await fetch(`${url}/generate_deck_title`, { 
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -87,7 +91,6 @@ export const getGeneratedDeckTitle = async (req: ResolverRequest) => {
         };
     }
 
-    // also add the page url to the description in the end
     return {
         success: true,
         title: data.title
@@ -152,7 +155,6 @@ export const addGeneratedFlashcards = async (req: ResolverRequest) => {
     const autoTag = tags.tags.find(tag => tag.title === 'auto-generated') as Tag || undefined;
     let autoId = 'undefined';
     if (!autoTag) {
-        // here, need to make the tag. ya
         return {
             success: false,
             error: 'tag not found'
@@ -185,23 +187,11 @@ export const addGeneratedFlashcards = async (req: ResolverRequest) => {
         await storage.set(autoTag.id, autoTag);
 
         await storage.set(cardId, newCard);
-        // const req = {
-        //     payload: {
-        //         cardId: cardId,
-        //         tagId: autoId
-        //     },
-        //     context: {
-        //         accountId: accountId
-        //     }
-        // } as ResolverRequest;
-        // const res = await addTagToCard(req);
         return { success: true, id: cardId };
     });
 
     // Wait for all flashcards to be created
     const results = await Promise.all(flashcardPromises);
-
-    // Ensure deck.cards exists
     if (!deck.cards) {
         deck.cards = [];
     }

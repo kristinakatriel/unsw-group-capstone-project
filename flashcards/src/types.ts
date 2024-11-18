@@ -30,7 +30,6 @@ export interface Card {
     hint?: string;          // TODO: NOT OPTIONAL
     deckIds: string[];      // TODO: REPLACE WITH K-V STORAGE
     locked: boolean;
-    //tagIds: string[];
 }
 
 export interface Deck {

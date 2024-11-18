@@ -1,13 +1,4 @@
 import Resolver from '@forge/resolver';
-import api, { QueryApi, route, startsWith, storage } from '@forge/api';
-import {
-  Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
-  QuizResult, StudyResult, QuizSession, StudySession,
-  ResolverRequest
-} from './types';
-import { generateId, clearStorage, getUserName, initUserData } from './helpers'
-// import { basename } from 'path';
-// import { create } from 'domain';
 import {
   createFlashcard, updateFlashcard, deleteFlashcard,
   getFlashcard, getAllFlashcards,
@@ -75,10 +66,11 @@ resolver.define('fetchUserCards', fetchUserCards);
 resolver.define('fetchUserDecks', fetchUserDecks);
 resolver.define('fetchUserTags', fetchUserTags);
 
-resolver.define('getGeneratedDeckTitle', getGeneratedDeckTitle);
 resolver.define('getAllContent', getAllContent);
 resolver.define('generateQA', generateQA);
 resolver.define('addGeneratedFlashcards', addGeneratedFlashcards);
+resolver.define('getGeneratedDeckTitle', getGeneratedDeckTitle);
+
 
 resolver.define('startQuizSession', startQuizSession);
 resolver.define('endQuizSession', endQuizSession);
