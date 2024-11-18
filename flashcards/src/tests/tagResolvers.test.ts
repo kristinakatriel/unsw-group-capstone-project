@@ -231,6 +231,45 @@ describe('Tag Resolver Functions', () => {
       expect(result.success).toEqual(true);
       expect(result.message).toEqual("Added tag to card")
     });
+
+    it('Test 2 - unsuccessful add tag to card - tag already exists', async() => {
+      const jestTagId = `t-${12345}`;
+      const jestCardId = `c-${12345}`;
+
+      const tag = {
+        id: jestTagId,
+        title: 'math',
+        colour: 'red',
+        cardIds: [jestCardId],
+        deckIds: [],
+        tagIds: [],
+        owner: '123',
+      };
+
+      const card = {
+        id: jestCardId,
+        front: '1+1',
+        back: '3',
+        hint: 'use addition',
+        owner: '123',
+        name: 'Freddie',
+        locked: true,
+        deckIds: []
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(card);
+      (storage.get as jest.Mock).mockResolvedValueOnce(tag); // replicating storage get
+
+      const req = {
+        payload: { tagId: tag.id, cardId: card.id },
+        context: { accountId: '123' },
+      }
+
+      const result = await addTagToCard(req);
+
+      expect(result.success).toEqual(false);
+      expect(result.error).toEqual("Item already included")
+    });
   });
   describe('Add Tag to Deck', () => {
     it('Test 1 - successful add tag to deck', async() => {
@@ -272,6 +311,45 @@ describe('Tag Resolver Functions', () => {
 
       expect(result.success).toEqual(true);
       expect(result.message).toEqual("Added tag to deck")
+    });
+    it('Test 2 - unsuccessful add tag to deck - tag already exists', async() => {
+      const jestTagId = `t-${12345}`;
+      const jestDeckId = `d-${12345}`;
+
+      const tag = {
+        id: jestTagId,
+        title: 'math',
+        colour: 'red',
+        cardIds: [],
+        deckIds: [jestDeckId],
+        tagIds: [],
+        owner: '123',
+      };
+
+      const deck = {
+        id: jestDeckId,
+        title: 'Math',
+        description: 'math deck',
+        owner: '123',
+        name: 'Freddie',
+        cards: [],
+        cardIds: [],
+        size: 0,                 
+        locked: false
+      };
+
+      (storage.get as jest.Mock).mockResolvedValueOnce(deck);
+      (storage.get as jest.Mock).mockResolvedValueOnce(tag); // replicating storage get
+
+      const req = {
+        payload: { tagId: tag.id, deckId: deck.id },
+        context: { accountId: '123' },
+      }
+
+      const result = await addTagToDeck(req);
+
+      expect(result.success).toEqual(false);
+      expect(result.error).toEqual("Item already included")
     });
   });
   describe('Remove Tag from Card', () => {
