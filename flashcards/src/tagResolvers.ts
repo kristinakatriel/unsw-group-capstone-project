@@ -233,7 +233,7 @@ export const addTagToCard = async (req: ResolverRequest) => {
         };
     }
 
-    if (tag.cardIds && tag.cardIds.includes(tagId)) {
+    if (tag.cardIds && tag.cardIds.includes(cardId)) {
         return {
             success: false,
             error: 'Item already included',
@@ -263,7 +263,7 @@ export const addTagToDeck = async (req: ResolverRequest) => {
         };
     }
 
-    if (tag.deckIds && tag.deckIds.includes(tagId)) {
+    if (tag.deckIds && tag.deckIds.includes(deckId)) {
         return {
             success: false,
             error: 'Item already included',
