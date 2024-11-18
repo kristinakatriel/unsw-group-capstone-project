@@ -131,28 +131,29 @@ export const updateCardStatusQuiz = async (req: ResolverRequest) => {
   
   await storage.set(sessionId, session);
 
-  // send next card in deck
+  // complete quiz or send next card in deck
   let newIndex = currentIndex + 1;
   if (newIndex == session.totalCardCount && status != 'hint') {
     return {
       success: true,
-      message: 'Quiz session complete'
+      message: 'Quiz complete'
     }
-  }
-  if (status == 'hint') {
-    newIndex = newIndex - 1;
-  }
-  session.currentCardIndex = newIndex;
+  } else {
+    if (status == 'hint') {
+      newIndex = newIndex - 1;
+    }
+    session.currentCardIndex = newIndex;
 
-  await storage.set(sessionId, session);
+    await storage.set(sessionId, session);
 
-  return {
-    success: true,
-    sessionId: sessionId,
-    session: session,
-    nextIndex: newIndex,
-    nextCardId: session.deckInSession.cards?.[newIndex].id,
-    state: status
+    return {
+      success: true,
+      nextIndex: newIndex,
+      nextCardId: session.deckInSession.cards?.[newIndex].id,
+      sessionId: sessionId,
+      session: session,
+      state: status
+    }
   }
 };
 

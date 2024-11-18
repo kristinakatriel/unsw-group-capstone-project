@@ -79,7 +79,7 @@ const QuizMode = ({ deck }) => {
         sessionId,
       });
       if (response.success) {
-        if (response.message === 'quiz is finished') {
+        if (response.message === 'Quiz complete') {
           setIsQuizCompleted(true);
           try {
             const endExecution = await invoke('endQuizSession', { sessionId });
@@ -115,7 +115,7 @@ const QuizMode = ({ deck }) => {
         sessionId,
       });
       if (response.success) {
-        if (response.message === 'quiz is finished') {
+        if (response.message === 'Quiz complete') {
           setIsQuizCompleted(true);
           try {
             const endExecution = await invoke('endQuizSession', { sessionId });
