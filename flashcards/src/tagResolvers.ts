@@ -1,12 +1,7 @@
-import Resolver from '@forge/resolver';
-import api, { QueryApi, route, startsWith, storage } from '@forge/api';
-import {
-    Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
-    QuizResult, StudyResult, QuizSession, StudySession
-} from './types';
-import { generateId, clearStorage, queryStorage, queryTagsForItem, getUserName, initUserData } from './helpers'
-import { queryCardsById, queryDecksById, queryTagsById, queryUsersById } from './helpers'
-import { ResolverRequest } from './types'
+import { startsWith, storage } from '@forge/api';
+import { ResolverRequest, Card, Deck, Tag } from './types';
+import { generateId, initUserData, queryStorage, queryTagsForItem, 
+         queryCardsById, queryDecksById, queryTagsById } from './helpers'
 
 
 export const createTag = async (req: ResolverRequest) => {
@@ -31,15 +26,13 @@ export const createTag = async (req: ResolverRequest) => {
         deckIds: deckIds || [],
         tagIds: tagIds || [],
         owner: accountId,
-        // STORE ASSOCIATED USERS?
     };
 
     await storage.set(tagId, tag);
 
     return {
         success: true,
-        tag,
-        // CAN ALSO INCLUDE CARD, DECK, TAG OBJECTS IF NEEDED
+        tag: tag
     };
 };
 
@@ -100,14 +93,6 @@ export const deleteTag = async (req: ResolverRequest) => {
         }
     }
 
-    // for (const userId of tag.userIds) {
-    //     const user = await storage.get(userId);
-    //     if (user) {
-    //         user.tagIds = user.tagIds.filter((id: string) => id !== tagId);
-    //         await storage.set(userId, user);
-    //     }
-    // }
-
     await storage.delete(tagId);
 
     return {
@@ -143,33 +128,18 @@ export const getTag = async (req: ResolverRequest) => {
 };
 
 
-// export const getAllTags = async () => {
-//     const tags: Tag[] = [];
-
-//     const query = await storage.query().where('key', startsWith('t-')).limit(50).getMany();
-
-//     query.results.forEach(({ value }) => {
-//         tags.push(value as Tag);
-//     });
-
-//     return {
-//         success: true,
-//         tags,
-//     };
-// };
-
 export const getAllTags = async () => {
-    // const allTags = await queryStorage('t-') as Tag[]; // use once limit implemented
+    const allTags = await queryStorage('t-') as Tag[];
 
     const tags: Tag[] = [];
-
+    
+    // FIXME
     const query = await storage.query().where('key', startsWith('t-')).limit(50).getMany();
 
     query.results.forEach(({ value }) => {
         tags.push(value as Tag);
     });
 
-    const allTags = await queryStorage('t-') as Tag[];
 
     const mapTags: Record<string, Tag[]> = {};
     allTags.forEach(tag => {
