@@ -66,6 +66,7 @@ For more information about functionality, jump to this section: [Functionality](
 │   ├── package-lock.json
 │   ├── package.json
 │   ├── src
+│   │   ├── tests/
 │   │   ├── aiResolvers.ts
 │   │   ├── cardResolvers.ts
 │   │   ├── deckResolvers.ts
