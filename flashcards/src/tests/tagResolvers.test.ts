@@ -1,9 +1,10 @@
 import { storage } from '@forge/api';
-import { queryStorage } from '../helpers';
-import { createTag, updateTag, deleteTag, getTag, getAllTags, addTagToCard, addTagToDeck, removeTagFromDeck, removeTagFromCard } from '../tagResolvers';
-import { removeCardFromDeck } from '../deckResolvers';
+import { createTag, updateTag, deleteTag, getTag, getAllTags,
+         addTagToCard, addTagToDeck, removeTagFromDeck, removeTagFromCard } from '../tagResolvers';
 
+         
 const getMany = jest.fn();
+
 jest.mock('@forge/api', () => ({
   storage: {
     get: jest.fn(),
@@ -30,7 +31,9 @@ jest.mock('../helpers', () => ({
   queryCardsById: jest.fn(() => Promise.resolve([])),
 }));
 
+
 describe('Tag Resolver Functions', () => {
+
   describe('Create Tag', () => {
     it('Test 1 - add tag successful', async() => {
         const req = {
@@ -72,6 +75,8 @@ describe('Tag Resolver Functions', () => {
         expect(result.error).toEqual("Tag title is required");
     });
   });
+
+
   describe('Update Tag', () => {
     it('Test 1 - successful update', async() => {
       const jestTagId = `t-${12345}`;
@@ -136,6 +141,8 @@ describe('Tag Resolver Functions', () => {
       expect(result.error).toEqual('Tag title is required');
     });
   });
+
+
   describe('Delete Tag', () => {
     it('Test 1 - successful delete', async() => {
       const jestTagId = `t-${12345}`;
@@ -164,6 +171,8 @@ describe('Tag Resolver Functions', () => {
       expect(result.message).toEqual(`Deleted tag with id: ${jestTagId}`);
     });
   });
+
+
   describe('Get Tag', () => {
     it('Test 1 - successful get tag', async() => {
       const jestTagId = `t-${12345}`;
@@ -191,6 +200,8 @@ describe('Tag Resolver Functions', () => {
       expect(result.tag).toEqual(tag);
     });
   });
+
+
   describe('Add Tag to Card', () => {
     it('Test 1 - successful add tag to card', async() => {
       const jestTagId = `t-${12345}`;
@@ -271,6 +282,8 @@ describe('Tag Resolver Functions', () => {
       expect(result.error).toEqual("Item already included")
     });
   });
+
+
   describe('Add Tag to Deck', () => {
     it('Test 1 - successful add tag to deck', async() => {
       const jestTagId = `t-${12345}`;
@@ -352,6 +365,8 @@ describe('Tag Resolver Functions', () => {
       expect(result.error).toEqual("Item already included")
     });
   });
+
+
   describe('Remove Tag from Card', () => {
     it('Test 1 - successful removal tag from card', async() => {
       const jestTagId = `t-${12345}`;
@@ -392,6 +407,8 @@ describe('Tag Resolver Functions', () => {
       expect(result.message).toEqual("Removed tag from card")
     });
   });
+
+
   describe('Remove Tag from Deck', () => {
     it('Test 1 - successful removal tag from deck', async() => {
       const jestTagId = `t-${12345}`;
@@ -433,6 +450,8 @@ describe('Tag Resolver Functions', () => {
       expect(result.message).toEqual("Tag removed from deck")
     });
   });
+
+
   describe('Get all Tags', () => {
     it('Test 1 - successful get all tags', async () => {
       const jestTagId = `t-${12345}`;
