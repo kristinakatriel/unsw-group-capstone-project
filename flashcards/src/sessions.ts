@@ -8,8 +8,6 @@ export const startQuizSession = async (req: ResolverRequest) => {
   const { deckId } = req.payload;
   const accountId = req.context.accountId;
   const user = await initUserData(accountId);
-  let x = 3;
-  let y = 3;
 
   if (!user) {
     return {
@@ -23,7 +21,6 @@ export const startQuizSession = async (req: ResolverRequest) => {
   }
 
   if (!(deckId in user.data)) {
-    x = 7;
     const newDynamicDataObj: DynamicData = {
       dynamicDeck: await storage.get(deckId),
       quizSessions: [],
@@ -51,10 +48,8 @@ export const startQuizSession = async (req: ResolverRequest) => {
 
   const newDeckCardIdSet = new Set(newDeck.cards.map(card => card.id));
 
-  // let us remove cards from the quiz deck not in new deck
   quizDeck.cards = quizDeck.cards.filter(card => newDeckCardIdSet.has(card.id));
 
-  // we need to create a set of card ids that contain ids from quiz deck
   const quizDeckCardIdSet = new Set(quizDeck.cards.map(card => card.id));
 
   // we loop through the new deck and add cards not in quiz deck
@@ -66,10 +61,8 @@ export const startQuizSession = async (req: ResolverRequest) => {
     }
   }
 
-  // create an array of status
   const totalCards = quizDeck.cards?.length
 
-  // check if length = 0
   if (totalCards == 0) {
     return {
       success: false,
@@ -92,14 +85,11 @@ export const startQuizSession = async (req: ResolverRequest) => {
 
   await storage.set(sessionId, newSession);
 
-  // let us return the first card and the session
   return {
     success: true,
     session: newSession,
     firstIndex: 0,
     sessionId: sessionId,
-    x: x,
-    y: y,
     cards: quizDeck.cards
   }
 };
@@ -116,7 +106,6 @@ export const updateCardStatusQuiz = async (req: ResolverRequest) => {
       };
     }
 
-  // check if current index is less than total length
   if (currentIndex >= session.totalCardCount) {
     return {
       success: false,
@@ -134,8 +123,7 @@ export const updateCardStatusQuiz = async (req: ResolverRequest) => {
     session.statusPerCard[currentIndex] = QuizSessionCardStatus.Incorrect;
   }
   await storage.set(sessionId, session);
-  // now let us return the next card
-  // check if quiz has finished
+
   let newIndex = currentIndex + 1;
   if (newIndex == session.totalCardCount && status != 'hint') {
     return {
@@ -192,7 +180,6 @@ export const endQuizSession = async (req: ResolverRequest) => {
   if (accountId) {
     const user = await initUserData(accountId);
     const deckId = session.deckInSession.id;
-    // check if dynamic dict does not exist
     if (!(deckId in user.data)) {
       const newDynamicDeck: DynamicData = {
         dynamicDeck: session.deckInSession,
@@ -205,7 +192,6 @@ export const endQuizSession = async (req: ResolverRequest) => {
     // now let us add the session to the list
     user.data[deckId].quizSessions.push(newQuizResult);
 
-    // let us store a new reordered decks
     if (!session.deckInSession.cards) {
       return {
         success: false,
@@ -240,7 +226,6 @@ export const endQuizSession = async (req: ResolverRequest) => {
     await storage.delete(sessionId);
     await storage.set(`u-${accountId}`, user);
 
-    // let us return data
     return {
       success: true,
       session: session,
@@ -341,7 +326,6 @@ export const startStudySession = async (req: ResolverRequest) => {
 
   const totalCards = studyDeck.cards?.length
 
-  // check if length = 0
   if (totalCards == 0) {
     return {
       success: false, 
@@ -379,7 +363,6 @@ export const nextCardStudy = async (req: ResolverRequest) => {
       };
     }
 
-  // check if current index is less than total length
   if (currentIndex >= session.totalCardCount) {
     return {
       success: false,
@@ -451,7 +434,6 @@ export const endStudySession = async (req: ResolverRequest) => {
   if (accountId) {
     const user = await initUserData(accountId);
     const deckId = session.deckInSession.id;
-    // check if dynamic dict does not exist 
     if (!(deckId in user.data)) {
       const newDynamicDeck: DynamicData = {
         dynamicDeck: session.deckInSession,
@@ -463,7 +445,6 @@ export const endStudySession = async (req: ResolverRequest) => {
     } else {
       user.data[deckId].dynamicDeck = session.deckInSession
     }
-    // now let us add the session to the list
     user.data[deckId].studySessions.push(newStudyResult);
 
     // let us store user data
