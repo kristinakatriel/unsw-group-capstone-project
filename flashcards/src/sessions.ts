@@ -1,12 +1,7 @@
-import Resolver from '@forge/resolver';
-import api, { QueryApi, route, startsWith, storage } from '@forge/api';
-import {
-  Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
-  QuizResult, StudyResult, QuizSession, StudySession,
-  ResolverRequest, QuizSessionCardStatus, StudySessionCardStatus
-} from './types';
-import { generateId, clearStorage, getUserName, initUserData } from './helpers'
-import { IndicatorSeparator } from 'react-select/dist/declarations/src/components/indicators';
+import { storage } from '@forge/api';
+import { ResolverRequest, Card, Deck, DynamicData, QuizSessionCardStatus,
+         QuizResult, StudyResult, QuizSession, StudySession } from './types';
+import { generateId, initUserData } from './helpers'
 
 
 export const startQuizSession = async (req: ResolverRequest) => {

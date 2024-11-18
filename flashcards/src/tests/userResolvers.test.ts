@@ -1,23 +1,7 @@
-import { 
-    fetchUserCards, 
-    fetchUserDecks, 
-    fetchUserTags 
-} from '../userResolvers';
-
-import { 
-    queryCardsById, 
-    queryDecksById, 
-    queryTagsById 
-} from '../helpers';
-
 import { storage } from '@forge/api';
-import {
-    Card,
-    Deck,
-    Tag,
-    ResolverRequest,
-    User
-} from '../types';
+import { ResolverRequest, User, Card, Deck, Tag } from '../types';
+import { fetchUserCards, fetchUserDecks, fetchUserTags } from '../userResolvers';
+import { queryCardsById, queryDecksById, queryTagsById } from '../helpers';
 
 
 jest.mock('@forge/api', () => ({
@@ -43,6 +27,7 @@ jest.mock('../helpers', () => ({
     queryTagsById: jest.fn(() => Promise.resolve([])),
     queryStorage: jest.fn(() => Promise.resolve([])),
 }));
+
 
 describe('User Resolvers', () => {
     describe('fetchUserCards', () => {
@@ -78,8 +63,8 @@ describe('User Resolvers', () => {
         it('fetch cards successfully when user data is valid', async () => {
             const mockUser: User = { cardIds: ['c-1', 'c-2'] } as User;
             const mockCards: Card[] = [
-                { id: 'c-1', owner: '', front: '', back: '', deckIds: [], locked: false },
-                { id: 'c-2', owner: '', front: '', back: '', deckIds: [], locked: false }
+                { id: 'c-1', owner: '', front: '', back: '', hint: '', deckIds: [], locked: false },
+                { id: 'c-2', owner: '', front: '', back: '', hint: '', deckIds: [], locked: false }
             ];
     
             (storage.get as jest.Mock).mockResolvedValueOnce(mockUser);

@@ -1,12 +1,7 @@
-import Resolver from '@forge/resolver';
-import api, { QueryApi, route, startsWith, storage } from '@forge/api';
-import {
-  Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
-  QuizResult, StudyResult, QuizSession, StudySession
-} from './types';
-import { generateId, clearStorage, getUserName, initUserData } from './helpers'
-import { queryCardsById, queryDecksById, queryTagsById, queryUsersById, queryStorage } from './helpers'
-import { ResolverRequest } from './types'
+import { startsWith, storage } from '@forge/api';
+import { ResolverRequest, Card, Deck, Tag } from './types';
+import { generateId, getUserName, initUserData, 
+         queryDecksById, queryTagsById, queryStorage } from './helpers'
 
 
 export const createFlashcard = async (req: ResolverRequest) => {
@@ -20,7 +15,6 @@ export const createFlashcard = async (req: ResolverRequest) => {
     };
   }
 
-  // await clearStorage();
   initUserData(accountId);
   const name = await getUserName(accountId);
 
@@ -80,7 +74,6 @@ export const updateFlashcard = async (req: ResolverRequest) => {
   await storage.set(id, updatedCard);
 
   // TODO: CHECK IF NEEDED
-
   const decksResult = await storage.query().where('key', startsWith('d-')).getMany();
   if (!decksResult) {
     return {
@@ -168,32 +161,8 @@ export const getFlashcard = async (req: ResolverRequest) => {
 };
 
 
-// export const getAllFlashcards = async (req: ResolverRequest) => {
-//   const allFlashcards: Card[] = [];
-
-//   const query = await storage.query().where('key', startsWith('c-')).limit(50).getMany();
-
-//   query.results.forEach(({ value }) => {
-//     allFlashcards.push(value as Card);
-//   });
-
-//   return {
-//     success: true,
-//     cards: allFlashcards,
-//   };
-// };
-
 export const getAllFlashcards = async (req: ResolverRequest) => {
-  const allCards = await queryStorage('c-') as Card[]; // use once limit implemented
-
-  // const allCards: Card[] = [];
-
-  // const query = await storage.query().where('key', startsWith('c-')).limit(50).getMany();
-
-  // query.results.forEach(({ value }) => {
-  //   allCards.push(value as Card);
-  // });
-
+  const allCards = await queryStorage('c-') as Card[];
   const allTags = await queryStorage('t-') as Tag[];
 
   const mapTags: Record<string, Tag[]> = {};

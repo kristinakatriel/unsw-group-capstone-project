@@ -1,12 +1,6 @@
-import Resolver from '@forge/resolver';
-import api, { QueryApi, route, startsWith, storage } from '@forge/api';
-import {
-    Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
-    QuizResult, StudyResult, QuizSession, StudySession
-} from './types';
-import { generateId, clearStorage, queryStorage, getUserName, initUserData } from './helpers'
-import { queryCardsById, queryDecksById, queryTagsById, queryUsersById } from './helpers'
-import { ResolverRequest } from './types'
+import { storage } from '@forge/api';
+import { ResolverRequest, Card, Deck, Tag } from './types';
+import { generateId, getUserName, initUserData, queryTagsById, queryStorage } from './helpers'
 
 
 export const createDeck = async (req: ResolverRequest) => {
@@ -147,32 +141,9 @@ export const getDeck = async (req: ResolverRequest) => {
 };
 
 
-// export const getAllDecks = async (req: ResolverRequest) => {
-//     const allDecks: Deck[] = [];
-
-//     const query = await storage.query().where('key', startsWith('d-')).limit(50).getMany();
-
-//     query.results.forEach(({ value }) => {
-//         allDecks.push(value as Deck);
-//     });
-
-//     return {
-//         success: true,
-//         decks: allDecks,
-//     };
-// };
-
 
 export const getAllDecks = async (req: ResolverRequest) => {
     const allDecks = await queryStorage('d-') as Deck[]; // use once limit implemented
-
-    // const allDecks: Deck[] = [];
-
-    // const query = await storage.query().where('key', startsWith('d-')).limit(50).getMany();
-
-    // query.allDecks.forEach(({ value }) => {
-    //     allDecks.push(value as Deck);
-    // });
 
     const allTags = await queryStorage('t-') as Tag[];
 
