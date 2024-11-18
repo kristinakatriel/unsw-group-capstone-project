@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1731912214864" clover="3.2.0">
-  <project timestamp="1731912214865" name="All files">
+<coverage generated="1731932032316" clover="3.2.0">
+  <project timestamp="1731932032316" name="All files">
     <metrics statements="159" coveredstatements="126" conditionals="106" coveredconditionals="69" methods="37" coveredmethods="27" elements="302" coveredelements="222" complexity="0" loc="159" ncloc="159" packages="1" files="2" classes="2"/>
     <file name="cardResolvers.ts" path="/mnt/c/users/mohan/vscode/capstone-project-2024-t3-3900h15amusketeers/flashcards/src/cardResolvers.ts">
       <metrics statements="72" coveredstatements="52" conditionals="38" coveredconditionals="21" methods="16" coveredmethods="10"/>
