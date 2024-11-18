@@ -3,23 +3,24 @@ import { ResolverRequest, Deck, Tag, GenFlashcardsPair, ParagraphType } from './
 import { getAllTags } from './tagResolvers';
 import { generateId, getUserName } from './helpers';
 
+
 export const url = "https://marlin-excited-gibbon.ngrok-free.app"
 
-// /**
-//  * Fetches all content from a Confluence page, extracts paragraph text recursively, and returns it along with metadata.
-//  *
-//  * @param {ResolverRequest} req - The request object containing payload and context.
-//  * @param {object} req.payload - The payload data.
-//  * @param {string} req.payload.pageId - The ID of the Confluence page to retrieve content from.
-//  * @param {string} req.payload.siteUrl - The base URL of the Confluence site.
-//  * @param {object} req.context - The request context.
-//  * @param {string} req.context.accountId - The ID of the user making the request.
-//  * @returns {Promise<object>} A response object indicating success or failure.
-//  */
+
+/**
+ * Fetches content from a Confluence page and extracts paragraph text recursively.
+ *
+ * @param {ResolverRequest} req - The request object with payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.pageId - The ID of the Confluence page.
+ * @param {string} req.payload.siteUrl - The base URL of the Confluence site.
+ * @param {object} req.context - The request context.
+ * @param {string} req.context.accountId - The ID of the user making the request.
+ * @returns {Promise<object>} An object with success message, extracted text, page title, and source link.
+ */
 export const getAllContent = async (req: ResolverRequest): Promise<object> => {
     const { pageId, siteUrl } = req.payload;
     const { accountId } = req.context;
-
     if (!accountId) {
         return {
             success: false,
@@ -27,13 +28,12 @@ export const getAllContent = async (req: ResolverRequest): Promise<object> => {
         };
     }
 
+    // load page info
     const response = await api.asUser().requestConfluence(route`/wiki/api/v2/pages/${pageId}?body-format=atlas_doc_format`, {
         headers: {
         'Accept': 'application/json'
         }
     });
-
-    console.log(response.status);
 
     if (response.status == 200) {
         const data = await response.json();
@@ -68,12 +68,19 @@ export const getAllContent = async (req: ResolverRequest): Promise<object> => {
     };
 };
 
-// rewrite this comment
-// get generated deck info: For content byline
+
+/**
+ * Generates a deck title from a given text input using an external service.
+ *
+ * @param {ResolverRequest} req - The request object with payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.text - The input text for generating the deck title.
+ * @returns {Promise<object>} An object with success message and the generated deck title.
+ */
 export const getGeneratedDeckTitle = async (req: ResolverRequest) => {
     const { text } = req.payload;
 
-    // access content byline
+    // call endpoint to generate deck title
     const response = await fetch(`${url}/generate_deck_title`, { 
         method: 'POST',
         headers: {
@@ -97,12 +104,17 @@ export const getGeneratedDeckTitle = async (req: ResolverRequest) => {
     };
 }
 
-// AI GENERATION
-// adding generating q&a through ai flashcards
+
+/**
+ * Generates Q&A pairs (flashcards) from input text using an external service.
+ *
+ * @param {ResolverRequest} req - The request object with payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.text - The input text for generating Q&A pairs.
+ * @returns {Promise<object>} An object with success message and the generated Q&A pairs.
+ */
 export const generateQA = async (req: ResolverRequest) => {
-    // get text
     const { text } = req.payload;
-    console.log("testing tunnel");
     if (text.length <= 2) {
         return {
             success: false,
@@ -110,9 +122,8 @@ export const generateQA = async (req: ResolverRequest) => {
         }
     }
 
-    console.log("calling url thing");
-    // get the flashcards generated using the external url
-    const response = await fetch(`${url}/generate_qa`, {  // the url which we need to generate the flashcards
+    // call endpoint to generate flashcard data
+    const response = await fetch(`${url}/generate_qa`, {
         method: 'POST',
         headers: {
             Accept: 'application/json',
@@ -121,49 +132,58 @@ export const generateQA = async (req: ResolverRequest) => {
         body: JSON.stringify({ text }),
     });
 
-    console.log("printing responce", response);
-
     const data = await response.json();
     if (!response.ok) {
         return {
             success: false,
-            error: 'Failed to generate Q&A from text',
+            error: 'Failed to generate Q&A from text input',
         };
     }
-    // this returns a json of q&a pairs, which can be displayed in the context menu
+
     return {
         success: true,
         data: data
     };
 };
 
+
+/**
+ * Adds generated flashcards (Q&A pairs) to a specific deck in storage.
+ *
+ * @param {ResolverRequest} req - The request object with payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {GenFlashcardsPair[]} req.payload.qAPairs - Array of Q&A pairs to add.
+ * @param {string} req.payload.deckId - The ID of the deck for the flashcards.
+ * @param {object} req.context - The request context.
+ * @param {string} req.context.accountId - The ID of the user making the request.
+ * @returns {Promise<object>} An object with success message, updated deck, and flashcard count.
+ */
 export const addGeneratedFlashcards = async (req: ResolverRequest) => {
     const { qAPairs, deckId } = req.payload;
     const accountId = req.context.accountId;
 
+    // get data from storage
     const deck = await storage.get(deckId) as Deck | undefined;
-
     if (!deck) {
         return {
             success: false,
-            error: 'Deck Not found',
+            error: 'Deck not found',
         };
     }
-
     const user = await getUserName(accountId);
     const tags = await getAllTags();
-    const autoTag = tags.tags.find(tag => tag.title === 'auto-generated') as Tag || undefined;
-    let autoId = 'undefined';
+
+    // check tag for gen-ai content
+    const autoTag = tags.tags.find(tag => tag.title === 'auto-generated') as Tag;
     if (!autoTag) {
         return {
             success: false,
-            error: 'tag not found'
-        }
-    } else {
-        autoId = autoTag.id;
+            error: 'Tag not found',
+        };
     }
     const cardIds: string[] = [];
 
+    // map q-a pairs to promises for creating flashcards
     const flashcardPromises = qAPairs.map(async (pair: GenFlashcardsPair) => {
         const { question, answer } = pair;
         if (!question || !answer) {
@@ -181,33 +201,28 @@ export const addGeneratedFlashcards = async (req: ResolverRequest) => {
             locked: false
         };
         cardIds.push(cardId);
-
         autoTag.cardIds.push(cardId);
 
         await storage.set(autoTag.id, autoTag);
-
         await storage.set(cardId, newCard);
         return { success: true, id: cardId };
     });
 
-    // Wait for all flashcards to be created
+    // wait until all flashcards created
     const results = await Promise.all(flashcardPromises);
     if (!deck.cards) {
         deck.cards = [];
     }
 
-    // Add the newly created flashcards to the deck
+    // set data to storage
     for (const cardId of cardIds) {
         const flashcard = await storage.get(cardId);
         if (flashcard) {
             deck.cards.push(flashcard);
         }
     }
-
-    // Store the updated deck in storage
     await storage.set(deck.id, deck);
 
-    // Return a consistent response
     return {
         success: true,
         createdDeck: deck,

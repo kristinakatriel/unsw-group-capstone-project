@@ -263,7 +263,7 @@ export const addTagToDeck = async (req: ResolverRequest) => {
         };
     }
 
-    if (tag.deckIds && tag.deckIds.includes(tagId)) {
+    if (tag.deckIds && tag.deckIds.includes(deckId)) {
         return {
             success: false,
             error: 'Item already included',
