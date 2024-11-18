@@ -168,16 +168,16 @@ function GlobalPageModule() {
         setDeleteSuccess(true);
         setTimeout(() => {
           closeDeleteFlashcardConfirm();
-          setIsDeleting(false); 
+          setIsDeleting(false);
         }, 400); // Show message and close the modal
         refreshFlashcardFrontend();  // Refresh UI
       } else {
         setErrorMessage(response.error);
-        setIsDeleting(false); 
+        setIsDeleting(false);
         console.error('Error deleting flashcard:', response.error);
       }
     } catch (error) {
-      setIsDeleting(false); 
+      setIsDeleting(false);
       console.error('Error deleting flashcard:', error);
     }
   };
@@ -333,9 +333,6 @@ function GlobalPageModule() {
       if (response.success) {
         setTimeout(() => {}, 1000);
         refreshTagFrontend();
-        refreshDeckFrontend();
-        refreshFlashcardFrontend();
-
       } else {
         setErrorMessage(response.error);
       }
@@ -373,7 +370,7 @@ function GlobalPageModule() {
         setIsDeleting(false);
         console.error('Error deleting tag:', response.error);
       }
-    } catch (error) {      
+    } catch (error) {
       setIsDeleting(false);
       console.error('Error deleting tag:', error);
     }
@@ -414,7 +411,7 @@ function GlobalPageModule() {
                 }}
               />
             }
-            label='View all Tags'
+            label='View All Tags'
             labelPlacement='start'
             sx={{
               margin: 0,
@@ -474,6 +471,8 @@ function GlobalPageModule() {
   //HELPERS
   const refreshTagFrontend = () => {
     loadTags();
+    refreshDeckFrontend();
+    refreshFlashcardFrontend();
   };
 
   //************************** SEARCH and TOGGLE FUNCTIONIONLITY **********************************************************************************************/
@@ -955,7 +954,7 @@ function GlobalPageModule() {
                       onClick={deleteFlashcard}
                       isDisabled={isDeleting}
                     >
-                      {isDeleting ? 'Deleting...' : 'Yes, Delete'} 
+                      {isDeleting ? 'Deleting...' : 'Yes, Delete'}
                     </Button>
                   </ModalFooter>
               </Modal>
@@ -997,7 +996,7 @@ function GlobalPageModule() {
                       onClick={deleteDeck}
                       isDisabled={isDeleting}
                     >
-                      {isDeleting ? 'Deleting...' : 'Yes, Delete'} 
+                      {isDeleting ? 'Deleting...' : 'Yes, Delete'}
                     </Button>
                   </ModalFooter>
               </Modal>
@@ -1039,7 +1038,7 @@ function GlobalPageModule() {
                       onClick={deleteTag}
                       isDisabled={isDeleting}
                     >
-                      {isDeleting ? 'Deleting...' : 'Yes, Delete'} 
+                      {isDeleting ? 'Deleting...' : 'Yes, Delete'}
                     </Button>
                   </ModalFooter>
               </Modal>
