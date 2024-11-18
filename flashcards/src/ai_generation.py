@@ -3,10 +3,13 @@ from pydantic import BaseModel
 from transformers import pipeline
 import math
 
+
 # Initialize FastAPI app
 app = FastAPI()
 
+
 # Models and Pipelines
+
 # 1. Question Generation (QG)
 qg_model = "ZhangCheng/T5-Base-Fine-Tuned-for-Question-Generation"
 qg_tokenizer = "ZhangCheng/T5-Base-Fine-Tuned-for-Question-Generation"
@@ -24,6 +27,7 @@ title_pipeline = pipeline("text2text-generation", model=title_model, tokenizer=t
 class TextInput(BaseModel):
     text: str
 
+
 # Generate Q&A Pairs
 @app.post("/generate_qa")
 async def generate_qa(input: TextInput):
@@ -32,7 +36,7 @@ async def generate_qa(input: TextInput):
     #  - Else, calculate the number of questions as max(3, ((character_count // 100) + 1))
     num_q = 15 if len(input.text) > 1500 else max((math.floor(len(input.text)/100)) + 1, 3)
 
-    # Generate questions
+    # Generate and extract questions
     generated_questions = qg_pipeline(
         f"generate questions: {input.text}",
         max_length=40,
@@ -42,10 +46,9 @@ async def generate_qa(input: TextInput):
         top_p=0.95,
     )
 
-    # Extract questions
     generated_questions = [q['generated_text'] for q in generated_questions]
 
-    # Generate answers and create flashcards
+    # Generate answers and form flashcards
     flashcards = []
     for question in generated_questions:
         result = qa_pipeline(question=question, context=input.text)
@@ -54,7 +57,8 @@ async def generate_qa(input: TextInput):
 
     return flashcards
 
-# Generate Deck Title and Description
+
+# Generate Deck Title
 @app.post("/generate_deck_title")
 async def generate_deck_title(input: TextInput):
     # Generate title using title pipeline
