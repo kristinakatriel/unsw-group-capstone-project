@@ -1,4 +1,6 @@
-// TESTING FILE
+import {createFlashcard, updateFlashcard, deleteFlashcard, getFlashcard, getAllFlashcards} from '../cardResolvers';
+import { storage } from '@forge/api';
+import { queryStorage } from '../helpers';
 
 jest.mock('@forge/api', () => ({
   storage: {
@@ -23,14 +25,6 @@ jest.mock('../helpers', () => ({
   queryStorage: jest.fn(() => Promise.resolve([]))
 }));
 
-import {createFlashcard, updateFlashcard, deleteFlashcard, getFlashcard, getAllFlashcards} from '../cardResolvers';
-import { storage } from '@forge/api';
-import { Card, ResolverRequest } from '../types';
-import { Resolver } from 'dns';
-import { startsWith } from '@forge/api';
-import { resourceLimits } from 'worker_threads';
-import { createDeck, updateDeck } from '../deckResolvers';
-import { queryStorage } from '../helpers';
 
 describe('Flashcards Resolver Functions', () => {
   describe('createFlashcard', () => {
@@ -51,7 +45,6 @@ describe('Flashcards Resolver Functions', () => {
         locked: false,
         owner: '123',
         name: 'Freddie',
-        // deckIds: []
       };
 
       expect(storage.set).toHaveBeenCalledWith(jestCardId, createdCardData);
@@ -103,7 +96,6 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const updatedCard = {
         ...oldCard,
@@ -137,7 +129,6 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const updatedCard = {
         ...oldCard,
@@ -170,7 +161,6 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const updatedCard = {
         ...oldCard,
@@ -204,7 +194,6 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const updatedCard = {
         ...oldCard,
@@ -238,7 +227,6 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const updatedCard = {
         ...oldCard,
@@ -252,7 +240,6 @@ describe('Flashcards Resolver Functions', () => {
 
       const result = await updateFlashcard(req);
 
-      // expect(storage.set).toHaveBeenCalledWith(jestCardId, updatedCard);
       expect(result.success).toBe(false);
       expect(result.error).toEqual("Invalid input: front and back required");
     });
@@ -272,7 +259,6 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldCard); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const updatedCard = {
         ...oldCard,
@@ -286,7 +272,6 @@ describe('Flashcards Resolver Functions', () => {
 
       const result = await updateFlashcard(req);
 
-      // expect(storage.set).toHaveBeenCalledWith(jestCardId, updatedCard);
       expect(result.success).toBe(false);
       expect(result.error).toEqual("Invalid input: front and back required");
     });
@@ -307,7 +292,6 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(card); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { cardId: card.id },
@@ -336,7 +320,6 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(card); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { cardId: card.id },
@@ -365,7 +348,6 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(card); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { cardId: card.id },
@@ -374,7 +356,6 @@ describe('Flashcards Resolver Functions', () => {
 
       const result = await deleteFlashcard(req);
 
-      // expect(storage.delete).toHaveBeenCalledWith(jestCardId);
       expect(result.success).toBe(false);
       expect(result.error).toEqual("Only owner can delete");
     });
@@ -394,7 +375,6 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(card); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { cardId: card.id },
@@ -424,7 +404,6 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(card); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { cardId: card.id },
@@ -451,7 +430,6 @@ describe('Flashcards Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(card); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { cardId: card.id },

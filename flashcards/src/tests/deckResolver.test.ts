@@ -1,4 +1,6 @@
-// TESTING FILE
+import { storage } from '@forge/api';
+import { addCardToDeck, createDeck, updateDeck, removeCardFromDeck, getAllDecks, getDeck, deleteDeck } from '../deckResolvers';
+import { queryStorage } from '../helpers';
 
 jest.mock('@forge/api', () => ({
     storage: {
@@ -14,25 +16,14 @@ jest.mock('@forge/api', () => ({
     startsWith: jest.fn((prefix) => prefix),
   }));
   
-  jest.mock('../helpers', () => ({
-    generateId: jest.fn(() => '12345'),
-    getUserName: jest.fn(() => 'Freddie'),
-    initUserData: jest.fn(),
-    queryDecksById: jest.fn(() => Promise.resolve([])),
-    queryTagsById: jest.fn(() => Promise.resolve([])),
-    queryStorage: jest.fn(() => Promise.resolve([]))
-  }));
-  
-import {createFlashcard, updateFlashcard, deleteFlashcard, getFlashcard} from '../cardResolvers';
-import { storage } from '@forge/api';
-import { Card, ResolverRequest } from '../types';
-import { Resolver } from 'dns';
-import { startsWith } from '@forge/api';
-import { resourceLimits } from 'worker_threads';
-import { addCardToDeck, createDeck, updateDeck, removeCardFromDeck, getAllDecks, getDeck, deleteDeck } from '../deckResolvers';
-import { faMagicWandSparkles } from '@fortawesome/free-solid-svg-icons';
-import { getAllContent } from '../aiResolvers';
-import { queryStorage } from '../helpers';
+jest.mock('../helpers', () => ({
+  generateId: jest.fn(() => '12345'),
+  getUserName: jest.fn(() => 'Freddie'),
+  initUserData: jest.fn(),
+  queryDecksById: jest.fn(() => Promise.resolve([])),
+  queryTagsById: jest.fn(() => Promise.resolve([])),
+  queryStorage: jest.fn(() => Promise.resolve([]))
+}));
 
 describe('Deck Resolver Functions', () => {
   describe('Create Deck', () => {
@@ -84,8 +75,6 @@ describe('Deck Resolver Functions', () => {
 
       const result = await createDeck(req);
 
-      // expect(storage.set).toHaveBeenCalledWith(jestDeckId, deck);
-
       expect(result.success).toBe(false);
       expect(result.error).toEqual("Invalid input: title required");
     });
@@ -108,7 +97,6 @@ describe('Deck Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const updatedDeck = {
         ...oldDeck,
@@ -143,7 +131,6 @@ describe('Deck Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const updatedDeck = {
         ...oldDeck,
@@ -178,7 +165,6 @@ describe('Deck Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const updatedDeck = {
         ...oldDeck,
@@ -213,7 +199,6 @@ describe('Deck Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const updatedDeck = {
         ...oldDeck,
@@ -227,7 +212,6 @@ describe('Deck Resolver Functions', () => {
 
       const result = await updateDeck(req);
 
-      // expect(storage.set).toHaveBeenCalledWith(jestDeckId, updatedDeck);
       expect(result.success).toBe(false);
       expect(result.error).toEqual("Only owner can edit");
     });
@@ -248,7 +232,6 @@ describe('Deck Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const updatedDeck = {
         ...oldDeck,
@@ -262,7 +245,6 @@ describe('Deck Resolver Functions', () => {
 
       const result = await updateDeck(req);
 
-      // expect(storage.set).toHaveBeenCalledWith(jestDeckId, updatedDeck);
       expect(result.success).toBe(false);
       expect(result.error).toEqual("Invalid input: title required");
     });
@@ -284,7 +266,6 @@ describe('Deck Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { deckId: deck.id },
@@ -312,7 +293,6 @@ describe('Deck Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { deckId: deck.id },
@@ -342,7 +322,6 @@ describe('Deck Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { deckId: deck.id },
@@ -372,7 +351,6 @@ describe('Deck Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { deckId: deck.id },
@@ -402,7 +380,6 @@ describe('Deck Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { deckId: deck.id },
@@ -432,7 +409,6 @@ describe('Deck Resolver Functions', () => {
       };
 
       (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
-      // (storage.set as jest.Mock).mockResolvedValue(undefined); // replicating storage set
 
       const req = {
         payload: { deckId: deck.id },
@@ -441,7 +417,6 @@ describe('Deck Resolver Functions', () => {
 
       const result = await deleteDeck(req);
 
-      // expect(storage.delete).toHaveBeenCalledWith(jestDeckId);
       expect(result.success).toBe(false);
       expect(result.error).toEqual("Only owner can delete");
     });

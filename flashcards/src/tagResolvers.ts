@@ -203,7 +203,7 @@ export const addTagToCard = async (req: ResolverRequest) => {
         };
     }
 
-    if (tag.cardIds && tag.cardIds.includes(tagId)) {
+    if (tag.cardIds && tag.cardIds.includes(cardId)) {
         return {
             success: false,
             error: 'Item already included',
