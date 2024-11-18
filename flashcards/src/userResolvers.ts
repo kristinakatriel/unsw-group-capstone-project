@@ -1,17 +1,19 @@
-import Resolver from '@forge/resolver';
-import api, { QueryApi, route, startsWith, storage } from '@forge/api';
-import {
-    Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
-    QuizResult, StudyResult, QuizSession, StudySession
-} from './types';
-import { generateId, clearStorage, getUserName, initUserData } from './helpers'
-import { queryCardsById, queryDecksById, queryTagsById, queryUsersById } from './helpers'
+import { storage } from '@forge/api';
 import { ResolverRequest } from './types'
+import { queryCardsById, queryDecksById, queryTagsById } from './helpers'
 
 
+/**
+ * Fetches all cards associated with the user identified by the account ID.
+ *
+ * @param {ResolverRequest} req - The request object containing payload and context.
+ * @param {object} req.context - The request context.
+ * @param {string} req.context.accountId - The account ID of the user.
+ * @returns {Promise<object>} A response object indicating success or failure.
+ *                            On success, includes an array of user cards.
+ */
 export const fetchUserCards = async (req: ResolverRequest) => {
     const { accountId } = req.context;
-
     if (!accountId) {
         return {
             success: false,
@@ -20,7 +22,6 @@ export const fetchUserCards = async (req: ResolverRequest) => {
     }
 
     const user = await storage.get(accountId);
-
     if (!user || !user.cardIds) {
         return {
             success: false,
@@ -29,7 +30,6 @@ export const fetchUserCards = async (req: ResolverRequest) => {
     }
 
     const cards = await queryCardsById(user.cardIds);
-
     return {
         success: true,
         cards
@@ -37,9 +37,17 @@ export const fetchUserCards = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Fetches all decks associated with the user identified by the account ID.
+ *
+ * @param {ResolverRequest} req - The request object containing payload and context.
+ * @param {object} req.context - The request context.
+ * @param {string} req.context.accountId - The account ID of the user.
+ * @returns {Promise<object>} A response object indicating success or failure.
+ *                            On success, includes an array of user decks.
+ */
 export const fetchUserDecks = async (req: ResolverRequest) => {
     const { accountId } = req.context;
-
     if (!accountId) {
         return {
             success: false,
@@ -48,7 +56,6 @@ export const fetchUserDecks = async (req: ResolverRequest) => {
     }
 
     const user = await storage.get(accountId);
-
     if (!user || !user.deckIds) {
         return {
             success: false,
@@ -57,7 +64,6 @@ export const fetchUserDecks = async (req: ResolverRequest) => {
     }
 
     const decks = await queryDecksById(user.deckIds);
-
     return {
         success: true,
         decks
@@ -65,9 +71,17 @@ export const fetchUserDecks = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Fetches all tags associated with the user identified by the account ID.
+ *
+ * @param {ResolverRequest} req - The request object containing payload and context.
+ * @param {object} req.context - The request context.
+ * @param {string} req.context.accountId - The account ID of the user.
+ * @returns {Promise<object>} A response object indicating success or failure.
+ *                            On success, includes an array of user tags.
+ */
 export const fetchUserTags = async (req: ResolverRequest) => {
     const { accountId } = req.context;
-
     if (!accountId) {
         return {
             success: false,
@@ -76,7 +90,6 @@ export const fetchUserTags = async (req: ResolverRequest) => {
     }
 
     const user = await storage.get(accountId);
-
     if (!user || !user.tagIds) {
         return {
             success: false,
@@ -85,7 +98,6 @@ export const fetchUserTags = async (req: ResolverRequest) => {
     }
 
     const tags = await queryTagsById(user.tagIds);
-
     return {
         success: true,
         tags

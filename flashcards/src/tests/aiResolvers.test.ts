@@ -159,7 +159,7 @@ describe('Adding Generated Flashcards Tests', () => {
 
     const result = await addGeneratedFlashcards(req);
 
-    expect(result).toEqual({ success: false, error: 'Deck Not found' });
+    expect(result).toEqual({ success: false, error: 'Deck not found' });
   });
 
   it('Test 2 - should add flashcards successfully', async () => {
@@ -189,9 +189,7 @@ describe('Adding Generated Flashcards Tests', () => {
   
     const result = await addGeneratedFlashcards(req);
   
-    // Ensure the success property is true
     expect(result.success).toBe(true);
-    // Optionally, check if the correct flashcards were created
     expect(result.createdFlashcardsCount).toBe(2);
   });
 });
