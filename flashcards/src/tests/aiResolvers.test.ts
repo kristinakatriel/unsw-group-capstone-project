@@ -167,7 +167,7 @@ describe('Adding Generated Flashcards Tests', () => {
     // Mock the get and set methods
     (storage.get as jest.Mock).mockResolvedValueOnce({
       id: 'deck-123',
-      cards: [{ question: 'nanana', answer: 'yayaya' }, { question: 'yayaya', answer: 'lfg' }],
+      cards: [{ question: 'q1', answer: 'a1' }, { question: 'q2', answer: 'a2' }],
     });
   
     (getAllTags as jest.Mock).mockResolvedValue({
