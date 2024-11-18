@@ -2,6 +2,7 @@ import { asUser, storage } from '@forge/api';
 import { addGeneratedFlashcards, getAllContent, getGeneratedDeckTitle, generateQA } from '../aiResolvers';
 import { getAllTags } from '../tagResolvers';
 
+
 global.fetch = jest.fn() as jest.Mock;
 
 jest.mock('@forge/api', () => ({
@@ -39,6 +40,7 @@ jest.mock('../tagResolvers', () => ({
   getAllTags: jest.fn(),
 }));
 
+
 describe('Generating Deck Title Tests', () => {
   const req = {
     payload: { text: 'Sample text for generating deck title' },
@@ -66,6 +68,7 @@ describe('Generating Deck Title Tests', () => {
     expect(result).toEqual({ success: false, error: 'No deck title generated' });
   });
 });
+
 
 describe('Getting All Content Tests', () => {
   const req = {
@@ -107,6 +110,7 @@ describe('Getting All Content Tests', () => {
   });
 });
 
+
 describe('Generating Q&A Tests', () => {
   const req = {
     payload: { text: 'Sample text' },
@@ -140,6 +144,7 @@ describe('Generating Q&A Tests', () => {
     });
   });
 });
+
 
 describe('Adding Generated Flashcards Tests', () => {
   const req = {
