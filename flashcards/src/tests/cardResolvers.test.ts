@@ -477,6 +477,7 @@ describe('Flashcards Resolver Functions', () => {
         deckIds: []
       };
 
+      
       const jestCardId2 = `c-${123456}`;
       const card2 = {
         id: jestCardId2,
