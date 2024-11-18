@@ -4,10 +4,22 @@ import { generateId, getUserName, initUserData,
          queryDecksById, queryTagsById, queryStorage } from './helpers'
 
 
+/**
+ * Creates a new flashcard.
+ *
+ * @param {ResolverRequest} req - The request containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.front - The front text of the flashcard.
+ * @param {string} req.payload.back - The back text of the flashcard.
+ * @param {string} [req.payload.hint] - An optional hint for the flashcard.
+ * @param {boolean} req.payload.locked - Whether the flashcard is locked.
+ * @param {object} req.context - The request context.
+ * @param {string} req.context.accountId - The account ID of the user.
+ * @returns {Promise<object>} The created flashcard and success status.
+ */
 export const createFlashcard = async (req: ResolverRequest) => {
   const { front, back, hint, locked } = req.payload;
   const accountId = req.context.accountId;
-
   if (!front || !back) {
     return {
       success: false,
@@ -39,6 +51,20 @@ export const createFlashcard = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Updates an existing flashcard.
+ *
+ * @param {ResolverRequest} req - The request containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.id - The ID of the flashcard to update.
+ * @param {string} req.payload.front - The updated front text of the flashcard.
+ * @param {string} req.payload.back - The updated back text of the flashcard.
+ * @param {string} [req.payload.hint] - The updated hint for the flashcard.
+ * @param {string} req.payload.owner - The owner ID of the flashcard.
+ * @param {boolean} req.payload.locked - Whether the flashcard is locked.
+ * @param {object} req.context - The request context.
+ * @returns {Promise<object>} The updated flashcard and success status.
+ */
 export const updateFlashcard = async (req: ResolverRequest) => {
   const { id, front, back, hint, owner, locked } = req.payload as Card;
 
@@ -73,7 +99,6 @@ export const updateFlashcard = async (req: ResolverRequest) => {
 
   await storage.set(id, updatedCard);
 
-  // TODO: CHECK IF NEEDED
   const decksResult = await storage.query().where('key', startsWith('d-')).getMany();
   if (!decksResult) {
     return {
@@ -98,6 +123,16 @@ export const updateFlashcard = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Deletes a flashcard.
+ *
+ * @param {ResolverRequest} req - The request containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.cardId - The ID of the flashcard to delete.
+ * @param {object} req.context - The request context.
+ * @param {string} req.context.accountId - The account ID of the user.
+ * @returns {Promise<object>} Success status and deletion message.
+ */
 export const deleteFlashcard = async (req: ResolverRequest) => {
   const { cardId } = req.payload;
 
@@ -143,6 +178,14 @@ export const deleteFlashcard = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Retrieves a single flashcard by its ID.
+ *
+ * @param {ResolverRequest} req - The request containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.cardId - The ID of the flashcard to fetch.
+ * @returns {Promise<object>} The flashcard data and success status.
+ */
 export const getFlashcard = async (req: ResolverRequest) => {
   const { cardId } = req.payload;
 
@@ -161,6 +204,12 @@ export const getFlashcard = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Retrieves all flashcards and their associated tags.
+ *
+ * @param {ResolverRequest} req - The request object.
+ * @returns {Promise<object>} All flashcards, their tags, and success status.
+ */
 export const getAllFlashcards = async (req: ResolverRequest) => {
   const allCards = await queryStorage('c-') as Card[];
   const allTags = await queryStorage('t-') as Tag[];

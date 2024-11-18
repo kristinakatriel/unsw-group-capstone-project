@@ -4,6 +4,20 @@ import { generateId, initUserData, queryStorage, queryTagsForItem,
          queryCardsById, queryDecksById, queryTagsById } from './helpers'
 
 
+/**
+ * Creates a new tag.
+ *
+ * @param {ResolverRequest} req - The request containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.title - The title of the tag.
+ * @param {string} [req.payload.colour] - An optional colour for the tag.
+ * @param {string[]} [req.payload.cardIds] - IDs of associated cards.
+ * @param {string[]} [req.payload.deckIds] - IDs of associated decks.
+ * @param {string[]} [req.payload.tagIds] - IDs of related tags.
+ * @param {object} req.context - The request context.
+ * @param {string} req.context.accountId - The account ID of the user creating the tag.
+ * @returns {Promise<object>} An object containing success status and the created tag.
+ */
 export const createTag = async (req: ResolverRequest) => {
     const { title, colour, cardIds, deckIds, tagIds } = req.payload;
     const accountId = req.context.accountId;
@@ -37,6 +51,18 @@ export const createTag = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Updates an existing tag.
+ *
+ * @param {ResolverRequest} req - The request containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.id - The ID of the tag to update.
+ * @param {string} req.payload.title - The updated title of the tag.
+ * @param {string} [req.payload.colour] - The updated colour of the tag.
+ * @param {string[]} [req.payload.cardIds] - The updated IDs of associated cards.
+ * @param {string[]} [req.payload.deckIds] - The updated IDs of associated decks.
+ * @returns {Promise<object>} An object containing success status and the updated tag.
+ */
 export const updateTag = async (req: ResolverRequest) => {
     const { id, title, colour, cardIds, deckIds } = req.payload;
 
@@ -73,6 +99,14 @@ export const updateTag = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Deletes a tag.
+ *
+ * @param {ResolverRequest} req - The request containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.tagId - The ID of the tag to delete.
+ * @returns {Promise<object>} An object containing success status and a deletion message.
+ */
 export const deleteTag = async (req: ResolverRequest) => {
     const { tagId } = req.payload;
 
@@ -102,6 +136,14 @@ export const deleteTag = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Retrieves a tag by its ID, along with its associated cards, decks, and tags.
+ *
+ * @param {ResolverRequest} req - The request containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.tagId - The ID of the tag to retrieve.
+ * @returns {Promise<object>} An object containing success status, the tag, and its associations.
+ */
 export const getTag = async (req: ResolverRequest) => {
     const { tagId } = req.payload;
 
@@ -128,6 +170,11 @@ export const getTag = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Retrieves all tags, along with their relationships.
+ *
+ * @returns {Promise<object>} An object containing success status, all tags, and their relationships.
+ */
 export const getAllTags = async () => {
     const allTags = await queryStorage('t-') as Tag[];
 
@@ -159,9 +206,16 @@ export const getAllTags = async () => {
 };
 
 
+/**
+ * Retrieves all tags associated with a specific item (card, deck, tag).
+ *
+ * @param {ResolverRequest} req - The request containing payload.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.itemId - The ID of the item to retrieve tags for.
+ * @param {string} req.payload.itemType - The type of the item ("card", "deck", "tag").
+ * @returns {Promise<object>} An object containing success status and the associated tags.
+ */
 export const getTagsForItem = async (req: ResolverRequest) => {
-
-
     const { itemId, itemType } = req.payload;
     try {
         const relTags = await queryTagsForItem(itemId, itemType);
@@ -176,20 +230,18 @@ export const getTagsForItem = async (req: ResolverRequest) => {
         console.error('Error fetching tags:', error);
         return { success: false, error: 'Error fetching tags' };
     }
-
-
-    // //const allTags = await queryStorage('t-') as Tag[];
-
-    // const relTags = await queryTagsForItem(itemId, itemType);
-
-
-    // return {
-    //     success: true,
-    //     tags: relTags,
-    // };
 };
 
 
+/**
+ * Adds a tag to a specific card.
+ *
+ * @param {ResolverRequest} req - The request containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.cardId - The ID of the card to tag.
+ * @param {string} req.payload.tagId - The ID of the tag to add to the card.
+ * @returns {Promise<object>} An object containing success status and a confirmation message.
+ */
 export const addTagToCard = async (req: ResolverRequest) => {
     const { cardId, tagId } = req.payload;
 
@@ -220,6 +272,15 @@ export const addTagToCard = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Adds a tag to a specific deck.
+ *
+ * @param {ResolverRequest} req - The request containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.deckId - The ID of the deck to tag.
+ * @param {string} req.payload.tagId - The ID of the tag to add to the deck.
+ * @returns {Promise<object>} An object containing success status and a confirmation message.
+ */
 export const addTagToDeck = async (req: ResolverRequest) => {
     const { deckId, tagId } = req.payload;
 
@@ -250,6 +311,15 @@ export const addTagToDeck = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Removes a tag from a specific card.
+ *
+ * @param {ResolverRequest} req - The request containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.cardId - The ID of the card to untag.
+ * @param {string} req.payload.tagId - The ID of the tag to remove from the card.
+ * @returns {Promise<object>} An object containing success status and a confirmation message.
+ */
 export const removeTagFromCard = async (req: ResolverRequest) => {
     const { cardId, tagId } = req.payload;
 
@@ -274,6 +344,15 @@ export const removeTagFromCard = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Removes a tag from a specific deck.
+ *
+ * @param {ResolverRequest} req - The request containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.deckId - The ID of the deck to untag.
+ * @param {string} req.payload.tagId - The ID of the tag to remove from the deck.
+ * @returns {Promise<object>} An object containing success status and a confirmation message.
+ */
 export const removeTagFromDeck = async (req: ResolverRequest) => {
     const { deckId, tagId } = req.payload;
 
@@ -296,33 +375,3 @@ export const removeTagFromDeck = async (req: ResolverRequest) => {
         message: 'Tag removed from deck',
     };
 };
-
-
-// export const getTagsByCardId = async (req: ResolverRequest) => {
-//     const { cardId } = req.payload;
-
-//     // Fetch all tags stored in the system
-//     const tags: Tag[] = [];
-
-//     const query = await storage.query().where('key', startsWith('t-')).limit(50).getMany();
-
-//     // Loop through the tags and check if the cardId is in the tag's cardIds array
-//     query.results.forEach(({ value }) => {
-//         const tag = value as Tag;
-//         if (tag.cardIds.includes(cardId)) {
-//             tags.push(tag);
-//         }
-//     });
-
-//     if (tags.length === 0) {
-//         return {
-//             success: false,
-//             error: `No tags found for card with id: ${cardId}`,
-//         };
-//     }
-
-//     return {
-//         success: true,
-//         tags,
-//     };
-// };
