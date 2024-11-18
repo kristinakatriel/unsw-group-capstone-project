@@ -20,15 +20,17 @@ jest.mock('../helpers', () => ({
   initUserData: jest.fn(),
   queryDecksById: jest.fn(() => Promise.resolve([])),
   queryTagsById: jest.fn(() => Promise.resolve([])),
+  queryStorage: jest.fn(() => Promise.resolve([]))
 }));
 
-import {createFlashcard, updateFlashcard, deleteFlashcard, getFlashcard} from '../cardResolvers';
+import {createFlashcard, updateFlashcard, deleteFlashcard, getFlashcard, getAllFlashcards} from '../cardResolvers';
 import { storage } from '@forge/api';
 import { Card, ResolverRequest } from '../types';
 import { Resolver } from 'dns';
 import { startsWith } from '@forge/api';
 import { resourceLimits } from 'worker_threads';
 import { createDeck, updateDeck } from '../deckResolvers';
+import { queryStorage } from '../helpers';
 
 describe('Flashcards Resolver Functions', () => {
   describe('createFlashcard', () => {
@@ -459,6 +461,45 @@ describe('Flashcards Resolver Functions', () => {
       const result = await getFlashcard(req);
 
       expect(result.success).toBe(true);
+    });
+  });
+  describe('getAllFlashcards', () => {
+    it('Test 1 - successful get all card', async () =>{
+      const jestCardId = `c-${12345}`;
+      const card = {
+        id: jestCardId,
+        front: '1+1',
+        back: '3',
+        hint: 'use addition',
+        owner: '123',
+        name: 'Freddie',
+        locked: false,
+        deckIds: []
+      };
+
+      const jestCardId2 = `c-${123456}`;
+      const card2 = {
+        id: jestCardId2,
+        front: '1+1',
+        back: '2',
+        hint: 'use addition',
+        owner: '123',
+        name: 'Freddie',
+        locked: false,
+        deckIds: []
+      };
+
+      const cardList = [card, card2];
+      (queryStorage as jest.Mock).mockResolvedValueOnce(cardList);
+
+      const req = {
+        payload: {},
+        context: {accountId: '123'}
+      }
+
+      const result = await getAllFlashcards(req);
+      expect(result.success).toBe(true);
+      expect(result.cards).toEqual(cardList);
     });
   });
 });
