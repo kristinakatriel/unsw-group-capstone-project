@@ -7,7 +7,8 @@ from flashcards import app
 
 client = TestClient(app)
 
-# NOTE: here, we made sure that the python tests pass as the edge cases are handled in airesolvers.js tests
+# NOTE: python tests pass as edge cases are handled in airesolvers.test.ts
+
 
 def test_generate_qa_success():
     # Sample input
@@ -24,6 +25,7 @@ def test_generate_qa_success():
     for qa_pair in data:
         assert "question" in qa_pair
         assert "answer" in qa_pair
+
 
 def test_generate_deck_title_success():
     # Sample input

@@ -1,7 +1,7 @@
 import { asUser, storage } from '@forge/api';
 import { addGeneratedFlashcards, getAllContent, getGeneratedDeckTitle, generateQA } from '../aiResolvers';
-import { getUserName } from '../helpers';
 import { getAllTags } from '../tagResolvers';
+
 
 global.fetch = jest.fn() as jest.Mock;
 
@@ -40,6 +40,7 @@ jest.mock('../tagResolvers', () => ({
   getAllTags: jest.fn(),
 }));
 
+
 describe('Generating Deck Title Tests', () => {
   const req = {
     payload: { text: 'Sample text for generating deck title' },
@@ -67,6 +68,7 @@ describe('Generating Deck Title Tests', () => {
     expect(result).toEqual({ success: false, error: 'No deck title generated' });
   });
 });
+
 
 describe('Getting All Content Tests', () => {
   const req = {
@@ -108,6 +110,7 @@ describe('Getting All Content Tests', () => {
   });
 });
 
+
 describe('Generating Q&A Tests', () => {
   const req = {
     payload: { text: 'Sample text' },
@@ -142,6 +145,7 @@ describe('Generating Q&A Tests', () => {
   });
 });
 
+
 describe('Adding Generated Flashcards Tests', () => {
   const req = {
     payload: {
@@ -160,11 +164,10 @@ describe('Adding Generated Flashcards Tests', () => {
 
     const result = await addGeneratedFlashcards(req);
 
-    expect(result).toEqual({ success: false, error: 'Deck Not found' });
+    expect(result).toEqual({ success: false, error: 'Deck not found' });
   });
 
   it('Test 2 - should add flashcards successfully', async () => {
-    // Mock the get and set methods
     (storage.get as jest.Mock).mockResolvedValueOnce({
       id: 'deck-123',
       cards: [{ question: 'q1', answer: 'a1' }, { question: 'q2', answer: 'a2' }],
@@ -176,7 +179,6 @@ describe('Adding Generated Flashcards Tests', () => {
   
     (storage.set as jest.Mock).mockResolvedValue(true);
     
-    // Mock the request payload
     const req = {
       payload: {
         qAPairs: [
@@ -192,9 +194,7 @@ describe('Adding Generated Flashcards Tests', () => {
   
     const result = await addGeneratedFlashcards(req);
   
-    // Ensure the success property is true
     expect(result.success).toBe(true);
-    // Optionally, check if the correct flashcards were created
     expect(result.createdFlashcardsCount).toBe(2);
   });
 });

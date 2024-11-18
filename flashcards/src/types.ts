@@ -4,33 +4,28 @@ import Resolver from '@forge/resolver';
 export type ResolverFunction = Parameters<Resolver['define']>[1];
 export type ResolverRequest = Parameters<ResolverFunction>[0];
 
-//////////////////////////////////////////////////
+///////////////////////////////////////////////////////
 
-export enum QuizSessionCardStatus {
-    Incomplete = 0,
-    Correct = 1,
-    Incorrect = 2,
-    Skip = 3,
+export interface GenFlashcardsPair {
+    question: string,
+    answer: string
 }
 
-export enum StudySessionCardStatus {
-    Positive,
-    Negative,
-    Incomplete
+export interface ParagraphType {
+    text: string
 }
 
-//////////////////////////////////////////////////
+///////////////////////////////////////////////////////
 
 export interface Card {
     id: string;
     owner: string;
-    name?: string;          // TODO: REMOVE AND RETURN MANUALLY
+    name?: string;
     front: string;
     back: string;
-    hint?: string;          // TODO: NOT OPTIONAL
-    deckIds: string[];      // TODO: REPLACE WITH K-V STORAGE
+    hint: string;
+    deckIds: string[];
     locked: boolean;
-    //tagIds: string[];
 }
 
 export interface Deck {
@@ -38,9 +33,9 @@ export interface Deck {
     title: string;
     description?: string;
     owner: string;
-    name?: string;          // TODO: REMOVE AND RETURN MANUALLY
-    cards: Card[];          // TODO: REMOVE AND RETURN MANUALLY
-    cardIds: string[];     // TODO: NOT OPTIONAL
+    name?: string;
+    cards: Card[];      // 
+    cardIds: string[];
     size: number;
     locked: boolean
 }
@@ -48,13 +43,12 @@ export interface Deck {
 export interface Tag {
     id: string;
     title: string;
-    owner: string;
     colour: string;
-    name?: string;          // TODO: REMOVE AND RETURN MANUALLY
+    owner: string;
+    name?: string;
     cardIds: string[];
     deckIds: string[];
     tagIds: string[];
-    // userIds: string[];
 }
 
 export interface User {
@@ -66,7 +60,7 @@ export interface User {
     data: { deckId: DynamicData };
 }
 
-//////////////////////////////////////////////////
+///////////////////////////////////////////////////////
 
 export interface DynamicData {
     dynamicDeck: Deck;
@@ -93,7 +87,7 @@ export interface StudyResult {
     deckInArchive: Deck;
 }
 
-//////////////////////////////////////////////////
+///////////////////////////////////////////////////////
 
 export interface SpaceSessions {
     quizSessions: string[];
@@ -118,11 +112,15 @@ export interface StudySession {
 
 ///////////////////////////////////////////////////////
 
-export interface GenFlashcardsPair {
-    question: string,
-    answer: string
+export enum QuizSessionCardStatus {
+    Incomplete = 0,
+    Correct = 1,
+    Incorrect = 2,
+    Skip = 3,
 }
 
-export interface ParagraphType {
-    text: string
+export enum StudySessionCardStatus {
+    Positive,
+    Negative,
+    Incomplete
 }

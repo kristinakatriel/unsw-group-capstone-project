@@ -1,38 +1,53 @@
 import Resolver from '@forge/resolver';
-import api, { QueryApi, route, startsWith, storage } from '@forge/api';
 import {
-  Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
-  QuizResult, StudyResult, QuizSession, StudySession,
-  ResolverRequest
-} from './types';
-import { generateId, clearStorage, getUserName, initUserData } from './helpers'
-// import { basename } from 'path';
-// import { create } from 'domain';
-import {
-  createFlashcard, updateFlashcard, deleteFlashcard,
-  getFlashcard, getAllFlashcards,
+  createFlashcard,
+  updateFlashcard,
+  deleteFlashcard,
+  getFlashcard,
+  getAllFlashcards,
 } from './cardResolvers';
 import {
-  createDeck, updateDeck, deleteDeck, getDeck, getAllDecks,
-  addCardToDeck, removeCardFromDeck
-} from './deckResolvers'
+  createDeck,
+  updateDeck,
+  deleteDeck,
+  getDeck,
+  getAllDecks,
+  addCardToDeck,
+  removeCardFromDeck,
+} from './deckResolvers';
 import {
-  createTag, updateTag, deleteTag, getTag, getAllTags, getTagsForItem,
-  addTagToCard, addTagToDeck, removeTagFromCard, removeTagFromDeck
+  createTag,
+  updateTag,
+  deleteTag,
+  getTag,
+  getAllTags,
+  getTagsForItem,
+  addTagToCard,
+  addTagToDeck,
+  removeTagFromCard,
+  removeTagFromDeck,
 } from './tagResolvers';
 import {
-  fetchUserCards, fetchUserDecks, fetchUserTags
+  fetchUserCards,
+  fetchUserDecks,
+  fetchUserTags,
 } from './userResolvers';
 import {
-  generateQA, addGeneratedFlashcards,
   getAllContent,
-  getGeneratedDeckTitle
-} from './aiResolvers'
-
+  generateQA,
+  addGeneratedFlashcards,
+  getGeneratedDeckTitle,
+} from './aiResolvers';
 import {
-  startQuizSession, updateCardStatusQuiz, endQuizSession, viewQuizResults,
-  startStudySession, nextCardStudy, endStudySession, prevCardStudy
-} from './sessions'
+  startQuizSession,
+  endQuizSession,
+  updateCardStatusQuiz,
+  viewQuizResults,
+  startStudySession,
+  endStudySession,
+  nextCardStudy,
+  prevCardStudy,
+} from './sessions';
 
 ///////////////////////////////////////////////////////////////////////////////////
 
@@ -67,18 +82,15 @@ resolver.define('addTagToCard', addTagToCard);
 resolver.define('addTagToDeck', addTagToDeck);
 resolver.define('removeTagFromCard', removeTagFromCard);
 resolver.define('removeTagFromDeck', removeTagFromDeck);
-// main handler file (where the resolver is defined)
-// resolver.define('getTagsByCardId', getTagsByCardId);
-
 
 resolver.define('fetchUserCards', fetchUserCards);
 resolver.define('fetchUserDecks', fetchUserDecks);
 resolver.define('fetchUserTags', fetchUserTags);
 
-resolver.define('getGeneratedDeckTitle', getGeneratedDeckTitle);
 resolver.define('getAllContent', getAllContent);
 resolver.define('generateQA', generateQA);
 resolver.define('addGeneratedFlashcards', addGeneratedFlashcards);
+resolver.define('getGeneratedDeckTitle', getGeneratedDeckTitle);
 
 resolver.define('startQuizSession', startQuizSession);
 resolver.define('endQuizSession', endQuizSession);

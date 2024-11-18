@@ -1,6 +1,8 @@
-import {createFlashcard, updateFlashcard, deleteFlashcard, getFlashcard, getAllFlashcards} from '../cardResolvers';
 import { storage } from '@forge/api';
+import { createFlashcard, updateFlashcard, deleteFlashcard,
+         getFlashcard, getAllFlashcards} from '../cardResolvers';
 import { queryStorage } from '../helpers';
+
 
 jest.mock('@forge/api', () => ({
   storage: {
@@ -27,6 +29,7 @@ jest.mock('../helpers', () => ({
 
 
 describe('Flashcards Resolver Functions', () => {
+
   describe('createFlashcard', () => {
     it('Test 1 - Successful card creation', async () => {
       const req = {
@@ -79,6 +82,7 @@ describe('Flashcards Resolver Functions', () => {
       expect(result.error).toBe('Invalid input: front and back required');
     });
   });
+
 
   describe('updateFlashcard', () => {
     it('Test 1 - successful card update - unlocked card - same user', async () =>{
@@ -276,6 +280,8 @@ describe('Flashcards Resolver Functions', () => {
       expect(result.error).toEqual("Invalid input: front and back required");
     });
   });
+
+
   describe('deleteFlashcard', () => {
     it('Test 1 - successful deletion - unlocked card - same user', async () =>{
       const jestCardId = `c-${12345}`;
@@ -388,6 +394,8 @@ describe('Flashcards Resolver Functions', () => {
       expect(result.message).toEqual(`Deleted card with id: ${jestCardId}`);
     });
   });
+
+
   describe('getFlashcard', () => {
     it('Test 1 - successful get card', async () =>{
       const jestCardId = `c-${12345}`;
@@ -441,6 +449,8 @@ describe('Flashcards Resolver Functions', () => {
       expect(result.success).toBe(true);
     });
   });
+
+
   describe('getAllFlashcards', () => {
     it('Test 1 - successful get all card', async () =>{
       const jestCardId = `c-${12345}`;

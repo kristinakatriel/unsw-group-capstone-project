@@ -1,6 +1,8 @@
 import { storage } from '@forge/api';
-import { addCardToDeck, createDeck, updateDeck, removeCardFromDeck, getAllDecks, getDeck, deleteDeck } from '../deckResolvers';
+import { createDeck, updateDeck, addCardToDeck, removeCardFromDeck,
+         getAllDecks, getDeck, deleteDeck } from '../deckResolvers';
 import { queryStorage } from '../helpers';
+
 
 jest.mock('@forge/api', () => ({
     storage: {
@@ -25,7 +27,9 @@ jest.mock('../helpers', () => ({
   queryStorage: jest.fn(() => Promise.resolve([]))
 }));
 
+
 describe('Deck Resolver Functions', () => {
+  
   describe('Create Deck', () => {
     it('Test 1 - successful deck creation', async () => {
       const req = {
@@ -80,6 +84,7 @@ describe('Deck Resolver Functions', () => {
     });
   });
 
+
   describe('Update Deck', () => {
     it('Test 1 - successful update - unlocked deck - same user', async () => {
       const jestDeckId = `d-${12345}`;
@@ -96,7 +101,7 @@ describe('Deck Resolver Functions', () => {
         locked: false
       };
 
-      (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck); // replicating storage get
+      (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck);
 
       const updatedDeck = {
         ...oldDeck,
@@ -130,7 +135,7 @@ describe('Deck Resolver Functions', () => {
         locked: false
       };
 
-      (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck); // replicating storage get
+      (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck);
 
       const updatedDeck = {
         ...oldDeck,
@@ -164,7 +169,7 @@ describe('Deck Resolver Functions', () => {
         locked: true
       };
 
-      (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck); // replicating storage get
+      (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck);
 
       const updatedDeck = {
         ...oldDeck,
@@ -198,7 +203,7 @@ describe('Deck Resolver Functions', () => {
         locked: true
       };
 
-      (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck); // replicating storage get
+      (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck);
 
       const updatedDeck = {
         ...oldDeck,
@@ -231,7 +236,7 @@ describe('Deck Resolver Functions', () => {
         locked: true
       };
 
-      (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck); // replicating storage get
+      (storage.get as jest.Mock).mockResolvedValueOnce(oldDeck);
 
       const updatedDeck = {
         ...oldDeck,
@@ -249,6 +254,8 @@ describe('Deck Resolver Functions', () => {
       expect(result.error).toEqual("Invalid input: title required");
     });
   });
+
+
   describe('Get Deck', () => {
     it('Test 1 - Get deck - same user - locked deck', async () => {
       const jestDeckId = `d-${12345}`;
@@ -265,7 +272,7 @@ describe('Deck Resolver Functions', () => {
         locked: true
       };
 
-      (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
+      (storage.get as jest.Mock).mockResolvedValueOnce(deck);
 
       const req = {
         payload: { deckId: deck.id },
@@ -292,7 +299,7 @@ describe('Deck Resolver Functions', () => {
         locked: true
       };
 
-      (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
+      (storage.get as jest.Mock).mockResolvedValueOnce(deck);
 
       const req = {
         payload: { deckId: deck.id },
@@ -304,6 +311,7 @@ describe('Deck Resolver Functions', () => {
       expect(result.success).toBe(true);
     });
   });
+
 
   describe('Delete Deck', () => {
     it('Test 1 - successful delete - unlocked deck - same user', async () => {
@@ -321,7 +329,7 @@ describe('Deck Resolver Functions', () => {
         locked: false
       };
 
-      (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
+      (storage.get as jest.Mock).mockResolvedValueOnce(deck);
 
       const req = {
         payload: { deckId: deck.id },
@@ -350,7 +358,7 @@ describe('Deck Resolver Functions', () => {
         locked: false
       };
 
-      (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
+      (storage.get as jest.Mock).mockResolvedValueOnce(deck);
 
       const req = {
         payload: { deckId: deck.id },
@@ -379,7 +387,7 @@ describe('Deck Resolver Functions', () => {
         locked: true
       };
 
-      (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
+      (storage.get as jest.Mock).mockResolvedValueOnce(deck);
 
       const req = {
         payload: { deckId: deck.id },
@@ -408,7 +416,7 @@ describe('Deck Resolver Functions', () => {
         locked: true
       };
 
-      (storage.get as jest.Mock).mockResolvedValueOnce(deck); // replicating storage get
+      (storage.get as jest.Mock).mockResolvedValueOnce(deck);
 
       const req = {
         payload: { deckId: deck.id },
@@ -421,6 +429,7 @@ describe('Deck Resolver Functions', () => {
       expect(result.error).toEqual("Only owner can delete");
     });
   });
+
 
   describe('Add Card to Deck', () => {
     it('Test 1 - successful add card to deck', async() => {
@@ -557,6 +566,8 @@ describe('Deck Resolver Functions', () => {
       expect(result.error).toBe("Item already included");
     });
   });
+
+
   describe('Remove card from Deck', () => {
     it('Test 1 - successful remove card from deck', async() => {
       const jestDeckId = `d-${12345}`;
@@ -653,6 +664,8 @@ describe('Deck Resolver Functions', () => {
       expect(result.error).toBe("Only owner can edit")
     });
   });
+
+
   describe('Get All Decks', () => {
     it('Test 1 - successful get all deck', async() => {
       const jestDeckId = `d-${12345}`;

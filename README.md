@@ -67,10 +67,10 @@ For more information about functionality, jump to this section: [Functionality](
 │   ├── package.json
 │   ├── src
 │   │   ├── tests/
+│   │   ├── ai_generation.py
 │   │   ├── aiResolvers.ts
 │   │   ├── cardResolvers.ts
 │   │   ├── deckResolvers.ts
-│   │   ├── flashcards.py
 │   │   ├── helpers.ts
 │   │   ├── index.ts
 │   │   ├── requirements.txt
@@ -94,7 +94,7 @@ Where the folders are as follows:
    2. `src` which consists of frontend files.
 3. `flashcards/src`: Consists of:
    1. backend files that help for card, deck and tag management and,
-   2. A python file `flashcards.py` which is used for the AI generation of flashcards and,
+   2. A python file `ai_generation.py` which is used for the AI generation of flashcards and,
    3. `requirements.txt`: To install all dependencies for the ai generation.
 4. `flashcards/frontend/src`: Consists of frontend files for the custom ui app
 5. `flashcards/frontend/src/components`: Consists of slider files, deck display and study mode files for the custom ui app

@@ -1,14 +1,21 @@
-import Resolver from '@forge/resolver';
-import api, { QueryApi, route, startsWith, storage } from '@forge/api';
-import {
-    Card, Deck, Tag, User, GenFlashcardsPair, DynamicData,
-    QuizResult, StudyResult, QuizSession, StudySession
-} from './types';
-import { generateId, clearStorage, queryStorage, getUserName, initUserData } from './helpers'
-import { queryCardsById, queryDecksById, queryTagsById, queryUsersById } from './helpers'
-import { ResolverRequest } from './types'
+import { storage } from '@forge/api';
+import { ResolverRequest, Card, Deck, Tag } from './types';
+import { generateId, getUserName, initUserData, queryTagsById, queryStorage } from './helpers'
 
 
+/**
+ * Creates a new deck.
+ *
+ * @param {ResolverRequest} req - The request object containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.title - The title of the deck.
+ * @param {string} [req.payload.description] - An optional description for the deck.
+ * @param {Card[]} [req.payload.cards] - Optional flashcards to include in the deck.
+ * @param {boolean} req.payload.locked - Whether the deck is locked.
+ * @param {object} req.context - The request context.
+ * @param {string} req.context.accountId - The account ID of the user creating the deck.
+ * @returns {Promise<object>} An object containing success status, deck ID, and the created deck.
+ */
 export const createDeck = async (req: ResolverRequest) => {
     const { title, description, cards: flashcards, locked } = req.payload as Omit<Deck, 'id'>;
     const accountId = req.context.accountId;
@@ -30,9 +37,9 @@ export const createDeck = async (req: ResolverRequest) => {
         description,
         owner: accountId,
         name: user,
-        cards: flashcards || [], // todo: remove once frontend refactored
-        cardIds: [],             // todo: implement card id references
-        size: 0,                 // todo: implement or remove
+        cards: flashcards || [],
+        cardIds: [],
+        size: 0,
         locked
     };
 
@@ -46,11 +53,23 @@ export const createDeck = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Updates an existing deck.
+ *
+ * @param {ResolverRequest} req - The request object containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.id - The ID of the deck to update.
+ * @param {string} req.payload.title - The updated title of the deck.
+ * @param {string} [req.payload.description] - The updated description of the deck.
+ * @param {Card[]} [req.payload.cards] - The updated flashcards in the deck.
+ * @param {string} req.payload.owner - The owner ID of the deck.
+ * @returns {Promise<object>} An object containing success status and the updated deck.
+ */
+
 export const updateDeck = async (req: ResolverRequest) => {
     const { id, title, description, owner, cards } = req.payload as Deck;
 
     const existingDeck = await storage.get(id) as Deck | undefined;
-
     if (!existingDeck) {
         return {
             success: false,
@@ -76,7 +95,7 @@ export const updateDeck = async (req: ResolverRequest) => {
         ...existingDeck,
         title: title || existingDeck.title,
         description: description || existingDeck.description,
-        cards: cards || existingDeck.cards,
+        cards: cards || existingDeck.cards
     };
 
     await storage.set(id, updatedDeck);
@@ -88,11 +107,18 @@ export const updateDeck = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Deletes a deck.
+ *
+ * @param {ResolverRequest} req - The request object containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.deckId - The ID of the deck to delete.
+ * @returns {Promise<object>} An object containing success status and a deletion message.
+ */
 export const deleteDeck = async (req: ResolverRequest) => {
     const { deckId } = req.payload;
 
     const deck = await storage.get(deckId);
-
     if (!deck) {
         return {
             success: false,
@@ -128,11 +154,18 @@ export const deleteDeck = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Retrieves a single deck by its ID.
+ *
+ * @param {ResolverRequest} req - The request object containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.deckId - The ID of the deck to retrieve.
+ * @returns {Promise<object>} An object containing success status and the retrieved deck.
+ */
 export const getDeck = async (req: ResolverRequest) => {
     const { deckId } = req.payload;
 
     const deck = await storage.get(deckId) as Deck | undefined;
-
     if (!deck) {
         return {
             success: false,
@@ -147,33 +180,14 @@ export const getDeck = async (req: ResolverRequest) => {
 };
 
 
-// export const getAllDecks = async (req: ResolverRequest) => {
-//     const allDecks: Deck[] = [];
-
-//     const query = await storage.query().where('key', startsWith('d-')).limit(50).getMany();
-
-//     query.results.forEach(({ value }) => {
-//         allDecks.push(value as Deck);
-//     });
-
-//     return {
-//         success: true,
-//         decks: allDecks,
-//     };
-// };
-
-
+/**
+ * Retrieves all decks and their associated tags.
+ *
+ * @param {ResolverRequest} req - The request object.
+ * @returns {Promise<object>} An object containing success status, all decks, and their tags.
+ */
 export const getAllDecks = async (req: ResolverRequest) => {
-    const allDecks = await queryStorage('d-') as Deck[]; // use once limit implemented
-
-    // const allDecks: Deck[] = [];
-
-    // const query = await storage.query().where('key', startsWith('d-')).limit(50).getMany();
-
-    // query.allDecks.forEach(({ value }) => {
-    //     allDecks.push(value as Deck);
-    // });
-
+    const allDecks = await queryStorage('d-') as Deck[];
     const allTags = await queryStorage('t-') as Tag[];
 
     const mapTags: Record<string, Tag[]> = {};
@@ -193,6 +207,16 @@ export const getAllDecks = async (req: ResolverRequest) => {
     };
 };
 
+
+/**
+ * Adds a card to a specified deck.
+ *
+ * @param {ResolverRequest} req - The request object containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.deckId - The ID of the deck to add the card to.
+ * @param {string} req.payload.cardId - The ID of the card to add to the deck.
+ * @returns {Promise<object>} An object containing success status and a confirmation message.
+ */
 export const addCardToDeck = async (req: ResolverRequest) => {
     const { deckId, cardId } = req.payload;
 
@@ -220,7 +244,7 @@ export const addCardToDeck = async (req: ResolverRequest) => {
         }
     }
 
-    deck.cards = [...(deck.cards || []), card];          // todo: remove once frontend refactored
+    deck.cards = [...(deck.cards || []), card];
     deck.cardIds = [...(deck.cardIds || []), cardId];
     card.deckIds = [...(card.deckIds || []), deckId];
 
@@ -233,6 +257,15 @@ export const addCardToDeck = async (req: ResolverRequest) => {
 };
 
 
+/**
+ * Removes a card from a specified deck.
+ *
+ * @param {ResolverRequest} req - The request object containing payload and context.
+ * @param {object} req.payload - The payload data.
+ * @param {string} req.payload.deckId - The ID of the deck to remove the card from.
+ * @param {string} req.payload.cardId - The ID of the card to remove from the deck.
+ * @returns {Promise<object>} An object containing success status and a confirmation message.
+ */
 export const removeCardFromDeck = async (req: ResolverRequest) => {
     const { deckId, cardId } = req.payload;
 
@@ -253,7 +286,7 @@ export const removeCardFromDeck = async (req: ResolverRequest) => {
         }
     }
 
-    deck.cards = deck.cards?.filter(c => c.id !== cardId) || [];  // todo: remove once frontend refactored
+    deck.cards = deck.cards?.filter(c => c.id !== cardId) || [];
     deck.cardIds = deck.cardIds?.filter(id => id !== cardId) || [];
     card.deckIds = card.deckIds?.filter(id => id !== deckId) || [];
 
