@@ -37,6 +37,7 @@ function ContentBylineModule() {
   const [savingDeck, setSavingDeck] = useState(false);
   const [deckSaved, setDeckSaved] = useState(false);
   const [saveSuccess, setSaveSuccess] = useState(false);
+  const [showTimeoutWarning, setShowTimeoutWarning] = useState(false);
 
   const [autoGenTag, setAutoGenTag] = useState(null);
 
@@ -143,6 +144,7 @@ function ContentBylineModule() {
             console.log(response.data);
           }
         } catch (error) {
+          setShowTimeoutWarning(true);
           console.error('Error generating flashcards:', error);
           setRunningReq((prevRunningReq) => [...prevRunningReq, chunk]);
         }
@@ -315,29 +317,37 @@ function ContentBylineModule() {
         )}
       </Field>
 
-      {/***************************** DECK FLASHCARDS AI GENERATE FIELD *******************************/}
-      {(flashcardsGenerating || !flashcardsGenerated) && (
-        <Field>
-          {() => (
-            <span
-              onClick={flashcardsGenerating || flashcardsGenerated ? null : generateFlashcards}
-              style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}
-            >
-              {flashcardsGenerating ? (
-                <Box sx={{ width: '100%' }}>
-                  <LinearProgress/>
-                </Box>
-              ) : (
-                <>
-                  {'AI generate flashcards for this deck!'}
-                  <span><AutoAwesomeIcon className="content-byline-ai-icon" fontSize="small" /></span>
-                </>
+      {/************************************* ERROR MESSAGE WHEN SELECTED TEXT TOO LARGE **********************/}
+      {showTimeoutWarning ? (
+        <Alert severity="warning" className='alert'>
+          {'You have been timed out due to an internal error. Please verify that the AI backend is correctly installed according to the instructions in the repositorys README file, and then try again. (Development)'}
+        </Alert>
+      ) : (
+        <>
+          {/***************************** DECK FLASHCARDS AI GENERATE FIELD *******************************/}
+          {(flashcardsGenerating || !flashcardsGenerated) && (
+            <Field>
+              {() => (
+                <span
+                  onClick={flashcardsGenerating || flashcardsGenerated ? null : generateFlashcards}
+                  style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}
+                >
+                  {flashcardsGenerating ? (
+                    <Box sx={{ width: '100%' }}>
+                      <LinearProgress/>
+                    </Box>
+                  ) : (
+                    <>
+                      {'AI generate flashcards for this deck!'}
+                      <span><AutoAwesomeIcon className="content-byline-ai-icon" fontSize="small" /></span>
+                    </>
+                  )}
+                </span>
               )}
-            </span>
+            </Field>
           )}
-        </Field>
+        </>
       )}
-
       {/* ***************************** SAVE DECK FIELD ****************************** */}
       {flashcardsGenerated && !deckSaved && (
         <div className="content-byline-button-group">

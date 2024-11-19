@@ -175,7 +175,7 @@ function ContextMenuModule() {
       {showTimeoutWarning || showWarning ? (
         <Alert severity="warning" className='alert'>
           {showTimeoutWarning
-            ? 'You have timed out due to an internal error. Please try again.'
+            ? 'You have been timed out due to an internal error. Please verify that the AI backend is correctly installed according to the instructions in the repositorys README file, and then try again. (Development)'
             : 'You must select less than 1500 characters to use this feature. Please try again, or use our other feature "Content Byline" if you want to AI generate flashcards for the entire page.'
           }
         </Alert>
