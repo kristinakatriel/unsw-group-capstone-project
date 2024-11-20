@@ -325,7 +325,7 @@ function CreateTagGlobal({ closeTagModal }) {
           </Field>
 
           {/************************************* LOCK/UNLOCKED FIELD ***************************************/}
-          <Field>
+          {/* <Field>
             {() => (
               <span onClick={() => setLocked(!locked)} style={{ cursor: 'pointer', justifyContent: 'flex-end', display: 'flex', alignItems: 'center' }}>
                 {locked ? 'This tag will be locked, only the owner can edit and delete' : 'This tag will be unlocked, others can edit and delete'}
@@ -338,7 +338,7 @@ function CreateTagGlobal({ closeTagModal }) {
                 </span>
               </span>
             )}
-          </Field>
+          </Field> */}
 
           {/************************************* SUCCESS MESSAGE ***************************************/}
           {saveSuccess && <Alert severity="success"> New tag created successfully! </Alert>}
