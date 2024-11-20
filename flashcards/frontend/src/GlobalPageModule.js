@@ -321,25 +321,11 @@ function GlobalPageModule() {
     setEditingTag(tag);
     setIsEditTagModalOpen(true);
   };
-  const closeTagEditModal = async (selectedDecks = [], selectedFlashcards = []) => {
-    try {
-     const response = await invoke('updateTag', {
-        id: editingTag.id,
-        title: editingTag.title,
-        cardIds: selectedFlashcards,
-        deckIds: selectedDecks
-      });
-
-      if (response.success) {
-        setTimeout(() => {}, 1000);
-        refreshTagFrontend();
-      } else {
-        setErrorMessage(response.error);
-      }
-    } catch (error) {
-      console.error('Error updating tag:', error);
-    }
+  const closeTagEditModal = async () => {
     setIsEditTagModalOpen(false);
+    refreshTagFrontend();
+    refreshDeckFrontend();
+    refreshFlashcardFrontend();
   };
 
   //DELETION
