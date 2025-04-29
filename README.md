@@ -1,2 +1,0 @@
-# unsw-group-capstone-project
-
